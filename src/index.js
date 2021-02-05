@@ -1,5 +1,11 @@
 'use strict'
 
+// ****** Imports and Requires ******
+import 'bootstrap';
+
+import Chart from 'chart.js';
+
+
 // ****** Creature setup ******
 // initial conditions
 const condsInit = {
