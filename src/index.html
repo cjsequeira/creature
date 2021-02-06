@@ -1,26 +1,50 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Creature!</title>
-  </head>
-  <body>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <div class="container">
-      <h1 class="text-center">Creature!!!</h1>
-      
+  <title>Creature!</title>
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <div class="container-fluid">
+      <div class="text-center">
+        <h1 class="display-1 fw-normal">Creature!!</h1>
+        <p class="lead fw-normal">Eats, sleeps, and otherwise does f$*!-all!</p>
+      </div>
+
       <div class="row border">
-        <div class="col-lg-6 col-md-12">
+        <div class="col-md-6 col-sm-12">
           <canvas id="intStateChart" width="400" height="200"></canvas>
         </div>
-      </div>
-      <div class="row border">
-        <div class="col-lg-6 col-md-12 overflow-auto" style="height: 15em;" id="creature_status">
+
+        <div class="col-md-6 col-sm-12" id="creature_status">
         </div>
       </div>
+
     </div>
-  </body>
+  </main>
+
+</body>
+
 </html>

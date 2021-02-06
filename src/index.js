@@ -2,6 +2,7 @@
 
 // ****** Imports ******
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom.css';
 import Chart from 'chart.js';
 
 
@@ -208,11 +209,6 @@ let timerId = setInterval(() => {
 
 
     // *** Update simulator status box
-    // get status box scroll bar information
-    let statusScrollTop = csBox.scrollTop();
-    let statusScrollHeight = csBox.prop('scrollHeight');
-    let statusInnerHeight = csBox.innerHeight();
-
     // push message into status box if applicable
     if (statusMessage != '') {
         csBox.append('Time ' +
@@ -222,12 +218,7 @@ let timerId = setInterval(() => {
             '<br />');
     }
 
-    // adjust scroll bar position to auto-scroll if scroll bar is near the end
-    if (statusScrollTop > (statusScrollHeight - 1.5 * statusInnerHeight)) {
-        csBox.scrollTop(statusScrollHeight);
-    }
-
-
+    
     // *** Update world time
     curTime = curTime + timeStep;
 }, browserTime);
