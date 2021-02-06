@@ -1,8 +1,7 @@
 'use strict'
 
-// ****** Imports and Requires ******
-import 'bootstrap';
-
+// ****** Imports ******
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Chart from 'chart.js';
 
 
@@ -16,7 +15,7 @@ const condsInit = {
 
 // behavior speeches
 const behaviorStrings = {
-    idling: "I'm is idling!",
+    idling: "I'm is idling! Blah...",
     eating: "I'm is eating!! Nom...",
     sleeping: "I'm is sleeping! Zzzz..."
 };
@@ -25,11 +24,11 @@ const behaviorStrings = {
 const ActIdling = (conds) => ({
     glucose: conds.glucose - 2.4,
     neuro: conds.neuro + 1.2,
-    behavior: (conds.glucose < 30.0) 
-                ? 'eating' 
-                : (conds.neuro > 80.0)
-                    ? 'sleeping'
-                    : 'idling'
+    behavior: (conds.glucose < 30.0)
+        ? 'eating'
+        : (conds.neuro > 80.0)
+            ? 'sleeping'
+            : 'idling'
 });
 
 // eating function
@@ -52,7 +51,7 @@ const ActAsSimpleCreature = (conds) => {
         case 'idling': return ActIdling(conds)
         case 'eating': return ActEating(conds)
         case 'sleeping': return ActSleeping(conds)
-        default: return conds 
+        default: return conds
     }
 };
 
@@ -67,10 +66,13 @@ const journalInit = {
 // ****** Simulator setup ******
 var curTime = 0.0;
 var timeStep = 1.0;
-var browserTime = 500;
+var browserTime = 750;
 
 
-// ****** Chart setup ******
+// ****** UI setup ******
+// handle to creature status box
+var csBox = $('#creature_status');
+
 // chart axis parameters
 var xAxisWidth = 10.0;
 var xStepSize = 1.0;
@@ -153,37 +155,34 @@ charts[intStateChartId] = new Chart(ctx, {
 let myCreature = {
     conds: condsInit
 };
-
 let curBehavior = '';
 
 let myJournal = [journalInit];
 let statusMessage = '';
 
 // *** Main update loop 
-var timerId = setInterval(() => {
+let timerId = setInterval(() => {
     // *** Update creature
     myCreature.conds = ActAsSimpleCreature(myCreature.conds);
+
 
     // *** Update journal if creature behavior change
     curBehavior = behaviorStrings[myCreature.conds.behavior];
     if (myJournal[myJournal.length - 1].entry != curBehavior) {
         statusMessage = curBehavior;
-        myJournal.push({time: curTime, entry: statusMessage});
+        myJournal.push({ time: curTime, entry: statusMessage });
     } else {
         statusMessage = '';
     }
 
 
     // *** Update charts
-    // get handle to creature status box
-    let csBox = $('#creature_status');
-
     // for each chart...
     charts.forEach((chart) => {
         // push values into chart data
         let index = 0;
         for (const cond in myCreature.conds) {
-            if (typeof(myCreature.conds[cond]) != 'string') {
+            if (typeof (myCreature.conds[cond]) != 'string') {
                 chart.data.datasets[index].data.push({ x: curTime, y: myCreature.conds[cond] });
                 index++;
             }
@@ -215,11 +214,11 @@ var timerId = setInterval(() => {
     let statusInnerHeight = csBox.innerHeight();
 
     // push message into status box if applicable
-    if (statusMessage != ''){
-        csBox.append('Time ' + 
-            curTime + 
-            ': ' + 
-            behaviorStrings[myCreature.conds.behavior] + 
+    if (statusMessage != '') {
+        csBox.append('Time ' +
+            curTime +
+            ': ' +
+            behaviorStrings[myCreature.conds.behavior] +
             '<br />');
     }
 
