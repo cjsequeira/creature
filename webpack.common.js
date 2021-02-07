@@ -24,13 +24,19 @@ module.exports = {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
         type: 'asset/resource'
       },
+      {
+        test: /\.html$/,
+        use: [
+          'html-loader'
+        ]
+      },
     ]
   },
 
   externals: {
     moment: 'moment',
   },
-  
+
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.ProvidePlugin({
