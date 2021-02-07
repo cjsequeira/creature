@@ -2,6 +2,7 @@
 
 // ****** Imports ******
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom.css';
 import Chart from 'chart.js';
 
 
@@ -226,8 +227,8 @@ let timerId = setInterval(() => {
     if (statusScrollTop > (statusScrollHeight - 1.5 * statusInnerHeight)) {
         csBox.scrollTop(statusScrollHeight);
     }
-
-
+    
+    
     // *** Update world time
     curTime = curTime + timeStep;
 }, browserTime);
