@@ -224,7 +224,7 @@ let timerId = setInterval(() => {
     }
 
     // adjust scroll bar position to auto-scroll if scroll bar is near the end
-    if (statusScrollTop > (statusScrollHeight - 1.5 * statusInnerHeight)) {
+    if (statusScrollTop > (statusScrollHeight - 1.1 * statusInnerHeight)) {
         csBox.scrollTop(statusScrollHeight);
     }
     
