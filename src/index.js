@@ -1,19 +1,21 @@
 'use strict'
 
 // ****** Imports ******
+// Styling and libraries
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
-import Chart from 'chart.js';
+
+// Our own stuff
+import storeInit from './store_init.js';
+import updateStatusBox from './util.js';
+
+
+// ****** HTML page references ******
+const conds_chart = 'page_conds_chart';
+const creature_status_box = 'creature_status';
 
 
 // ****** Creature setup ******
-// initial conditions
-const condsInit = {
-    glucose: 50.0,
-    neuro: 50.0,
-    behavior: 'idling'
-};
-
 // behavior speeches
 const behaviorStrings = {
     idling: "I'm is idling! Blah...",
@@ -57,178 +59,73 @@ const ActAsSimpleCreature = (conds) => {
 };
 
 
-// ****** Journal setup ******
-const journalInit = {
-    time: 0.0,
-    entry: 'Simulator init'
-}
-
-
 // ****** Simulator setup ******
 var curTime = 0.0;
 var timeStep = 1.0;
 var browserTime = 750;
 
 
-// ****** UI setup ******
-// handle to creature status box
-var csBox = $('#creature_status');
-
-// chart axis parameters
-var xAxisWidth = 10.0;
-var xStepSize = 1.0;
-var theY = 0.0;
-
-// array for charts
-var charts = [];
-var intStateChartId = 0;
-
-// internal state chart
-var ctx = document.getElementById('intStateChart').getContext('2d');
-charts[intStateChartId] = new Chart(ctx, {
-    type: 'scatter',
-    data: {
-        datasets: [{
-            label: 'Glucose',
-            xAxisId: 'my-x-axis',
-            yAxisId: 'my-y-axis',
-            showLine: true,
-            fill: false,
-            backgroundColor: '#0000cc',
-            borderColor: '#000099',
-            tension: 0.2,
-            data: []
-        },
-        {
-            label: 'Neuro',
-            xAxisId: 'my-x-axis',
-            yAxisId: 'my-y-axis',
-            showLine: true,
-            fill: false,
-            backgroundColor: '#00cc00',
-            borderColor: '#009900',
-            tension: 0.2,
-            data: []
-        }]
-    },
-    options: {
-        title: {
-            display: true,
-            fontSize: 14,
-            position: 'top',
-            text: 'Internal Conditions'
-        },
-        tooltips: {
-            enabled: false
-        },
-        scales: {
-            xAxes: [{
-                id: 'my-x-axis',
-                type: 'linear',
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Time'
-                },
-                ticks: {
-                    min: 0.0,
-                    max: xAxisWidth,
-                    stepSize: xStepSize
-                }
-            }],
-            yAxes: [{
-                id: 'my-y-axis',
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Value'
-                },
-                ticks: {
-                    min: 0.0,
-                    max: 100.0
-                }
-            }]
-        }
-    }
-});
-
-
 // ****** Main code ******
 // *** Non-const code setup
-let myCreature = {
-    conds: condsInit
-};
+let myStore = storeInit(
+    document.getElementById(conds_chart).getContext('2d'),
+    document.getElementById(creature_status_box));
 let curBehavior = '';
 
-let myJournal = [journalInit];
-let statusMessage = '';
 
 // *** Main update loop 
 let timerId = setInterval(() => {
     // *** Update creature
-    myCreature.conds = ActAsSimpleCreature(myCreature.conds);
+    myStore.creature = ActAsSimpleCreature(myStore.creature);
 
 
     // *** Update journal if creature behavior change
-    curBehavior = behaviorStrings[myCreature.conds.behavior];
-    if (myJournal[myJournal.length - 1].entry != curBehavior) {
-        statusMessage = curBehavior;
-        myJournal.push({ time: curTime, entry: statusMessage });
-    } else {
-        statusMessage = '';
+    curBehavior = behaviorStrings[myStore.creature.behavior];
+    if (myStore.journal[myStore.journal.length - 1].entry != curBehavior) {
+        updateStatusBox(myStore.box_status, 'Time ' + curTime + ": " + curBehavior);
+        myStore.journal = [...myStore.journal, { time: curTime, entry: curBehavior }];
     }
 
 
-    // *** Update charts
-    // for each chart...
-    charts.forEach((chart) => {
-        // push values into chart data
-        let index = 0;
-        for (const cond in myCreature.conds) {
-            if (typeof (myCreature.conds[cond]) != 'string') {
-                chart.data.datasets[index].data.push({ x: curTime, y: myCreature.conds[cond] });
-                index++;
-            }
-        }
-
-        // revise chart x axis "window" if needed, for next chart update cycle
-        if (curTime > xAxisWidth) {
-            chart.options.scales.xAxes[0].ticks.max = Math.ceil(curTime);
-            chart.options.scales.xAxes[0].ticks.min = Math.ceil(curTime) - xAxisWidth;
-
-            // remove first element in each data array if hidden
-            chart.data.datasets.forEach((dataset) => {
-                let checkShift = dataset.data[0];
-                if (checkShift.x < (Math.ceil(curTime) - xAxisWidth - xStepSize)) {
-                    dataset.data.shift();
-                }
+    // *** Update chart
+    // push values into chart data
+    let index = 0;
+    for (const cond in myStore.creature) {
+        if (typeof (myStore.creature[cond]) != 'string') {
+            myStore.chart_creature.data.datasets[index].data.push({
+                x: curTime,
+                y: myStore.creature[cond]
             });
+            index++;
         }
-
-        // update chart
-        chart.update();
-    });
-
-
-    // *** Update simulator status box
-    // get status box scroll bar information
-    let statusScrollTop = csBox.scrollTop();
-    let statusScrollHeight = csBox.prop('scrollHeight');
-    let statusInnerHeight = csBox.innerHeight();
-
-    // push message into status box if applicable
-    if (statusMessage != '') {
-        csBox.append('Time ' +
-            curTime +
-            ': ' +
-            behaviorStrings[myCreature.conds.behavior] +
-            '<br />');
     }
 
-    // adjust scroll bar position to auto-scroll if scroll bar is near the end
-    if (statusScrollTop > (statusScrollHeight - 1.1 * statusInnerHeight)) {
-        csBox.scrollTop(statusScrollHeight);
+    // revise chart x axis "window" if needed, for next chart update cycle
+    let chart_creature_x = myStore.chart_creature.options.scales.xAxes[0].ticks;
+    let chart_creature_xWidth = chart_creature_x.max - chart_creature_x.min;
+    if (curTime > chart_creature_x.max) {
+        let new_max = Math.ceil(curTime);
+        myStore.chart_creature.options.scales.xAxes[0].ticks = {
+            ...chart_creature_x,
+            max: new_max,
+            min: new_max - chart_creature_xWidth
+        };
+
+
+        // remove first element in each data array if hidden
+        myStore.chart_creature.data.datasets.forEach((dataset) => {
+            let checkShift = dataset.data[0];
+            if (checkShift.x < (new_max - chart_creature_xWidth - chart_creature_x.StepSize)) {
+                dataset.data.shift();
+            }
+        });
     }
-    
-    
+
+    // update chart
+    myStore.chart_creature.update();
+
+
     // *** Update world time
     curTime = curTime + timeStep;
 }, browserTime);
+
