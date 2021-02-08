@@ -9,7 +9,7 @@
   <title>Creature!</title>
 </head>
 
-<body>
+<body style="background-color: #f2f3d9;">
   <div class="container-fluid">
 
     <div class="row top-box rounded-lg">
@@ -21,19 +21,20 @@
       <div class="col-9 justify-start">
         <h2>Eats, sleeps, and otherwise does f$*!-all!</h2>
       </div>
-      <div class="col-2">
+      <div class="col-2 m-3">
         <!-- Image from: https://www.deviantart.com/lethargiceye/art/Cute-Creature-75055699 -->
-        <img src="./assets/cute_creature.png" class="float-end" style="max-width: 100px;" />
+        <img src="./assets/cute_creature.png" class="float-end rounded rounded-lg border border-secondary"
+          style="max-width: 100px;" />
       </div>
     </div>
 
     <div class="row align-items-start justify-content-sm-center">
-      <div class="col-lg-5 col-11 border border-secondary rounded rounded-lg m-3" style="height:18em;">
-        <canvas id="intStateChart" width="400" height="200"></canvas>
+      <div class="col-md-5 col-11 border border-secondary rounded rounded-lg m-3 bg-white">
+        <canvas id="page_conds_chart" width="400" height="300"></canvas>
       </div>
 
-      <div class="col-lg-5 col-11 overflow-auto border border-secondary rounded rounded-lg m-3" style="height:18em; background-color:#f2f3d9;"
-        id="creature_status">
+      <div class="col-md-5 col-11 overflow-auto border border-secondary rounded rounded-lg m-3 bg-white"
+        style="height:20.7em;" id="creature_status">
       </div>
     </div>
   </div>
