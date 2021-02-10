@@ -63,17 +63,19 @@ let timerId = setInterval(() => {
     let chart_creature_xWidth = chart_creature_x.max - chart_creature_x.min;
     if (curTime > chart_creature_x.max) {
         let new_max = Math.ceil(curTime);
+        let new_min = new_max - chart_creature_xWidth;
+
         myStore.chart_creature.options.scales.xAxes[0].ticks = {
             ...chart_creature_x,
             max: new_max,
-            min: new_max - chart_creature_xWidth
+            min: new_min
         };
 
 
         // remove first element in each data array if hidden
         myStore.chart_creature.data.datasets.forEach((dataset) => {
             let checkShift = dataset.data[0];
-            if (checkShift.x < (new_max - chart_creature_xWidth - chart_creature_x.StepSize)) {
+            if (checkShift.x < (new_min - chart_creature_x.StepSize)) {
                 dataset.data.shift();
             }
         });
