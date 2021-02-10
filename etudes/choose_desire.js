@@ -15,11 +15,12 @@ const calcDesireToIdle = () => 1;
 const calcDesireToEat = () => 10;
 const calcDesireToSleep = () => 5;
 
-// array of three desires; each desire is actually a function
-const desireFuncs = [calcDesireToIdle, calcDesireToEat, calcDesireToSleep];
-
-// desire labels for later reveal
-const desireLabels = ['idle', 'eat', 'sleep'];
+// object containing three desires; each desire is actually a function with behavior label
+const desireFuncs = {
+    'idling': calcDesireToIdle, 
+    'eating': calcDesireToEat, 
+    'sleeping': calcDesireToSleep
+};
 
 
 // *** Utility functions
@@ -29,7 +30,7 @@ const geThan = x => y => (y >= x);
 
 // *** Main code
 // get numerical desires by evaluating each desire func with nifty shorthand
-const numbers = desireFuncs.map(f => f());
+const numbers = Object.values(desireFuncs).map(f => f());
 
 // desires as cumulative array
 const cum_numbers = numbers.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
@@ -45,14 +46,14 @@ const chosenElem = cum_numbers.filter(x => geThan(randInRange)(x))[0];
 const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange)(x));
 
 // show it all
-console.log('Desire labels: ' + desireLabels);
+console.log('Desire labels: ' + Object.keys(desireFuncs));
 console.log('Desire values: ' + numbers);
 console.log('Cumulative desire values: ' + cum_numbers);
 console.log('Max cumulative desire value: ' + max_cum_numbers);
 console.log('Random number from uniform distrib: ' + randInRange);
 console.log('Cumulative desire value element chosen by random number: ' + chosenElem);
 console.log('Cumulative desire value index chosen by random number: ' + chosenIndex);
-console.log('Chosen desire label: ' + desireLabels[chosenIndex]);
+console.log('Chosen desire label: ' + Object.keys(desireFuncs)[chosenIndex]);
 
 // outta here
 process.exit();

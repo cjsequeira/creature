@@ -73,9 +73,12 @@ const chart_creature_params_init = {
 const store = {
     // Initial creature
     creature: {
-        glucose: 50.0,
-        neuro: 50.0,
-        behavior: 'idling',
+        conds: {
+            glucose: 50.0,
+            neuro: 50.0,
+            behavior: 'idling',
+        },
+        seed: 0
     },
 
     // Initial journal
@@ -92,11 +95,8 @@ const store = {
 };
 
 
-const storeInit = (chart_creature_context, box_status_context) => ({
+export const storeInit = (chart_creature_context, box_status_context) => ({
     ...store,
     chart_creature: new Chart(chart_creature_context, chart_creature_params_init),
     box_status: box_status_context,
 });
-
-
-export default storeInit;

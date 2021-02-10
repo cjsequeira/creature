@@ -1,8 +1,30 @@
 'use strict'
 
+// ****** Code utilities ******
 
-// *** Update simulator status box with given HTML message
-function updateStatusBox(statusBox, message) {
+// *** Functional programming utilities
+// greater than or equal to
+export const geThan = x => y => (y >= x);
+
+
+// **** Numerical utilities
+// seeded random number
+// reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+export const seededRand = (seed = 0, min = 0.0, max = 1.0) => {
+    // return [seed, value]
+    return [
+        (seed * 9301 + 49297) % 233280,
+
+        min +
+        ((seed * 9301 + 49297) % 233280) / 233280 *
+        (max - min)
+    ];
+};
+
+
+// *** UI utilities
+// update simulator status box with given HTML message
+export function updateStatusBox(statusBox, message) {
     // get status box scroll bar information
     let statusScrollTop = statusBox.scrollTop;
     let statusScrollHeight = statusBox.scrollHeight;
@@ -16,6 +38,3 @@ function updateStatusBox(statusBox, message) {
         statusBox.scrollTop = statusScrollHeight;
     }
 }
-
-
-export default updateStatusBox;
