@@ -8,55 +8,12 @@ import './custom.css';
 // Our own stuff
 import storeInit from './store_init.js';
 import updateStatusBox from './util.js';
+import {ActAsSimpleCreature, behaviorStrings} from './creatures/simple_creature.js';
 
 
 // ****** HTML page references ******
 const conds_chart = 'page_conds_chart';
 const creature_status_box = 'creature_status';
-
-
-// ****** Creature setup ******
-// behavior speeches
-const behaviorStrings = {
-    idling: "I'm is idling! Blah...",
-    eating: "I'm is eating!! Nom...",
-    sleeping: "I'm is sleeping! Zzzz..."
-};
-
-// idling function
-const ActIdling = (conds) => ({
-    glucose: conds.glucose - 2.4,
-    neuro: conds.neuro + 1.2,
-    behavior: (conds.glucose < 30.0)
-        ? 'eating'
-        : (conds.neuro > 80.0)
-            ? 'sleeping'
-            : 'idling'
-});
-
-// eating function
-const ActEating = (conds) => ({
-    glucose: conds.glucose + 4.0,
-    neuro: conds.neuro + 2.6,
-    behavior: (conds.glucose > 45.0) ? 'idling' : 'eating'
-});
-
-// sleeping function
-const ActSleeping = (conds) => ({
-    glucose: conds.glucose - 1.0,
-    neuro: conds.neuro - 2.2,
-    behavior: (conds.neuro < 60.0) ? 'idling' : 'sleeping'
-});
-
-// dispatch function
-const ActAsSimpleCreature = (conds) => {
-    switch (conds.behavior) {
-        case 'idling': return ActIdling(conds)
-        case 'eating': return ActEating(conds)
-        case 'sleeping': return ActSleeping(conds)
-        default: return conds
-    }
-};
 
 
 // ****** Simulator setup ******
