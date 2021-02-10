@@ -6,9 +6,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
 
 // Our own stuff
-import storeInit from './store_init.js';
-import updateStatusBox from './util.js';
-import {ActAsSimpleCreature, behaviorStrings} from './creatures/simple_creature.js';
+import { storeInit } from './store_init.js';
+import { updateStatusBox } from './util.js';
+import { ActAsSimpleCreature, behaviorStrings } from './creatures/simple_creature.js';
 
 
 // ****** HTML page references ******

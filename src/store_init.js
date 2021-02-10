@@ -92,11 +92,8 @@ const store = {
 };
 
 
-const storeInit = (chart_creature_context, box_status_context) => ({
+export const storeInit = (chart_creature_context, box_status_context) => ({
     ...store,
     chart_creature: new Chart(chart_creature_context, chart_creature_params_init),
     box_status: box_status_context,
 });
-
-
-export default storeInit;

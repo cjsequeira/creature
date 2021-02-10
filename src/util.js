@@ -2,7 +2,7 @@
 
 
 // *** Update simulator status box with given HTML message
-function updateStatusBox(statusBox, message) {
+export function updateStatusBox(statusBox, message) {
     // get status box scroll bar information
     let statusScrollTop = statusBox.scrollTop;
     let statusScrollHeight = statusBox.scrollHeight;
@@ -16,6 +16,3 @@ function updateStatusBox(statusBox, message) {
         statusBox.scrollTop = statusScrollHeight;
     }
 }
-
-
-export default updateStatusBox;
