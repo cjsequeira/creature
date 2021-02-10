@@ -31,13 +31,14 @@ let curBehavior = '';
 
 
 // *** Main update loop 
+
 let timerId = setInterval(() => {
     // *** Update creature
     myStore.creature = ActAsSimpleCreature(myStore.creature);
 
 
     // *** Update journal if creature behavior change
-    curBehavior = behaviorStrings[myStore.creature.behavior];
+    curBehavior = behaviorStrings[myStore.creature.conds.behavior];
     if (myStore.journal[myStore.journal.length - 1].entry != curBehavior) {
         updateStatusBox(myStore.box_status, 'Time ' + curTime + ": " + curBehavior);
         myStore.journal = [...myStore.journal, { time: curTime, entry: curBehavior }];
@@ -47,11 +48,11 @@ let timerId = setInterval(() => {
     // *** Update chart
     // push values into chart data
     let index = 0;
-    for (const cond in myStore.creature) {
-        if (typeof (myStore.creature[cond]) != 'string') {
+    for (const cond in myStore.creature.conds) {
+        if (typeof (myStore.creature.conds[cond]) != 'string') {
             myStore.chart_creature.data.datasets[index].data.push({
                 x: curTime,
-                y: myStore.creature[cond]
+                y: myStore.creature.conds[cond]
             });
             index++;
         }
@@ -84,5 +85,5 @@ let timerId = setInterval(() => {
 
     // *** Update world time
     curTime = curTime + timeStep;
-}, browserTime);
 
+}, browserTime);

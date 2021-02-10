@@ -73,9 +73,12 @@ const chart_creature_params_init = {
 const store = {
     // Initial creature
     creature: {
-        glucose: 50.0,
-        neuro: 50.0,
-        behavior: 'idling',
+        conds: {
+            glucose: 50.0,
+            neuro: 50.0,
+            behavior: 'idling',
+        },
+        seed: 0
     },
 
     // Initial journal
