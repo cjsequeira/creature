@@ -50,7 +50,7 @@ const chart_creature_params_init = {
                 },
                 ticks: {
                     min: 0.0,
-                    max: 10.0,
+                    max: 50.0,
                     stepSize: 1.0
                 }
             }],
