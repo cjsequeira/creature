@@ -23,9 +23,10 @@ const ActIdling = (creatureType) =>
         // pass in behavior change desires specific to this behavior function
         {
             'idling': () => 1.0,
-            'eating': (creatureType) => (creatureType.conds.glucose < 30.0) ? 2.0 : 0.0,
-            'sleeping': (creatureType) => (creatureType.conds.neuro > 70.0) ? 2.0 : 0.0,
-        });
+            'eating': (creatureType) => (creatureType.conds.glucose < 30.0) ? 4.0 : 0.2,
+            'sleeping': (creatureType) => (creatureType.conds.neuro > 70.0) ? 4.0 : 0.2,
+        }
+    );
 
 // eating behavior function
 // returns creatureType
@@ -43,8 +44,9 @@ const ActEating = (creatureType) =>
         // pass in behavior change desires specific to this behavior function
         {
             'eating': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.glucose > 45.0) ? 2.0 : 0.0
-        });
+            'idling': (creatureType) => (creatureType.conds.glucose > 45.0) ? 2.0 : 0.2
+        }
+    );
 
 // sleeping behavior function
 // returns creatureType
@@ -62,8 +64,9 @@ const ActSleeping = (creatureType) =>
         // pass in behavior change desires specific to this behavior function
         {
             'sleeping': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.neuro < 60.0) ? 2.0 : 0.0
-        });
+            'idling': (creatureType) => (creatureType.conds.neuro < 60.0) ? 2.0 : 0.2
+        }
+    );
 
 
 // *** Function to review and return appropriate behavior
@@ -84,9 +87,11 @@ const CheckBehavior = (creatureType, desireFuncType) => {
     const randInRange = seededRand(creatureType.seed, 0, max_cum_numbers);
 
     // declare: first desire "box" that holds random number "target"
-    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x));
+    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x) );
 
-    // return declare: creatureType object with behavior indicated via chosen desire "box"
+    // return declare: creatureType object with: 
+    //      updated seed
+    //      behavior indicated via chosen desire "box"
     return {
         ...creatureType,
         seed: randInRange[0],
