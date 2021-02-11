@@ -1,6 +1,7 @@
 'use strict'
 
 import Chart from 'chart.js';
+import { ActAsSimpleCreature } from './creatures/simple_creature.js';
 
 
 // Initial creature conditions chart parameters
@@ -73,6 +74,7 @@ const chart_creature_params_init = {
 const store = {
     // Initial creature
     creature: {
+        act: ActAsSimpleCreature,
         conds: {
             glucose: 50.0,
             neuro: 50.0,
