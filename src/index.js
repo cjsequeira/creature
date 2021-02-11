@@ -7,8 +7,9 @@ import './custom.css';
 
 // Our own stuff
 import { storeInit } from './store_init.js';
+import { ResolveRules } from './rulebook.js';
 import { updateStatusBox } from './util.js';
-import { ActAsSimpleCreature, behaviorStrings } from './creatures/simple_creature.js';
+import { behaviorStrings } from './creatures/simple_creature.js';
 
 
 // ****** HTML page references ******
@@ -26,7 +27,8 @@ var browserTime = 750;
 // *** Non-const code setup
 let myStore = storeInit(
     document.getElementById(conds_chart).getContext('2d'),
-    document.getElementById(creature_status_box));
+    document.getElementById(creature_status_box)
+);
 let curBehavior = '';
 
 
@@ -34,10 +36,10 @@ let curBehavior = '';
 
 let timerId = setInterval(() => {
     // *** Update creature
-    myStore.creature = ActAsSimpleCreature(myStore.creature);
+    myStore.creature = ResolveRules(myStore.creature);
 
 
-    // *** Update journal if creature behavior change
+    // *** Update journal if creature behavior has just changed
     curBehavior = behaviorStrings[myStore.creature.conds.behavior];
     if (myStore.journal[myStore.journal.length - 1].entry != curBehavior) {
         updateStatusBox(myStore.box_status, 'Time ' + curTime + ": " + curBehavior);
@@ -50,11 +52,10 @@ let timerId = setInterval(() => {
     let index = 0;
     for (const cond in myStore.creature.conds) {
         if (typeof (myStore.creature.conds[cond]) != 'string') {
-            myStore.chart_creature.data.datasets[index].data.push({
+            myStore.chart_creature.data.datasets[index++].data.push({
                 x: curTime,
                 y: myStore.creature.conds[cond]
             });
-            index++;
         }
     }
 
