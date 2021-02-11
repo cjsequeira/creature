@@ -7,6 +7,8 @@ Example: creatures
 
 All physicalType objects have one thing in common: a property called **act** with a function value implementing the physicalType's action. This function takes a physicalType as an argument and **always** returns a physicalType.
 
+Description:
+
     physicalType: {
         ...
         act: functionImplementingMyAction
@@ -24,6 +26,8 @@ All creatureType objects have two things in common:
 * a property called **conds**, which contains a string property **behavior** and a list of numerical conditions (if applicable)
     * Example behavior: 'eating'
     * Example numerical condition: glucose_level
+
+Description: 
 
     creatureType: {
         ...
