@@ -1,7 +1,11 @@
 'use strict'
 
+// ****** App store setup ******
+
+// Our imports
 import Chart from 'chart.js';
 import { ActAsSimpleCreature } from './creatures/simple_creature.js';
+import { ActAsCrazyCreature } from './creatures/crazy_creature.js';
 
 
 // Initial creature conditions chart parameters
@@ -74,6 +78,7 @@ const chart_creature_params_init = {
 const store = {
     // Initial creature
     creature: {
+        name: 'Vinny the Simple Creature',
         act: ActAsSimpleCreature,
         conds: {
             glucose: 50.0,
@@ -99,6 +104,18 @@ const store = {
 
 export const storeInit = (chart_creature_context, box_status_context) => ({
     ...store,
-    chart_creature: new Chart(chart_creature_context, chart_creature_params_init),
+    chart_creature: new Chart(
+        chart_creature_context, 
+        {
+            ...chart_creature_params_init,
+            options: {
+                ...chart_creature_params_init.options,
+                title: {
+                    ...chart_creature_params_init.options.title,
+                    text: chart_creature_params_init.options.title.text + ': ' + store.creature.name,
+                },
+            }
+        },
+    ),
     box_status: box_status_context,
 });

@@ -1,6 +1,6 @@
 'use strict'
 
-// ****** Simple Creature code ******
+// ****** Crazy Creature code ******
 
 // *** Imports
 import { geThan, seededRand } from '../util.js';
@@ -23,8 +23,8 @@ const ActIdling = (creatureType) =>
         // pass in behavior change desires specific to this behavior function
         {
             'idling': () => 1.0,
-            'eating': (creatureType) => (creatureType.conds.glucose < 30.0) ? 4.0 : 0.2,
-            'sleeping': (creatureType) => (creatureType.conds.neuro > 70.0) ? 4.0 : 0.2,
+            'eating': (creatureType) => (creatureType.conds.glucose < 30.0) ? 1.0 : 0.5,
+            'sleeping': (creatureType) => (creatureType.conds.neuro > 70.0) ? 1.0 : 0.5,
         }
     );
 
@@ -44,7 +44,7 @@ const ActEating = (creatureType) =>
         // pass in behavior change desires specific to this behavior function
         {
             'eating': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.glucose > 45.0) ? 2.0 : 0.2
+            'idling': (creatureType) => (creatureType.conds.glucose > 45.0) ? 1.0 : 0.5
         }
     );
 
@@ -64,7 +64,7 @@ const ActSleeping = (creatureType) =>
         // pass in behavior change desires specific to this behavior function
         {
             'sleeping': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.neuro < 60.0) ? 2.0 : 0.2
+            'idling': (creatureType) => (creatureType.conds.neuro < 60.0) ? 1.0 : 0.5
         }
     );
 
@@ -105,7 +105,7 @@ const CheckBehavior = (creatureType, desireFuncType) => {
 
 // *** Main dispatch function
 // returns creatureType
-export const ActAsSimpleCreature = (creatureType) => {
+export const ActAsCrazyCreature = (creatureType) => {
     switch (creatureType.conds.behavior) {
         case 'idling': return ActIdling(creatureType)
         case 'eating': return ActEating(creatureType)
