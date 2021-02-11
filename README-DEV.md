@@ -1,7 +1,7 @@
 # Creature version 0.0.1 - README for developers
 
 ## Complex data types:
-####**physicalType**: The basic world element type
+#### **physicalType**: The basic world element type
 
 Example: creatures
 
@@ -14,7 +14,7 @@ All physicalType objects have one thing in common: a property called **act** wit
 
 Where functionImplementingMyAction = f(physicalType) and **always** returns a physicalType.
 
-####**creatureType**: A type common to all creatures
+#### **creatureType**: A type common to all creatures
 
 Example: creatures
 
