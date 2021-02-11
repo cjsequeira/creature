@@ -11,7 +11,7 @@ import { ActAsCrazyCreature } from './creatures/crazy_creature.js';
 // *** Rulebook functions
 // rulebook resolver
 // returns physicalType
-export const ResolveRules = (physicalType = {}) => {
+export const ResolveRules = (physicalType = { act: null }) => {
     switch (physicalType.act) {
         // Simple Creature and Crazy Creature: active if glucose > 0.0 and neuro < 100.0, otherwise freezes
         case ActAsSimpleCreature: 
