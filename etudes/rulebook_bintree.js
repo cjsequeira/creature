@@ -1,6 +1,23 @@
 'use strict'
 
 // ****** Code to test implementation of a rulebook as a binary tree
+//
+// Concept:
+//
+// The rulebook is an implementation of test functions and final "instructions." The test
+// functions are interior nodes, and the final "instructions" are the leaf nodes. The 
+// rulebook consists entirely of nodes, of the format:
+//
+// {
+//      func: mandatory function that always returns a bool or non-bool value
+//      left: node to traverse if func evaluates to true
+//      right: node to traverse if func evaluates to false
+// }  
+//
+//  left and right are optional in the node IF AND ONLY IF func will NEVER evaluate to a bool.
+//
+//  The tree is traversed by evaluating each function recursively, going left if true, going right
+//  if false, and returning the function result if non-bool.
 
 const ruleBook = {
   func: (x) => x > 5,
