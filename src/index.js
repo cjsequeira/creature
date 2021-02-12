@@ -1,6 +1,8 @@
 'use strict'
 
-// ****** Imports ******
+// ****** Main code ******
+
+// *** Imports
 // Styling and libraries
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
@@ -9,31 +11,38 @@ import './custom.css';
 import { storeInit } from './store_init.js';
 import { ResolveRules } from './rulebook.js';
 import { updateStatusBox } from './util.js';
-import { behaviorStrings } from './creatures/simple_creature.js';
 
 
-// ****** HTML page references ******
+// *** HTML page references 
 const conds_chart = 'page_conds_chart';
 const creature_status_box = 'creature_status';
 
 
-// ****** Simulator setup ******
+// *** Simulator setup 
 var curTime = 0.0;
 var timeStep = 1.0;
 var browserTime = 750;
 
 
-// ****** Main code ******
+// *** Simple status message object
+const behaviorStrings = {
+    idling: "I'm is idling! Blah...",
+    eating: "I'm is eating!! Nom...",
+    sleeping: "I'm is sleeping! Zzzz...",
+    frozen: "I'm is frozen! Brrrr....."
+};
+
+
 // *** Non-const code setup
 let myStore = storeInit(
     document.getElementById(conds_chart).getContext('2d'),
     document.getElementById(creature_status_box)
 );
+
 let curBehavior = '';
 
 
 // *** Main update loop 
-
 let timerId = setInterval(() => {
     // *** Update creature
     myStore.creature = myStore.creature.act(myStore.creature);
