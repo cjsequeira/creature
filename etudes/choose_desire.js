@@ -1,6 +1,6 @@
-// ****** Code to practice weighted random draws of desires using desire functions as probability weights
 'use strict'
 
+// ****** Code to practice weighted random draws of desires using desire functions as probability weights
 
 // *** Test list of desire outputs
 /*
@@ -46,6 +46,7 @@ const chosenElem = cum_numbers.filter(x => geThan(randInRange)(x))[0];
 const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange)(x));
 
 // show it all
+console.log(' ');
 console.log('Desire labels: ' + Object.keys(desireFuncs));
 console.log('Desire values: ' + numbers);
 console.log('Cumulative desire values: ' + cum_numbers);

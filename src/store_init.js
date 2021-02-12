@@ -5,7 +5,7 @@
 // Our imports
 import Chart from 'chart.js';
 import { ActAsSimpleCreature } from './creatures/simple_creature.js';
-import { ActAsCrazyCreature } from './creatures/crazy_creature.js';
+import { ActAsSimpleCreature_Crazy } from './creatures/simple_creature_crazy.js';
 
 
 // Initial creature conditions chart parameters
