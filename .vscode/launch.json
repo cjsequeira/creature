@@ -14,5 +14,23 @@
                 "start",
             ],
         },
+        {
+            "name": "Debug JS in command line",
+            "type": "node",
+            "request": "launch",
+            "program": "${file}",
+            "stopOnEntry": true,
+            "args": [],
+            "cwd": "${fileDirname}",
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "sourceMaps": false,
+        },
     ]
 }
