@@ -5,7 +5,7 @@
 // Our imports
 import Chart from 'chart.js';
 import { ActAsSimpleCreature } from './creatures/simple_creature.js';
-import { ActAsCrazyCreature } from './creatures/crazy_creature.js';
+import { ActAsSimpleCreature_Crazy } from './creatures/simple_creature_crazy.js';
 
 
 // Initial creature conditions chart parameters
@@ -78,8 +78,8 @@ const chart_creature_params_init = {
 const store = {
     // Initial creature
     creature: {
-        name: 'Vinny the Simple Creature',
-        act: ActAsSimpleCreature,
+        name: 'Max the Crazy Simple Creature',
+        act: ActAsSimpleCreature_Crazy,
         conds: {
             glucose: 50.0,
             neuro: 50.0,

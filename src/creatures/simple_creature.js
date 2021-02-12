@@ -4,9 +4,10 @@
 
 // *** Imports
 import { geThan, seededRand } from '../util.js';
+import { ResolveRules } from '../rulebook.js';
 
 
-// *** Behavior functions 
+// *** Behavior functions unique to this creature
 // idling behavior function
 // returns creatureType
 const ActIdling = (creatureType) =>
@@ -69,9 +70,10 @@ const ActSleeping = (creatureType) =>
     );
 
 
-// *** Function to review and return appropriate behavior
+// *** Code common to all simple creatures
+// function to review and return appropriate behavior
 // returns creatureType
-const CheckBehavior = (creatureType, desireFuncType) => {
+export const CheckBehavior = (creatureType, desireFuncType) => {
     // declare: numerical desires as evaluation of each desire func with nifty shorthand
     const numbers = Object.values(desireFuncType).map(f => f(creatureType));
 
@@ -87,23 +89,22 @@ const CheckBehavior = (creatureType, desireFuncType) => {
     const randInRange = seededRand(creatureType.seed, 0, max_cum_numbers);
 
     // declare: first desire "box" that holds random number "target"
-    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x) );
+    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x));
 
     // return declare: creatureType object with: 
     //      updated seed
-    //      behavior indicated via chosen desire "box"
-    return {
+    //      behavior indicated via rulebook review of chosen desire
+    return ResolveRules({
         ...creatureType,
         seed: randInRange[0],
         conds: {
             ...creatureType.conds,
             behavior: Object.keys(desireFuncType)[chosenIndex]
         }
-    };
+    });
 };
 
-
-// *** Main dispatch function
+// main dispatch function
 // returns creatureType
 export const ActAsSimpleCreature = (creatureType) => {
     switch (creatureType.conds.behavior) {
@@ -114,7 +115,7 @@ export const ActAsSimpleCreature = (creatureType) => {
     }
 };
 
-// *** Behavior speeches object
+// behavior speeches object
 export const behaviorStrings = {
     idling: "I'm is idling! Blah...",
     eating: "I'm is eating!! Nom...",

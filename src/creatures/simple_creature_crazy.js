@@ -1,9 +1,10 @@
 'use strict'
 
-// ****** Crazy Creature code ******
+// ****** Simple Creature - Crazy code ******
+// Variant of Simple Creature
 
 // *** Imports
-import { geThan, seededRand } from '../util.js';
+import { CheckBehavior } from './simple_creature.js';
 
 
 // *** Behavior functions 
@@ -69,55 +70,13 @@ const ActSleeping = (creatureType) =>
     );
 
 
-// *** Function to review and return appropriate behavior
-// returns creatureType
-const CheckBehavior = (creatureType, desireFuncType) => {
-    // declare: numerical desires as evaluation of each desire func with nifty shorthand
-    const numbers = Object.values(desireFuncType).map(f => f(creatureType));
-
-    // declare: desires as cumulative array
-    const cum_numbers = numbers.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-
-    // declare: max value in cumulative array
-    const max_cum_numbers = cum_numbers.reduce((a, x) => Math.max(a, x));
-
-    // declare: random number in range of max value, as [0, max_cum_numbers]
-    // note: seededRand returns [seed, value]
-    // note: if max_cum_numbers = 0.0, value will be 0.0
-    const randInRange = seededRand(creatureType.seed, 0, max_cum_numbers);
-
-    // declare: first desire "box" that holds random number "target"
-    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x) );
-
-    // return declare: creatureType object with: 
-    //      updated seed
-    //      behavior indicated via chosen desire "box"
-    return {
-        ...creatureType,
-        seed: randInRange[0],
-        conds: {
-            ...creatureType.conds,
-            behavior: Object.keys(desireFuncType)[chosenIndex]
-        }
-    };
-};
-
-
 // *** Main dispatch function
 // returns creatureType
-export const ActAsCrazyCreature = (creatureType) => {
+export const ActAsSimpleCreature_Crazy = (creatureType) => {
     switch (creatureType.conds.behavior) {
         case 'idling': return ActIdling(creatureType)
         case 'eating': return ActEating(creatureType)
         case 'sleeping': return ActSleeping(creatureType)
         default: return creatureType
     }
-};
-
-// *** Behavior speeches object
-export const behaviorStrings = {
-    idling: "I'm is idling! Blah...",
-    eating: "I'm is eating!! Nom...",
-    sleeping: "I'm is sleeping! Zzzz...",
-    frozen: "I'm is frozen! Brrrr....."
 };

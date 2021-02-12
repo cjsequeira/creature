@@ -36,7 +36,7 @@ let curBehavior = '';
 
 let timerId = setInterval(() => {
     // *** Update creature
-    myStore.creature = ResolveRules(myStore.creature);
+    myStore.creature = myStore.creature.act(myStore.creature);
 
 
     // *** Update journal if creature behavior has just changed
