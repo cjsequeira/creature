@@ -102,7 +102,7 @@ export const CheckBehavior = (creatureType, desireFuncType) => {
     // declare: first desire "box" that holds random number "target"
     const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x));
 
-    // return declare: creatureType object with: 
+    // return creatureType object with: 
     //      updated seed
     //      behavior indicated via rulebook review of chosen desire
     return ResolveRules({
