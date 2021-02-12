@@ -78,8 +78,8 @@ const chart_creature_params_init = {
 const store = {
     // Initial creature
     creature: {
-        name: 'Max the Crazy Simple Creature',
-        act: ActAsSimpleCreature_Crazy,
+        name: 'Vinny the Simple Creature',
+        act: ActAsSimpleCreature,
         conds: {
             glucose: 50.0,
             neuro: 50.0,
