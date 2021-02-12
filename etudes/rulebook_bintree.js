@@ -1,6 +1,7 @@
 'use strict'
 
 // ****** Code to test implementation of a rulebook as a binary tree
+// Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 //
 // Concept:
 //
