@@ -8,6 +8,17 @@ import { ResolveRules } from '../rulebook.js';
 
 
 // *** Behavior functions unique to this creature
+// main dispatch function
+// returns creatureType
+export const ActAsSimpleCreature = (creatureType) => {
+    switch (creatureType.conds.behavior) {
+        case 'idling': return ActIdling(creatureType)
+        case 'eating': return ActEating(creatureType)
+        case 'sleeping': return ActSleeping(creatureType)
+        default: return creatureType
+    }
+};
+
 // idling behavior function
 // returns creatureType
 const ActIdling = (creatureType) =>
@@ -102,23 +113,4 @@ export const CheckBehavior = (creatureType, desireFuncType) => {
             behavior: Object.keys(desireFuncType)[chosenIndex]
         }
     });
-};
-
-// main dispatch function
-// returns creatureType
-export const ActAsSimpleCreature = (creatureType) => {
-    switch (creatureType.conds.behavior) {
-        case 'idling': return ActIdling(creatureType)
-        case 'eating': return ActEating(creatureType)
-        case 'sleeping': return ActSleeping(creatureType)
-        default: return creatureType
-    }
-};
-
-// behavior speeches object
-export const behaviorStrings = {
-    idling: "I'm is idling! Blah...",
-    eating: "I'm is eating!! Nom...",
-    sleeping: "I'm is sleeping! Zzzz...",
-    frozen: "I'm is frozen! Brrrr....."
 };

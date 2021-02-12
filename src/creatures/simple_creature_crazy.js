@@ -7,7 +7,18 @@
 import { CheckBehavior } from './simple_creature.js';
 
 
-// *** Behavior functions 
+// *** Behavior functions unique to Simple Creature - Crazy
+// Main dispatch function
+// returns creatureType
+export const ActAsSimpleCreature_Crazy = (creatureType) => {
+    switch (creatureType.conds.behavior) {
+        case 'idling': return ActIdling(creatureType)
+        case 'eating': return ActEating(creatureType)
+        case 'sleeping': return ActSleeping(creatureType)
+        default: return creatureType
+    }
+};
+
 // idling behavior function
 // returns creatureType
 const ActIdling = (creatureType) =>
@@ -68,15 +79,3 @@ const ActSleeping = (creatureType) =>
             'idling': (creatureType) => (creatureType.conds.neuro < 60.0) ? 1.0 : 0.5
         }
     );
-
-
-// *** Main dispatch function
-// returns creatureType
-export const ActAsSimpleCreature_Crazy = (creatureType) => {
-    switch (creatureType.conds.behavior) {
-        case 'idling': return ActIdling(creatureType)
-        case 'eating': return ActEating(creatureType)
-        case 'sleeping': return ActSleeping(creatureType)
-        default: return creatureType
-    }
-};

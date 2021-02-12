@@ -19,7 +19,6 @@ export const ResolveRules = (physicalType = {}) => {
     )
 };
 
-
 // rulebook resolver for creatureType
 // returns creatureType
 const ResolveRules_CreatureType = (creatureType = { conds: null }) => {
