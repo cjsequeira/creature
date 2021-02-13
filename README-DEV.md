@@ -1,4 +1,4 @@
-# Creature version 0.0.1 - README for developers
+# Creature version 0.0.2 - README for developers
 
 ## Complex data types:
 ### **physicalType**: The basic world element type
