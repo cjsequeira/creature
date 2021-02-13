@@ -9,13 +9,13 @@ import './custom.css';
 
 // Our own stuff
 import { storeInit } from './store_init.js';
-import { ResolveRules } from './rulebook.js';
 import { updateStatusBox } from './util.js';
 
 
 // *** HTML page references 
-const conds_chart = 'page_conds_chart';
-const creature_status_box = 'creature_status';
+const creature_time_chart = 'page_time_chart';
+const creature_geo_chart = 'page_geo_chart';
+const creature_status_box = 'page_creature_status';
 
 
 // *** Simulator setup 
@@ -29,13 +29,15 @@ const behaviorStrings = {
     idling: "I'm is idling! Blah...",
     eating: "I'm is eating!! Nom...",
     sleeping: "I'm is sleeping! Zzzz...",
+    wandering: "I'm is wandering! Wiggity whack!",
     frozen: "I'm is frozen! Brrrr....."
 };
 
 
 // *** Non-const code setup
 let myStore = storeInit(
-    document.getElementById(conds_chart).getContext('2d'),
+    document.getElementById(creature_time_chart).getContext('2d'),
+    document.getElementById(creature_geo_chart).getContext('2d'),
     document.getElementById(creature_status_box)
 );
 
@@ -56,43 +58,57 @@ let timerId = setInterval(() => {
     }
 
 
-    // *** Update chart
+    // *** Update time history chart
     // push values into chart data
-    let index = 0;
-    for (const cond in myStore.creature.conds) {
-        if (typeof (myStore.creature.conds[cond]) != 'string') {
-            myStore.chart_creature.data.datasets[index++].data.push({
-                x: curTime,
-                y: myStore.creature.conds[cond]
-            });
-        }
-    }
+    myStore.creature_time_chart.data.datasets[0].data.push({
+        x: curTime,
+        y: myStore.creature.conds.glucose
+    });
+    myStore.creature_time_chart.data.datasets[1].data.push({
+        x: curTime,
+        y: myStore.creature.conds.neuro
+    });
 
-    // revise chart x axis "window" if needed, for next chart update cycle
-    let chart_creature_x = myStore.chart_creature.options.scales.xAxes[0].ticks;
-    let chart_creature_xWidth = chart_creature_x.max - chart_creature_x.min;
-    if (curTime > chart_creature_x.max) {
+    // revise time history chart x axis "window" if needed, for next chart update cycle
+    let creature_time_chart_x = myStore.creature_time_chart.options.scales.xAxes[0].ticks;
+    let creature_time_chart_xWidth = creature_time_chart_x.max - creature_time_chart_x.min;
+    if (curTime > creature_time_chart_x.max) {
         let new_max = Math.ceil(curTime);
-        let new_min = new_max - chart_creature_xWidth;
+        let new_min = new_max - creature_time_chart_xWidth;
 
-        myStore.chart_creature.options.scales.xAxes[0].ticks = {
-            ...chart_creature_x,
+        myStore.creature_time_chart.options.scales.xAxes[0].ticks = {
+            ...creature_time_chart_x,
             max: new_max,
             min: new_min
         };
 
-
         // remove first element in each data array if hidden
-        myStore.chart_creature.data.datasets.forEach((dataset) => {
+        myStore.creature_time_chart.data.datasets.forEach((dataset) => {
             let checkShift = dataset.data[0];
-            if (checkShift.x < (new_min - chart_creature_x.StepSize)) {
+            if (checkShift.x < (new_min - creature_time_chart_x.StepSize)) {
                 dataset.data.shift();
             }
         });
     }
 
-    // update chart
-    myStore.chart_creature.update();
+    // redraw time history chart
+    myStore.creature_time_chart.update();
+
+
+    // *** Update geospatial chart
+    // push values into chart data
+    myStore.creature_geo_chart.data.datasets[0].data.push({
+        x: myStore.creature.conds.x,
+        y: myStore.creature.conds.y
+    });
+
+    // remove earlier values as the dataset gets long
+    if (myStore.creature_geo_chart.data.datasets[0].data.length > 5) {
+        myStore.creature_geo_chart.data.datasets[0].data.shift();
+    }
+
+    // redraw geospatial chart
+    myStore.creature_geo_chart.update();
 
 
     // *** Update world time
