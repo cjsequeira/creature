@@ -36,7 +36,7 @@ const ruleBook = {
                     })
                 },
                 no: {
-                    name: '-------- NO! Behavior request set to idle',
+                    name: '-------- NO! Behavior set to idle',
                     func: (creatureType) => ({
                         ...creatureType,
                         seed: seededRand(creatureType.seed, 0.0, 1.0)[0],
@@ -71,7 +71,7 @@ const ruleBook = {
         }
     },
     no: {
-        name: 'NO! Return given physicalType',
+        name: '-- NO! Return given physicalType',
         func: (physicalType) => physicalType
     }
 };
