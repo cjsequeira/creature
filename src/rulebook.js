@@ -23,7 +23,7 @@ const ruleBook = {
             // yes:
             yes: {
                 name: '------ YES! Is food available?',
-                func: (creatureType) => seededRand(creatureType.seed, 0.0, 1.0)[1] > 0.2,
+                func: (creatureType) => seededRand(creatureType.seed, 0.0, 1.0)[1] > 0.4,
                 yes: {
                     name: '-------- YES! Behavior request approved: eating',
                     func: (creatureType) => ({
@@ -36,7 +36,7 @@ const ruleBook = {
                     })
                 },
                 no: {
-                    name: '-------- NO! Behavior set to idle',
+                    name: '-------- NO! Behavior set to: idling',
                     func: (creatureType) => ({
                         ...creatureType,
                         seed: seededRand(creatureType.seed, 0.0, 1.0)[0],
