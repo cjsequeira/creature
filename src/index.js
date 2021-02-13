@@ -9,7 +9,7 @@ import './custom.css';
 
 // Our own stuff
 import { storeInit } from './store_init.js';
-import { updateStatusBox } from './util.js';
+import { updateStatusBox, hexRGBAFade } from './util.js';
 
 
 // *** HTML page references 
@@ -42,6 +42,8 @@ let myStore = storeInit(
 );
 
 let curBehavior = '';
+let timeData = null;
+let geoData = null;
 
 
 // *** Main update loop 
@@ -59,15 +61,29 @@ let timerId = setInterval(() => {
 
 
     // *** Update time history chart
-    // push values into chart data
-    myStore.creature_time_chart.data.datasets[0].data.push({
-        x: curTime,
-        y: myStore.creature.conds.glucose
-    });
-    myStore.creature_time_chart.data.datasets[1].data.push({
-        x: curTime,
-        y: myStore.creature.conds.neuro
-    });
+    // get chart data with new glucose value
+    // timeData is shorthand to reduce typing / increase readability of code
+    timeData = myStore.creature_time_chart.data.datasets[0];
+    myStore.creature_time_chart.data.datasets[0] = {
+        ...timeData,
+        data: timeData.data.concat(
+            {
+                x: curTime,
+                y: myStore.creature.conds.glucose
+            })
+    };
+
+    // get chart data with new neuro value
+    // timeData is shorthand to reduce typing / increase readability of code
+    timeData = myStore.creature_time_chart.data.datasets[1];
+    myStore.creature_time_chart.data.datasets[1] = {
+        ...timeData,
+        data: timeData.data.concat(
+            {
+                x: curTime,
+                y: myStore.creature.conds.neuro
+            })
+    };
 
     // revise time history chart x axis "window" if needed, for next chart update cycle
     let creature_time_chart_x = myStore.creature_time_chart.options.scales.xAxes[0].ticks;
@@ -87,6 +103,8 @@ let timerId = setInterval(() => {
             let checkShift = dataset.data[0];
             if (checkShift.x < (new_min - creature_time_chart_x.StepSize)) {
                 dataset.data.shift();
+                dataset.backgroundColor.shift();
+                dataset.borderColor.shift();
             }
         });
     }
@@ -96,16 +114,51 @@ let timerId = setInterval(() => {
 
 
     // *** Update geospatial chart
-    // push values into chart data
-    myStore.creature_geo_chart.data.datasets[0].data.push({
-        x: myStore.creature.conds.x,
-        y: myStore.creature.conds.y
-    });
+    // get chart data without first datapoint if data array is a certain length
+    // geoData is shorthand to reduce typing / increase readability of code
+    geoData = myStore.creature_geo_chart.data.datasets[0];
+    if (geoData.data.length > 10) {
+        myStore.creature_geo_chart.data.datasets[0] = {
+            ...geoData,
 
-    // remove earlier values as the dataset gets long
-    if (myStore.creature_geo_chart.data.datasets[0].data.length > 5) {
-        myStore.creature_geo_chart.data.datasets[0].data.shift();
+            backgroundColor: geoData.backgroundColor.slice(1),
+            borderColor: geoData.borderColor.slice(1),
+            pointBackgroundColor: geoData.pointBackgroundColor.slice(1),
+            pointBorderColor: geoData.pointBorderColor.slice(1),
+
+            data: geoData.data.slice(1)
+        };
     }
+
+    // get chart data with new x-y pair
+    // geoData is shorthand to reduce typing / increase readability of code
+    geoData = myStore.creature_geo_chart.data.datasets[0];
+    myStore.creature_geo_chart.data.datasets[0] = {
+        ...geoData,
+
+        backgroundColor: geoData.backgroundColor.concat('#ec56cdff'),
+        borderColor: geoData.borderColor.concat('#ec56cdff'),
+        pointBackgroundColor: geoData.pointBackgroundColor.concat('#ec56cdff'),
+        pointBorderColor: geoData.pointBorderColor.concat('#ec56cdff'),
+
+        data: geoData.data.concat(
+            {
+                x: myStore.creature.conds.x,
+                y: myStore.creature.conds.y
+            })
+    };
+
+    // fade color values
+    // geoData is shorthand to reduce typing / increase readability of code
+    geoData = myStore.creature_geo_chart.data.datasets[0];
+    myStore.creature_geo_chart.data.datasets[0].backgroundColor =
+        geoData.backgroundColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
+    myStore.creature_geo_chart.data.datasets[0].borderColor =
+        geoData.borderColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
+    myStore.creature_geo_chart.data.datasets[0].pointBackgroundColor =
+        geoData.pointBackgroundColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
+    myStore.creature_geo_chart.data.datasets[0].pointBorderColor =
+        geoData.pointBorderColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
 
     // redraw geospatial chart
     myStore.creature_geo_chart.update();

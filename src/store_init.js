@@ -18,10 +18,12 @@ const creature_time_chart_params_init = {
             yAxisId: 'my-y-axis',
             showLine: true,
             fill: false,
-            backgroundColor: '#0000cc',
-            borderColor: '#0000cc',
             tension: 0.2,
-            data: []
+            data: [],
+            backgroundColor: '#0000ccff',
+            borderColor: '#0000ccff',
+            pointBackgroundColor: '#0000ccff',
+            pointBorderColor: '#0000ccff'
         },
         {
             label: 'neuro',
@@ -29,10 +31,12 @@ const creature_time_chart_params_init = {
             yAxisId: 'my-y-axis',
             showLine: true,
             fill: false,
-            backgroundColor: '#00cc00',
-            borderColor: '#00cc00',
             tension: 0.2,
-            data: []
+            data: [],
+            backgroundColor: '#00cc00ff',
+            borderColor: '#00cc00ff',
+            pointBackgroundColor: '#00cc00ff',
+            pointBorderColor: '#00cc00ff'
         }]
     },
     options: {
@@ -85,10 +89,12 @@ const creature_geo_chart_params_init = {
                 yAxisId: 'my-y-axis',
                 showLine: true,
                 fill: false,
-                backgroundColor: '#ec56cd',
-                borderColor: '#ec56cd',
                 tension: 0.2,
-                data: []
+                data: [],
+                backgroundColor: [],
+                borderColor: [],
+                pointBackgroundColor: [],
+                pointBorderColor: []
             }]
     },
     options: {
