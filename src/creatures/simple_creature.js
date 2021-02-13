@@ -36,8 +36,7 @@ const ActIdling = (creatureType) => {
         // pass in behavior change desires specific to this behavior function
         {
             'idling': () => 0.2,
-            'wandering': () => 3.6,
-            'eating': (creatureType) => (creatureType.conds.glucose < 20.0) ? 4.0 : 0.2,
+            'wandering': (creatureType) => (creatureType.conds.glucose < 40.0) ? 4.0 : 0.2,
             'sleeping': (creatureType) => (creatureType.conds.neuro > 85.0) ? 4.0 : 0.2,
         }
     );
