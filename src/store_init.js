@@ -84,6 +84,7 @@ const store = {
             glucose: 50.0,
             neuro: 50.0,
             behavior: 'idling',
+            behavior_request: null
         },
         seed: 0
     },

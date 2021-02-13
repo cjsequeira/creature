@@ -3,21 +3,64 @@
 // ****** Simulation rulebook ******
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
+// *** Our imports
+import { seededRand } from './util.js';
+
+
 // *** The rulebook
 const ruleBook = {
-    // is it a creatureType? (i.e. does it have 'conds' property?)
+    name: 'Is creatureType?',
     func: (physicalType) => physicalType.hasOwnProperty('conds'),
     // yes:
     yes: {
-        // are glucose and neuro in range?
+        name: '-- YES! Glucose and neuro in range?',
         func: (creatureType) => ((creatureType.conds.glucose > 0.0) &&
             (creatureType.conds.neuro < 100.0)),
-        // yes: return given creatureType
+        // yes: 
         yes: {
-            func: (creatureType) => creatureType
+            name: '---- YES! Requesting behavior: eating?',
+            func: (creatureType) => creatureType.conds.behavior_request === 'eating',
+            // yes:
+            yes: {
+                name: '------ YES! Is food available?',
+                func: (creatureType) => seededRand(creatureType.seed, 0.0, 1.0)[1] > 0.2,
+                yes: {
+                    name: '-------- YES! Behavior request approved: eating',
+                    func: (creatureType) => ({
+                        ...creatureType,
+                        seed: seededRand(creatureType.seed, 0.0, 1.0)[0],
+                        conds: {
+                            ...creatureType.conds,
+                            behavior: creatureType.conds.behavior_request
+                        }
+                    })
+                },
+                no: {
+                    name: '-------- NO! Behavior request set to idle',
+                    func: (creatureType) => ({
+                        ...creatureType,
+                        seed: seededRand(creatureType.seed, 0.0, 1.0)[0],
+                        conds: {
+                            ...creatureType.conds,
+                            behavior: 'idling'
+                        }
+                    })
+                }
+            },
+            no: {
+                name: '------ NO! Behavior request approved',
+                func: (creatureType) => ({
+                    ...creatureType,
+                    conds: {
+                        ...creatureType.conds,
+                        behavior: creatureType.conds.behavior_request
+                    }
+                })
+            },
         },
         // no: return creatureType with behavior of "frozen"
         no: {
+            name: '-- NO! Behavior set to: frozen',
             func: (creatureType) => ({
                 ...creatureType,
                 conds: {
@@ -27,8 +70,8 @@ const ruleBook = {
             })
         }
     },
-    // no: return given physicalType
     no: {
+        name: 'NO! Return given physicalType',
         func: (physicalType) => physicalType
     }
 };
@@ -38,18 +81,12 @@ const ruleBook = {
 // general rulebook resolver
 // returns physicalType
 export const ResolveRules = (arg = {}, node = ruleBook) => {
-    console.log(node.func.toString());
+    console.log(node.name);
     let funcResult = node.func(arg);
 
     switch (funcResult) {
-        case true:
-            console.log('got true');
-            return ResolveRules(arg, node.yes);
-        case false:
-            console.log('got false')
-            return ResolveRules(arg, node.no);
-        default:
-            console.log(funcResult);
-            return funcResult;
+        case true: return ResolveRules(arg, node.yes);
+        case false: return ResolveRules(arg, node.no);
+        default: return funcResult;
     }
 };

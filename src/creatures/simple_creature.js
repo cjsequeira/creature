@@ -110,7 +110,7 @@ export const CheckBehavior = (creatureType, desireFuncType) => {
         seed: randInRange[0],
         conds: {
             ...creatureType.conds,
-            behavior: Object.keys(desireFuncType)[chosenIndex]
+            behavior_request: Object.keys(desireFuncType)[chosenIndex]
         }
     });
 };
