@@ -15,30 +15,66 @@ export const ActAsSimpleCreature = (creatureType) => {
         case 'idling': return ActIdling(creatureType)
         case 'eating': return ActEating(creatureType)
         case 'sleeping': return ActSleeping(creatureType)
+        case 'wandering': return ActWandering(creatureType)
         default: return creatureType
     }
 };
 
 // idling behavior function
 // returns creatureType
-const ActIdling = (creatureType) =>
-    CheckBehavior(
-        // pass in creatureType object with specific glucose and neuro
+const ActIdling = (creatureType) => {
+    return CheckBehavior(
+        // pass in creatureType object with specific glucose, neuro, and random velocity
         {
             ...creatureType,
             conds: {
                 ...creatureType.conds,
-                glucose: creatureType.conds.glucose - 2.4,
-                neuro: creatureType.conds.neuro + 1.2,
+                glucose: creatureType.conds.glucose - 1.0,
+                neuro: creatureType.conds.neuro + 0.5,
             }
         },
         // pass in behavior change desires specific to this behavior function
         {
-            'idling': () => 1.0,
-            'eating': (creatureType) => (creatureType.conds.glucose < 30.0) ? 4.0 : 0.2,
-            'sleeping': (creatureType) => (creatureType.conds.neuro > 70.0) ? 4.0 : 0.2,
+            'idling': () => 0.2,
+            'wandering': () => 3.6,
+            'eating': (creatureType) => (creatureType.conds.glucose < 20.0) ? 4.0 : 0.2,
+            'sleeping': (creatureType) => (creatureType.conds.neuro > 85.0) ? 4.0 : 0.2,
         }
     );
+};
+
+// wandering behavior function
+// returns creatureType
+const ActWandering = (creatureType) => {
+    // declare: random acceleration
+    const rand_a = seededRand(creatureType.seed, -2.0, 2.0);
+
+    // declare: random heading nudge
+    const rand_hdg_nudge = seededRand(rand_a[0], -0.3, 0.3);
+
+    return CheckBehavior(
+        // pass in creatureType object with specific glucose, neuro, and random acceleration
+        {
+            ...creatureType,
+            seed: rand_hdg_nudge[0],
+            conds: {
+                ...creatureType.conds,
+                glucose: creatureType.conds.glucose - 1.6,
+                neuro: creatureType.conds.neuro + 1.6,
+                
+                heading: creatureType.conds.heading + rand_hdg_nudge[1],
+                accel: rand_a[1],
+            }
+        },
+        // pass in behavior change desires specific to this behavior function
+        {
+            'wandering': () => 4.0,
+            'idling': () => 0.2,
+            'eating': (creatureType) => (creatureType.conds.glucose < 20.0) ? 4.0 : 0.2,
+            'sleeping': (creatureType) => (creatureType.conds.neuro > 85.0) ? 4.0 : 0.2,
+        }
+    );
+};
 
 // eating behavior function
 // returns creatureType
@@ -50,13 +86,13 @@ const ActEating = (creatureType) =>
             conds: {
                 ...creatureType.conds,
                 glucose: creatureType.conds.glucose + 4.0,
-                neuro: creatureType.conds.neuro + 2.6,
+                neuro: creatureType.conds.neuro + 1.0,
             }
         },
         // pass in behavior change desires specific to this behavior function
         {
             'eating': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.glucose > 45.0) ? 2.0 : 0.2
+            'idling': (creatureType) => (creatureType.conds.glucose > 50.0) ? 2.0 : 0.2
         }
     );
 
@@ -69,14 +105,14 @@ const ActSleeping = (creatureType) =>
             ...creatureType,
             conds: {
                 ...creatureType.conds,
-                glucose: creatureType.conds.glucose - 1.0,
+                glucose: creatureType.conds.glucose - 0.3,
                 neuro: creatureType.conds.neuro - 2.2,
             }
         },
         // pass in behavior change desires specific to this behavior function
         {
             'sleeping': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.neuro < 60.0) ? 2.0 : 0.2
+            'idling': (creatureType) => (creatureType.conds.neuro < 50.0) ? 2.0 : 0.2
         }
     );
 
@@ -110,7 +146,7 @@ export const CheckBehavior = (creatureType, desireFuncType) => {
         seed: randInRange[0],
         conds: {
             ...creatureType.conds,
-            behavior: Object.keys(desireFuncType)[chosenIndex]
+            behavior_request: Object.keys(desireFuncType)[chosenIndex]
         }
     });
 };

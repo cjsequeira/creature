@@ -21,6 +21,9 @@ export const seededRand = (seed = 0, min = 0.0, max = 1.0) => {
     ];
 };
 
+// within given range, as (min, max)
+export const withinRange = (num, min = 0.0, max = 1.0) => (num > min) && (num < max);
+
 
 // *** UI utilities
 // update simulator status box with given HTML message
