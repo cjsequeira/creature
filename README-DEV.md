@@ -1,20 +1,31 @@
-# Creature version 0.0.2 - README for developers
+# Creature version 0.0.3 - README for developers
 
 ## Complex data types:
-### **physicalType**: The basic world element type
+### **physicalContainerType**: The basic physical element state container
 
-Example: creatures
+The purpose of physicalContainerType is to hold a physicalType as well as the rule last applied to that physicalType. This makes tracking rulebook activity easy. See **physicalType**.
 
-All physicalType objects have one thing in common: a property called **act** with a function value implementing the physicalType's action. This function takes a physicalType as an argument and **always** returns a physicalType.
+Description:
+
+    physicalContainerType: {
+        lastRule: rulebook node last applied to this physical element
+        physicalElem: type physicalType
+    }
+
+### **physicalType**: The basic type for physical objects that act in the world
+
+Example: creatures, rocks, whatever
+
+All physicalType objects have one thing in common: a property called **act** with a function value implementing the physicalType's action. This function takes a physicalType as an argument and **always** returns a **physicalContainerType**.
 
 Description:
 
     physicalType: {
         ...
-        act: functionImplementingMyAction
+        act: functionImplementingMyAction giving physicalContainerType
     }
 
-Where functionImplementingMyAction = f(physicalType) and **always** returns a physicalType.
+Where functionImplementingMyAction = f(**physicalType**) and **always** returns a **physicalContainerType**.
 
 ### **creatureType**: A type common to all creatures
 
@@ -31,7 +42,7 @@ Description:
 
     creatureType: {
         ...
-        act: functionImplementingMyAction
+        act: functionImplementingMyAction functionImplementingMyAction giving physicalContainerType
         conds: {
             behavior: string
             num_cond_if_applicable: number

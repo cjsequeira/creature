@@ -5,10 +5,11 @@
 // *** Our imports
 import Chart from 'chart.js';
 import { ActAsSimpleCreature } from './creatures/simple_creature.js';
+import { chartParamsUseTitle } from './util.js';
 
 
-// *** Initial parameters for creature conditions charts parameters
-// Time-based parameters
+// *** Initial parameters for creature charts 
+// time-based parameters
 const creature_time_chart_params_init = {
     type: 'scatter',
     data: {
@@ -78,7 +79,7 @@ const creature_time_chart_params_init = {
     }
 };
 
-// Geospatial parameters
+// geospatial parameters
 const creature_geo_chart_params_init = {
     type: 'scatter',
     data: {
@@ -142,76 +143,86 @@ const creature_geo_chart_params_init = {
 
 
 // *** Initial store
-const store = {
-    // Initial creature
-    creature: {
-        name: 'Vinny the Simple Creature',
-        act: ActAsSimpleCreature,
-        conds: {
-            // internal biology
-            glucose: 50.0,
-            neuro: 50.0,
+const initialStore = {
+    // array of state changes
+    changes: [],
 
-            // behavior
-            behavior: 'idling',
-            behavior_request: null,
+    // initial creature with no prior rule applied
+    // type: physicalContainerType
+    creatureStore: {
+        // the last rule node applied
+        lastRule: null,
 
-            // location
-            x: 15.0 * Math.random() + 4.0,
-            y: 15.0 * Math.random() + 4.0,
+        // the creature
+        // type: creatureType
+        physicalElem: {
+            name: 'Vinny the Simple Creature',
+            act: ActAsSimpleCreature,
+            conds: {
+                // internal biology
+                glucose: 50.0,
+                neuro: 50.0,
 
-            // heading, speed, acceleration
-            heading: 2 * Math.PI * Math.random(),
-            speed: Math.random() - 0.5,
-            accel: 0.0,
+                // behavior
+                behavior: 'idling',
+                behavior_request: null,
+
+                // location
+                x: 15.0 * Math.random() + 4.0,
+                y: 15.0 * Math.random() + 4.0,
+
+                // heading, speed, acceleration
+                heading: 2 * Math.PI * Math.random(),
+                speed: Math.random() - 0.5,
+                accel: 0.0,
+            },
+            seed: Date.now()
         },
-        seed: Date.now()
     },
 
-    // Initial journal
+    // initial journal
     journal: [{
         time: 0.0,
-        entry: 'Simulator init'
+        message: 'Simulator init'
     }],
 
-    // Creature chart time reference placeholder
-    creature_time_chart: null,
+    // UI elements
+    ui: {
+        // creature chart time reference placeholder
+        creature_time_chart: null,
 
-    // Creature chart geospatial reference placeholder
-    creature_geo_chart: null,
+        // creature chart geospatial reference placeholder
+        creature_geo_chart: null,
 
-    // Status box reference placeholder
-    box_status: null,
+        // status box reference placeholder
+        status_box: null,
+    }
 };
 
 
-export const storeInit = (creature_time_chart_context, creature_geo_chart_context, box_status_context) => ({
-    ...store,
-    creature_time_chart: new Chart(
-        creature_time_chart_context,
-        {
-            ...creature_time_chart_params_init,
-            options: {
-                ...creature_time_chart_params_init.options,
-                title: {
-                    ...creature_time_chart_params_init.options.title,
-                    text: creature_time_chart_params_init.options.title.text + ': ' + store.creature.name,
-                },
-            }
-        },
-    ),
-    creature_geo_chart: new Chart(
-        creature_geo_chart_context,
-        {
-            ...creature_geo_chart_params_init,
-            options: {
-                ...creature_geo_chart_params_init.options,
-                title: {
-                    ...creature_geo_chart_params_init.options.title,
-                    text: creature_geo_chart_params_init.options.title.text + ': ' + store.creature.name,
-                },
-            }
-        },
-    ),
-    box_status: box_status_context,
+// *** Store initializer function
+export const storeInit = (creature_time_chart_context, creature_geo_chart_context, status_box_context) => ({
+    ...initialStore,
+    ui: {
+        // time chart with creature name in title
+        creature_time_chart: new Chart(
+            creature_time_chart_context,
+            chartParamsUseTitle(
+                creature_time_chart_params_init,
+                creature_time_chart_params_init.options.title.text +
+                ': ' + initialStore.creatureStore.physicalElem.name)
+        ),
+
+        // geo chart with creature name in title
+        creature_geo_chart: new Chart(
+            creature_geo_chart_context,
+            chartParamsUseTitle(
+                creature_geo_chart_params_init,
+                creature_geo_chart_params_init.options.title.text
+                + ': ' + initialStore.creatureStore.physicalElem.name)
+        ),
+
+        // status box
+        status_box: status_box_context
+    }
 });

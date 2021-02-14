@@ -9,121 +9,144 @@ import { ResolveRules } from '../rulebook.js';
 
 // *** Behavior functions unique to this creature
 // main dispatch function
-// returns creatureType
-export const ActAsSimpleCreature = (creatureType) => {
-    switch (creatureType.conds.behavior) {
-        case 'idling': return ActIdling(creatureType)
-        case 'eating': return ActEating(creatureType)
-        case 'sleeping': return ActSleeping(creatureType)
-        case 'wandering': return ActWandering(creatureType)
-        default: return creatureType
+// returns physicalContainerType
+export const ActAsSimpleCreature = (physicalContainerType) => {
+    switch (physicalContainerType.physicalElem.conds.behavior) {
+        case 'idling': return ActIdling(physicalContainerType)
+        case 'eating': return ActEating(physicalContainerType)
+        case 'sleeping': return ActSleeping(physicalContainerType)
+        case 'wandering': return ActWandering(physicalContainerType)
+        default: return physicalContainerType
     }
 };
 
 // idling behavior function
-// returns creatureType
-const ActIdling = (creatureType) => {
+// returns physicalContainerType
+const ActIdling = (physicalContainerType) => {
     return CheckBehavior(
-        // pass in creatureType object with specific glucose, neuro, and random velocity
+        // pass in physicalContainerType object with specific glucose, neuro, and random velocity
         {
-            ...creatureType,
-            conds: {
-                ...creatureType.conds,
-                glucose: creatureType.conds.glucose - 1.0,
-                neuro: creatureType.conds.neuro + 0.5,
+            ...physicalContainerType,
+            physicalElem: {
+                ...physicalContainerType.physicalElem,
+                conds: {
+                    ...physicalContainerType.physicalElem.conds,
+                    glucose: physicalContainerType.physicalElem.conds.glucose - 1.0,
+                    neuro: physicalContainerType.physicalElem.conds.neuro + 0.5,
+                }
             }
         },
         // pass in behavior change desires specific to this behavior function
         {
-            'idling': () => 0.2,
-            'wandering': (creatureType) => (creatureType.conds.glucose < 40.0) ? 4.0 : 0.2,
-            'sleeping': (creatureType) => (creatureType.conds.neuro > 85.0) ? 4.0 : 0.2,
+            'idling': () =>
+                0.2,
+            'wandering': (physicalContainerType) =>
+                (physicalContainerType.physicalElem.conds.glucose < 40.0) ? 4.0 : 0.2,
+            'sleeping': (physicalContainerType) =>
+                (physicalContainerType.physicalElem.conds.neuro > 85.0) ? 4.0 : 0.2,
         }
     );
 };
 
 // wandering behavior function
-// returns creatureType
-const ActWandering = (creatureType) => {
+// returns physicalContainerType
+const ActWandering = (physicalContainerType) => {
     // declare: random acceleration
-    const rand_a = seededRand(creatureType.seed, -2.0, 2.0);
+    const rand_a = seededRand(physicalContainerType.physicalElem.seed, -2.0, 2.0);
 
     // declare: random heading nudge
     const rand_hdg_nudge = seededRand(rand_a[0], -0.3, 0.3);
 
     return CheckBehavior(
-        // pass in creatureType object with specific glucose, neuro, and random acceleration
+        // pass in physicalContainerType object with specific glucose, neuro, and random acceleration
         {
-            ...creatureType,
-            seed: rand_hdg_nudge[0],
-            conds: {
-                ...creatureType.conds,
-                glucose: creatureType.conds.glucose - 1.6,
-                neuro: creatureType.conds.neuro + 1.6,
-                
-                heading: creatureType.conds.heading + rand_hdg_nudge[1],
-                accel: rand_a[1],
+            ...physicalContainerType,
+            physicalElem: {
+                ...physicalContainerType.physicalElem,
+                seed: rand_hdg_nudge[0],
+                conds: {
+                    ...physicalContainerType.physicalElem.conds,
+                    glucose: physicalContainerType.physicalElem.conds.glucose - 1.6,
+                    neuro: physicalContainerType.physicalElem.conds.neuro + 1.6,
+
+                    heading: physicalContainerType.physicalElem.conds.heading + rand_hdg_nudge[1],
+                    accel: rand_a[1],
+                }
             }
         },
         // pass in behavior change desires specific to this behavior function
         {
-            'wandering': () => 4.0,
-            'idling': () => 0.2,
-            'eating': (creatureType) => (creatureType.conds.glucose < 20.0) ? 4.0 : 0.2,
-            'sleeping': (creatureType) => (creatureType.conds.neuro > 85.0) ? 4.0 : 0.2,
+            'wandering': () =>
+                4.0,
+            'idling': () =>
+                0.2,
+            'eating': (physicalContainerType) =>
+                (physicalContainerType.physicalElem.conds.glucose < 20.0) ? 4.0 : 0.2,
+            'sleeping': (physicalContainerType) =>
+                (physicalContainerType.physicalElem.conds.neuro > 85.0) ? 4.0 : 0.2,
         }
     );
 };
 
 // eating behavior function
-// returns creatureType
-const ActEating = (creatureType) =>
+// returns physicalContainerType
+const ActEating = (physicalContainerType) =>
     CheckBehavior(
-        // pass in creatureType object with specific glucose and neuro
+        // pass in physicalContainerType object with specific glucose and neuro
         {
-            ...creatureType,
-            conds: {
-                ...creatureType.conds,
-                glucose: creatureType.conds.glucose + 4.0,
-                neuro: creatureType.conds.neuro + 1.0,
+            ...physicalContainerType,
+            physicalElem: {
+                ...physicalContainerType.physicalElem,
+                conds: {
+                    ...physicalContainerType.physicalElem.conds,
+                    glucose: physicalContainerType.physicalElem.conds.glucose + 4.0,
+                    neuro: physicalContainerType.physicalElem.conds.neuro + 1.0,
+                }
             }
         },
         // pass in behavior change desires specific to this behavior function
         {
-            'eating': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.glucose > 50.0) ? 2.0 : 0.2
+            'eating': () =>
+                1.0,
+            'idling': (physicalContainerType) =>
+                (physicalContainerType.physicalElem.conds.glucose > 50.0) ? 2.0 : 0.2
         }
     );
 
 // sleeping behavior function
-// returns creatureType
-const ActSleeping = (creatureType) =>
+// returns physicalContainerType
+const ActSleeping = (physicalContainerType) =>
     CheckBehavior(
-        // pass in creatureType object with specific glucose and neuro
+        // pass in physicalContainerType object with specific glucose and neuro
         {
-            ...creatureType,
-            conds: {
-                ...creatureType.conds,
-                glucose: creatureType.conds.glucose - 0.3,
-                neuro: creatureType.conds.neuro - 2.2,
+            ...physicalContainerType,
+            physicalElem: {
+                ...physicalContainerType.physicalElem,
+                conds: {
+                    ...physicalContainerType.physicalElem.conds,
+                    glucose: physicalContainerType.physicalElem.conds.glucose - 0.3,
+                    neuro: physicalContainerType.physicalElem.conds.neuro - 2.2,
+                }
             }
         },
         // pass in behavior change desires specific to this behavior function
         {
-            'sleeping': () => 1.0,
-            'idling': (creatureType) => (creatureType.conds.neuro < 50.0) ? 2.0 : 0.2
+            'sleeping': () =>
+                1.0,
+            'idling': (physicalContainerType) =>
+                (physicalContainerType.physicalElem.conds.neuro < 50.0) ? 2.0 : 0.2
         }
     );
 
 
 // *** Code common to all simple creatures
 // function to review and return appropriate behavior
-// returns creatureType
-export const CheckBehavior = (creatureType, desireFuncType) => {
+// returns physicalContainerType
+export const CheckBehavior = (physicalContainerType, desireFuncType) => {
     // declare: numerical desires as evaluation of each desire func with nifty shorthand
-    const numbers = Object.values(desireFuncType).map(f => f(creatureType));
+    const numbers = Object.values(desireFuncType).map(f => f(physicalContainerType));
 
-    // declare: desires as cumulative array
+    // declare: numerical desires as cumulative array
     const cum_numbers = numbers.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
 
     // declare: max value in cumulative array
@@ -132,20 +155,25 @@ export const CheckBehavior = (creatureType, desireFuncType) => {
     // declare: random number in range of max value, as [0, max_cum_numbers]
     // note: seededRand returns [seed, value]
     // note: if max_cum_numbers = 0.0, value will be 0.0
-    const randInRange = seededRand(creatureType.seed, 0, max_cum_numbers);
+    const randInRange = seededRand(physicalContainerType.physicalElem.seed, 0, max_cum_numbers);
 
     // declare: first desire "box" that holds random number "target"
     const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x));
 
-    // return creatureType object with: 
-    //      updated seed
-    //      behavior indicated via rulebook review of chosen desire
+    // return physicalContainerType object with: 
+    //      lastRule: the rule node applied to this creature
+    //      physicalElem: the creature, as a creatureType with:
+    //          updated seed
+    //          behavior indicated via rulebook review of chosen desire
     return ResolveRules({
-        ...creatureType,
-        seed: randInRange[0],
-        conds: {
-            ...creatureType.conds,
-            behavior_request: Object.keys(desireFuncType)[chosenIndex]
+        ...physicalContainerType,
+        physicalElem: {
+            ...physicalContainerType.physicalElem,
+            seed: randInRange[0],
+            conds: {
+                ...physicalContainerType.physicalElem.conds,
+                behavior_request: Object.keys(desireFuncType)[chosenIndex]
+            }
         }
     });
 };
