@@ -5,12 +5,18 @@
 // *** Imports
 // Styling and libraries
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { data } from 'jquery';
 import './custom.css';
 
 // Our own stuff
 import { storeInit } from './store_init.js';
-import { actionDispatch, addGeoChartData, addStatusMessage, addTimeChartData } from './reduxlike/action_creators.js';
+import { renderState } from './reduxlike/reducers_renderers.js';
+import {
+    actionDispatch,
+    addGeoChartData,
+    addJournalEntry,
+    addStatusMessage,
+    addTimeChartData
+} from './reduxlike/action_creators.js';
 
 
 // *** HTML page references 
@@ -53,18 +59,22 @@ let timerId = setInterval(() => {
 
     // *** Update status box and journal if creature behavior has just changed
     curBehavior = behaviorStrings[myStore.creature.conds.behavior];
-    if (myStore.journal[myStore.journal.length - 1].entry != curBehavior) {
+    if (myStore.journal[myStore.journal.length - 1].message != curBehavior) {
         myStore = actionDispatch(
             myStore,
             addStatusMessage(myStore.status_box, 'Time ' + curTime + ": " + curBehavior)
         );
 
-        myStore.journal = [...myStore.journal, { time: curTime, entry: curBehavior }];
+        myStore = actionDispatch(
+            myStore,
+            addJournalEntry(myStore.journal, curTime, curBehavior)
+        );
     }
 
+    console.log(myStore.journal);
 
-    // *** Update charts
-    // glucose and neuro
+    // *** Update chart data
+    // time chart: glucose
     myStore = actionDispatch(
         myStore,
         addTimeChartData(
@@ -75,6 +85,8 @@ let timerId = setInterval(() => {
                 value: myStore.creature.conds.glucose
             })
     );
+
+    // time chart: neuro
     myStore = actionDispatch(
         myStore,
         addTimeChartData(
@@ -85,9 +97,8 @@ let timerId = setInterval(() => {
                 value: myStore.creature.conds.neuro
             })
     );
-    myStore.creature_time_chart.update();
 
-    // geospatial
+    // geospatial chart
     myStore = actionDispatch(
         myStore,
         addGeoChartData(
@@ -97,7 +108,10 @@ let timerId = setInterval(() => {
                 y: myStore.creature.conds.y
             })
     );
-    myStore.creature_geo_chart.update();
+
+
+    // *** render state
+    myStore = renderState(myStore);
 
 
     // *** Update world time

@@ -3,13 +3,14 @@
 // ****** Code for creating actions ******
 
 // *** Our imports
-import { rootReducer } from './reducers.js';
+import { rootReducer } from './reducers_renderers.js';
 
 
 // *** Action names
 export const ACTION_ADD_TIMECHART_DATA = 'ADD_TIMECHART_DATA';
 export const ACTION_ADD_GEOCHART_DATA = 'ADD_GEOCHART_DATA';
 export const ACTION_ADD_STATUS_MESSAGE = 'ADD_STATUS_MESSAGE';
+export const ACTION_ADD_JOURNAL_ENTRY = 'ADD_JOURNAL_ENTRY';
 
 
 // *** Action creator functions
@@ -34,6 +35,14 @@ export const addGeoChartData = (chart, xyPair) => ({
 export const addStatusMessage = (statusBox, message = '') => ({
     type: ACTION_ADD_STATUS_MESSAGE,
     statusBox,
+    message
+});
+
+// add journal entry
+export const addJournalEntry = (journal, time, message = '') => ({
+    type: ACTION_ADD_JOURNAL_ENTRY,
+    journal, 
+    time,
     message
 });
 

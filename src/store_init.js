@@ -143,6 +143,9 @@ const creature_geo_chart_params_init = {
 
 // *** Initial store
 const store = {
+    // array of state changes
+    changes: [],
+    
     // initial creature
     creature: {
         name: 'Vinny the Simple Creature',
@@ -171,7 +174,7 @@ const store = {
     // initial journal
     journal: [{
         time: 0.0,
-        entry: 'Simulator init'
+        message: 'Simulator init'
     }],
 
     // creature chart time reference placeholder

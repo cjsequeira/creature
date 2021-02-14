@@ -1,12 +1,13 @@
 'use strict'
 
-// ****** Functions to produce state based on given state and action
+// ****** Functions to produce state based on given state and action, and render due to state changes
 
 // *** Our imports
 import {
     ACTION_ADD_TIMECHART_DATA,
     ACTION_ADD_GEOCHART_DATA,
-    ACTION_ADD_STATUS_MESSAGE
+    ACTION_ADD_STATUS_MESSAGE,
+    ACTION_ADD_JOURNAL_ENTRY
 } from './action_creators.js';
 
 import { hexRGBAFade } from '../util.js';
@@ -19,6 +20,10 @@ export const rootReducer = (state, action) => {
         case ACTION_ADD_TIMECHART_DATA:
             return {
                 ...state,
+                changes: [
+                    ...state.changes,
+                    () => action.chart.update()
+                ],
                 creature_time_chart:
                     mutable_updateTimeChartData(action.chart, action.dataIndex, action.yTimePair)
             };
@@ -26,6 +31,10 @@ export const rootReducer = (state, action) => {
         case ACTION_ADD_GEOCHART_DATA:
             return {
                 ...state,
+                changes: [
+                    ...state.changes,
+                    () => action.chart.update()
+                ],
                 creature_geo_chart:
                     mutable_updateGeoChartData(action.chart, action.xyPair)
             };
@@ -33,12 +42,50 @@ export const rootReducer = (state, action) => {
         case ACTION_ADD_STATUS_MESSAGE:
             return {
                 ...state,
+                changes: [
+                    ...state.changes,
+                    () => { }
+                ],
                 status_box:
                     mutable_updateStatusBox(action.statusBox, action.message)
             };
 
+        case ACTION_ADD_JOURNAL_ENTRY:
+            return {
+                ...state,
+                changes: [
+                    ...state.changes,
+                    () => { }
+                ],
+                journal: [
+                    ...action.journal,
+                    {
+                        time: action.time,
+                        message: action.message
+                    }
+                ]
+            };
+
         default:
             return state;
+    }
+}
+
+
+// *** Render functions
+// function to render state based on array of change functions
+export const renderState = (state) => {
+    // get array of change functions with no duplicates
+    // based on https://medium.com/dailyjs/how-to-remove-array-duplicates-in-es6-5daa8789641c
+    const stateChanges = state.changes.filter((item, i, arr) => arr.indexOf(item) === i);
+
+    // for each state change, call provided render function 
+    stateChanges.forEach((renderFunc) => renderFunc());
+
+    // return state with changes array cleared
+    return {
+        ...state,
+        changes: []
     }
 }
 
