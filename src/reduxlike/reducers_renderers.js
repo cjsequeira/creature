@@ -61,7 +61,7 @@ export const rootReducer = (state, action) => {
         case ACTION_DO_CREATURE_ACT:
             return {
                 ...state,
-                creatureStore: action.creature.act(action.creature)
+                creatureStore: action.physicalContainerType.physicalElem.act(action.physicalContainerType)
             }
 
         default:

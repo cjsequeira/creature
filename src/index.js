@@ -9,6 +9,7 @@ import './custom.css';
 
 // Our own stuff
 import { storeInit } from './store_init.js';
+import { RULE_HIT_WALL, RULE_CONDS_OUT_OF_LIMITS } from './rulebook.js';
 import { renderStateChanges } from './reduxlike/reducers_renderers.js';
 import { makeChain } from './util.js';
 import {
@@ -33,7 +34,7 @@ var timeStep = 1.0;
 var browserTime = 750;
 
 
-// *** Simple status message object
+// *** Status message objects/arrays
 const behaviorStrings = {
     idling: "I'm is idling! Blah...",
     eating: "I'm is eating!! Nom...",
@@ -41,6 +42,11 @@ const behaviorStrings = {
     wandering: "I'm is wandering! Wiggity whack!",
     frozen: "I'm is frozen! Brrrr....."
 };
+
+const ruleStringsArr = [
+    RULE_HIT_WALL,
+    RULE_CONDS_OUT_OF_LIMITS
+];
 
 
 // *** Non-const code setup
@@ -55,7 +61,7 @@ let curBehavior = '';
 
 // *** Main update loop 
 let timerId = setInterval(() => {
-    // *** Dispatch actions to update store
+    // update creature and charts
     myStore = makeChain(
         // function to call repeatedly...
         actionDispatch,
@@ -64,7 +70,7 @@ let timerId = setInterval(() => {
         myStore,
 
         // act out creature behavior
-        doCreatureAct(myStore.creatureStore.physicalElem),
+        doCreatureAct(myStore.creatureStore),
 
         // add glucose data to time chart
         addTimeChartData(
@@ -93,32 +99,51 @@ let timerId = setInterval(() => {
             })
     );
 
-
-
-    console.log(myStore.journal);
-
-
-    
-    // *** Update status box and journal if creature behavior has just changed
+    // update status box and journal if creature behavior has just changed
     curBehavior = behaviorStrings[myStore.creatureStore.physicalElem.conds.behavior];
     if (myStore.journal[myStore.journal.length - 1].message != curBehavior) {
+        // update status box
         myStore = actionDispatch(
             myStore,
             addStatusMessage(myStore.ui.status_box, 'Time ' + curTime + ": " + curBehavior)
         );
 
+        // add journal entry
         myStore = actionDispatch(
             myStore,
             addJournalEntry(myStore.journal, curTime, curBehavior)
         );
     }
 
+    // update status box and journal if last-used rule is one we want to verbalize
+    ruleStringsArr.forEach((ruleString) => {
+        if (myStore.creatureStore.lastRule.name === ruleString) {
+            // update status box
+            myStore = actionDispatch(
+                myStore,
+                addStatusMessage(
+                    myStore.ui.status_box,
+                    'Time ' + curTime + ": *** " +
+                    myStore.creatureStore.physicalElem.name + " " + ruleString
+                )
+            );
 
-    // *** render state
+            // add journal entry
+            myStore = actionDispatch(
+                myStore,
+                addJournalEntry(
+                    myStore.journal,
+                    curTime,
+                    myStore.creatureStore.physicalElem.name + " " + ruleString
+                )
+            );
+        }
+    })
+
+    // render state
     myStore = renderStateChanges(myStore);
 
-
-    // *** Update world time
+    // update world time
     curTime = curTime + timeStep;
 
 }, browserTime);

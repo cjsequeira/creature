@@ -148,7 +148,7 @@ const initialStore = {
     changes: [],
 
     // initial creature with no prior rule applied
-    // type: physicalElemType
+    // type: physicalContainerType
     creatureStore: {
         // the last rule node applied
         lastRule: null,
