@@ -140,8 +140,35 @@ let timerId = setInterval(() => {
         }
     })
 
+    // if creature is frozen, give termination message and end update loop
+    if (myStore.creatureStore.lastRule.name === RULE_CONDS_OUT_OF_LIMITS) {
+        // update status box
+        myStore = actionDispatch(
+            myStore,
+            addStatusMessage(
+                myStore.ui.status_box,
+                'Time ' + curTime + ": *** Simulation ended"
+            )
+        );
+
+        // add journal entry
+        myStore = actionDispatch(
+            myStore,
+            addJournalEntry(
+                myStore.journal,
+                curTime,
+                "Simulation ended"
+            )
+        );
+
+        // end update loop
+        clearInterval(timerId);
+    }
+
     // render state
     myStore = renderStateChanges(myStore);
+
+
 
     // update world time
     curTime = curTime + timeStep;
