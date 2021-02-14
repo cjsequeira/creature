@@ -11,6 +11,7 @@ export const ACTION_ADD_TIMECHART_DATA = 'ADD_TIMECHART_DATA';
 export const ACTION_ADD_GEOCHART_DATA = 'ADD_GEOCHART_DATA';
 export const ACTION_ADD_STATUS_MESSAGE = 'ADD_STATUS_MESSAGE';
 export const ACTION_ADD_JOURNAL_ENTRY = 'ADD_JOURNAL_ENTRY';
+export const ACTION_DO_CREATURE_ACT = 'DO_CREATURE_ACT';
 
 
 // *** Action creator functions
@@ -44,6 +45,13 @@ export const addJournalEntry = (journal, time, message = '') => ({
     journal, 
     time,
     message
+});
+
+// perform creature action
+export const doCreatureAct = (creature, time) => ({
+    type: ACTION_DO_CREATURE_ACT,
+    creature, 
+    time
 });
 
 

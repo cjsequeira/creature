@@ -9,13 +9,15 @@ import './custom.css';
 
 // Our own stuff
 import { storeInit } from './store_init.js';
-import { renderState } from './reduxlike/reducers_renderers.js';
+import { renderStateChanges } from './reduxlike/reducers_renderers.js';
+import { makeChain } from './util.js';
 import {
     actionDispatch,
     addGeoChartData,
     addJournalEntry,
     addStatusMessage,
-    addTimeChartData
+    addTimeChartData,
+    doCreatureAct
 } from './reduxlike/action_creators.js';
 
 
@@ -53,56 +55,35 @@ let curBehavior = '';
 
 // *** Main update loop 
 let timerId = setInterval(() => {
-    // *** Update creature
-    myStore.creature = myStore.creature.act(myStore.creature);
-
-
-    // *** Update status box and journal if creature behavior has just changed
-    curBehavior = behaviorStrings[myStore.creature.conds.behavior];
-    if (myStore.journal[myStore.journal.length - 1].message != curBehavior) {
-        myStore = actionDispatch(
-            myStore,
-            addStatusMessage(myStore.status_box, 'Time ' + curTime + ": " + curBehavior)
-        );
-
-        myStore = actionDispatch(
-            myStore,
-            addJournalEntry(myStore.journal, curTime, curBehavior)
-        );
-    }
-
-    console.log(myStore.journal);
-
-    // *** Update chart data
-    // time chart: glucose
-    myStore = actionDispatch(
+    // *** Dispatch actions to update store
+    myStore = makeChain(
+        actionDispatch,
         myStore,
+
+        // act out creature behavior
+        doCreatureAct(myStore.creature),
+
+        // add glucose data to time chart
         addTimeChartData(
-            myStore.creature_time_chart,
+            myStore.ui.creature_time_chart,
             0,
             {
                 time: curTime,
                 value: myStore.creature.conds.glucose
-            })
-    );
+            }),
 
-    // time chart: neuro
-    myStore = actionDispatch(
-        myStore,
+        // add neuro data to time chart
         addTimeChartData(
-            myStore.creature_time_chart,
+            myStore.ui.creature_time_chart,
             1,
             {
                 time: curTime,
                 value: myStore.creature.conds.neuro
-            })
-    );
+            }),
 
-    // geospatial chart
-    myStore = actionDispatch(
-        myStore,
+        // add x-y data to geo chart
         addGeoChartData(
-            myStore.creature_geo_chart,
+            myStore.ui.creature_geo_chart,
             {
                 x: myStore.creature.conds.x,
                 y: myStore.creature.conds.y
@@ -110,8 +91,24 @@ let timerId = setInterval(() => {
     );
 
 
+    // *** Update status box and journal if creature behavior has just changed
+    curBehavior = behaviorStrings[myStore.creature.conds.behavior];
+    if (myStore.journal[myStore.journal.length - 1].message != curBehavior) {
+        myStore = actionDispatch(
+            myStore,
+            addStatusMessage(myStore.ui.status_box, 'Time ' + curTime + ": " + curBehavior)
+        );
+
+        myStore = actionDispatch(
+            myStore,
+            addJournalEntry(myStore.journal, curTime, curBehavior)
+        );
+    }
+    console.log(myStore.journal);
+
+
     // *** render state
-    myStore = renderState(myStore);
+    myStore = renderStateChanges(myStore);
 
 
     // *** Update world time

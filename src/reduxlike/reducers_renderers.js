@@ -1,16 +1,16 @@
 'use strict'
 
-// ****** Functions to produce state based on given state and action, and render due to state changes
+// ****** Functions to produce state based on given state and action, and render state changes
 
 // *** Our imports
+import { hexRGBAFade } from '../util.js';
 import {
     ACTION_ADD_TIMECHART_DATA,
     ACTION_ADD_GEOCHART_DATA,
     ACTION_ADD_STATUS_MESSAGE,
-    ACTION_ADD_JOURNAL_ENTRY
+    ACTION_ADD_JOURNAL_ENTRY,
+    ACTION_DO_CREATURE_ACT,
 } from './action_creators.js';
-
-import { hexRGBAFade } from '../util.js';
 
 
 // *** Reducer functions
@@ -42,10 +42,6 @@ export const rootReducer = (state, action) => {
         case ACTION_ADD_STATUS_MESSAGE:
             return {
                 ...state,
-                changes: [
-                    ...state.changes,
-                    () => { }
-                ],
                 status_box:
                     mutable_updateStatusBox(action.statusBox, action.message)
             };
@@ -53,10 +49,6 @@ export const rootReducer = (state, action) => {
         case ACTION_ADD_JOURNAL_ENTRY:
             return {
                 ...state,
-                changes: [
-                    ...state.changes,
-                    () => { }
-                ],
                 journal: [
                     ...action.journal,
                     {
@@ -66,28 +58,31 @@ export const rootReducer = (state, action) => {
                 ]
             };
 
+        case ACTION_DO_CREATURE_ACT:
+            return {
+                ...state,
+                creature: action.creature.act(action.creature)
+            }
+
         default:
             return state;
     }
 }
 
 
-// *** Render functions
-// function to render state based on array of change functions
-export const renderState = (state) => {
-    // get array of change functions with no duplicates
-    // based on https://medium.com/dailyjs/how-to-remove-array-duplicates-in-es6-5daa8789641c
-    const stateChanges = state.changes.filter((item, i, arr) => arr.indexOf(item) === i);
+// *** Function to render store changes using an array of render functions
+// returns store with empty render function array
+// assumes render functions NEVER RETURN TRUE
+export const renderStateChanges = (store, ...args) => ({
+    ...store,
+    changes:
+        // array of render functions with no duplicates
+        store.changes.filter((item, i, arr) => arr.indexOf(item) === i)
 
-    // for each state change, call provided render function 
-    stateChanges.forEach((renderFunc) => renderFunc());
-
-    // return state with changes array cleared
-    return {
-        ...state,
-        changes: []
-    }
-}
+            // call each provided render function, resulting in empty render function array
+            // assumes render functions NEVER RETURN TRUE
+            .filter(renderFunc => renderFunc(store, args))
+});
 
 
 // *** Reducer helpers
