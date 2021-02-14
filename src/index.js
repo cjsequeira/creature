@@ -57,11 +57,14 @@ let curBehavior = '';
 let timerId = setInterval(() => {
     // *** Dispatch actions to update store
     myStore = makeChain(
+        // function to call repeatedly...
         actionDispatch,
+
+        // ... using this store, until all actions listed below have been dispatched
         myStore,
 
         // act out creature behavior
-        doCreatureAct(myStore.creature),
+        doCreatureAct(myStore.creatureStore.physicalElem),
 
         // add glucose data to time chart
         addTimeChartData(
@@ -69,7 +72,7 @@ let timerId = setInterval(() => {
             0,
             {
                 time: curTime,
-                value: myStore.creature.conds.glucose
+                value: myStore.creatureStore.physicalElem.conds.glucose
             }),
 
         // add neuro data to time chart
@@ -78,21 +81,26 @@ let timerId = setInterval(() => {
             1,
             {
                 time: curTime,
-                value: myStore.creature.conds.neuro
+                value: myStore.creatureStore.physicalElem.conds.neuro
             }),
 
         // add x-y data to geo chart
         addGeoChartData(
             myStore.ui.creature_geo_chart,
             {
-                x: myStore.creature.conds.x,
-                y: myStore.creature.conds.y
+                x: myStore.creatureStore.physicalElem.conds.x,
+                y: myStore.creatureStore.physicalElem.conds.y
             })
     );
 
 
+
+    console.log(myStore.journal);
+
+
+    
     // *** Update status box and journal if creature behavior has just changed
-    curBehavior = behaviorStrings[myStore.creature.conds.behavior];
+    curBehavior = behaviorStrings[myStore.creatureStore.physicalElem.conds.behavior];
     if (myStore.journal[myStore.journal.length - 1].message != curBehavior) {
         myStore = actionDispatch(
             myStore,
@@ -104,7 +112,6 @@ let timerId = setInterval(() => {
             addJournalEntry(myStore.journal, curTime, curBehavior)
         );
     }
-    console.log(myStore.journal);
 
 
     // *** render state

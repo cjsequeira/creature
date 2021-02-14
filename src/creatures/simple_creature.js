@@ -9,19 +9,19 @@ import { ResolveRules } from '../rulebook.js';
 
 // *** Behavior functions unique to this creature
 // main dispatch function
-// returns creatureType
+// returns { lastRule: last used rule node, physicalElem: physicalType with rule applied }
 export const ActAsSimpleCreature = (creatureType) => {
     switch (creatureType.conds.behavior) {
         case 'idling': return ActIdling(creatureType)
         case 'eating': return ActEating(creatureType)
         case 'sleeping': return ActSleeping(creatureType)
         case 'wandering': return ActWandering(creatureType)
-        default: return creatureType
+        default: return { lastRule: null, physicalElem: creatureType}
     }
 };
 
 // idling behavior function
-// returns creatureType
+// returns { lastRule: last used rule node, physicalElem: physicalType with rule applied }
 const ActIdling = (creatureType) => {
     return CheckBehavior(
         // pass in creatureType object with specific glucose, neuro, and random velocity
@@ -43,7 +43,7 @@ const ActIdling = (creatureType) => {
 };
 
 // wandering behavior function
-// returns creatureType
+// returns { lastRule: last used rule node, physicalElem: physicalType with rule applied }
 const ActWandering = (creatureType) => {
     // declare: random acceleration
     const rand_a = seededRand(creatureType.seed, -2.0, 2.0);
@@ -76,7 +76,7 @@ const ActWandering = (creatureType) => {
 };
 
 // eating behavior function
-// returns creatureType
+// returns { lastRule: last used rule node, physicalElem: physicalType with rule applied }
 const ActEating = (creatureType) =>
     CheckBehavior(
         // pass in creatureType object with specific glucose and neuro
@@ -96,7 +96,7 @@ const ActEating = (creatureType) =>
     );
 
 // sleeping behavior function
-// returns creatureType
+// returns { lastRule: last used rule node, physicalElem: physicalType with rule applied }
 const ActSleeping = (creatureType) =>
     CheckBehavior(
         // pass in creatureType object with specific glucose and neuro
@@ -118,7 +118,7 @@ const ActSleeping = (creatureType) =>
 
 // *** Code common to all simple creatures
 // function to review and return appropriate behavior
-// returns creatureType
+// returns { lastRule: last used rule node, physicalElem: physicalType with rule applied }
 export const CheckBehavior = (creatureType, desireFuncType) => {
     // declare: numerical desires as evaluation of each desire func with nifty shorthand
     const numbers = Object.values(desireFuncType).map(f => f(creatureType));
@@ -137,9 +137,11 @@ export const CheckBehavior = (creatureType, desireFuncType) => {
     // declare: first desire "box" that holds random number "target"
     const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x));
 
-    // return creatureType object with: 
-    //      updated seed
-    //      behavior indicated via rulebook review of chosen desire
+    // return physicalStoreType object with: 
+    //      lastRule: the rule node applied to this creature
+    //      physicalElem: the creature, as a creatureType with:
+    //          updated seed
+    //          behavior indicated via rulebook review of chosen desire
     return ResolveRules({
         ...creatureType,
         seed: randInRange[0],

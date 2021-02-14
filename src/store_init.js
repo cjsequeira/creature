@@ -147,29 +147,37 @@ const initialStore = {
     // array of state changes
     changes: [],
 
-    // initial creature
-    creature: {
-        name: 'Vinny the Simple Creature',
-        act: ActAsSimpleCreature,
-        conds: {
-            // internal biology
-            glucose: 50.0,
-            neuro: 50.0,
+    // initial creature with no prior rule applied
+    // type: physicalElemType
+    creatureStore: {
+        // the last rule node applied
+        lastRule: null,
 
-            // behavior
-            behavior: 'idling',
-            behavior_request: null,
+        // the creature
+        // type: creatureType
+        physicalElem: {
+            name: 'Vinny the Simple Creature',
+            act: ActAsSimpleCreature,
+            conds: {
+                // internal biology
+                glucose: 50.0,
+                neuro: 50.0,
 
-            // location
-            x: 15.0 * Math.random() + 4.0,
-            y: 15.0 * Math.random() + 4.0,
+                // behavior
+                behavior: 'idling',
+                behavior_request: null,
 
-            // heading, speed, acceleration
-            heading: 2 * Math.PI * Math.random(),
-            speed: Math.random() - 0.5,
-            accel: 0.0,
+                // location
+                x: 15.0 * Math.random() + 4.0,
+                y: 15.0 * Math.random() + 4.0,
+
+                // heading, speed, acceleration
+                heading: 2 * Math.PI * Math.random(),
+                speed: Math.random() - 0.5,
+                accel: 0.0,
+            },
+            seed: Date.now()
         },
-        seed: Date.now()
     },
 
     // initial journal
@@ -200,18 +208,20 @@ export const storeInit = (creature_time_chart_context, creature_geo_chart_contex
         creature_time_chart: new Chart(
             creature_time_chart_context,
             chartParamsUseTitle(
-                creature_time_chart_params_init, 
-                creature_time_chart_params_init.options.title.text + ': ' + initialStore.creature.name)
+                creature_time_chart_params_init,
+                creature_time_chart_params_init.options.title.text +
+                ': ' + initialStore.creatureStore.physicalElem.name)
         ),
 
         // geo chart with creature name in title
         creature_geo_chart: new Chart(
             creature_geo_chart_context,
             chartParamsUseTitle(
-                creature_geo_chart_params_init, 
-                creature_geo_chart_params_init.options.title.text + ': ' + initialStore.creature.name)
+                creature_geo_chart_params_init,
+                creature_geo_chart_params_init.options.title.text
+                + ': ' + initialStore.creatureStore.physicalElem.name)
         ),
-        
+
         // status box
         status_box: status_box_context
     }

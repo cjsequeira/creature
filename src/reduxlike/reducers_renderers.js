@@ -61,7 +61,7 @@ export const rootReducer = (state, action) => {
         case ACTION_DO_CREATURE_ACT:
             return {
                 ...state,
-                creature: action.creature.act(action.creature)
+                creatureStore: action.creature.act(action.creature)
             }
 
         default:
@@ -73,7 +73,7 @@ export const rootReducer = (state, action) => {
 // *** Function to render store changes using an array of render functions
 // returns store with empty render function array
 // assumes render functions NEVER RETURN TRUE
-export const renderStateChanges = (store, ...args) => ({
+export const renderStateChanges = (store) => ({
     ...store,
     changes:
         // array of render functions with no duplicates
@@ -81,7 +81,7 @@ export const renderStateChanges = (store, ...args) => ({
 
             // call each provided render function, resulting in empty render function array
             // assumes render functions NEVER RETURN TRUE
-            .filter(renderFunc => renderFunc(store, args))
+            .filter(renderFunc => renderFunc(store))
 });
 
 

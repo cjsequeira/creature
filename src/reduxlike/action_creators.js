@@ -48,10 +48,9 @@ export const addJournalEntry = (journal, time, message = '') => ({
 });
 
 // perform creature action
-export const doCreatureAct = (creature, time) => ({
+export const doCreatureAct = (creature) => ({
     type: ACTION_DO_CREATURE_ACT,
-    creature, 
-    time
+    creature
 });
 
 

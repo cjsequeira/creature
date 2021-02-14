@@ -169,14 +169,14 @@ const ruleBook = {
 
 // *** Rulebook functions
 // general rulebook resolver
-// returns physicalType
-export const ResolveRules = (arg = {}, node = ruleBook) => {
-//    console.log(node.name);
+// returns { lastRule: last used rule node, physicalElem: physicalType with rule applied }
+export const ResolveRules = (arg, node = ruleBook) => {
+    console.log(node.name);
     const funcResult = node.func(arg);
 
     switch (funcResult) {
         case true: return ResolveRules(arg, node.yes);
         case false: return ResolveRules(arg, node.no);
-        default: return funcResult;
+        default: return { lastRule: node, physicalElem: funcResult };
     }
 };
