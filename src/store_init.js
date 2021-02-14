@@ -8,7 +8,7 @@ import { ActAsSimpleCreature } from './creatures/simple_creature.js';
 
 
 // *** Initial parameters for creature conditions charts parameters
-// Time-based parameters
+// time-based parameters
 const creature_time_chart_params_init = {
     type: 'scatter',
     data: {
@@ -78,7 +78,7 @@ const creature_time_chart_params_init = {
     }
 };
 
-// Geospatial parameters
+// geospatial parameters
 const creature_geo_chart_params_init = {
     type: 'scatter',
     data: {
@@ -143,7 +143,7 @@ const creature_geo_chart_params_init = {
 
 // *** Initial store
 const store = {
-    // Initial creature
+    // initial creature
     creature: {
         name: 'Vinny the Simple Creature',
         act: ActAsSimpleCreature,
@@ -168,24 +168,25 @@ const store = {
         seed: Date.now()
     },
 
-    // Initial journal
+    // initial journal
     journal: [{
         time: 0.0,
         entry: 'Simulator init'
     }],
 
-    // Creature chart time reference placeholder
+    // creature chart time reference placeholder
     creature_time_chart: null,
 
-    // Creature chart geospatial reference placeholder
+    // creature chart geospatial reference placeholder
     creature_geo_chart: null,
 
-    // Status box reference placeholder
-    box_status: null,
+    // status box reference placeholder
+    status_box: null,
 };
 
 
-export const storeInit = (creature_time_chart_context, creature_geo_chart_context, box_status_context) => ({
+// *** Store initializer function
+export const storeInit = (creature_time_chart_context, creature_geo_chart_context, status_box_context) => ({
     ...store,
     creature_time_chart: new Chart(
         creature_time_chart_context,
@@ -213,5 +214,5 @@ export const storeInit = (creature_time_chart_context, creature_geo_chart_contex
             }
         },
     ),
-    box_status: box_status_context,
+    status_box: status_box_context
 });

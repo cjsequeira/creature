@@ -7,7 +7,7 @@
 export const geThan = x => y => (y >= x);
 
 
-// **** Numerical utilities
+// *** Numerical utilities
 // seeded random number
 // reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
 export const seededRand = (seed = 0, min = 0.0, max = 1.0) => {
@@ -21,30 +21,14 @@ export const seededRand = (seed = 0, min = 0.0, max = 1.0) => {
     ];
 };
 
-// within given range, as (min, max)
+// within given range? as (min, max)
 export const withinRange = (num, min = 0.0, max = 1.0) => (num > min) && (num < max);
 
 
 // *** UI utilities
-// update simulator status box with given HTML message
-export function updateStatusBox(statusBox, message) {
-    // get status box scroll bar information
-    let statusScrollTop = statusBox.scrollTop;
-    let statusScrollHeight = statusBox.scrollHeight;
-    let statusInnerHeight = statusBox.clientHeight;
-
-    // push message into status box
-    statusBox.innerHTML = statusBox.innerHTML + message + '<br />';
-
-    // adjust scroll bar position to auto-scroll if scroll bar is near the end
-    if (statusScrollTop > (statusScrollHeight - 1.1 * statusInnerHeight)) {
-        statusBox.scrollTop = statusScrollHeight;
-    }
-}
-
 // fade one RGBA hex color to another, controlled by a [0, 1] fader
 // based on https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
-export function hexRGBAFade(hexStart = '#ffffffff', fader = 0.5, hexEnd = '#08080800') {
+export const hexRGBAFade = (hexStart = '#ffffffff', fader = 0.5, hexEnd = '#08080800') => {
     const rStart = parseInt(hexStart.slice(1, 3), 16),
         gStart = parseInt(hexStart.slice(3, 5), 16),
         bStart = parseInt(hexStart.slice(5, 7), 16),
@@ -61,4 +45,4 @@ export function hexRGBAFade(hexStart = '#ffffffff', fader = 0.5, hexEnd = '#0808
         Math.round(bStart + (1.0 - fader) * (bEnd - bStart)).toString(16) +
         Math.round(aStart + (1.0 - fader) * (aEnd - aStart)).toString(16)
     )
-}
+};
