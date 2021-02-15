@@ -167,6 +167,7 @@ const initialStore = {
                 behavior: 'idling',
                 behavior_request: null,
 
+                /*
                 // location
                 x: 15.0 * Math.random() + 4.0,
                 y: 15.0 * Math.random() + 4.0,
@@ -175,8 +176,18 @@ const initialStore = {
                 heading: 2 * Math.PI * Math.random(),
                 speed: Math.random() - 0.5,
                 accel: 0.0,
+                */
+
+                // location
+                x: 15.0,
+                y: 15.0,
+
+                // heading, speed, acceleration
+                heading: 0,
+                speed: 1,
+                accel: 0.0,
             },
-            seed: Date.now()
+            seed: 0
         },
     },
 
