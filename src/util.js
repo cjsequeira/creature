@@ -14,6 +14,22 @@ export const geThan = x => y => (y >= x);
 export const makeChain = (func, obj, ...args) =>
     args.reduce((accum, cur) => func(accum || obj, cur), null);
 
+// return physicalContainerType with given conditions
+export const pctUseConds = (pct, argConds) => ({
+    ...pct,
+    physicalElem: {
+        ...pct.physicalElem,
+        conds: {
+            ...pct.physicalElem.conds,
+            ...argConds
+        }
+    }
+})
+
+// return specific condition from physicalContainerType
+export const pctGetCond = (pct, argCond) =>
+    pct.physicalElem.conds[argCond]
+
 
 // *** Numerical utilities
 // seeded random number
