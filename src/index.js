@@ -62,42 +62,44 @@ let curBehavior = '';
 // *** Main update loop 
 let timerId = setInterval(() => {
     // update creature and charts
-    myStore = makeChain(
-        // function to call repeatedly...
-        actionDispatch,
+    myStore = makeChain
+        // function to apply repeatedly...
+        (actionDispatch)
 
-        // ... using this store, until all actions listed below have been dispatched
-        myStore,
+        // using these action creators...
+        (
+            // act out creature behavior
+            doCreatureAct(myStore.creatureStore),
 
-        // act out creature behavior
-        doCreatureAct(myStore.creatureStore),
+            // add glucose data to time chart
+            addTimeChartData(
+                myStore.ui.creature_time_chart,
+                0,
+                {
+                    time: curTime,
+                    value: myStore.creatureStore.physicalElem.conds.glucose
+                }),
 
-        // add glucose data to time chart
-        addTimeChartData(
-            myStore.ui.creature_time_chart,
-            0,
-            {
-                time: curTime,
-                value: myStore.creatureStore.physicalElem.conds.glucose
-            }),
+            // add neuro data to time chart
+            addTimeChartData(
+                myStore.ui.creature_time_chart,
+                1,
+                {
+                    time: curTime,
+                    value: myStore.creatureStore.physicalElem.conds.neuro
+                }),
 
-        // add neuro data to time chart
-        addTimeChartData(
-            myStore.ui.creature_time_chart,
-            1,
-            {
-                time: curTime,
-                value: myStore.creatureStore.physicalElem.conds.neuro
-            }),
+            // add x-y data to geo chart
+            addGeoChartData(
+                myStore.ui.creature_geo_chart,
+                {
+                    x: myStore.creatureStore.physicalElem.conds.x,
+                    y: myStore.creatureStore.physicalElem.conds.y
+                })
+        )
 
-        // add x-y data to geo chart
-        addGeoChartData(
-            myStore.ui.creature_geo_chart,
-            {
-                x: myStore.creatureStore.physicalElem.conds.x,
-                y: myStore.creatureStore.physicalElem.conds.y
-            })
-    );
+        // ... along with this store
+        (myStore);
 
     // update status box and journal if creature behavior has just changed
     curBehavior = behaviorStrings[myStore.creatureStore.physicalElem.conds.behavior];

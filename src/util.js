@@ -6,13 +6,12 @@
 // greater than or equal to
 export const geThan = x => y => (y >= x);
 
-// given a list of arguments, call the same function repeatedly
-// the function is first called with the given object,
-//  then called again with the output of the function
-//  until all arguments are exhausted
-// returns the final evaluation
-export const makeChain = (func, obj, ...args) =>
-    args.reduce((accum, cur) => func(accum || obj, cur), null);
+// given a function, an array of arguments, and a target,
+//  apply the target and first argument to the function, then
+//  apply the result to the function along with the next argument
+//  and so on until all arguments are exhausted
+export const makeChain = func => (...args) => target =>
+    args.reduce((accum, cur) => func(accum || target, cur), null);
 
 // return physicalContainerType with given conditions
 export const pctUseConds = (pct, argConds) => ({
