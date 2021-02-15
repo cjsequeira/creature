@@ -48,9 +48,9 @@ export const addJournalEntry = (journal, time, message = '') => ({
 });
 
 // perform creature action
-export const doCreatureAct = (physicalContainerType) => ({
+export const doCreatureAct = (pct) => ({
     type: ACTION_DO_CREATURE_ACT,
-    physicalContainerType
+    pct
 });
 
 

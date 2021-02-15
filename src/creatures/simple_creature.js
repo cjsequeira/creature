@@ -24,18 +24,12 @@ export const ActAsSimpleCreature = (pct) => {
 // returns physicalContainerType
 const ActIdling = (pct) => {
     return CheckBehavior(
-        // pass in physicalContainerType object with specific glucose, neuro, and random velocity
-        {
-            ...pct,
-            physicalElem: {
-                ...pct.physicalElem,
-                conds: {
-                    ...pct.physicalElem.conds,
-                    glucose: pctGetCond(pct, 'glucose') - 1.0,
-                    neuro: pctGetCond(pct, 'neuro') + 0.5,
-                }
-            }
-        },
+        // pass in physicalContainerType object with specific glucose and neuro
+        pctUseConds(pct,
+            {
+                glucose: pctGetCond(pct, 'glucose') - 1.0,
+                neuro: pctGetCond(pct, 'neuro') + 0.5
+            }),
         // pass in behavior change desires specific to this behavior function
         {
             'idling': () =>
@@ -58,22 +52,15 @@ const ActWandering = (pct) => {
     const rand_hdg_nudge = seededRand(rand_a[0], -0.3, 0.3);
 
     return CheckBehavior(
-        // pass in physicalContainerType object with specific glucose, neuro, and random acceleration
-        {
-            ...pct,
-            physicalElem: {
-                ...pct.physicalElem,
-                seed: rand_hdg_nudge[0],
-                conds: {
-                    ...pct.physicalElem.conds,
-                    glucose: pctGetCond(pct, 'glucose') - 1.6,
-                    neuro: pctGetCond(pct, 'neuro') + 1.6,
+        // pass in physicalContainerType object with specific glucose, neuro, heading, accel
+        pctUseConds(pct,
+            {
+                glucose: pctGetCond(pct, 'glucose') - 1.6,
+                neuro: pctGetCond(pct, 'neuro') + 1.6,
 
-                    heading: pctGetCond(pct, 'heading') + rand_hdg_nudge[1],
-                    accel: rand_a[1],
-                }
-            }
-        },
+                heading: pctGetCond(pct, 'heading') + rand_hdg_nudge[1],
+                accel: rand_a[1],
+            }),
         // pass in behavior change desires specific to this behavior function
         {
             'wandering': () =>
@@ -93,17 +80,11 @@ const ActWandering = (pct) => {
 const ActEating = (pct) =>
     CheckBehavior(
         // pass in physicalContainerType object with specific glucose and neuro
-        {
-            ...pct,
-            physicalElem: {
-                ...pct.physicalElem,
-                conds: {
-                    ...pct.physicalElem.conds,
-                    glucose: pctGetCond(pct, 'glucose') + 4.0,
-                    neuro: pctGetCond(pct, 'neuro') + 1.0,
-                }
-            }
-        },
+        pctUseConds(pct,
+            {
+                glucose: pctGetCond(pct, 'glucose') + 4.0,
+                neuro: pctGetCond(pct, 'neuro') + 1.0
+            }),
         // pass in behavior change desires specific to this behavior function
         {
             'eating': () =>
@@ -118,17 +99,11 @@ const ActEating = (pct) =>
 const ActSleeping = (pct) =>
     CheckBehavior(
         // pass in physicalContainerType object with specific glucose and neuro
-        {
-            ...pct,
-            physicalElem: {
-                ...pct.physicalElem,
-                conds: {
-                    ...pct.physicalElem.conds,
-                    glucose: pctGetCond(pct, 'glucose') - 0.3,
-                    neuro: pctGetCond(pct, 'neuro') - 2.2,
-                }
-            }
-        },
+        pctUseConds(pct,
+            {
+                glucose: pctGetCond(pct, 'glucose') - 0.3,
+                neuro: pctGetCond(pct, 'neuro') - 2.2
+            }),
         // pass in behavior change desires specific to this behavior function
         {
             'sleeping': () =>
