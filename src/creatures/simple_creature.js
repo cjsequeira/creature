@@ -3,7 +3,7 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-import { geThan, seededRand } from '../util.js';
+import { geThan, seededRand, boundToRange, excludeRange } from '../util.js';
 import { pctGetCond, pctUseConds } from '../reduxlike/store_getters.js';
 import { ResolveRules } from '../rulebook.js';
 
@@ -25,18 +25,18 @@ export const ActAsSimpleCreature = (pct) => {
 // returns physicalContainerType
 const ActIdling = (pct) => {
     return CheckBehavior(
-        // pass in physicalContainerType object with specific glucose and neuro
+        // pass in physicalContainerType object with specific glucose, and neuro
         pctUseConds(pct,
             {
                 glucose: pctGetCond(pct, 'glucose') - 1.0,
-                neuro: pctGetCond(pct, 'neuro') + 0.5
+                neuro: pctGetCond(pct, 'neuro') + 0.5,
             }),
         // pass in behavior change desires specific to this behavior function
         {
             'idling': () =>
                 0.2,
             'wandering': (pct) =>
-                (pctGetCond(pct, 'glucose') < 40.0) ? 4.0 : 0.2,
+                (pctGetCond(pct, 'glucose') < 50.0) ? 4.0 : 0.2,
             'sleeping': (pct) =>
                 (pctGetCond(pct, 'neuro') > 85.0) ? 4.0 : 0.2,
         }
@@ -46,18 +46,22 @@ const ActIdling = (pct) => {
 // wandering behavior function
 // returns physicalContainerType
 const ActWandering = (pct) => {
-    // declare: random acceleration
-    const rand_a = seededRand(pct.physicalElem.seed, -2.0, 2.0);
+    // declare: random acceleration that's at least 0.3 in magnitude
+    const rand_a = [
+        seededRand(pct.physicalElem.seed, -0.5, 1.8)[0],
+        excludeRange(seededRand(pct.physicalElem.seed, -0.5, 1.8)[1], 0.3)
+    ];
 
     // declare: random heading nudge
-    const rand_hdg_nudge = seededRand(rand_a[0], -0.3, 0.3);
+    const rand_hdg_nudge = seededRand(rand_a[0], -0.6, 0.6);
 
     return CheckBehavior(
         // pass in physicalContainerType object with specific glucose, neuro, heading, accel
+        // glucose and neuro impacts are more severe with higher accceleration magnitude
         pctUseConds(pct,
             {
-                glucose: pctGetCond(pct, 'glucose') - 1.6,
-                neuro: pctGetCond(pct, 'neuro') + 1.6,
+                glucose: pctGetCond(pct, 'glucose') - 1.2 * Math.abs(rand_a[1]),
+                neuro: pctGetCond(pct, 'neuro') + 1.0 * Math.abs(rand_a[1]),
 
                 heading: pctGetCond(pct, 'heading') + rand_hdg_nudge[1],
                 accel: rand_a[1],
@@ -91,7 +95,7 @@ const ActEating = (pct) =>
             'eating': () =>
                 1.0,
             'idling': (pct) =>
-                (pctGetCond(pct, 'glucose') > 50.0) ? 2.0 : 0.2
+                (pctGetCond(pct, 'glucose') > 40.0) ? 2.0 : 0.2
         }
     );
 
@@ -110,7 +114,7 @@ const ActSleeping = (pct) =>
             'sleeping': () =>
                 1.0,
             'idling': (pct) =>
-                (pctGetCond(pct, 'neuro') < 50.0) ? 2.0 : 0.2
+                (pctGetCond(pct, 'neuro') < 60.0) ? 2.0 : 0.2
         }
     );
 

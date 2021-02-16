@@ -1,4 +1,4 @@
-# Creature version 0.0.3 - README for developers
+# Creature version 0.0.4 - README for developers
 
 ## Complex data types:
 ### **physicalContainerType**: The basic physical element state container

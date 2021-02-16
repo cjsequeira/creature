@@ -14,7 +14,7 @@ export const geThan = x => y => (y >= x);
 export const makeChain = func => (...args) => target =>
     args.flat().reduce((accum, cur) => func(accum || target, cur), null);
 
-    
+
 // *** Numerical utilities
 // seeded random number
 // returns [seed, value]
@@ -33,6 +33,25 @@ export const seededRand = (seed = 0, min = 0.0, max = 1.0) => {
 // within given range? as (min, max)
 // returns bool
 export const withinRange = (num, min = 0.0, max = 1.0) => (num > min) && (num < max);
+
+// bound input to [min, max] or [min, +Infinity) or (-Infinity, max]
+// returns number
+export const boundToRange = (num, min = -Infinity, max = +Infinity) =>
+    (num < min)
+        ? min
+        : (num > max)
+            ? max
+            : num;
+
+// bump input so that it falls outside the given box around 0.0
+// if number is zero, bumps input to positive bound
+// returns number
+export const excludeRange = (num, bound) =>
+    (num > 0.0)
+        ? boundToRange(num, bound, +Infinity)
+        : (num < 0.0)
+            ? boundToRange(num, -Infinity, -bound)
+            : boundToRange(num, bound, +Infinity);
 
 
 // *** UI utilities

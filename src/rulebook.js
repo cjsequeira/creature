@@ -4,7 +4,7 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { seededRand, withinRange } from './util.js';
+import { boundToRange, seededRand, withinRange } from './util.js';
 import { pctGetCond, pctUseConds } from './reduxlike/store_getters.js';
 
 
@@ -19,27 +19,56 @@ const ruleBook = {
             name: '-- -- YES! Requesting behavior: idling?',
             func: (pct) => pctGetCond(pct, 'behavior_request') === 'idling',
             yes: {
-                name: '-- -- -- YES! Behavior request approved: idling',
-                func: (pct) => pctUseConds(pct,
-                    {
-                        behavior: pctGetCond(pct, 'behavior_request'),
+                name: '-- -- -- YES! Projected position in range?',
+                func: (pct) => (
+                    withinRange(pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') * Math.sin(pctGetCond(pct, 'heading')), 0.0, 20.0) &&
+                    withinRange(pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') * Math.cos(pctGetCond(pct, 'heading')), 0.0, 20.0)
+                ),
+                yes: {
+                    name: '-- -- -- -- YES! Behavior request approved: idling',
+                    func: (pct) => pctUseConds(pct,
+                        {
+                            behavior: pctGetCond(pct, 'behavior_request'),
 
-                        // can't idle and wander!
-                        speed: 0.0
-                    }),
+                            // compute x and y based on given speed and heading to implement "coasting" activity
+                            x: pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') *
+                                Math.sin(pctGetCond(pct, 'heading')),
+                            y: pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') *
+                                Math.cos(pctGetCond(pct, 'heading')),
+                        }),
+                },
+                no: {
+                    name: 'coasted into a wall! BOUNCE... ',
+                    verbalize: true,
+                    func: (pct) => pctUseConds(pct,
+                        {
+                            behavior: pctGetCond(pct, 'behavior_request'),
+
+                            // bound projected x to the boundary limit
+                            x: boundToRange(pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') *
+                                Math.sin(pctGetCond(pct, 'heading')), 0.0, 20.0),
+
+                            // bound projected y to the boundary limit
+                            y: boundToRange(pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') *
+                                Math.cos(pctGetCond(pct, 'heading')), 0.0, 20.0),
+
+                            // spin heading around a bit (in radians)
+                            heading: pctGetCond(pct, 'heading') + 2.35,
+
+                            // establish a minimum speed
+                            speed: 1.0,
+                        }),
+                },
             },
             no: {
                 name: '-- -- -- NO! Requesting behavior: wandering?',
                 func: (pct) => pctGetCond(pct, 'behavior_request') === 'wandering',
                 yes: {
                     name: '-- -- -- -- YES! Projected position in range?',
-                    func: (pct) =>
-                        withinRange(pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') *
-                            Math.sin(pctGetCond(pct, 'heading')),
-                            0.0, 20.0) &&
-                        withinRange(pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') *
-                            Math.cos(pctGetCond(pct, 'heading')),
-                            0.0, 20.0),
+                    func: (pct) => (
+                        withinRange(pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') * Math.sin(pctGetCond(pct, 'heading')), 0.0, 20.0) &&
+                        withinRange(pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') * Math.cos(pctGetCond(pct, 'heading')), 0.0, 20.0)
+                    ),
                     yes: {
                         name: '-- -- -- -- -- YES! Behavior request approved: wandering',
                         func: (pct) => pctUseConds(pct,
@@ -57,20 +86,25 @@ const ruleBook = {
                             }),
                     },
                     no: {
-                        name: 'hit a wall! BOUNCE...',
+                        name: 'wandered into a wall! BOUNCE... ',
                         verbalize: true,
                         func: (pct) => pctUseConds(pct,
                             {
                                 behavior: pctGetCond(pct, 'behavior_request'),
 
-                                // compute x and y based on REVERSE of given speed and heading 
-                                x: pctGetCond(pct, 'x') - pctGetCond(pct, 'speed') *
-                                    Math.sin(pctGetCond(pct, 'heading')),
-                                y: pctGetCond(pct, 'y') - pctGetCond(pct, 'speed') *
-                                    Math.cos(pctGetCond(pct, 'heading')),
+                                // bound projected x to the boundary limit
+                                x: boundToRange(pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') *
+                                    Math.sin(pctGetCond(pct, 'heading')), 0.0, 20.0),
+
+                                // bound projected y to the boundary limit
+                                y: boundToRange(pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') *
+                                    Math.cos(pctGetCond(pct, 'heading')), 0.0, 20.0),
 
                                 // spin heading around a bit (in radians)
-                                heading: pctGetCond(pct, 'heading') + 2.0,
+                                heading: pctGetCond(pct, 'heading') + 2.35,
+
+                                // establish a minimum speed
+                                speed: 1.0,
                             }),
                     },
                 },
@@ -79,7 +113,7 @@ const ruleBook = {
                     func: (pct) => pctGetCond(pct, 'behavior_request') === 'eating',
                     yes: {
                         name: '-- -- -- -- -- YES! Is food available?',
-                        func: (pct) => seededRand(pct.physicalElem.seed, 0.0, 1.0)[1] > 0.2,
+                        func: (pct) => seededRand(pct.physicalElem.seed, 0.0, 1.0)[1] > 0.3,
                         yes: {
                             name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
                             func: (pct) => pctUseConds(pct,
@@ -97,8 +131,12 @@ const ruleBook = {
                                 {
                                     behavior: 'idling',
 
-                                    // can't move if idling!
-                                    speed: 0.0
+                                    // compute x and y based on given speed and heading to 
+                                    //  implement "coasting" behavior
+                                    x: pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') *
+                                        Math.sin(pctGetCond(pct, 'heading')),
+                                    y: pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') *
+                                        Math.cos(pctGetCond(pct, 'heading')),
                                 }),
                         }
                     },
@@ -116,7 +154,7 @@ const ruleBook = {
                                 }),
                         },
                         no: {
-                            name: '-- -- -- -- -- NO! Unknown behavior!',
+                            name: '-- -- -- -- -- -- NO! Unknown behavior!',
                             func: (pct) => pct
                         }
                     },
@@ -134,7 +172,7 @@ const ruleBook = {
     },
     no: {
         name: '-- NO! Return given physicalContainerType',
-        func: (pct) => pct
+        func: (pct) => pct,
     }
 };
 
@@ -142,6 +180,7 @@ const ruleBook = {
 // *** Rulebook functions
 // general rulebook resolver
 // returns physicalContainerType with applied rule node
+// $$$$ Concept addition idea: pre-func and post-func?
 export const ResolveRules = (arg, node = ruleBook) => {
     const funcResult = node.func(arg);
 
