@@ -15,7 +15,6 @@ import {
 } from './reduxlike/action_creators.js';
 import { renderStoreChanges } from './reduxlike/reducers_renderers.js';
 import { pctGetCond, simGetCurTime, simGetRunning } from './reduxlike/store_getters.js';
-import { RULE_HIT_WALL, RULE_CONDS_OUT_OF_LIMITS } from './rulebook.js';
 import { makeChain } from './util.js';
 
 
@@ -31,8 +30,6 @@ const behaviorStrings = {
     wandering: "I'm is wandering! Wiggity whack!",
     frozen: "I'm is frozen! Brrrr....."
 };
-
-const ruleStringsArr = [RULE_HIT_WALL, RULE_CONDS_OUT_OF_LIMITS];
 
 
 // *** Code for the main update loop
@@ -91,7 +88,7 @@ export const doUpdateLoop = (store) => {
                     : doNothing(),
 
                 // next, if last-used rule is one we want to verbalize, update journal and status box
-                (ruleStringsArr.find(s => store.creatureStore.lastRule.name === s) !== undefined)
+                (store.creatureStore.lastRule.verbalize)
                     ? [
                         addJournalEntry(
                             store.journal,
@@ -109,7 +106,7 @@ export const doUpdateLoop = (store) => {
                     : doNothing(),
 
                 // next, if creature is frozen, give termination message and stop simulator
-                (store.creatureStore.lastRule.name === RULE_CONDS_OUT_OF_LIMITS)
+                (pctGetCond(store.creatureStore, 'behavior') === 'frozen')
                     ? [
                         addJournalEntry(
                             store.journal,
@@ -129,7 +126,7 @@ export const doUpdateLoop = (store) => {
                     ? advanceSim()
                     : doNothing()
 
-                // ... and evaluating all those listed action creators using the current store
+                // ... and evaluating all listed action creators above using the current store
             )(store)
 
         // closing paren for renderStoreChanges(...)
