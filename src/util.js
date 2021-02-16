@@ -6,30 +6,15 @@
 // greater than or equal to
 export const geThan = x => y => (y >= x);
 
-// given a function, an array of arguments, and a target,
-//  apply the target and first argument to the function, then
-//  apply the result to the function along with the next argument
+// given a function, an array of arguments, and a target, apply the target and first argument 
+//  to the function, then apply the result to the function along with the next argument
 //  and so on until all arguments are exhausted
+// the array of arguments will be flattened once, allowing arrays of arrays of arguments
+//  (but not arrays of arrays of arrays of arguments, or deeper)
 export const makeChain = func => (...args) => target =>
-    args.reduce((accum, cur) => func(accum || target, cur), null);
+    args.flat().reduce((accum, cur) => func(accum || target, cur), null);
 
-// return physicalContainerType with given conditions
-export const pctUseConds = (pct, argConds) => ({
-    ...pct,
-    physicalElem: {
-        ...pct.physicalElem,
-        conds: {
-            ...pct.physicalElem.conds,
-            ...argConds
-        }
-    }
-})
-
-// return specific condition from physicalContainerType
-export const pctGetCond = (pct, argCond) =>
-    pct.physicalElem.conds[argCond]
-
-
+    
 // *** Numerical utilities
 // seeded random number
 // returns [seed, value]

@@ -4,7 +4,8 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { seededRand, withinRange, pctGetCond, pctUseConds } from './util.js';
+import { seededRand, withinRange } from './util.js';
+import { pctGetCond, pctUseConds } from './reduxlike/store_getters.js';
 
 
 // *** String constants for rules that will be verbally expressed elsewhere

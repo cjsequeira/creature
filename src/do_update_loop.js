@@ -1,0 +1,140 @@
+'use strict'
+
+// *** Imports
+import {
+    actionDispatch,
+    addGeoChartData,
+    addJournalEntry,
+    addStatusMessage,
+    addTimeChartData,
+    doCreatureAct,
+    startSim,
+    stopSim,
+    advanceSim,
+    doNothing
+} from './reduxlike/action_creators.js';
+import { renderStoreChanges } from './reduxlike/reducers_renderers.js';
+import { pctGetCond, simGetCurTime, simGetRunning } from './reduxlike/store_getters.js';
+import { RULE_HIT_WALL, RULE_CONDS_OUT_OF_LIMITS } from './rulebook.js';
+import { makeChain } from './util.js';
+
+
+// *** Function-chaining function with our store action dispatcher already applied
+const makeChainOfActionDispatch = makeChain(actionDispatch);
+
+
+// *** Status message objects/arrays
+const behaviorStrings = {
+    idling: "I'm is idling! Blah...",
+    eating: "I'm is eating!! Nom...",
+    sleeping: "I'm is sleeping! Zzzz...",
+    wandering: "I'm is wandering! Wiggity whack!",
+    frozen: "I'm is frozen! Brrrr....."
+};
+
+const ruleStringsArr = [RULE_HIT_WALL, RULE_CONDS_OUT_OF_LIMITS];
+
+
+// *** Code for the main update loop
+export const doUpdateLoop = (store) => {
+    // if sim is running, then:
+    if (simGetRunning(store)) {
+        //  point store to a rendered store object that's built from the current store by...
+        store = renderStoreChanges(
+            // ... applying our action dispatcher repeatedly to the action creators
+            //  listed below, in top-to-bottom order...
+            makeChainOfActionDispatch(
+                // first, act out creature behavior
+                doCreatureAct(store.creatureStore),
+
+                // next, add glucose data to time chart
+                addTimeChartData(
+                    store.ui.creature_time_chart,
+                    0,
+                    {
+                        time: simGetCurTime(store),
+                        value: pctGetCond(store.creatureStore, 'glucose')
+                    }),
+
+                // next, add neuro data to time chart
+                addTimeChartData(
+                    store.ui.creature_time_chart,
+                    1,
+                    {
+                        time: simGetCurTime(store),
+                        value: pctGetCond(store.creatureStore, 'neuro')
+                    }),
+
+                // next, add x-y data to geo chart
+                addGeoChartData(
+                    store.ui.creature_geo_chart,
+                    {
+                        x: pctGetCond(store.creatureStore, 'x'),
+                        y: pctGetCond(store.creatureStore, 'y')
+                    }),
+
+                // next, if creature behavior has just changed, update journal and status box
+                (store.journal[store.journal.length - 1].message !=
+                    behaviorStrings[pctGetCond(store.creatureStore, 'behavior')])
+                    ? [
+                        addJournalEntry(
+                            store.journal,
+                            simGetCurTime(store),
+                            behaviorStrings[pctGetCond(store.creatureStore, 'behavior')]
+                        ),
+                        addStatusMessage(
+                            store.ui.status_box,
+                            'Time ' + simGetCurTime(store) +
+                            ": " + behaviorStrings[pctGetCond(store.creatureStore, 'behavior')]
+                        )
+                    ]
+                    : doNothing(),
+
+                // next, if last-used rule is one we want to verbalize, update journal and status box
+                (ruleStringsArr.find(s => store.creatureStore.lastRule.name === s) !== undefined)
+                    ? [
+                        addJournalEntry(
+                            store.journal,
+                            simGetCurTime(store),
+                            store.creatureStore.physicalElem.name + " " +
+                            store.creatureStore.lastRule.name
+                        ),
+                        addStatusMessage(
+                            store.ui.status_box,
+                            'Time ' + simGetCurTime(store) + ": *** " +
+                            store.creatureStore.physicalElem.name + " " +
+                            store.creatureStore.lastRule.name
+                        )
+                    ]
+                    : doNothing(),
+
+                // next, if creature is frozen, give termination message and stop simulator
+                (store.creatureStore.lastRule.name === RULE_CONDS_OUT_OF_LIMITS)
+                    ? [
+                        addJournalEntry(
+                            store.journal,
+                            simGetCurTime(store),
+                            "Simulation ended"
+                        ),
+                        addStatusMessage(
+                            store.ui.status_box,
+                            'Time ' + simGetCurTime(store) + ": *** Simulation ended"
+                        ),
+                        stopSim()
+                    ]
+                    : doNothing(),
+
+                // next, advance simulator if simulator is running
+                (simGetRunning(store))
+                    ? advanceSim()
+                    : doNothing()
+
+                // ... and evaluating all those listed action creators using the current store
+            )(store)
+
+        // closing paren for renderStoreChanges(...)
+        );
+
+    // closing brace for if(simGetRunning(store)) {}
+    }
+};
