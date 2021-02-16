@@ -35,9 +35,9 @@ const behaviorStrings = {
 // *** Code for the main update loop
 export const doUpdateLoop = (store) => {
     // if sim is running, then:
-    if (simGetRunning(store)) {
-        //  point store to a rendered store object that's built from the current store by...
-        store = renderStoreChanges(
+    return (simGetRunning(store))
+        // return a rendered store object that's built from the current store by...
+        ? renderStoreChanges(
             // ... applying our action dispatcher repeatedly to the action creators
             //  listed below, in top-to-bottom order...
             makeChainOfActionDispatch(
@@ -130,10 +130,8 @@ export const doUpdateLoop = (store) => {
             )(store)
 
             // closing paren for renderStoreChanges(...)
-        );
+        )
 
-        // closing brace for if(simGetRunning(store)) {}
-    }
-
-    return store;
+        // if sim is not running, just return the given store
+        : store
 };
