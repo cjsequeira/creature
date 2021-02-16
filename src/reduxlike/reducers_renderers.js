@@ -206,13 +206,13 @@ function mutable_updateGeoChartData(chart, xyPair) {
     // geoData is shorthand to reduce typing / increase readability of code
     geoData = chart.data.datasets[0];
     chart.data.datasets[0].backgroundColor =
-        geoData.backgroundColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
+        geoData.backgroundColor.map((_, i) => hexRGBAFade('#ec56cdff', (i || 1) / geoData.data.length));
     chart.data.datasets[0].borderColor =
-        geoData.borderColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
+        geoData.borderColor.map((_, i) => hexRGBAFade('#ec56cdff', (i || 1) / geoData.data.length));
     chart.data.datasets[0].pointBackgroundColor =
-        geoData.pointBackgroundColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
+        geoData.pointBackgroundColor.map((_, i) => hexRGBAFade('#ec56cdff', (i || 1) / geoData.data.length));
     chart.data.datasets[0].pointBorderColor =
-        geoData.pointBorderColor.map((_, i) => hexRGBAFade('#ec56cdff', i / geoData.data.length));
+        geoData.pointBorderColor.map((_, i) => hexRGBAFade('#ec56cdff', (i || 1) / geoData.data.length));
 
     return chart;
 }
