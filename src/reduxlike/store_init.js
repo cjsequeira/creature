@@ -4,8 +4,8 @@
 
 // *** Our imports
 import Chart from 'chart.js';
-import { ActAsSimpleCreature } from './creatures/simple_creature.js';
-import { chartParamsUseTitle } from './util.js';
+import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
+import { chartParamsUseTitle } from '../util.js';
 
 
 // *** Initial parameters for creature charts 
@@ -144,14 +144,21 @@ const creature_geo_chart_params_init = {
 
 // *** Initial store
 const initialStore = {
-    // array of state changes
+    // is simulator running?
+    sim: {
+        running: false,
+        curTime: 0.0,
+        timeStep: 1.0,
+    },
+
+    // array of store changes to render
     changes: [],
 
     // initial creature with no prior rule applied
     // type: physicalContainerType
     creatureStore: {
         // the last rule node applied
-        lastRule: null,
+        lastRule: {},
 
         // the creature
         // type: creatureType

@@ -3,7 +3,8 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-import { geThan, seededRand, pctGetCond, pctUseConds } from '../util.js';
+import { geThan, seededRand } from '../util.js';
+import { pctGetCond, pctUseConds } from '../reduxlike/store_getters.js';
 import { ResolveRules } from '../rulebook.js';
 
 

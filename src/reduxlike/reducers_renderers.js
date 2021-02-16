@@ -1,27 +1,32 @@
 'use strict'
 
-// ****** Functions to produce state based on given state and action, and render state changes
+// ****** Functions to produce store based on given store and action, and render store changes
 
 // *** Our imports
-import { hexRGBAFade } from '../util.js';
 import {
     ACTION_ADD_TIMECHART_DATA,
     ACTION_ADD_GEOCHART_DATA,
     ACTION_ADD_STATUS_MESSAGE,
     ACTION_ADD_JOURNAL_ENTRY,
     ACTION_DO_CREATURE_ACT,
+    ACTION_START_SIM,
+    ACTION_STOP_SIM,
+    ACTION_ADVANCE_SIM,
+    ACTION_DO_NOTHING
 } from './action_creators.js';
+import { hexRGBAFade } from '../util.js';
+
 
 
 // *** Reducer functions
 // root reducer
-export const rootReducer = (state, action) => {
+export const rootReducer = (store, action) => {
     switch (action.type) {
         case ACTION_ADD_TIMECHART_DATA:
             return {
-                ...state,
+                ...store,
                 changes: [
-                    ...state.changes,
+                    ...store.changes,
                     () => action.chart.update()
                 ],
                 creature_time_chart:
@@ -30,9 +35,9 @@ export const rootReducer = (state, action) => {
 
         case ACTION_ADD_GEOCHART_DATA:
             return {
-                ...state,
+                ...store,
                 changes: [
-                    ...state.changes,
+                    ...store.changes,
                     () => action.chart.update()
                 ],
                 creature_geo_chart:
@@ -41,16 +46,16 @@ export const rootReducer = (state, action) => {
 
         case ACTION_ADD_STATUS_MESSAGE:
             return {
-                ...state,
+                ...store,
                 status_box:
                     mutable_updateStatusBox(action.statusBox, action.message)
             };
 
         case ACTION_ADD_JOURNAL_ENTRY:
             return {
-                ...state,
+                ...store,
                 journal: [
-                    ...action.journal,
+                    ...store.journal,
                     {
                         time: action.time,
                         message: action.message
@@ -60,12 +65,42 @@ export const rootReducer = (state, action) => {
 
         case ACTION_DO_CREATURE_ACT:
             return {
-                ...state,
+                ...store,
                 creatureStore: action.pct.physicalElem.act(action.pct)
             }
 
+        case ACTION_START_SIM:
+            return {
+                ...store,
+                sim: {
+                    ...store.sim,
+                    running: true
+                }
+            }
+
+        case ACTION_STOP_SIM:
+            return {
+                ...store,
+                sim: {
+                    ...store.sim,
+                    running: false
+                }
+            }
+
+        case ACTION_ADVANCE_SIM:
+            return {
+                ...store,
+                sim: {
+                    ...store.sim,
+                    curTime: store.sim.curTime + store.sim.timeStep
+                }
+            }
+
+        case ACTION_DO_NOTHING:
+            return store;
+
         default:
-            return state;
+            return store;
     }
 }
 
@@ -73,7 +108,7 @@ export const rootReducer = (state, action) => {
 // *** Function to render store changes using an array of render functions
 // returns store with empty render function array
 // assumes render functions NEVER RETURN TRUE
-export const renderStateChanges = (store) => ({
+export const renderStoreChanges = (store) => ({
     ...store,
     changes:
         // array of render functions with no duplicates
