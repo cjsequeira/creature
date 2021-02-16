@@ -91,6 +91,7 @@ const creature_geo_chart_params_init = {
                 showLine: true,
                 fill: false,
                 tension: 0.2,
+                pointRadius: 6,
                 data: [],
                 backgroundColor: [],
                 borderColor: [],
