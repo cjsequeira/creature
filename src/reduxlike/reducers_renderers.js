@@ -205,14 +205,25 @@ function mutable_updateGeoChartData(chart, xyPair) {
     // fade color values
     // geoData is shorthand to reduce typing / increase readability of code
     geoData = chart.data.datasets[0];
-    chart.data.datasets[0].backgroundColor = geoData.backgroundColor.map((_, i) =>
-        hexRGBAFade(i / geoData.data.length, '#cccccc08', '#ec56cdff'));
-    chart.data.datasets[0].borderColor = geoData.borderColor.map((_, i) =>
-        hexRGBAFade(i / geoData.data.length, '#cccccc08', '#ec56cdff'));
-    chart.data.datasets[0].pointBackgroundColor = geoData.pointBackgroundColor.map((_, i) =>
-        hexRGBAFade(i / geoData.data.length, '#cccccc08', '#ec56cdff'));
-    chart.data.datasets[0].pointBorderColor = geoData.pointBorderColor.map((_, i) =>
-        hexRGBAFade(i / geoData.data.length, '#cccccc08', '#ec56cdff'));
+    console.log(geoData.backgroundColor);
+    if (geoData.data.length >= 2) {
+        chart.data.datasets[0].backgroundColor = geoData.backgroundColor.map((_, i, arr) =>
+            (i < (arr.length - 1))
+                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
+                : arr[i]);
+        chart.data.datasets[0].borderColor = geoData.borderColor.map((_, i, arr) =>
+            (i < (arr.length - 1))
+                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
+                : arr[i]);
+        chart.data.datasets[0].pointBackgroundColor = geoData.pointBackgroundColor.map((_, i, arr) =>
+            (i < (arr.length - 1))
+                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
+                : arr[i]);
+        chart.data.datasets[0].pointBorderColor = geoData.pointBorderColor.map((_, i, arr) =>
+            (i < (arr.length - 1))
+                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
+                : arr[i]);
+    }
 
     return chart;
 }
