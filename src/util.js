@@ -51,7 +51,7 @@ export const chartParamsUseTitle = (chartParams, title) => ({
 // fade one RGBA hex color to another, controlled by a [0, 1] fader
 // returns RGBA hex color
 // based on https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
-export const hexRGBAFade = (hexStart = '#ffffffff', fader = 0.5, hexEnd = '#08080800') => {
+export const hexRGBAFade = (fader, hexStart = '#ffffffff', hexEnd = '#08080800') => {
     const rStart = parseInt(hexStart.slice(1, 3), 16),
         gStart = parseInt(hexStart.slice(3, 5), 16),
         bStart = parseInt(hexStart.slice(5, 7), 16),
@@ -63,9 +63,9 @@ export const hexRGBAFade = (hexStart = '#ffffffff', fader = 0.5, hexEnd = '#0808
         aEnd = parseInt(hexEnd.slice(7, 9), 16);
 
     return ('#' +
-        Math.round(rStart + (1.0 - fader) * (rEnd - rStart)).toString(16) +
-        Math.round(gStart + (1.0 - fader) * (gEnd - gStart)).toString(16) +
-        Math.round(bStart + (1.0 - fader) * (bEnd - bStart)).toString(16) +
-        Math.round(aStart + (1.0 - fader) * (aEnd - aStart)).toString(16)
+        ('00' + Math.round(rStart + fader * (rEnd - rStart)).toString(16)).slice(-2) +
+        ('00' + Math.round(gStart + fader * (gEnd - gStart)).toString(16)).slice(-2) +
+        ('00' + Math.round(bStart + fader * (bEnd - bStart)).toString(16)).slice(-2) +
+        ('00' + Math.round(aStart + fader * (aEnd - aStart)).toString(16)).slice(-2)
     )
 };

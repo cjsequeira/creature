@@ -41,10 +41,7 @@ export const doUpdateLoop = (store) => {
             // ... applying our action dispatcher repeatedly to the action creators
             //  listed below, in top-to-bottom order...
             makeChainOfActionDispatch(
-                // first, act out creature behavior
-                doCreatureAct(store.creatureStore),
-
-                // next, add glucose data to time chart
+                // first, add glucose data to time chart
                 addTimeChartData(
                     store.ui.creature_time_chart,
                     0,
@@ -69,6 +66,9 @@ export const doUpdateLoop = (store) => {
                         x: pctGetCond(store.creatureStore, 'x'),
                         y: pctGetCond(store.creatureStore, 'y')
                     }),
+
+                // next, act out creature behavior
+                doCreatureAct(store.creatureStore),
 
                 // next, if creature behavior has just changed, update journal and status box
                 (store.journal[store.journal.length - 1].message !=
@@ -129,10 +129,10 @@ export const doUpdateLoop = (store) => {
                 // ... and evaluating all listed action creators above using the current store
             )(store)
 
-        // closing paren for renderStoreChanges(...)
+            // closing paren for renderStoreChanges(...)
         );
 
-    // closing brace for if(simGetRunning(store)) {}
+        // closing brace for if(simGetRunning(store)) {}
     }
 
     return store;
