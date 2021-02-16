@@ -24,7 +24,7 @@ const makeChainOfActionDispatch = makeChain(actionDispatch);
 
 // *** Status message objects/arrays
 const behaviorStrings = {
-    idling: "I'm is idling! Blah...",
+    idling: "I'm is chillin'! Yeeeah...",
     eating: "I'm is eating!! Nom...",
     sleeping: "I'm is sleeping! Zzzz...",
     wandering: "I'm is wandering! Wiggity whack!",
@@ -34,7 +34,7 @@ const behaviorStrings = {
 
 // *** Code for the main update loop
 export const doUpdateLoop = (store) => {
-    // if sim is running, then:
+    // if sim is running, then:    
     return (simGetRunning(store))
         // return a rendered store object that's built from the current store by...
         ? renderStoreChanges(
