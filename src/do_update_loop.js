@@ -137,4 +137,6 @@ export const doUpdateLoop = (store) => {
 
     // closing brace for if(simGetRunning(store)) {}
     }
+
+    return store;
 };

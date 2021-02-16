@@ -34,9 +34,11 @@ let myStore = storeInit(
     document.getElementById(creature_status_box)
 );
 
-// begin regular evaluations of a closure containing doUpdateLoop applied to our store
-let timerId = setInterval(() => doUpdateLoop(myStore), browserTime);
-
-// start the sim running
+// change the sim status to running
 myStore = actionDispatch(myStore, startSim());
+
+// establish an interval of time for repeatedly updating our store
+// the arrow function below puts myStore in a closure so that it's accessible to doUpdateLoop
+let timerId = setInterval(() => { myStore = doUpdateLoop(myStore) }, browserTime);
+
 // ***********************************************************************************
