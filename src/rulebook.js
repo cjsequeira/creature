@@ -8,11 +8,6 @@ import { seededRand, withinRange } from './util.js';
 import { pctGetCond, pctUseConds } from './reduxlike/store_getters.js';
 
 
-// *** String constants for rules that will be verbally expressed elsewhere
-export const RULE_HIT_WALL = 'hit a wall! BOUNCE...';
-export const RULE_CONDS_OUT_OF_LIMITS = 'conditions out of limits!';
-
-
 // *** The rulebook
 const ruleBook = {
     name: 'Is creatureType?',
@@ -62,7 +57,8 @@ const ruleBook = {
                             }),
                     },
                     no: {
-                        name: RULE_HIT_WALL,
+                        name: 'hit a wall! BOUNCE...',
+                        verbalize: true,
                         func: (pct) => pctUseConds(pct,
                             {
                                 behavior: pctGetCond(pct, 'behavior_request'),
@@ -95,7 +91,8 @@ const ruleBook = {
                                 }),
                         },
                         no: {
-                            name: '-- -- -- -- -- -- NO! Behavior set to: idling',
+                            name: "wants to eat but there's no food here!",
+                            verbalize: true,
                             func: (pct) => pctUseConds(pct,
                                 {
                                     behavior: 'idling',
@@ -127,7 +124,8 @@ const ruleBook = {
             }
         },
         no: {
-            name: RULE_CONDS_OUT_OF_LIMITS,
+            name: 'conditions out of limits!',
+            verbalize: true,
             func: (pct) => pctUseConds(pct,
                 {
                     behavior: 'frozen',
