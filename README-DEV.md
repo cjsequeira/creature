@@ -16,7 +16,7 @@ Description:
 
 Example: creatures, rocks, whatever
 
-All physicalType objects have one thing in common: a property called **act** with a function value implementing the physicalType's action. This function takes a physicalType as an argument and **always** returns a **physicalContainerType**.
+All physicalType objects have one thing in common: a property called **act** with a function value implementing the physicalType's action. This function takes a **physicalContainerType** as an argument and **always** returns a **physicalContainerType**.
 
 Description:
 
@@ -25,7 +25,7 @@ Description:
         act: functionImplementingMyAction giving physicalContainerType
     }
 
-Where functionImplementingMyAction = f(**physicalType**) and **always** returns a **physicalContainerType**.
+Where functionImplementingMyAction = f(**physicalContainerType**) and **always** returns a **physicalContainerType**.
 
 ### **creatureType**: A type common to all creatures
 
@@ -42,7 +42,7 @@ Description:
 
     creatureType: {
         ...
-        act: functionImplementingMyAction functionImplementingMyAction giving physicalContainerType
+        act: functionImplementingMyAction giving physicalContainerType
         conds: {
             behavior: string
             num_cond_if_applicable: number
