@@ -183,6 +183,7 @@ const ruleBook = {
 // general rulebook resolver
 // returns physicalContainerType with applied rule node
 // $$$$ Concept addition idea: pre-func and post-func?
+// ISSUE: This function does not return the same type! It returns either bool or non-bool. NOT FP-LIKE!
 export const ResolveRules = (arg, node = ruleBook) => {
     const funcResult = node.func(arg);
 
