@@ -41,6 +41,7 @@ export const doUpdateLoop = (store) => {
             // ... applying our action dispatcher repeatedly to the action creators
             //  listed below, in top-to-bottom order...
             makeChainOfActionDispatch(
+
                 // first, add glucose data to time chart
                 addTimeChartData(
                     store.ui.creature_time_chart,
@@ -67,10 +68,7 @@ export const doUpdateLoop = (store) => {
                         y: pctGetCond(store.creatureStore, 'y')
                     }),
 
-                // next, act out creature behavior
-                doCreatureAct(store.creatureStore),
-
-                // next, if creature behavior has just changed, update journal and status box
+                // next, if creature behavior has just changed in current store, update journal and status box
                 (store.journal[store.journal.length - 1].message !=
                     behaviorStrings[pctGetCond(store.creatureStore, 'behavior')])
                     ? [
@@ -87,7 +85,7 @@ export const doUpdateLoop = (store) => {
                     ]
                     : doNothing(),
 
-                // next, if last-used rule is one we want to verbalize, update journal and status box
+                // next, if last-used rule in current store should be verbalized, update journal and status box
                 (store.creatureStore.lastRule.verbalize)
                     ? [
                         addJournalEntry(
@@ -105,7 +103,8 @@ export const doUpdateLoop = (store) => {
                     ]
                     : doNothing(),
 
-                // next, if creature is frozen, give termination message and stop simulator
+                // next, if creature has just frozen in current store, give termination message and stop simulator
+                // else, act out creature behavior using current store
                 (pctGetCond(store.creatureStore, 'behavior') === 'frozen')
                     ? [
                         addJournalEntry(
@@ -119,7 +118,7 @@ export const doUpdateLoop = (store) => {
                         ),
                         stopSim()
                     ]
-                    : doNothing(),
+                    : doCreatureAct(store.creatureStore),
 
                 // next, advance simulator if simulator is running
                 (simGetRunning(store))

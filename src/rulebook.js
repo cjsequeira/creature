@@ -44,13 +44,13 @@ const ruleBook = {
                         {
                             behavior: pctGetCond(pct, 'behavior_request'),
 
-                            // bound projected x to the boundary limit
+                            // bound projected x to the boundary limit plus a small margin
                             x: boundToRange(pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') *
-                                Math.sin(pctGetCond(pct, 'heading')), 0.0, 20.0),
+                                Math.sin(pctGetCond(pct, 'heading')), 0.1, 19.9),
 
-                            // bound projected y to the boundary limit
+                            // bound projected y to the boundary limit plus a small margin
                             y: boundToRange(pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') *
-                                Math.cos(pctGetCond(pct, 'heading')), 0.0, 20.0),
+                                Math.cos(pctGetCond(pct, 'heading')), 0.1, 19.9),
 
                             // spin heading around a bit (in radians)
                             heading: pctGetCond(pct, 'heading') + 2.35,
@@ -92,13 +92,13 @@ const ruleBook = {
                             {
                                 behavior: pctGetCond(pct, 'behavior_request'),
 
-                                // bound projected x to the boundary limit
+                                // bound projected x to the boundary limit plus a small margin
                                 x: boundToRange(pctGetCond(pct, 'x') + pctGetCond(pct, 'speed') *
-                                    Math.sin(pctGetCond(pct, 'heading')), 0.0, 20.0),
+                                    Math.sin(pctGetCond(pct, 'heading')), 0.1, 19.9),
 
-                                // bound projected y to the boundary limit
+                                // bound projected y to the boundary limit plus a small margin
                                 y: boundToRange(pctGetCond(pct, 'y') + pctGetCond(pct, 'speed') *
-                                    Math.cos(pctGetCond(pct, 'heading')), 0.0, 20.0),
+                                    Math.cos(pctGetCond(pct, 'heading')), 0.1, 19.9),
 
                                 // spin heading around a bit (in radians)
                                 heading: pctGetCond(pct, 'heading') + 2.35,
@@ -121,7 +121,8 @@ const ruleBook = {
                                     behavior: pctGetCond(pct, 'behavior_request'),
 
                                     // can't move if eating: no grab-and-go!
-                                    speed: 0.0
+                                    speed: 0.0,
+                                    accel: 0.0
                                 }),
                         },
                         no: {
@@ -150,7 +151,8 @@ const ruleBook = {
                                     behavior: 'sleeping',
 
                                     // can't move if sleeping!
-                                    speed: 0.0
+                                    speed: 0.0,
+                                    accel: 0.0
                                 }),
                         },
                         no: {
