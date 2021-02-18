@@ -2,21 +2,18 @@
 
 // ****** Functions to get information from store
 
-// *** physicalContainerType getter functions
-// return physicalContainerType with given conditions
-export const pctUseConds = (pct, argConds) => ({
-    ...pct,
-    physicalElem: {
-        ...pct.physicalElem,
-        conds: {
-            ...pct.physicalElem.conds,
-            ...argConds
-        }
+// *** physType getter functions
+// return physType with given conditions
+export const physTypeUseConds = (physType, argConds) => ({
+    ...physType,
+    conds: {
+        ...physType.conds,
+        ...argConds
     }
 });
 
-// return specific condition from physicalContainerType
-export const pctGetCond = (pct, argCond) => pct.physicalElem.conds[argCond];
+// return specific condition from physType
+export const physTypeGetCond = (physType, argCond) => physType.conds[argCond];
 
 
 // *** Simulator getter functions

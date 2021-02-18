@@ -60,9 +60,9 @@ export const addJournalEntry = (journal, time, message) => ({
 
 
 // *** Basic action creator functions: perform creature action
-export const doCreatureAct = (pct) => ({
+export const doCreatureAct = (physType) => ({
     type: ACTION_DO_CREATURE_ACT,
-    pct
+    physType
 });
 
 // *** Basic action creator functions: sim control

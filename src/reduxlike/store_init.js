@@ -156,14 +156,14 @@ const initialStore = {
     changes: [],
 
     // initial creature with no prior rule applied
-    // type: physicalContainerType
+    // type: physContainerType
     creatureStore: {
         // the last rule node applied
         lastRule: {},
 
         // the creature
         // type: creatureType
-        physicalElem: {
+        physType: {
             name: 'Vinny',
             act: ActAsSimpleCreature,
             conds: {
@@ -223,7 +223,7 @@ export const storeInit = (creature_time_chart_context, creature_geo_chart_contex
             chartParamsUseTitle(
                 creature_time_chart_params_init,
                 creature_time_chart_params_init.options.title.text +
-                ': ' + initialStore.creatureStore.physicalElem.name)
+                ': ' + initialStore.creatureStore.physType.name)
         ),
 
         // geo chart with creature name in title
@@ -232,7 +232,7 @@ export const storeInit = (creature_time_chart_context, creature_geo_chart_contex
             chartParamsUseTitle(
                 creature_geo_chart_params_init,
                 creature_geo_chart_params_init.options.title.text
-                + ': ' + initialStore.creatureStore.physicalElem.name)
+                + ': ' + initialStore.creatureStore.physType.name)
         ),
 
         // status box

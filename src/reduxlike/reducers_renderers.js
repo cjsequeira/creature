@@ -66,7 +66,7 @@ export const rootReducer = (store, action) => {
         case ACTION_DO_CREATURE_ACT:
             return {
                 ...store,
-                creatureStore: action.pct.physicalElem.act(action.pct)
+                creatureStore: action.physType.act(action.physType)
             }
 
         case ACTION_START_SIM:
@@ -205,7 +205,6 @@ function mutable_updateGeoChartData(chart, xyPair) {
     // fade color values
     // geoData is shorthand to reduce typing / increase readability of code
     geoData = chart.data.datasets[0];
-    console.log(geoData.backgroundColor);
     if (geoData.data.length >= 2) {
         chart.data.datasets[0].backgroundColor = geoData.backgroundColor.map((_, i, arr) =>
             (i < (arr.length - 1))
