@@ -4,66 +4,67 @@
 
 // *** Imports
 import { geThan, seededRand, boundToRange, excludeRange } from '../util.js';
-import { pctGetCond, pctUseConds } from '../reduxlike/store_getters.js';
+import { physTypeGetCond, physTypeUseConds } from '../reduxlike/store_getters.js';
 import { ResolveRules } from '../rulebook.js';
 
 
 // *** Behavior functions unique to this creature
 // main dispatch function
-// returns physicalContainerType
-export const ActAsSimpleCreature = (pct) => {
-    switch (pct.physicalElem.conds.behavior) {
-        case 'idling': return ActIdling(pct)
-        case 'eating': return ActEating(pct)
-        case 'sleeping': return ActSleeping(pct)
-        case 'wandering': return ActWandering(pct)
-        default: return pct
+// takes physType
+// returns physContainerType
+export const ActAsSimpleCreature = (physType) => {
+    switch (physType.conds.behavior) {
+        case 'idling': return ActIdling(physType)
+        case 'eating': return ActEating(physType)
+        case 'sleeping': return ActSleeping(physType)
+        case 'wandering': return ActWandering(physType)
+        default: return physType
     }
 };
 
 // idling behavior function
-// returns physicalContainerType
-const ActIdling = (pct) => {
+// returns physContainerType
+const ActIdling = (physType) => {
     return CheckBehavior(
-        // pass in physicalContainerType object with specific glucose, and neuro
-        pctUseConds(pct,
+        // pass in physType object with specific glucose, and neuro
+        physTypeUseConds(physType,
             {
-                glucose: pctGetCond(pct, 'glucose') - 1.0,
-                neuro: pctGetCond(pct, 'neuro') + 0.5,
+                glucose: physTypeGetCond(physType, 'glucose') - 1.0,
+                neuro: physTypeGetCond(physType, 'neuro') + 0.5,
             }),
         // pass in behavior change desires specific to this behavior function
         {
             'idling': () =>
                 0.2,
-            'wandering': (pct) =>
-                (pctGetCond(pct, 'glucose') < 50.0) ? 4.0 : 0.2,
-            'sleeping': (pct) =>
-                (pctGetCond(pct, 'neuro') > 85.0) ? 4.0 : 0.2,
+            'wandering': (physType) =>
+                (physTypeGetCond(physType, 'glucose') < 50.0) ? 4.0 : 0.2,
+            'sleeping': (physType) =>
+                (physTypeGetCond(physType, 'neuro') > 85.0) ? 4.0 : 0.2,
         }
     );
 };
 
 // wandering behavior function
-// returns physicalContainerType
-const ActWandering = (pct) => {
+// returns physContainerType
+const ActWandering = (physType) => {
     // declare: random acceleration that's at least 0.3 in magnitude
     const rand_a = [
-        seededRand(pct.physicalElem.seed, -0.5, 1.8)[0],
-        excludeRange(seededRand(pct.physicalElem.seed, -0.5, 1.8)[1], 0.3)
+        seededRand(physType.seed, -0.5, 1.8)[0],
+        excludeRange(seededRand(physType.seed, -0.5, 1.8)[1], 0.3)
     ];
 
     // declare: random heading nudge
     const rand_hdg_nudge = seededRand(rand_a[0], -0.6, 0.6);
 
     return CheckBehavior(
-        // pass in physicalContainerType object with specific glucose, neuro, heading, accel
+        // pass in physType object with specific glucose, neuro, heading, accel
         // glucose and neuro impacts are more severe with higher accceleration magnitude
-        pctUseConds(pct,
+        physTypeUseConds(physType,
             {
-                glucose: pctGetCond(pct, 'glucose') - 1.2 * Math.abs(rand_a[1]),
-                neuro: pctGetCond(pct, 'neuro') + 1.0 * Math.abs(rand_a[1]),
+                glucose: physTypeGetCond(physType, 'glucose') - 1.2 * Math.abs(rand_a[1]),
+                neuro: physTypeGetCond(physType, 'neuro') + 1.0 * Math.abs(rand_a[1]),
 
-                heading: pctGetCond(pct, 'heading') + rand_hdg_nudge[1],
+                heading: physTypeGetCond(physType, 'heading') + rand_hdg_nudge[1],
                 accel: rand_a[1],
             }),
         // pass in behavior change desires specific to this behavior function
@@ -72,59 +73,59 @@ const ActWandering = (pct) => {
                 4.0,
             'idling': () =>
                 0.2,
-            'eating': (pct) =>
-                (pctGetCond(pct, 'glucose') < 20.0) ? 4.0 : 0.2,
-            'sleeping': (pct) =>
-                (pctGetCond(pct, 'neuro') > 85.0) ? 4.0 : 0.2,
+            'eating': (physType) =>
+                (physTypeGetCond(physType, 'glucose') < 20.0) ? 4.0 : 0.2,
+            'sleeping': (physType) =>
+                (physTypeGetCond(physType, 'neuro') > 85.0) ? 4.0 : 0.2,
         }
     );
 };
 
 // eating behavior function
-// returns physicalContainerType
-const ActEating = (pct) =>
+// returns physContainerType
+const ActEating = (physType) =>
     CheckBehavior(
-        // pass in physicalContainerType object with specific glucose and neuro
-        pctUseConds(pct,
+        // pass in physType object with specific glucose and neuro
+        physTypeUseConds(physType,
             {
-                glucose: pctGetCond(pct, 'glucose') + 4.0,
-                neuro: pctGetCond(pct, 'neuro') + 1.0
+                glucose: physTypeGetCond(physType, 'glucose') + 4.0,
+                neuro: physTypeGetCond(physType, 'neuro') + 1.0
             }),
         // pass in behavior change desires specific to this behavior function
         {
             'eating': () =>
                 1.0,
-            'idling': (pct) =>
-                (pctGetCond(pct, 'glucose') > 40.0) ? 2.0 : 0.2
+            'idling': (physType) =>
+                (physTypeGetCond(physType, 'glucose') > 40.0) ? 2.0 : 0.2
         }
     );
 
 // sleeping behavior function
-// returns physicalContainerType
-const ActSleeping = (pct) =>
+// returns physContainerType
+const ActSleeping = (physType) =>
     CheckBehavior(
-        // pass in physicalContainerType object with specific glucose and neuro
-        pctUseConds(pct,
+        // pass in physType object with specific glucose and neuro
+        physTypeUseConds(physType,
             {
-                glucose: pctGetCond(pct, 'glucose') - 0.3,
-                neuro: pctGetCond(pct, 'neuro') - 2.2
+                glucose: physTypeGetCond(physType, 'glucose') - 0.3,
+                neuro: physTypeGetCond(physType, 'neuro') - 2.2
             }),
         // pass in behavior change desires specific to this behavior function
         {
             'sleeping': () =>
                 1.0,
-            'idling': (pct) =>
-                (pctGetCond(pct, 'neuro') < 60.0) ? 2.0 : 0.2
+            'idling': (physType) =>
+                (physTypeGetCond(physType, 'neuro') < 60.0) ? 2.0 : 0.2
         }
     );
 
 
 // *** Code common to all simple creatures
 // function to review and return appropriate behavior
-// returns physicalContainerType
-export const CheckBehavior = (pct, desireFuncType) => {
+// returns physContainerType
+export const CheckBehavior = (physType, desireFuncType) => {
     // declare: numerical desires as evaluation of each desire func with nifty shorthand
-    const numbers = Object.values(desireFuncType).map(f => f(pct));
+    const numbers = Object.values(desireFuncType).map(f => f(physType));
 
     // declare: numerical desires as cumulative array
     const cum_numbers = numbers.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
@@ -135,25 +136,22 @@ export const CheckBehavior = (pct, desireFuncType) => {
     // declare: random number in range of max value, as [0, max_cum_numbers]
     // note: seededRand returns [seed, value]
     // note: if max_cum_numbers = 0.0, value will be 0.0
-    const randInRange = seededRand(pct.physicalElem.seed, 0, max_cum_numbers);
+    const randInRange = seededRand(physType.seed, 0, max_cum_numbers);
 
     // declare: first desire "box" that holds random number "target"
     const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x));
 
-    // return physicalContainerType object with: 
+    // return physContainerType object with: 
     //      lastRule: the rule node applied to this creature
-    //      physicalElem: the creature, as a creatureType with:
+    //      physType: the creature, as a creatureType with:
     //          updated seed
     //          behavior indicated via rulebook review of chosen desire
     return ResolveRules({
-        ...pct,
-        physicalElem: {
-            ...pct.physicalElem,
-            seed: randInRange[0],
-            conds: {
-                ...pct.physicalElem.conds,
-                behavior_request: Object.keys(desireFuncType)[chosenIndex]
-            }
+        ...physType,
+        seed: randInRange[0],
+        conds: {
+            ...physType.conds,
+            behavior_request: Object.keys(desireFuncType)[chosenIndex]
         }
     });
 };

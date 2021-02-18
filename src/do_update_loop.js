@@ -14,7 +14,7 @@ import {
     doNothing
 } from './reduxlike/action_creators.js';
 import { renderStoreChanges } from './reduxlike/reducers_renderers.js';
-import { pctGetCond, simGetCurTime, simGetRunning } from './reduxlike/store_getters.js';
+import { physTypeGetCond, simGetCurTime, simGetRunning } from './reduxlike/store_getters.js';
 import { makeChain } from './util.js';
 
 
@@ -48,7 +48,7 @@ export const doUpdateLoop = (store) => {
                     0,
                     {
                         time: simGetCurTime(store),
-                        value: pctGetCond(store.creatureStore, 'glucose')
+                        value: physTypeGetCond(store.creatureStore.physType, 'glucose')
                     }),
 
                 // next, add neuro data to time chart
@@ -57,30 +57,30 @@ export const doUpdateLoop = (store) => {
                     1,
                     {
                         time: simGetCurTime(store),
-                        value: pctGetCond(store.creatureStore, 'neuro')
+                        value: physTypeGetCond(store.creatureStore.physType, 'neuro')
                     }),
 
                 // next, add x-y data to geo chart
                 addGeoChartData(
                     store.ui.creature_geo_chart,
                     {
-                        x: pctGetCond(store.creatureStore, 'x'),
-                        y: pctGetCond(store.creatureStore, 'y')
+                        x: physTypeGetCond(store.creatureStore.physType, 'x'),
+                        y: physTypeGetCond(store.creatureStore.physType, 'y')
                     }),
 
                 // next, if creature behavior has just changed in current store, update journal and status box
                 (store.journal[store.journal.length - 1].message !=
-                    behaviorStrings[pctGetCond(store.creatureStore, 'behavior')])
+                    behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')])
                     ? [
                         addJournalEntry(
                             store.journal,
                             simGetCurTime(store),
-                            behaviorStrings[pctGetCond(store.creatureStore, 'behavior')]
+                            behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
                         ),
                         addStatusMessage(
                             store.ui.status_box,
                             'Time ' + simGetCurTime(store) +
-                            ": " + behaviorStrings[pctGetCond(store.creatureStore, 'behavior')]
+                            ": " + behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
                         )
                     ]
                     : doNothing(),
@@ -91,13 +91,13 @@ export const doUpdateLoop = (store) => {
                         addJournalEntry(
                             store.journal,
                             simGetCurTime(store),
-                            store.creatureStore.physicalElem.name + " " +
+                            store.creatureStore.physType.name + " " +
                             store.creatureStore.lastRule.name
                         ),
                         addStatusMessage(
                             store.ui.status_box,
                             'Time ' + simGetCurTime(store) + ": *** " +
-                            store.creatureStore.physicalElem.name + " " +
+                            store.creatureStore.physType.name + " " +
                             store.creatureStore.lastRule.name
                         )
                     ]
@@ -105,7 +105,7 @@ export const doUpdateLoop = (store) => {
 
                 // next, if creature has just frozen in current store, give termination message and stop simulator
                 // else, act out creature behavior using current store
-                (pctGetCond(store.creatureStore, 'behavior') === 'frozen')
+                (physTypeGetCond(store.creatureStore.physType, 'behavior') === 'frozen')
                     ? [
                         addJournalEntry(
                             store.journal,
@@ -118,7 +118,7 @@ export const doUpdateLoop = (store) => {
                         ),
                         stopSim()
                     ]
-                    : doCreatureAct(store.creatureStore),
+                    : doCreatureAct(store.creatureStore.physType),
 
                 // next, advance simulator if simulator is running
                 (simGetRunning(store))
