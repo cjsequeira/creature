@@ -60,7 +60,7 @@ const creature_time_chart_params_init = {
                 },
                 ticks: {
                     min: 0.0,
-                    max: 50.0,
+                    max: 30.0,
                     stepSize: 1.0
                 }
             }],

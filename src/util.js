@@ -67,6 +67,16 @@ export const chartParamsUseTitle = (chartParams, title) => ({
     }
 });
 
+// return chart data excluding all elements less than provided x
+export const chartShiftData = (data, x) => {
+    // count how many points are less than the given x and should be excluded; could be zero
+    const numPoints = data.filter(elem => elem.x < x).length;
+
+    // return data with excluded elements
+    return data.slice(numPoints);
+}
+
+
 // fade one RGBA hex color to another, controlled by a [0, 1] fader
 // returns RGBA hex color
 // based on https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
