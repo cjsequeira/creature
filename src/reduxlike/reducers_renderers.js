@@ -147,7 +147,11 @@ function mutable_updateTimeChartData(chart, dataIndex, yTimePair) {
     };
 
     // MUTABLE: shift out data that have "fallen off" the left side of the chart
-    chart.data.datasets[dataIndex].data = chartShiftData(chart.data.datasets[dataIndex].data, new_min + 1.0);
+    chart.data.datasets[dataIndex].data =
+        chartShiftData(
+            chart.data.datasets[dataIndex].data,
+            new_min - chart.options.scales.xAxes[0].ticks.stepSize
+        );
 
     // return the passed-in chart object reference
     return chart;
