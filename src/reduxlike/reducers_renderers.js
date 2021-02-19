@@ -14,8 +14,7 @@ import {
     ACTION_ADVANCE_SIM,
     ACTION_DO_NOTHING
 } from './action_creators.js';
-import { hexRGBAFade } from '../util.js';
-
+import { chartShiftData, hexRGBAFade } from '../util.js';
 
 
 // *** Reducer functions
@@ -122,15 +121,12 @@ export const renderStoreChanges = (store) => ({
 
 // *** Reducer helpers
 // update time history chart data
+// WARNING: mutates "chart" argument
 function mutable_updateTimeChartData(chart, dataIndex, yTimePair) {
-    // timeData is shorthand to reduce typing / increase readability of code
-    let timeData = null;
-
-    // get chart data with new value
-    timeData = chart.data.datasets[dataIndex];
+    // MUTABLE: add data to chart
     chart.data.datasets[dataIndex] = {
-        ...timeData,
-        data: timeData.data.concat(
+        ...chart.data.datasets[dataIndex],
+        data: chart.data.datasets[dataIndex].data.concat(
             {
                 x: yTimePair.time,
                 y: yTimePair.value
@@ -138,101 +134,84 @@ function mutable_updateTimeChartData(chart, dataIndex, yTimePair) {
     };
 
     // revise time history chart x axis "window" if needed, for next chart update cycle
-    let creature_time_chart_x = chart.options.scales.xAxes[0].ticks;
-    let creature_time_chart_xWidth = creature_time_chart_x.max - creature_time_chart_x.min;
-    if (yTimePair.time > creature_time_chart_x.max) {
-        let new_max = Math.ceil(yTimePair.time);
-        let new_min = new_max - creature_time_chart_xWidth;
+    const chart_x = chart.options.scales.xAxes[0].ticks;    // shorthand for x-axis ticks
+    const chart_xWidth = chart_x.max - chart_x.min;             // extents of x axis
+    const new_max = Math.ceil(yTimePair.time);                  // potential different x axis max           
+    const new_min = new_max - chart_xWidth;                     // potential different x axis min
 
-        chart.options.scales.xAxes[0].ticks = {
-            ...creature_time_chart_x,
-            max: new_max,
-            min: new_min
-        };
+    // MUTABLE: assign x axis min and max - shifted rightward if indicated by new_min and new_max
+    chart.options.scales.xAxes[0].ticks = {
+        ...chart_x,
+        max: (chart_x.max < new_max) ? new_max : chart_x.max,
+        min: (chart_x.min < new_min) ? new_min : chart_x.min,
+    };
 
-        // remove first element in each data array if hidden
-        chart.data.datasets.forEach((dataset) => {
-            let checkShift = dataset.data[0];
-            if (checkShift.x < (new_min - creature_time_chart_x.StepSize)) {
-                dataset.data.shift();
-                dataset.backgroundColor.shift();
-                dataset.borderColor.shift();
-            }
-        });
-    }
+    // MUTABLE: shift out data that have "fallen off" the left side of the chart
+    chart.data.datasets[dataIndex].data = chartShiftData(chart.data.datasets[dataIndex].data, new_min + 1.0);
 
+    // return the passed-in chart object reference
     return chart;
 }
 
 // update geospatial chart data
+// WARNING: mutates "chart" argument
 function mutable_updateGeoChartData(chart, xyPair) {
-    // geoData is shorthand to reduce typing / increase readability of code
-    let geoData = null;
+    // maximum length of geospatial data arrays
+    const maxLen = 10;
 
-    // get chart data without first datapoint if data array is a certain length
-    geoData = chart.data.datasets[0];
-    if (geoData.data.length > 10) {
-        chart.data.datasets[0] = {
-            ...geoData,
-
-            backgroundColor: geoData.backgroundColor.slice(1),
-            borderColor: geoData.borderColor.slice(1),
-            pointBackgroundColor: geoData.pointBackgroundColor.slice(1),
-            pointBorderColor: geoData.pointBorderColor.slice(1),
-
-            data: geoData.data.slice(1)
-        };
-    }
-
-    // get chart data with new x-y pair
-    // geoData is shorthand to reduce typing / increase readability of code
-    geoData = chart.data.datasets[0];
+    // MUTABLE: add data and colors to chart, then slice to max length, 
+    //  then fade colors if array length is at least 2
     chart.data.datasets[0] = {
-        ...geoData,
+        ...chart.data.datasets[0],
 
-        backgroundColor: geoData.backgroundColor.concat('#ec56cdff'),
-        borderColor: geoData.borderColor.concat('#ec56cdff'),
-        pointBackgroundColor: geoData.pointBackgroundColor.concat('#ec56cdff'),
-        pointBorderColor: geoData.pointBorderColor.concat('#ec56cdff'),
+        backgroundColor: chart.data.datasets[0].backgroundColor
+            .concat('#ec56cdff')                                    // add
+            .slice(-maxLen)                                         // slice to max length
+            .map((_, i, arr) =>                                     // fade colors if array length at least 2
+                (arr.length >= 2)
+                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    : arr[i]),
 
-        data: geoData.data.concat(
-            {
-                x: xyPair.x,
-                y: xyPair.y
-            })
+        borderColor: chart.data.datasets[0].borderColor
+            .concat('#ec56cdff')
+            .slice(-maxLen)
+            .map((_, i, arr) =>
+                (arr.length >= 2)
+                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    : arr[i]),
+
+        pointBackgroundColor: chart.data.datasets[0].pointBackgroundColor
+            .concat('#ec56cdff')
+            .slice(-maxLen)
+            .map((_, i, arr) =>
+                (arr.length >= 2)
+                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    : arr[i]),
+
+        pointBorderColor: chart.data.datasets[0].pointBorderColor
+            .concat('#ec56cdff')
+            .slice(-maxLen)
+            .map((_, i, arr) =>
+                (arr.length >= 2)
+                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    : arr[i]),
+
+        data: chart.data.datasets[0].data
+            .concat({ x: xyPair.x, y: xyPair.y })
+            .slice(-maxLen),
     };
 
-    // fade color values
-    // geoData is shorthand to reduce typing / increase readability of code
-    geoData = chart.data.datasets[0];
-    if (geoData.data.length >= 2) {
-        chart.data.datasets[0].backgroundColor = geoData.backgroundColor.map((_, i, arr) =>
-            (i < (arr.length - 1))
-                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
-                : arr[i]);
-        chart.data.datasets[0].borderColor = geoData.borderColor.map((_, i, arr) =>
-            (i < (arr.length - 1))
-                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
-                : arr[i]);
-        chart.data.datasets[0].pointBackgroundColor = geoData.pointBackgroundColor.map((_, i, arr) =>
-            (i < (arr.length - 1))
-                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
-                : arr[i]);
-        chart.data.datasets[0].pointBorderColor = geoData.pointBorderColor.map((_, i, arr) =>
-            (i < (arr.length - 1))
-                ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00')
-                : arr[i]);
-    }
-
+    // return the passed-in chart object reference
     return chart;
 }
 
 // update simulator status box with given HTML message
+// WARNING: Mutates "statusBox" argument
 export function mutable_updateStatusBox(statusBox, message) {
     // get status box scroll bar information
-    let statusScrollTop = statusBox.scrollTop;
-    let statusScrollHeight = statusBox.scrollHeight;
-    let statusInnerHeight = statusBox.clientHeight;
+    const statusScrollTop = statusBox.scrollTop;
+    const statusScrollHeight = statusBox.scrollHeight;
+    const statusInnerHeight = statusBox.clientHeight;
 
     // push message into status box
     statusBox.innerHTML = statusBox.innerHTML + message + '<br />';
