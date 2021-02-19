@@ -14,6 +14,7 @@ const ruleBook = {
     testFunc: (physType) => physType.hasOwnProperty('conds'),
     yes: {
         name: '-- YES! Glucose and neuro in range?',
+        preFunc: (physType) => physType,
         testFunc: (physType) => (physTypeGetCond(physType, 'glucose') > 0.0) && (physTypeGetCond(physType, 'neuro') < 100.0),
         yes: {
             name: '-- -- YES! Requesting behavior: idling?',
@@ -186,22 +187,36 @@ const ruleBook = {
 // REFACTOR IDEA:
 //  Determine whether to save last-used rule in a pct or some other structure (e.g. a store list with a creature lookup)
 export const ResolveRules = (physType) => {
-    // get the rule based on a review of the physType
-    const rule_to_use = findRule(physType);
+    // get physContainerType with selected rule and a physType to apply the rule to
+    const pct_to_use = findRule(physType);
 
-    // return physContainerType with applied rule as well as record of rule used
+    // return physContainerType with selected rule as well as physType with selected rule applied
     return {
-        lastRule: rule_to_use,
-        physType: rule_to_use.func(physType)
+        ...pct_to_use,
+        lastRule: pct_to_use.lastRule,
+        physType: pct_to_use.lastRule.func(pct_to_use.physType)
     }
 }
 
-
 // rulebook node finder
-// returns node with function (named "func") that should be applied to a physType
-const findRule = (physType, node = ruleBook) =>
-    (node.testFunc === undefined)
-        ? node
-        : (node.testFunc(physType))
-            ? findRule(physType, node.yes)
-            : findRule(physType, node.no);
+// returns physContainerType with function (named "func") that should be applied to the physType
+const findRule = (physType, node = ruleBook) => {
+    // is pre-function undefined? if yes, go forward with physType. if no, go forward with preFunc(physType)
+    const physType_to_use = (node.preFunc === undefined) ? physType : node.preFunc(physType);
+
+    // is test function undefined?
+    return (node.testFunc === undefined)
+        // yes: return the physContainerType
+        ? {
+            lastRule: node,
+            physType: physType_to_use
+        }
+
+        // no: apply the test func to the physType
+        : (node.testFunc(physType_to_use))
+            // test func returned true? follow node.yes
+            ? findRule(physType_to_use, node.yes)
+
+            // test func returned false? follow node.no
+            : findRule(physType_to_use, node.no)
+}

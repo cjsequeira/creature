@@ -31,6 +31,7 @@ const ActIdling = (physType) => {
             {
                 glucose: physTypeGetCond(physType, 'glucose') - 1.0,
                 neuro: physTypeGetCond(physType, 'neuro') + 0.5,
+                accel: 0.0
             }),
         // pass in behavior change desires specific to this behavior function
         {
