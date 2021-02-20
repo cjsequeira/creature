@@ -6,6 +6,7 @@
 // *** Our imports
 import { boundToRange, seededRand, withinRange } from './util.js';
 import { physTypeGetCond, physTypeUseConds } from './reduxlike/store_getters.js';
+import { physTypeDoPhysics } from './sim/physics.js';
 
 
 // *** The rulebook
@@ -14,100 +15,31 @@ const ruleBook = {
     testFunc: (physType) => physType.hasOwnProperty('conds'),
     yes: {
         name: '-- YES! Glucose and neuro in range?',
-        preFunc: (physType) => physType,
         testFunc: (physType) => (physTypeGetCond(physType, 'glucose') > 0.0) && (physTypeGetCond(physType, 'neuro') < 100.0),
         yes: {
+            // produce creatureType object with laws of physics applied
+            preFunc: (physType) => physTypeDoPhysics(physType),
             name: '-- -- YES! Requesting behavior: idling?',
             testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'idling',
             yes: {
-                name: '-- -- -- YES! Projected position in range?',
-                testFunc: (physType) => (
-                    withinRange(physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') * Math.sin(physTypeGetCond(physType, 'heading')), 0.0, 20.0) &&
-                    withinRange(physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') * Math.cos(physTypeGetCond(physType, 'heading')), 0.0, 20.0)
-                ),
-                yes: {
-                    name: '-- -- -- -- YES! Behavior request approved: idling',
-                    func: (physType) => physTypeUseConds(physType,
-                        {
-                            behavior: physTypeGetCond(physType, 'behavior_request'),
-
-                            // compute x and y based on given speed and heading to implement "coasting" activity
-                            x: physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') *
-                                Math.sin(physTypeGetCond(physType, 'heading')),
-                            y: physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') *
-                                Math.cos(physTypeGetCond(physType, 'heading')),
-                        }),
-                },
-                no: {
-                    name: 'coasted into a wall! BOUNCE... ',
-                    verbalize: true,
-                    func: (physType) => physTypeUseConds(physType,
-                        {
-                            behavior: physTypeGetCond(physType, 'behavior_request'),
-
-                            // bound projected x to the boundary limit plus a small margin
-                            x: boundToRange(physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') *
-                                Math.sin(physTypeGetCond(physType, 'heading')), 0.1, 19.9),
-
-                            // bound projected y to the boundary limit plus a small margin
-                            y: boundToRange(physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') *
-                                Math.cos(physTypeGetCond(physType, 'heading')), 0.1, 19.9),
-
-                            // spin heading around a bit (in radians)
-                            heading: physTypeGetCond(physType, 'heading') + 2.35,
-
-                            // establish a minimum speed
-                            speed: 1.0,
-                        }),
-                },
+                name: '-- -- -- -- YES! Behavior request approved: idling',
+                func: (physType) => physTypeUseConds(physType,
+                    {
+                        behavior: physTypeGetCond(physType, 'behavior_request'),
+                    }),
             },
             no: {
                 name: '-- -- -- NO! Requesting behavior: wandering?',
                 testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'wandering',
                 yes: {
-                    name: '-- -- -- -- YES! Projected position in range?',
-                    testFunc: (physType) => (
-                        withinRange(physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') * Math.sin(physTypeGetCond(physType, 'heading')), 0.0, 20.0) &&
-                        withinRange(physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') * Math.cos(physTypeGetCond(physType, 'heading')), 0.0, 20.0)
-                    ),
-                    yes: {
-                        name: '-- -- -- -- -- YES! Behavior request approved: wandering',
-                        func: (physType) => physTypeUseConds(physType,
-                            {
-                                behavior: physTypeGetCond(physType, 'behavior_request'),
+                    name: '-- -- -- -- -- YES! Behavior request approved: wandering',
+                    func: (physType) => physTypeUseConds(physType,
+                        {
+                            behavior: physTypeGetCond(physType, 'behavior_request'),
 
-                                // compute x and y based on given speed and heading 
-                                x: physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') *
-                                    Math.sin(physTypeGetCond(physType, 'heading')),
-                                y: physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') *
-                                    Math.cos(physTypeGetCond(physType, 'heading')),
-
-                                // compute speed based on given accel
-                                speed: physTypeGetCond(physType, 'speed') + physTypeGetCond(physType, 'accel'),
-                            }),
-                    },
-                    no: {
-                        name: 'wandered into a wall! BOUNCE... ',
-                        verbalize: true,
-                        func: (physType) => physTypeUseConds(physType,
-                            {
-                                behavior: physTypeGetCond(physType, 'behavior_request'),
-
-                                // bound projected x to the boundary limit plus a small margin
-                                x: boundToRange(physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') *
-                                    Math.sin(physTypeGetCond(physType, 'heading')), 0.1, 19.9),
-
-                                // bound projected y to the boundary limit plus a small margin
-                                y: boundToRange(physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') *
-                                    Math.cos(physTypeGetCond(physType, 'heading')), 0.1, 19.9),
-
-                                // spin heading around a bit (in radians)
-                                heading: physTypeGetCond(physType, 'heading') + 2.35,
-
-                                // establish a minimum speed
-                                speed: 1.0,
-                            }),
-                    },
+                            // compute speed based on given accel
+                            speed: physTypeGetCond(physType, 'speed') + physTypeGetCond(physType, 'accel'),
+                        }),
                 },
                 no: {
                     name: '-- -- -- -- NO! Requesting behavior: eating?',
@@ -131,14 +63,8 @@ const ruleBook = {
                             verbalize: true,
                             func: (physType) => physTypeUseConds(physType,
                                 {
+                                    // set behavior to 'idling'
                                     behavior: 'idling',
-
-                                    // compute x and y based on given speed and heading to 
-                                    //  implement "coasting" behavior
-                                    x: physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') *
-                                        Math.sin(physTypeGetCond(physType, 'heading')),
-                                    y: physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') *
-                                        Math.cos(physTypeGetCond(physType, 'heading')),
                                 }),
                         }
                     },
@@ -183,14 +109,13 @@ const ruleBook = {
 // *** Rulebook functions
 // general rulebook resolver
 // returns physContainerType with applied rule and record of rule used
-// $$$$ Concept addition idea: pre-func and post-func?
 // REFACTOR IDEA:
 //  Determine whether to save last-used rule in a pct or some other structure (e.g. a store list with a creature lookup)
 export const ResolveRules = (physType) => {
     // get physContainerType with selected rule and a physType to apply the rule to
     const pct_to_use = findRule(physType);
 
-    // return physContainerType with selected rule as well as physType with selected rule applied
+    // return physContainerType with lastRule: selected rule, and physType: with selected rule applied
     return {
         ...pct_to_use,
         lastRule: pct_to_use.lastRule,
