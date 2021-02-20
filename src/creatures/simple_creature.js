@@ -6,7 +6,7 @@
 import { resolveRules } from '../rulebook.js';
 import { geThan, boundToRange, excludeRange } from '../util.js';
 import { physTypeGetCond, physTypeUseConds } from '../reduxlike/store_getters.js';
-import { randGen, mutable_seededRand } from '../sim/seeded_rand.js';
+import { randGen, mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
 
 // *** Behavior functions unique to this creature
@@ -52,10 +52,10 @@ const ActIdling = (physType) => {
 // returns physContainerType
 const ActWandering = (physType) => {
     // declare: random acceleration that's at least 0.3 in magnitude
-    const rand_a = excludeRange(mutable_seededRand(randGen, -0.5, 1.8), 0.3);
+    const rand_a = excludeRange(mutableRandGen_seededRand(randGen, -0.5, 1.8), 0.3);
 
     // declare: random heading nudge
-    const rand_hdg_nudge = mutable_seededRand(randGen, -0.6, 0.6);
+    const rand_hdg_nudge = mutableRandGen_seededRand(randGen, -0.6, 0.6);
 
     return CheckBehavior(
         // pass in physType object with specific glucose, neuro, heading, accel
@@ -139,7 +139,7 @@ export const CheckBehavior = (physType, desireFuncType) => {
 
     // declare: random number in range of max value, as [0, max_cum_numbers]
     // note: if max_cum_numbers = 0.0, value will be 0.0
-    const randInRange = mutable_seededRand(randGen, 0, max_cum_numbers);
+    const randInRange = mutableRandGen_seededRand(randGen, 0, max_cum_numbers);
 
     // declare: first desire "box" that holds random number "target"
     const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange)(x));

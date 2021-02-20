@@ -4,7 +4,7 @@
 
 // *** Our imports
 import Chart from 'chart.js';
-import { randGen, mutable_initRandGen } from '../sim/seeded_rand.js';
+import { randGen, mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
 import { chartParamsUseTitle } from '../util.js';
 
@@ -151,6 +151,7 @@ const initialStore = {
         running: false,
 
         curTime: 0.0,
+        lastTime: 0.0, 
         timeStep: 1.0,
 
         initSeed: Date.now(),
@@ -220,7 +221,7 @@ export const storeInit = (creature_time_chart_context, creature_geo_chart_contex
         ...initialStore.sim,
 
         // Random number generator: initRandGen just gives back the input seed
-        initSeed: mutable_initRandGen(randGen, initialStore.sim.initSeed),
+        initSeed: mutableRandGen_initRandGen(randGen, initialStore.sim.initSeed),
     },
 
     // UI

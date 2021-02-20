@@ -6,7 +6,7 @@
 // *** Our imports
 import { physTypeGetCond, physTypeUseConds } from './reduxlike/store_getters.js';
 import { physTypeDoPhysics } from './sim/physics.js';
-import { randGen, mutable_seededRand } from './sim/seeded_rand.js';
+import { randGen, mutableRandGen_seededRand } from './sim/seeded_rand.js';
 
 
 // *** The rulebook
@@ -46,7 +46,7 @@ const ruleBook = {
                     testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'eating',
                     yes: {
                         name: '-- -- -- -- -- YES! Is food available?',
-                        testFunc: (physType) => mutable_seededRand(randGen, 0.0, 1.0) > 0.3,
+                        testFunc: (physType) => mutableRandGen_seededRand(randGen, 0.0, 1.0) > 0.3,
                         yes: {
                             name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
                             func: (physType) => physTypeUseConds(physType,

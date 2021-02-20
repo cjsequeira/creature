@@ -12,7 +12,7 @@ export let randGen = {
 // *** Random number utils
 // init random number generator
 // MUTABLE: Mutates inRandGen argument
-export function mutable_initRandGen(inRandGen, initSeed = 0) {
+export function mutableRandGen_initRandGen(inRandGen, initSeed = 0) {
     // MUTABLE: Store given seed in random number generator
     inRandGen.seed = initSeed;
 
@@ -22,7 +22,7 @@ export function mutable_initRandGen(inRandGen, initSeed = 0) {
 // get seeded random number
 // MUTABLE: Mutates inRandGen argument
 // reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
-export function mutable_seededRand(inRandGen, min = 0.0, max = 1.0) {
+export function mutableRandGen_seededRand(inRandGen, min = 0.0, max = 1.0) {
     // calculate random value using current seed
     const value = min + ((inRandGen.seed * 9301 + 49297) % 233280) / 233280 * (max - min);
 
