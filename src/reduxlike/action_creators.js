@@ -51,10 +51,9 @@ export const addStatusMessage = (statusBox, message) => ({
 });
 
 // add journal entry
-export const addJournalEntry = (journal, time, message) => ({
+export const addJournalEntry = (journal, message) => ({
     type: ACTION_ADD_JOURNAL_ENTRY,
     journal,
-    time,
     message
 });
 
