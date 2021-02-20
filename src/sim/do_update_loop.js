@@ -118,7 +118,7 @@ export const doUpdateLoop = (store) => {
                         ),
                         stopSim()
                     ]
-                    : doCreatureAct(store.creatureStore.physType),
+                    : doCreatureAct(store.creatureStore),
 
                 // next, advance simulator if simulator is running
                 (simGetRunning(store))

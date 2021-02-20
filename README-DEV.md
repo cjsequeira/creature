@@ -1,4 +1,4 @@
-# Creature version 0.0.5 - README for developers
+# Creature version 0.0.6 - README for developers
 
 ## Complex data types:
 ### **physContainerType**: The basic physical element state container
@@ -49,3 +49,5 @@ Description:
             ...
         }
     }
+
+### **desireFuncType**: A type for creature desire functions - TO BE ADDED

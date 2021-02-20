@@ -10,19 +10,20 @@ import { ResolveRules } from '../rulebook.js';
 
 // *** Behavior functions unique to this creature
 // main dispatch function
-// takes physType
+// takes physContainerType
 // returns physContainerType
-export const ActAsSimpleCreature = (physType) => {
-    switch (physType.conds.behavior) {
-        case 'idling': return ActIdling(physType)
-        case 'eating': return ActEating(physType)
-        case 'sleeping': return ActSleeping(physType)
-        case 'wandering': return ActWandering(physType)
-        default: return physType
+export const ActAsSimpleCreature = (pct) => {
+    switch (pct.physType.conds.behavior) {
+        case 'idling': return ActIdling(pct.physType)
+        case 'eating': return ActEating(pct.physType)
+        case 'sleeping': return ActSleeping(pct.physType)
+        case 'wandering': return ActWandering(pct.physType)
+        default: return pct
     }
 };
 
 // idling behavior function
+// takes physType
 // returns physContainerType
 const ActIdling = (physType) => {
     return CheckBehavior(
@@ -46,6 +47,7 @@ const ActIdling = (physType) => {
 };
 
 // wandering behavior function
+// takes physType
 // returns physContainerType
 const ActWandering = (physType) => {
     // declare: random acceleration that's at least 0.3 in magnitude
@@ -83,6 +85,7 @@ const ActWandering = (physType) => {
 };
 
 // eating behavior function
+// takes physType
 // returns physContainerType
 const ActEating = (physType) =>
     CheckBehavior(
@@ -102,6 +105,7 @@ const ActEating = (physType) =>
     );
 
 // sleeping behavior function
+// takes physType
 // returns physContainerType
 const ActSleeping = (physType) =>
     CheckBehavior(
@@ -123,6 +127,7 @@ const ActSleeping = (physType) =>
 
 // *** Code common to all simple creatures
 // function to review and return appropriate behavior
+// takes physType and desireFuncType
 // returns physContainerType
 export const CheckBehavior = (physType, desireFuncType) => {
     // declare: numerical desires as evaluation of each desire func with nifty shorthand

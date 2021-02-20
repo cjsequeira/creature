@@ -31,8 +31,10 @@ const physTypeDoMovements = (physType) => physTypeUseConds(
 // return physType with parameters updated if wall collisions
 const physTypeCheckWallCollisions = (physType) =>
     // are x and y within world boundary?
-    (withinRange(physTypeGetCond(physType, 'x'), 0.1, 19.9) &&
-        withinRange(physTypeGetCond(physType, 'y'), 0.1, 19.9))
+    (
+        withinRange(physTypeGetCond(physType, 'x'), 0.1, 19.9) &&
+        withinRange(physTypeGetCond(physType, 'y'), 0.1, 19.9)
+    )
         // yes: return given physType
         ? physType
 
