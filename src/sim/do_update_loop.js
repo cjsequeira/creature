@@ -4,17 +4,17 @@
 import { makeArgChain } from '../util.js';
 import {
     actionDispatch,
-    addGeoChartData,
-    addJournalEntry,
-    addStatusMessage,
-    addTimeChartData,
-    doCreatureAct,
-    startSim,
-    stopSim,
     advanceSim,
-    doNothing
+    addJournalEntry,
+    doCreatureAct,
+    doNothing,
+    queue_addGeoChartData,
+    queue_addStatusMessage,
+    queue_addTimeChartData,
+    startSim,
+    stopSim
 } from '../reduxlike/action_creators.js';
-import { renderStoreChanges } from '../reduxlike/reducers_renderers.js';
+import { mutable_renderStoreChanges } from '../reduxlike/reducers_renderers.js';
 import { physTypeGetCond, simGetCurTime, simGetRunning } from '../reduxlike/store_getters.js';
 
 
@@ -37,13 +37,13 @@ export const doUpdateLoop = (store) => {
     // if sim is running, then:    
     return (simGetRunning(store))
         // return a rendered store object that's built from the current store by...
-        ? renderStoreChanges(
+        ? mutable_renderStoreChanges(
             // ... applying our action dispatcher repeatedly to the action creators
             //  listed below, in top-to-bottom order...
             makeChainOfActionDispatch(
 
-                // first, add glucose data to time chart
-                addTimeChartData(
+                // first, queue add glucose data to time chart
+                queue_addTimeChartData(
                     store.ui.creature_time_chart,
                     0,
                     {
@@ -51,8 +51,8 @@ export const doUpdateLoop = (store) => {
                         value: physTypeGetCond(store.creatureStore.physType, 'glucose')
                     }),
 
-                // next, add neuro data to time chart
-                addTimeChartData(
+                // next, queue add neuro data to time chart
+                queue_addTimeChartData(
                     store.ui.creature_time_chart,
                     1,
                     {
@@ -60,15 +60,16 @@ export const doUpdateLoop = (store) => {
                         value: physTypeGetCond(store.creatureStore.physType, 'neuro')
                     }),
 
-                // next, add x-y data to geo chart
-                addGeoChartData(
+                // next, queue add x-y data to geo chart
+                queue_addGeoChartData(
                     store.ui.creature_geo_chart,
                     {
                         x: physTypeGetCond(store.creatureStore.physType, 'x'),
                         y: physTypeGetCond(store.creatureStore.physType, 'y')
                     }),
 
-                // next, if creature behavior has just changed in current store, update journal and status box
+                // next, if creature behavior has just changed in current store, 
+                //  update journal and queue update status box
                 (store.journal[store.journal.length - 1].message !=
                     behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')])
                     ? [
@@ -76,14 +77,15 @@ export const doUpdateLoop = (store) => {
                             store.journal,
                             behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
                         ),
-                        addStatusMessage(
+                        queue_addStatusMessage(
                             store.ui.status_box,
                             behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
                         )
                     ]
                     : doNothing(),
 
-                // next, if last-used rule in current store should be verbalized, update journal and status box
+                // next, if last-used rule in current store should be verbalized, 
+                //  update journal and queue update status box
                 (store.creatureStore.lastRule.verbalize)
                     ? [
                         addJournalEntry(
@@ -91,7 +93,7 @@ export const doUpdateLoop = (store) => {
                             store.creatureStore.physType.name + " " +
                             store.creatureStore.lastRule.name
                         ),
-                        addStatusMessage(
+                        queue_addStatusMessage(
                             store.ui.status_box,
                             "*** " +
                             store.creatureStore.physType.name + " " +
@@ -100,15 +102,16 @@ export const doUpdateLoop = (store) => {
                     ]
                     : doNothing(),
 
-                // next, if creature has just frozen in current store, give termination message and stop simulator
-                // else, act out creature behavior using current store
+                // next, if creature has just frozen in current store, 
+                //  queue give termination message and stop simulator
+                //  else, act out creature behavior using current store
                 (physTypeGetCond(store.creatureStore.physType, 'behavior') === 'frozen')
                     ? [
                         addJournalEntry(
                             store.journal,
                             "Simulation ended"
                         ),
-                        addStatusMessage(
+                        queue_addStatusMessage(
                             store.ui.status_box,
                             "*** Simulation ended"
                         ),
@@ -124,7 +127,7 @@ export const doUpdateLoop = (store) => {
                 // ... and evaluating all listed action creators above using the current store
             )(store)
 
-            // closing paren for renderStoreChanges(...)
+            // closing paren for mutable_renderStoreChanges(...)
         )
 
         // if sim is not running, just return the given store
