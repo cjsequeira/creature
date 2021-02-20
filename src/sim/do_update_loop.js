@@ -74,13 +74,11 @@ export const doUpdateLoop = (store) => {
                     ? [
                         addJournalEntry(
                             store.journal,
-                            simGetCurTime(store),
                             behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
                         ),
                         addStatusMessage(
                             store.ui.status_box,
-                            'Time ' + simGetCurTime(store) +
-                            ": " + behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
+                            behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
                         )
                     ]
                     : doNothing(),
@@ -90,13 +88,12 @@ export const doUpdateLoop = (store) => {
                     ? [
                         addJournalEntry(
                             store.journal,
-                            simGetCurTime(store),
                             store.creatureStore.physType.name + " " +
                             store.creatureStore.lastRule.name
                         ),
                         addStatusMessage(
                             store.ui.status_box,
-                            'Time ' + simGetCurTime(store) + ": *** " +
+                            "*** " +
                             store.creatureStore.physType.name + " " +
                             store.creatureStore.lastRule.name
                         )
@@ -109,12 +106,11 @@ export const doUpdateLoop = (store) => {
                     ? [
                         addJournalEntry(
                             store.journal,
-                            simGetCurTime(store),
                             "Simulation ended"
                         ),
                         addStatusMessage(
                             store.ui.status_box,
-                            'Time ' + simGetCurTime(store) + ": *** Simulation ended"
+                            "*** Simulation ended"
                         ),
                         stopSim()
                     ]

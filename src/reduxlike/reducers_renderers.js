@@ -14,6 +14,7 @@ import {
     ACTION_ADVANCE_SIM,
     ACTION_DO_NOTHING
 } from './action_creators.js';
+import { simGetCurTime } from './store_getters.js';
 import { chartShiftData, hexRGBAFade } from '../util.js';
 
 
@@ -47,7 +48,11 @@ export const rootReducer = (store, action) => {
             return {
                 ...store,
                 status_box:
-                    mutable_updateStatusBox(action.statusBox, action.message)
+                    mutable_updateStatusBox(
+                        action.statusBox,
+                        'Time ' + simGetCurTime(store) +
+                        ': ' + action.message
+                    )
             };
 
         case ACTION_ADD_JOURNAL_ENTRY:
@@ -56,7 +61,7 @@ export const rootReducer = (store, action) => {
                 journal: [
                     ...store.journal,
                     {
-                        time: action.time,
+                        time: simGetCurTime(store),
                         message: action.message
                     }
                 ]
