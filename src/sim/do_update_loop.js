@@ -12,14 +12,14 @@ import {
     stopSim,
     advanceSim,
     doNothing
-} from './reduxlike/action_creators.js';
-import { renderStoreChanges } from './reduxlike/reducers_renderers.js';
-import { physTypeGetCond, simGetCurTime, simGetRunning } from './reduxlike/store_getters.js';
-import { makeChain } from './util.js';
+} from '../reduxlike/action_creators.js';
+import { renderStoreChanges } from '../reduxlike/reducers_renderers.js';
+import { physTypeGetCond, simGetCurTime, simGetRunning } from '../reduxlike/store_getters.js';
+import { makeArgChain } from '../util.js';
 
 
 // *** Function-chaining function with our store action dispatcher already applied
-const makeChainOfActionDispatch = makeChain(actionDispatch);
+const makeChainOfActionDispatch = makeArgChain(actionDispatch);
 
 
 // *** Status message objects/arrays

@@ -6,13 +6,21 @@
 // greater than or equal to
 export const geThan = x => y => (y >= x);
 
-// given a function, an array of arguments, and a target, apply the target and first argument 
-//  to the function, then apply the result to the function along with the next argument
+// given a function, an array of arguments, and a target, apply function to the target and 
+//  first argument , then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
 // the array of arguments will be flattened once, allowing arrays of arrays of arguments
 //  (but not arrays of arrays of arrays of arguments, or deeper)
-export const makeChain = func => (...args) => target =>
+export const makeArgChain = func => (...args) => target =>
     args.flat().reduce((accum, cur) => func(accum || target, cur), null);
+
+// given a target and an array of functions, apply the first function to the target,
+//  then apply the next function to the result of the first function, and so on until 
+//  all arguments are exhausted
+// the array of arguments will be flattened once, allowing arrays of arrays of functions
+//  (but not arrays of arrays of arrays of functions, or deeper)
+export const makeFuncChain = (...funcs) => target =>
+    funcs.flat().reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
 
 
 // *** Numerical utilities
