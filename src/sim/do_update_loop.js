@@ -41,34 +41,7 @@ export const doUpdateLoop = (store) => {
             // ... applying our action dispatcher repeatedly to the action creators
             //  listed below, in top-to-bottom order...
             makeChainOfActionDispatch(
-
-                // first, queue add glucose data to time chart
-                queue_addTimeChartData(
-                    store.ui.creature_time_chart,
-                    0,
-                    {
-                        time: simGetCurTime(store),
-                        value: physTypeGetCond(store.creatureStore.physType, 'glucose')
-                    }),
-
-                // next, queue add neuro data to time chart
-                queue_addTimeChartData(
-                    store.ui.creature_time_chart,
-                    1,
-                    {
-                        time: simGetCurTime(store),
-                        value: physTypeGetCond(store.creatureStore.physType, 'neuro')
-                    }),
-
-                // next, queue add x-y data to geo chart
-                queue_addGeoChartData(
-                    store.ui.creature_geo_chart,
-                    {
-                        x: physTypeGetCond(store.creatureStore.physType, 'x'),
-                        y: physTypeGetCond(store.creatureStore.physType, 'y')
-                    }),
-
-                // next, if creature behavior has just changed in current store, 
+                // first, if creature behavior has just changed in current store, 
                 //  update journal and queue update status box
                 (store.journal[store.journal.length - 1].message !=
                     behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')])
@@ -118,6 +91,32 @@ export const doUpdateLoop = (store) => {
                         stopSim()
                     ]
                     : doCreatureAct(store.creatureStore),
+
+                // next, queue add glucose data to time chart
+                queue_addTimeChartData(
+                    store.ui.creature_time_chart,
+                    0,
+                    {
+                        time: simGetCurTime(store),
+                        value: physTypeGetCond(store.creatureStore.physType, 'glucose')
+                    }),
+
+                // next, queue add neuro data to time chart
+                queue_addTimeChartData(
+                    store.ui.creature_time_chart,
+                    1,
+                    {
+                        time: simGetCurTime(store),
+                        value: physTypeGetCond(store.creatureStore.physType, 'neuro')
+                    }),
+
+                // next, queue add x-y data to geo chart
+                queue_addGeoChartData(
+                    store.ui.creature_geo_chart,
+                    {
+                        x: physTypeGetCond(store.creatureStore.physType, 'x'),
+                        y: physTypeGetCond(store.creatureStore.physType, 'y')
+                    }),
 
                 // next, advance simulator if simulator is running
                 (simGetRunning(store))
