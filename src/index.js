@@ -11,7 +11,6 @@ import './custom.css';
 import { actionDispatch, startSim, stopSim } from './reduxlike/action_creators.js';
 import { doUpdateLoop } from './sim/do_update_loop.js';
 import { storeInit } from './reduxlike/store_init.js';
-import { RULE_HIT_WALL, RULE_CONDS_OUT_OF_LIMITS } from './rulebook.js';
 
 
 // *** HTML page references 
