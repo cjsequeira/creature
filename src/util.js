@@ -7,7 +7,7 @@
 export const geThan = x => y => (y >= x);
 
 // given a function, an array of arguments, and a target, apply function to the target and 
-//  first argument , then apply the same function to the result along with the next argument
+//  first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
 // the array of arguments will be flattened once, allowing arrays of arrays of arguments
 //  (but not arrays of arrays of arrays of arguments, or deeper)
@@ -24,20 +24,6 @@ export const makeFuncChain = (...funcs) => target =>
 
 
 // *** Numerical utilities
-// seeded random number
-// returns [seed, value]
-// reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
-export const seededRand = (seed = 0, min = 0.0, max = 1.0) => {
-    // return [seed, value]
-    return [
-        (seed * 9301 + 49297) % 233280,
-
-        min +
-        ((seed * 9301 + 49297) % 233280) / 233280 *
-        (max - min)
-    ];
-};
-
 // within given range? as (min, max)
 // returns bool
 export const withinRange = (num, min = 0.0, max = 1.0) => (num > min) && (num < max);
@@ -83,7 +69,6 @@ export const chartShiftData = (data, x) => {
     // return data with excluded elements
     return data.slice(numPoints);
 }
-
 
 // fade one RGBA hex color to another, controlled by a [0, 1] fader
 // returns RGBA hex color

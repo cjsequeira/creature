@@ -4,9 +4,9 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { boundToRange, seededRand, withinRange } from './util.js';
 import { physTypeGetCond, physTypeUseConds } from './reduxlike/store_getters.js';
 import { physTypeDoPhysics } from './sim/physics.js';
+import { randGen, mutable_seededRand } from './sim/seeded_rand.js';
 
 
 // *** The rulebook
@@ -46,7 +46,7 @@ const ruleBook = {
                     testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'eating',
                     yes: {
                         name: '-- -- -- -- -- YES! Is food available?',
-                        testFunc: (physType) => seededRand(physType.seed, 0.0, 1.0)[1] > 0.3,
+                        testFunc: (physType) => mutable_seededRand(randGen, 0.0, 1.0) > 0.3,
                         yes: {
                             name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
                             func: (physType) => physTypeUseConds(physType,
@@ -111,7 +111,7 @@ const ruleBook = {
 // returns physContainerType with applied rule and record of rule used
 // REFACTOR IDEA:
 //  Determine whether to save last-used rule in a pct or some other structure (e.g. a store list with a creature lookup)
-export const ResolveRules = (physType) => {
+export const resolveRules = (physType) => {
     // get physContainerType with selected rule and a physType to apply the rule to
     const pct_to_use = findRule(physType);
 

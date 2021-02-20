@@ -4,6 +4,7 @@
 
 // *** Our imports
 import Chart from 'chart.js';
+import { randGen, mutable_initRandGen } from '../sim/seeded_rand.js';
 import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
 import { chartParamsUseTitle } from '../util.js';
 
@@ -145,11 +146,14 @@ const creature_geo_chart_params_init = {
 
 // *** Initial store
 const initialStore = {
-    // is simulator running?
     sim: {
+        // is simulator running?
         running: false,
+
         curTime: 0.0,
         timeStep: 1.0,
+
+        initSeed: Date.now(),
     },
 
     // array of store changes to render
@@ -176,20 +180,14 @@ const initialStore = {
                 behavior_request: null,
 
                 // location
-                x: 15.0 * Math.random() + 4.0,
-                y: 15.0 * Math.random() + 4.0,
-
-                // heading, speed, acceleration
-                heading: 2 * Math.PI * Math.random(),
-                speed: Math.random() - 0.5,
-                accel: 0.0,
+                x: 18.0 * Math.random() + 1.0,
+                y: 18.0 * Math.random() + 1.0,
 
                 // heading, speed, acceleration
                 heading: 2.0 * Math.PI * Math.random(),
                 speed: Math.random(),
                 accel: 0.0,
             },
-            seed: Date.now(),
         },
     },
 
@@ -216,7 +214,19 @@ const initialStore = {
 // *** Store initializer function
 export const storeInit = (creature_time_chart_context, creature_geo_chart_context, status_box_context) => ({
     ...initialStore,
+
+    // Simulator
+    sim: {
+        ...initialStore.sim,
+
+        // Random number generator: initRandGen just gives back the input seed
+        initSeed: mutable_initRandGen(randGen, initialStore.sim.initSeed),
+    },
+
+    // UI
     ui: {
+        ...initialStore.ui,
+
         // time chart with creature name in title
         creature_time_chart: new Chart(
             creature_time_chart_context,

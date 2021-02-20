@@ -1,6 +1,7 @@
 'use strict'
 
 // *** Imports
+import { makeArgChain } from '../util.js';
 import {
     actionDispatch,
     addGeoChartData,
@@ -15,7 +16,6 @@ import {
 } from '../reduxlike/action_creators.js';
 import { renderStoreChanges } from '../reduxlike/reducers_renderers.js';
 import { physTypeGetCond, simGetCurTime, simGetRunning } from '../reduxlike/store_getters.js';
-import { makeArgChain } from '../util.js';
 
 
 // *** Function-chaining function with our store action dispatcher already applied

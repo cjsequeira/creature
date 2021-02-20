@@ -51,3 +51,5 @@ Description:
     }
 
 ### **desireFuncType**: A type for creature desire functions - TO BE ADDED
+
+### **randGen**: The app's mutable random number generator - TO BE ADDED

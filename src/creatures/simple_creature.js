@@ -3,9 +3,10 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-import { geThan, seededRand, boundToRange, excludeRange } from '../util.js';
+import { resolveRules } from '../rulebook.js';
+import { geThan, boundToRange, excludeRange } from '../util.js';
 import { physTypeGetCond, physTypeUseConds } from '../reduxlike/store_getters.js';
-import { ResolveRules } from '../rulebook.js';
+import { randGen, mutable_seededRand } from '../sim/seeded_rand.js';
 
 
 // *** Behavior functions unique to this creature
@@ -51,24 +52,21 @@ const ActIdling = (physType) => {
 // returns physContainerType
 const ActWandering = (physType) => {
     // declare: random acceleration that's at least 0.3 in magnitude
-    const rand_a = [
-        seededRand(physType.seed, -0.5, 1.8)[0],
-        excludeRange(seededRand(physType.seed, -0.5, 1.8)[1], 0.3)
-    ];
+    const rand_a = excludeRange(mutable_seededRand(randGen, -0.5, 1.8), 0.3);
 
     // declare: random heading nudge
-    const rand_hdg_nudge = seededRand(rand_a[0], -0.6, 0.6);
+    const rand_hdg_nudge = mutable_seededRand(randGen, -0.6, 0.6);
 
     return CheckBehavior(
         // pass in physType object with specific glucose, neuro, heading, accel
         // glucose and neuro impacts are more severe with higher accceleration magnitude
         physTypeUseConds(physType,
             {
-                glucose: physTypeGetCond(physType, 'glucose') - 1.2 * Math.abs(rand_a[1]),
-                neuro: physTypeGetCond(physType, 'neuro') + 1.0 * Math.abs(rand_a[1]),
+                glucose: physTypeGetCond(physType, 'glucose') - 1.2 * Math.abs(rand_a),
+                neuro: physTypeGetCond(physType, 'neuro') + 1.0 * Math.abs(rand_a),
 
-                heading: physTypeGetCond(physType, 'heading') + rand_hdg_nudge[1],
-                accel: rand_a[1],
+                heading: physTypeGetCond(physType, 'heading') + rand_hdg_nudge,
+                accel: rand_a,
             }),
         // pass in behavior change desires specific to this behavior function
         {
@@ -140,21 +138,17 @@ export const CheckBehavior = (physType, desireFuncType) => {
     const max_cum_numbers = cum_numbers.reduce((a, x) => Math.max(a, x));
 
     // declare: random number in range of max value, as [0, max_cum_numbers]
-    // note: seededRand returns [seed, value]
     // note: if max_cum_numbers = 0.0, value will be 0.0
-    const randInRange = seededRand(physType.seed, 0, max_cum_numbers);
+    const randInRange = mutable_seededRand(randGen, 0, max_cum_numbers);
 
     // declare: first desire "box" that holds random number "target"
-    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange[1])(x));
+    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange)(x));
 
     // return physContainerType object with: 
-    //      lastRule: the rule node applied to this creature
-    //      physType: the creature, as a creatureType with:
-    //          updated seed
-    //          behavior indicated via rulebook review of chosen desire
-    return ResolveRules({
+    //  lastRule: the rule node applied to this creature
+    //  physType: the creature, as a creatureType with behavior indicated via rulebook review of chosen desire
+    return resolveRules({
         ...physType,
-        seed: randInRange[0],
         conds: {
             ...physType.conds,
             behavior_request: Object.keys(desireFuncType)[chosenIndex]
