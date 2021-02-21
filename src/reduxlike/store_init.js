@@ -106,6 +106,9 @@ const creature_geo_chart_params_init = {
             }]
     },
     options: {
+        animation: {
+            duration: 100,
+        },
         title: {
             display: true,
             fontSize: 14,

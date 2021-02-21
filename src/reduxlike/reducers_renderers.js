@@ -21,7 +21,7 @@ import { boundToRange, chartShiftData, hexRGBAFade, roundTo } from '../util.js';
 
 
 // *** Our constants
-const UI_NUM_TRAILS = 10;
+const UI_NUM_TRAILS = 20;
 
 
 // *** Root reducer 
