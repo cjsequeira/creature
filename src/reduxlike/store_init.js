@@ -4,7 +4,7 @@
 
 // *** Our imports
 import Chart from 'chart.js';
-import { randGen, mutable_initRandGen } from '../sim/seeded_rand.js';
+import { randGen, mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
 import { chartParamsUseTitle } from '../util.js';
 
@@ -25,7 +25,8 @@ const creature_time_chart_params_init = {
             backgroundColor: '#0000ccff',
             borderColor: '#0000ccff',
             pointBackgroundColor: '#0000ccff',
-            pointBorderColor: '#0000ccff'
+            pointBorderColor: '#0000ccff',
+            pointRadius: 1,
         },
         {
             label: 'neuro',
@@ -38,10 +39,14 @@ const creature_time_chart_params_init = {
             backgroundColor: '#00cc00ff',
             borderColor: '#00cc00ff',
             pointBackgroundColor: '#00cc00ff',
-            pointBorderColor: '#00cc00ff'
+            pointBorderColor: '#00cc00ff',
+            pointRadius: 1,
         }]
     },
     options: {
+        animation: {
+            duration: 150,
+        },
         title: {
             display: true,
             fontSize: 14,
@@ -61,7 +66,7 @@ const creature_time_chart_params_init = {
                 },
                 ticks: {
                     min: 0.0,
-                    max: 30.0,
+                    max: 20.0,
                     stepSize: 1.0
                 }
             }],
@@ -146,13 +151,22 @@ const creature_geo_chart_params_init = {
 
 // *** Initial store
 const initialStore = {
+    // store locked or unlocked for writing
+    locked: false,
+
+    // simulator properties
     sim: {
         // is simulator running?
         running: false,
 
+        // internal sim time info
         curTime: 0.0,
-        timeStep: 1.0,
+        timeStep: 0.0,
 
+        // system clock info
+        lastClock: 0.0, 
+
+        // initial random number generator seed
         initSeed: Date.now(),
     },
 
@@ -220,7 +234,7 @@ export const storeInit = (creature_time_chart_context, creature_geo_chart_contex
         ...initialStore.sim,
 
         // Random number generator: initRandGen just gives back the input seed
-        initSeed: mutable_initRandGen(randGen, initialStore.sim.initSeed),
+        initSeed: mutableRandGen_initRandGen(randGen, initialStore.sim.initSeed),
     },
 
     // UI
