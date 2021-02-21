@@ -36,9 +36,12 @@ const creature_status_box = 'page_creature_status';
 const makeChainOfActionDispatch = makeArgChain(actionDispatch);
 
 
-// *** UI update setup
-// how often, ideally, to update the UI, in milliseconds
-const UI_UPDATE_FREQ = 200.0;
+// *** Timing loop setup
+// how often (ideally) to update the UI and the simulator in milliseconds
+// simulator frequency should be MORE FREQUENT than UI
+const UPDATE_FREQ_UI = 200.0;
+const UPDATE_FREQ_SIM = 50;
+let lastClock = 0.0;
 
 
 // ***********************************************************************************
@@ -50,45 +53,35 @@ export let myStore = storeInit(
     document.getElementById(creature_status_box)
 );
 
-// define web worker to update the sim
-let simWorker = new Worker(new URL('./sim/worker_sim_loop.js', import.meta.url));
-
-// establish the function we call when we receive a message from worker
-simWorker.onmessage = (message) => simWorkerReceiver(message);
-
 // change the sim status to running
 myStore = actionDispatch(myStore, startSim());
 
 // do the initial UI draw
 myStore = doUpdateLoop(myStore);
 
-// start repeatedly updating our UI at specific intervals of time
-let requestId = setInterval(nonSimUpdate, UI_UPDATE_FREQ);
+// start repeatedly updating our application at sim frequency
+let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
 
-// start the web worker that updates the sim
-simWorker.postMessage('start');
 // ***********************************************************************************
 
 
-// *** Time-based callback functions
-// non-sim update function (primarily updates UI)
-function nonSimUpdate() {
-    myStore = doUpdateLoop(myStore);
-};
+// *** Time-based callback function
+function appUpdate() {
+    // is simulator running and store NOT LOCKED?
+    if ( simGetRunning(myStore) && (!storeIsLocked(myStore)) ) {
+        // yes: set store lock, do creature act, advance sim, unset store lock
+        myStore = makeChainOfActionDispatch(
+            lockStore(),
+            doCreatureAct(myStore.creatureStore),
+            advanceSim(),
+            unlockStore()
+        )(myStore);
+    }
 
-// web worker sim update function
-function simWorkerReceiver(message) {
-    // if message is to advance...
-    if (message.data === 'advance') {
-        // is simulator running and store NOT LOCKED?
-        if (simGetRunning(myStore) && !storeIsLocked(myStore)) {
-            // yes: set store lock, do creature act, advance sim, unset store lock
-            myStore = makeChainOfActionDispatch(
-                lockStore(),
-                doCreatureAct(myStore.creatureStore),
-                advanceSim(),
-                unlockStore()
-            )(myStore);
-        }
+    // if UPDATE_FREQ_UI time has passed since last UI update
+    //  AND store NOT LOCKED, then update UI
+    if ( (performance.now() > (lastClock + UPDATE_FREQ_UI)) && (!storeIsLocked(myStore) )
+    ) {
+        myStore = doUpdateLoop(myStore);
     }
 };
