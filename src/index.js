@@ -23,7 +23,7 @@ import {
     storeIsLocked
 } from './reduxlike/store_getters.js';
 import { storeInit } from './reduxlike/store_init.js';
-import { doUpdateLoop } from './sim/do_update_loop.js';
+import { doNonSimUpdate } from './do_nonsim_update.js';
 
 
 // *** HTML page references 
@@ -57,7 +57,7 @@ export let myStore = storeInit(
 myStore = actionDispatch(myStore, startSim());
 
 // do the initial UI draw
-myStore = doUpdateLoop(myStore);
+myStore = doNonSimUpdate(myStore);
 
 // start repeatedly updating our application at sim frequency
 let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -82,6 +82,6 @@ function appUpdate() {
     //  AND store NOT LOCKED, then update UI
     if ( (performance.now() > (lastClock + UPDATE_FREQ_UI)) && (!storeIsLocked(myStore) )
     ) {
-        myStore = doUpdateLoop(myStore);
+        myStore = doNonSimUpdate(myStore);
     }
 };

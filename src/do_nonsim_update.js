@@ -1,12 +1,12 @@
 'use strict'
 
+// ****** Code to update the non-sim parts of the application ******
+
 // *** Imports
-import { makeArgChain } from '../util.js';
+import { makeArgChain } from './util.js';
 import {
     actionDispatch,
-    advanceSim,
     addJournalEntry,
-    doCreatureAct,
     doNothing,
     lockStore,
     unlockStore,
@@ -15,21 +15,21 @@ import {
     queue_addTimeChartData,
     startSim,
     stopSim
-} from '../reduxlike/action_creators.js';
-import { mutable_renderStoreChanges } from '../reduxlike/reducers_renderers.js';
+} from './reduxlike/action_creators.js';
+import { mutable_renderStoreChanges } from './reduxlike/reducers_renderers.js';
 import {
     physTypeGetCond,
     simGetCurTime,
     simGetRunning,
     storeIsLocked
-} from '../reduxlike/store_getters.js';
+} from './reduxlike/store_getters.js';
 
 
 // *** Function-chaining function with our store action dispatcher already applied
 const makeChainOfActionDispatch = makeArgChain(actionDispatch);
 
 
-// *** Status message objects/arrays
+// *** Creature behavior strings
 const behaviorStrings = {
     idling: "I'm is chillin'! Yeeeah...",
     eating: "I'm is eating!! Nom...",
@@ -40,10 +40,10 @@ const behaviorStrings = {
 
 
 // *** Code for the main update loop
-// REFACTOR: Cannot reliably update UI in response to creature state changes, because code below
-//  may miss such changes since they are updated in a separate thread. Consider designing watchers
-//  to generate actions/messages when certain things change
-export const doUpdateLoop = (store) => {
+// REFACTOR: Cannot currently reliably update UI in response to creature state changes, because code below
+//  may miss such changes since UI and sim update are now decoupled. Consider designing watchers
+//  to generate actions/messages/events in response to changes in certain things 
+export const doNonSimUpdate = (store) => {
     // if sim is running AND store is unlocked, then:    
     return (simGetRunning(store) && !storeIsLocked(store))
         // return a rendered store object that's built from the current store by...
@@ -67,22 +67,6 @@ export const doUpdateLoop = (store) => {
                             store.ui.status_box,
                             behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
                         )
-                    ]
-                    : doNothing(),
-
-                // next, if creature in current store is frozen, 
-                //  queue give termination message and stop simulator
-                (physTypeGetCond(store.creatureStore.physType, 'behavior') === 'frozen')
-                    ? [
-                        addJournalEntry(
-                            store.journal,
-                            "Simulation ended"
-                        ),
-                        queue_addStatusMessage(
-                            store.ui.status_box,
-                            "*** Simulation ended"
-                        ),
-                        stopSim()
                     ]
                     : doNothing(),
 
@@ -111,6 +95,22 @@ export const doUpdateLoop = (store) => {
                         x: physTypeGetCond(store.creatureStore.physType, 'x'),
                         y: physTypeGetCond(store.creatureStore.physType, 'y')
                     }),
+
+                // next, if creature in current store is frozen, 
+                //  queue give termination message and stop simulator
+                (physTypeGetCond(store.creatureStore.physType, 'behavior') === 'frozen')
+                    ? [
+                        addJournalEntry(
+                            store.journal,
+                            "Simulation ended"
+                        ),
+                        queue_addStatusMessage(
+                            store.ui.status_box,
+                            "*** Simulation ended"
+                        ),
+                        stopSim()
+                    ]
+                    : doNothing(),
 
                 // next, unset store lock
                 unlockStore()
