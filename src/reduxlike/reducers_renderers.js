@@ -82,7 +82,7 @@ export const mutable_rootReducer = (store, action) => {
                 ...store,
                 changes: [
                     ...store.changes,
-                    () => mutable_updateGeoChartData(action.chart, action.xyPair),
+                    () => mutable_updateGeoChartData(action.chart, action.dataIndex, action.color, action.xyPair),
                 ],
             };
 
@@ -197,48 +197,54 @@ function mutable_updateTimeChartData(chart, dataIndex, yTimePair) {
 // MUTABLE: mutates "chart" argument
 // takes chart reference, {x, y} pair
 // does not return anything!
-function mutable_updateGeoChartData(chart, xyPair) {
-    // maximum length of geospatial data arrays
-    const maxLen = 10;
-
+function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
     // MUTABLE: add data and colors to chart, then slice to max length, 
     //  then fade colors if array length is at least 2
-    chart.data.datasets[0] = {
-        ...chart.data.datasets[0],
+    chart.data.datasets[dataIndex] = {
+        ...chart.data.datasets[dataIndex],
 
-        backgroundColor: chart.data.datasets[0].backgroundColor
-            .concat('#ec56cdff')                                    // add
+        backgroundColor: [chart.data.datasets[dataIndex].backgroundColor]
+            .flat()                                                 // flatten
+            .slice(-chart.data.datasets[dataIndex].data.length)     // slice to same length as datapoints arr
+            .concat(color)                                          // add
             .slice(-UI_NUM_TRAILS)                                  // slice to max length
             .map((_, i, arr) =>                                     // fade colors if array length at least 2
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
-        borderColor: chart.data.datasets[0].borderColor
-            .concat('#ec56cdff')
+        borderColor: [chart.data.datasets[dataIndex].borderColor]
+            .flat()
+            .slice(-chart.data.datasets[dataIndex].data.length)
+            .concat(color)
             .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
-        pointBackgroundColor: chart.data.datasets[0].pointBackgroundColor
-            .concat('#ec56cdff')
+        pointBackgroundColor: [chart.data.datasets[dataIndex].pointBackgroundColor]
+            .flat()
+            .slice(-chart.data.datasets[dataIndex].data.length)
+            .concat(color)
             .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
-        pointBorderColor: chart.data.datasets[0].pointBorderColor
-            .concat('#ec56cdff')
+        pointBorderColor: [chart.data.datasets[dataIndex].pointBorderColor]
+            .flat()
+            .slice(-chart.data.datasets[dataIndex].data.length)
+            .concat(color)
             .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
-        data: chart.data.datasets[0].data
+        data: [chart.data.datasets[dataIndex].data]
+            .flat()
             .concat({ x: xyPair.x, y: xyPair.y })
             .slice(-UI_NUM_TRAILS),
     };

@@ -91,10 +91,24 @@ const creature_geo_chart_params_init = {
     data: {
         datasets: [
             {
-                label: 'position',
+                label: 'Food',
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
-                showLine: true,
+                showLine: false,
+                fill: false,
+                tension: 0.2,
+                pointRadius: 3,
+                data: [],
+                backgroundColor: [],
+                borderColor: [],
+                pointBackgroundColor: [],
+                pointBorderColor: []
+            },
+            {
+                label: 'Vinny',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: false,
                 fill: false,
                 tension: 0.2,
                 pointRadius: 6,
@@ -167,7 +181,7 @@ const initialStore = {
         timeStep: 0.0,
 
         // system clock info
-        lastClock: 0.0, 
+        lastClock: 0.0,
 
         // initial random number generator seed
         initSeed: Date.now(),

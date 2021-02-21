@@ -91,6 +91,8 @@ export const doNonSimUpdate = (store) => {
                 // next, queue add x-y data to geo chart
                 queue_addGeoChartData(
                     store.ui.creature_geo_chart,
+                    1,
+                    '#ec56cdff',
                     {
                         x: physTypeGetCond(store.creatureStore.physType, 'x'),
                         y: physTypeGetCond(store.creatureStore.physType, 'y')
@@ -114,7 +116,7 @@ export const doNonSimUpdate = (store) => {
 
                 // next, unset store lock
                 unlockStore()
-                
+
                 // ... and evaluating all listed action creators above using the current store
             )(store)
 
