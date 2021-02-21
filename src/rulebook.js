@@ -44,7 +44,7 @@ const ruleBook = {
                     testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'eating',
                     yes: {
                         name: '-- -- -- -- -- YES! Is food available?',
-                        testFunc: (physType) => mutableRandGen_seededRand(randGen, 0.0, 1.0) > 0.05,
+                        testFunc: (physType) => mutableRandGen_seededRand(randGen, 0.0, 1.0) > 0.03,
                         yes: {
                             name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
                             func: (physType) => physTypeUseConds(physType,
@@ -60,8 +60,8 @@ const ruleBook = {
                             name: "wants to eat but there's no food here!",
                             func: (physType) => physTypeUseConds(physType,
                                 {
-                                    // set behavior to 'idling'
-                                    behavior: 'idling',
+                                    // reject behavior request
+                                    behavior: physTypeGetCond(physType, 'behavior'),
                                 }),
                         }
                     },

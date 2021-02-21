@@ -94,8 +94,8 @@ const ActEating = (physType) =>
         // pass in physType object with specific glucose and neuro
         physTypeUseConds(physType,
             {
-                glucose: physTypeGetCond(physType, 'glucose') + 10.0 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType, 'neuro') + 5.0 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(physType, 'glucose') + 6.0 * simGetTimeStep(myStore),
+                neuro: physTypeGetCond(physType, 'neuro') + 4.0 * simGetTimeStep(myStore),
             }),
         // pass in behavior change desires specific to this behavior function
         {
@@ -114,8 +114,8 @@ const ActSleeping = (physType) =>
         // pass in physType object with specific glucose and neuro
         physTypeUseConds(physType,
             {
-                glucose: physTypeGetCond(physType, 'glucose') - 3.0 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType, 'neuro') - 10.2 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(physType, 'glucose') - 1.4 * simGetTimeStep(myStore),
+                neuro: physTypeGetCond(physType, 'neuro') - 6.2 * simGetTimeStep(myStore),
             }),
         // pass in behavior change desires specific to this behavior function
         {
