@@ -47,6 +47,10 @@ export const excludeRange = (num, bound) =>
             ? boundToRange(num, -Infinity, -bound)
             : boundToRange(num, bound, +Infinity);
 
+// round input to given number of digits
+export const roundTo = (num, digits = 0) =>
+    Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits);
+
 
 // *** UI utilities
 // return provided chart parameters with different title

@@ -3,7 +3,7 @@
 // ****** Code for creating actions ******
 
 // *** Our imports
-import { rootReducer } from './reducers_renderers.js';
+import { mutable_rootReducer } from './reducers_renderers.js';
 
 
 // *** Action names
@@ -22,6 +22,10 @@ export const ACTION_DO_CREATURE_ACT = 'DO_CREATURE_ACT';
 export const ACTION_START_SIM = 'START_SIM';
 export const ACTION_STOP_SIM = 'STOP_SIM';
 export const ACTION_ADVANCE_SIM = 'ADVANCE_SIM';
+
+// control writing to store
+export const ACTION_LOCK_STORE = 'LOCK_STORE';
+export const ACTION_UNLOCK_STORE = 'UNLOCK_STORE';
 
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';
@@ -68,6 +72,7 @@ export const doCreatureAct = (pct) => ({
     pct
 });
 
+
 // *** Sim control
 // start sim
 export const startSim = () => ({
@@ -82,7 +87,20 @@ export const stopSim = () => ({
 // advance sim time
 export const advanceSim = () => ({
     type: ACTION_ADVANCE_SIM,
+});
+
+
+// *** Lock and unlock for write access
+// lock store
+export const lockStore = () => ({
+    type: ACTION_LOCK_STORE,
+});
+
+// unlock store
+export const unlockStore = () => ({
+    type: ACTION_UNLOCK_STORE,
 })
+
 
 // *** Do nothing
 export const doNothing = () => ({
@@ -91,4 +109,4 @@ export const doNothing = () => ({
 
 
 // *** Action dispatcher function
-export const actionDispatch = (store, action) => rootReducer(store, action);
+export const actionDispatch = (store, action) => mutable_rootReducer(store, action);

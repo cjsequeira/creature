@@ -15,7 +15,8 @@ const ruleBook = {
     testFunc: (physType) => physType.hasOwnProperty('conds'),
     yes: {
         name: '-- YES! Glucose and neuro in range?',
-        testFunc: (physType) => (physTypeGetCond(physType, 'glucose') > 0.0) && (physTypeGetCond(physType, 'neuro') < 100.0),
+        testFunc: (physType) => (physTypeGetCond(physType, 'glucose') > 0.0)
+            && (physTypeGetCond(physType, 'neuro') < 100.0),
         yes: {
             // produce creatureType object with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
@@ -36,9 +37,6 @@ const ruleBook = {
                     func: (physType) => physTypeUseConds(physType,
                         {
                             behavior: physTypeGetCond(physType, 'behavior_request'),
-
-                            // compute speed based on given accel
-                            speed: physTypeGetCond(physType, 'speed') + physTypeGetCond(physType, 'accel'),
                         }),
                 },
                 no: {
@@ -46,7 +44,7 @@ const ruleBook = {
                     testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'eating',
                     yes: {
                         name: '-- -- -- -- -- YES! Is food available?',
-                        testFunc: (physType) => mutableRandGen_seededRand(randGen, 0.0, 1.0) > 0.3,
+                        testFunc: (physType) => mutableRandGen_seededRand(randGen, 0.0, 1.0) > 0.05,
                         yes: {
                             name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
                             func: (physType) => physTypeUseConds(physType,
@@ -60,7 +58,6 @@ const ruleBook = {
                         },
                         no: {
                             name: "wants to eat but there's no food here!",
-                            verbalize: true,
                             func: (physType) => physTypeUseConds(physType,
                                 {
                                     // set behavior to 'idling'
@@ -92,7 +89,6 @@ const ruleBook = {
         },
         no: {
             name: 'conditions out of limits!',
-            verbalize: true,
             func: (physType) => physTypeUseConds(physType,
                 {
                     behavior: 'frozen',

@@ -8,20 +8,27 @@ import {
     ACTION_ADVANCE_SIM,
     ACTION_DO_CREATURE_ACT,
     ACTION_DO_NOTHING,
+    ACTION_LOCK_STORE,
+    ACTION_UNLOCK_STORE,
     ACTION_QUEUE_ADD_GEOCHART_DATA,
     ACTION_QUEUE_ADD_STATUS_MESSAGE,
     ACTION_QUEUE_ADD_TIMECHART_DATA,
     ACTION_START_SIM,
     ACTION_STOP_SIM
 } from './action_creators.js';
-import { simGetCurTime } from './store_getters.js';
-import { chartShiftData, hexRGBAFade } from '../util.js';
+import { simGetCurTime, simGetLastClock, storeIsLocked } from './store_getters.js';
+import { boundToRange, chartShiftData, hexRGBAFade, roundTo } from '../util.js';
+
+
+// *** Our constants
+const UI_NUM_TRAILS = 10;
 
 
 // *** Root reducer 
+// MUTABLE: Can cause changes in application store and other parts of application!
 // takes store type and action type
 // returns store type
-export const rootReducer = (store, action) => {
+export const mutable_rootReducer = (store, action) => {
     switch (action.type) {
         case ACTION_DO_CREATURE_ACT:
             return {
@@ -37,7 +44,12 @@ export const rootReducer = (store, action) => {
                 ...store,
                 sim: {
                     ...store.sim,
-                    curTime: store.sim.curTime + store.sim.timeStep,
+                    lastClock: performance.now(),
+                    timeStep:
+                        boundToRange(performance.now() - simGetLastClock(store), 0.0, 250.0) / 1000.0,
+                    curTime:
+                        store.sim.curTime +
+                        boundToRange(performance.now() - simGetLastClock(store), 0.0, 250.0) / 1000.0,
                 }
             }
 
@@ -52,6 +64,18 @@ export const rootReducer = (store, action) => {
                     }
                 ],
             };
+
+        case ACTION_LOCK_STORE:
+            return {
+                ...store,
+                locked: true,
+            }
+
+        case ACTION_UNLOCK_STORE:
+            return {
+                ...store,
+                locked: false,
+            }
 
         case ACTION_QUEUE_ADD_GEOCHART_DATA:
             return {
@@ -68,7 +92,8 @@ export const rootReducer = (store, action) => {
                 changes: [
                     ...store.changes,
                     () => mutable_updateStatusBox(
-                        action.statusBox, 'Time ' + simGetCurTime(store) + ': ' + action.message
+                        action.statusBox,
+                        'Time ' + roundTo(simGetCurTime(store), 2) + ': ' + action.message
                     ),
                 ],
             };
@@ -145,10 +170,10 @@ function mutable_updateTimeChartData(chart, dataIndex, yTimePair) {
     };
 
     // revise time history chart x axis "window" if needed, for next chart update cycle
-    const chart_x = chart.options.scales.xAxes[0].ticks;        // shorthand for x-axis ticks
-    const chart_xWidth = chart_x.max - chart_x.min;             // extents of x axis
-    const new_max = Math.ceil(yTimePair.time);                  // potential different x axis max           
-    const new_min = new_max - chart_xWidth;                     // potential different x axis min
+    const chart_x = chart.options.scales.xAxes[0].ticks;            // shorthand for x-axis ticks
+    const chart_xWidth = chart_x.max - chart_x.min;                 // extents of x axis
+    const new_max = Math.ceil(yTimePair.time - chart_x.stepSize);   // potential different x axis max           
+    const new_min = new_max - chart_xWidth;                         // potential different x axis min
 
     // MUTABLE: assign x axis min and max - shifted rightward if indicated by new_min and new_max
     chart.options.scales.xAxes[0].ticks = {
@@ -161,7 +186,7 @@ function mutable_updateTimeChartData(chart, dataIndex, yTimePair) {
     chart.data.datasets[dataIndex].data =
         chartShiftData(
             chart.data.datasets[dataIndex].data,
-            new_min - chart.options.scales.xAxes[0].ticks.stepSize
+            new_min - chart.options.scales.xAxes[0].ticks.stepSize,
         );
 
     // MUTABLE: redraw the chart
@@ -183,7 +208,7 @@ function mutable_updateGeoChartData(chart, xyPair) {
 
         backgroundColor: chart.data.datasets[0].backgroundColor
             .concat('#ec56cdff')                                    // add
-            .slice(-maxLen)                                         // slice to max length
+            .slice(-UI_NUM_TRAILS)                                  // slice to max length
             .map((_, i, arr) =>                                     // fade colors if array length at least 2
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
@@ -191,7 +216,7 @@ function mutable_updateGeoChartData(chart, xyPair) {
 
         borderColor: chart.data.datasets[0].borderColor
             .concat('#ec56cdff')
-            .slice(-maxLen)
+            .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
@@ -199,7 +224,7 @@ function mutable_updateGeoChartData(chart, xyPair) {
 
         pointBackgroundColor: chart.data.datasets[0].pointBackgroundColor
             .concat('#ec56cdff')
-            .slice(-maxLen)
+            .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
@@ -207,7 +232,7 @@ function mutable_updateGeoChartData(chart, xyPair) {
 
         pointBorderColor: chart.data.datasets[0].pointBorderColor
             .concat('#ec56cdff')
-            .slice(-maxLen)
+            .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
                     ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
@@ -215,7 +240,7 @@ function mutable_updateGeoChartData(chart, xyPair) {
 
         data: chart.data.datasets[0].data
             .concat({ x: xyPair.x, y: xyPair.y })
-            .slice(-maxLen),
+            .slice(-UI_NUM_TRAILS),
     };
 
     // MUTABLE: redraw the chart

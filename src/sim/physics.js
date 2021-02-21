@@ -3,8 +3,10 @@
 // ****** Code implementing laws of physics ******
 
 // *** Our imports
-import { physTypeGetCond, physTypeUseConds } from '../reduxlike/store_getters.js';
+import { myStore } from '../index.js';
+
 import { makeFuncChain, withinRange, boundToRange } from '../util.js';
+import { physTypeGetCond, physTypeUseConds, simGetTimeStep } from '../reduxlike/store_getters.js';
 
 
 // *** Public consolidator for physType physics functions
@@ -22,10 +24,16 @@ const physTypeDoMovements = (physType) => physTypeUseConds(
     physType,
     {
         // compute x and y based on given speed and heading
-        x: physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') *
+        x: physTypeGetCond(physType, 'x') +
+            simGetTimeStep(myStore) * physTypeGetCond(physType, 'speed') *
             Math.sin(physTypeGetCond(physType, 'heading')),
-        y: physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') *
+        y: physTypeGetCond(physType, 'y') +
+            simGetTimeStep(myStore) * physTypeGetCond(physType, 'speed') *
             Math.cos(physTypeGetCond(physType, 'heading')),
+
+        // compute speed based on given accel
+        speed: physTypeGetCond(physType, 'speed') +
+            simGetTimeStep(myStore) * physTypeGetCond(physType, 'accel'),
     });
 
 // return physType with parameters updated if wall collisions
@@ -42,13 +50,11 @@ const physTypeCheckWallCollisions = (physType) =>
         : physTypeUseConds(
             physType,
             {
-                // bound projected x to the boundary limit plus a small margin
-                x: boundToRange(physTypeGetCond(physType, 'x') + physTypeGetCond(physType, 'speed') *
-                    Math.sin(physTypeGetCond(physType, 'heading')), 0.1, 19.9),
+                // bound x to the boundary limit plus a small margin
+                x: boundToRange(physTypeGetCond(physType, 'x'), 0.1, 19.9),
 
-                // bound projected y to the boundary limit plus a small margin
-                y: boundToRange(physTypeGetCond(physType, 'y') + physTypeGetCond(physType, 'speed') *
-                    Math.cos(physTypeGetCond(physType, 'heading')), 0.1, 19.9),
+                // bound y to the boundary limit plus a small margin
+                y: boundToRange(physTypeGetCond(physType, 'y'), 0.1, 19.9),
 
                 // spin heading around a bit (in radians)
                 heading: physTypeGetCond(physType, 'heading') + 2.35,
