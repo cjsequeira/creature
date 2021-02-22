@@ -4,9 +4,9 @@
 
 // *** Our imports
 import Chart from 'chart.js';
-import { randGen, mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
+import { repeat } from '../util.js';
 import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
-import { chartParamsUseTitle } from '../util.js';
+import { randGen, mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
 
 // *** Initial parameters for creature charts 
@@ -15,7 +15,7 @@ const creature_time_chart_params_init = {
     type: 'scatter',
     data: {
         datasets: [{
-            label: 'glucose',
+            label: 'Vinny glucose',
             xAxisId: 'my-x-axis',
             yAxisId: 'my-y-axis',
             showLine: true,
@@ -29,7 +29,7 @@ const creature_time_chart_params_init = {
             pointRadius: 1,
         },
         {
-            label: 'neuro',
+            label: 'Vinny neuro',
             xAxisId: 'my-x-axis',
             yAxisId: 'my-y-axis',
             showLine: true,
@@ -40,6 +40,34 @@ const creature_time_chart_params_init = {
             borderColor: '#00cc00ff',
             pointBackgroundColor: '#00cc00ff',
             pointBorderColor: '#00cc00ff',
+            pointRadius: 1,
+        },
+        {
+            label: 'Eddie glucose',
+            xAxisId: 'my-x-axis',
+            yAxisId: 'my-y-axis',
+            showLine: true,
+            fill: false,
+            tension: 0.2,
+            data: [],
+            backgroundColor: '#f7036cff',
+            borderColor: '#f7036cff',
+            pointBackgroundColor: '#f7036cff',
+            pointBorderColor: '#f7036cff',
+            pointRadius: 1,
+        },
+        {
+            label: 'Eddie neuro',
+            xAxisId: 'my-x-axis',
+            yAxisId: 'my-y-axis',
+            showLine: true,
+            fill: false,
+            tension: 0.2,
+            data: [],
+            backgroundColor: '#3289eaff',
+            borderColor: '#3289eaff',
+            pointBackgroundColor: '#3289eaff',
+            pointBorderColor: '#3289eaff',
             pointRadius: 1,
         }]
     },
@@ -91,10 +119,10 @@ const creature_geo_chart_params_init = {
     data: {
         datasets: [
             {
-                label: 'position',
+                label: 'Vinny',
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
-                showLine: true,
+                showLine: false,
                 fill: false,
                 tension: 0.2,
                 pointRadius: 6,
@@ -103,7 +131,36 @@ const creature_geo_chart_params_init = {
                 borderColor: [],
                 pointBackgroundColor: [],
                 pointBorderColor: []
-            }]
+            },
+            {
+                label: 'Eddie',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: false,
+                fill: false,
+                tension: 0.2,
+                pointRadius: 6,
+                data: [],
+                backgroundColor: [],
+                borderColor: [],
+                pointBackgroundColor: [],
+                pointBorderColor: []
+            },
+            {
+                label: 'Food',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: false,
+                fill: false,
+                tension: 0.2,
+                pointRadius: 3,
+                data: [],
+                backgroundColor: [],
+                borderColor: [],
+                pointBackgroundColor: [],
+                pointBorderColor: []
+            },
+        ]
     },
     options: {
         animation: {
@@ -167,7 +224,7 @@ const initialStore = {
         timeStep: 0.0,
 
         // system clock info
-        lastClock: 0.0, 
+        lastClock: 0.0,
 
         // initial random number generator seed
         initSeed: Date.now(),
@@ -176,9 +233,9 @@ const initialStore = {
     // array of store changes to render
     changes: [],
 
-    // initial creature with no prior rule applied
+    // initial creatures with no prior rule applied
     // type: physContainerType
-    creatureStore: {
+    creatureStore: [{
         // the last rule node applied
         lastRule: {},
 
@@ -186,6 +243,7 @@ const initialStore = {
         // type: creatureType
         physType: {
             name: 'Vinny',
+            color: '#0000ccff',
             act: ActAsSimpleCreature,
             conds: {
                 // internal biology
@@ -204,6 +262,55 @@ const initialStore = {
                 heading: 2.0 * Math.PI * Math.random(),
                 speed: Math.random(),
                 accel: 0.0,
+            },
+        },
+    },
+    {
+        // the last rule node applied
+        lastRule: {},
+
+        // the creature
+        // type: creatureType
+        physType: {
+            name: 'Eddie',
+            color: '#f7036cff',
+            act: ActAsSimpleCreature,
+            conds: {
+                // internal biology
+                glucose: 50.0,
+                neuro: 50.0,
+
+                // behavior
+                behavior: 'idling',
+                behavior_request: null,
+
+                // location
+                x: 18.0 * Math.random() + 1.0,
+                y: 18.0 * Math.random() + 1.0,
+
+                // heading, speed, acceleration
+                heading: 2.0 * Math.PI * Math.random(),
+                speed: Math.random(),
+                accel: 0.0,
+            },
+        },
+    }],
+
+    // initial food element
+    // type: physContainerType
+    foodStore: {
+        // the last rule node applied
+        lastRule: {},
+
+        // the food
+        // type: physType
+        physType: {
+            name: 'Food',
+            act: (pct) => pct,
+            conds: {
+                // location
+                x: 18.0 * Math.random() + 1.0,
+                y: 18.0 * Math.random() + 1.0,
             },
         },
     },
@@ -244,23 +351,11 @@ export const storeInit = (creature_time_chart_context, creature_geo_chart_contex
     ui: {
         ...initialStore.ui,
 
-        // time chart with creature name in title
-        creature_time_chart: new Chart(
-            creature_time_chart_context,
-            chartParamsUseTitle(
-                creature_time_chart_params_init,
-                creature_time_chart_params_init.options.title.text +
-                ': ' + initialStore.creatureStore.physType.name)
-        ),
+        // time chart
+        creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
 
-        // geo chart with creature name in title
-        creature_geo_chart: new Chart(
-            creature_geo_chart_context,
-            chartParamsUseTitle(
-                creature_geo_chart_params_init,
-                creature_geo_chart_params_init.options.title.text
-                + ': ' + initialStore.creatureStore.physType.name)
-        ),
+        // geo chart
+        creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
 
         // status box
         status_box: status_box_context

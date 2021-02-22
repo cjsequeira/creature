@@ -35,9 +35,11 @@ export const ACTION_DO_NOTHING = 'DO_NOTHING';
 // *** These functions don't change state until mutable_renderStateChanges is applied
 // queue add geo chart data
 // xyPair is {x, y}
-export const queue_addGeoChartData = (chart, xyPair) => ({
+export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
     type: ACTION_QUEUE_ADD_GEOCHART_DATA,
     chart,
+    dataIndex,
+    color,
     xyPair
 });
 
@@ -66,10 +68,11 @@ export const addJournalEntry = (journal, message) => ({
 });
 
 
-// *** Perform creature action
-export const doCreatureAct = (pct) => ({
+// *** Perform action for creature at given index
+export const doCreatureAct = (pct, index) => ({
     type: ACTION_DO_CREATURE_ACT,
-    pct
+    pct, 
+    index
 });
 
 
