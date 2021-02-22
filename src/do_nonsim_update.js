@@ -18,6 +18,7 @@ import {
 } from './reduxlike/action_creators.js';
 import { mutable_renderStoreChanges } from './reduxlike/reducers_renderers.js';
 import {
+    physTypeGet,
     physTypeGetCond,
     simGetCurTime,
     simGetRunning,
@@ -31,11 +32,11 @@ const makeChainOfActionDispatch = makeArgChain(actionDispatch);
 
 // *** Creature behavior strings
 const behaviorStrings = {
-    idling: "I'm is chillin'! Yeeeah...",
-    eating: "I'm is eating!! Nom...",
-    sleeping: "I'm is sleeping! Zzzz...",
-    wandering: "I'm is wandering! Wiggity whack!",
-    frozen: "I'm is frozen! Brrrr....."
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
 };
 
 
@@ -54,65 +55,81 @@ export const doNonSimUpdate = (store) => {
                 // first, set store lock... OTHER CODE MUST CHECK FOR AND RESPECT THIS!
                 lockStore(),
 
-                // next, if creature behavior string is not the most-recent journal item,
-                //  update journal and queue update status box
-                (store.journal[store.journal.length - 1].message !=
-                    behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')])
-                    ? [
-                        addJournalEntry(
-                            store.journal,
-                            behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
-                        ),
-                        queue_addStatusMessage(
-                            store.ui.status_box,
-                            behaviorStrings[physTypeGetCond(store.creatureStore.physType, 'behavior')]
-                        )
-                    ]
-                    : doNothing(),
+                // for all creatures...
+                store.creatureStore.map((creature, index) => [
+                    // next, if creature behavior string is not the most-recent journal item,
+                    //  update journal and queue update status box
+                    (store.journal[store.journal.length - 1].message !=
+                        (physTypeGet(creature.physType, 'name') + ' ' +
+                            behaviorStrings[physTypeGetCond(creature.physType, 'behavior')]))
+                        ? [
+                            addJournalEntry(
+                                store.journal,
+                                physTypeGet(creature.physType, 'name') + ' ' +
+                                behaviorStrings[physTypeGetCond(creature.physType, 'behavior')]
+                            ),
+                            queue_addStatusMessage(
+                                store.ui.status_box,
+                                physTypeGet(creature.physType, 'name') + ' ' +
+                                behaviorStrings[physTypeGetCond(creature.physType, 'behavior')]
+                            )
+                        ]
+                        : doNothing(),
 
-                // next, queue add glucose data to time chart
-                queue_addTimeChartData(
-                    store.ui.creature_time_chart,
-                    0,
-                    {
-                        time: simGetCurTime(store),
-                        value: physTypeGetCond(store.creatureStore.physType, 'glucose')
-                    }),
+                    // next, queue add glucose data to time chart
+                    queue_addTimeChartData(
+                        store.ui.creature_time_chart,
+                        2 * index,
+                        {
+                            time: simGetCurTime(store),
+                            value: physTypeGetCond(creature.physType, 'glucose')
+                        }),
 
-                // next, queue add neuro data to time chart
-                queue_addTimeChartData(
-                    store.ui.creature_time_chart,
-                    1,
-                    {
-                        time: simGetCurTime(store),
-                        value: physTypeGetCond(store.creatureStore.physType, 'neuro')
-                    }),
+                    // next, queue add neuro data to time chart
+                    queue_addTimeChartData(
+                        store.ui.creature_time_chart,
+                        2 * index + 1,
+                        {
+                            time: simGetCurTime(store),
+                            value: physTypeGetCond(creature.physType, 'neuro')
+                        }),
 
-                // next, queue add x-y data to geo chart
+                    // next, queue add x-y data to geo chart
+                    queue_addGeoChartData(
+                        store.ui.creature_geo_chart,
+                        index,
+                        physTypeGet(creature.physType, 'color'),
+                        {
+                            x: physTypeGetCond(creature.physType, 'x'),
+                            y: physTypeGetCond(creature.physType, 'y')
+                        }),
+
+                    // next, if creature in current store is frozen, 
+                    //  queue give termination message and stop simulator
+                    (physTypeGetCond(creature.physType, 'behavior') === 'frozen')
+                        ? [
+                            addJournalEntry(
+                                store.journal,
+                                "Simulation ended"
+                            ),
+                            queue_addStatusMessage(
+                                store.ui.status_box,
+                                "*** Simulation ended"
+                            ),
+                            stopSim()
+                        ]
+                        : doNothing()
+                ]),
+
+                // next, queue add food to geo chart
                 queue_addGeoChartData(
                     store.ui.creature_geo_chart,
-                    1,
-                    '#ec56cdff',
+                    store.creatureStore.length,
+                    '#008800ff',
                     {
-                        x: physTypeGetCond(store.creatureStore.physType, 'x'),
-                        y: physTypeGetCond(store.creatureStore.physType, 'y')
+                        x: physTypeGetCond(store.foodStore.physType, 'x'),
+                        y: physTypeGetCond(store.foodStore.physType, 'y')
                     }),
-
-                // next, if creature in current store is frozen, 
-                //  queue give termination message and stop simulator
-                (physTypeGetCond(store.creatureStore.physType, 'behavior') === 'frozen')
-                    ? [
-                        addJournalEntry(
-                            store.journal,
-                            "Simulation ended"
-                        ),
-                        queue_addStatusMessage(
-                            store.ui.status_box,
-                            "*** Simulation ended"
-                        ),
-                        stopSim()
-                    ]
-                    : doNothing(),
 
                 // next, unset store lock
                 unlockStore()

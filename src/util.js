@@ -9,18 +9,32 @@ export const geThan = x => y => (y >= x);
 // given a function, an array of arguments, and a target, apply function to the target and 
 //  first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
-// the array of arguments will be flattened once, allowing arrays of arrays of arguments
-//  (but not arrays of arrays of arrays of arguments, or deeper)
+// the array of arguments will be flattened up to three times
 export const makeArgChain = func => (...args) => target =>
-    args.flat().reduce((accum, cur) => func(accum || target, cur), null);
+    args.flat(3).reduce((accum, cur) => func(accum || target, cur), null);
 
 // given a target and an array of functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
-// the array of arguments will be flattened once, allowing arrays of arrays of functions
-//  (but not arrays of arrays of arrays of functions, or deeper)
+// the array of arguments will be flattened up to three times
 export const makeFuncChain = (...funcs) => target =>
-    funcs.flat().reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
+    funcs.flat(3).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
+
+// given an array, an index, and a list of elements, 
+//  return an array with the elements spliced into the array at the index
+// based on https://vincent.billey.me/pure-javascript-immutable-array/#splice
+export const splice = (arr, start, deleteCount, ...items) => [
+    ...arr.slice(0, start),
+    ...items,
+    ...arr.slice(start + deleteCount)
+];
+
+// given an input of a single element or an array, return an array with the
+//  input repeated n times
+export const repeat = input => n =>
+    (n > 0)
+        ? [...[input], repeat(input)(n - 1)].flat()
+        : input;
 
 
 // *** Numerical utilities

@@ -37,9 +37,9 @@ const makeChainOfActionDispatch = makeArgChain(actionDispatch);
 
 
 // *** Timing loop setup
-// how often (ideally) to update the UI and the simulator in milliseconds
-// simulator frequency should be MORE FREQUENT than UI
-const UPDATE_FREQ_UI = 200.0;
+// how often (ideally) to update the non-sim and the simulator in milliseconds
+// simulator frequency should be MORE FREQUENT than non-sim
+const UPDATE_FREQ_NONSIM = 100.0;
 const UPDATE_FREQ_SIM = 50;
 let lastClock = 0.0;
 
@@ -56,7 +56,7 @@ export let myStore = storeInit(
 // change the sim status to running
 myStore = actionDispatch(myStore, startSim());
 
-// do the initial UI draw
+// do the initial non-sim draw
 myStore = doNonSimUpdate(myStore);
 
 // start repeatedly updating our application at sim frequency
@@ -68,20 +68,22 @@ let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
 // *** Time-based callback function
 function appUpdate() {
     // is simulator running and store NOT LOCKED?
-    if ( simGetRunning(myStore) && (!storeIsLocked(myStore)) ) {
+    if (simGetRunning(myStore) && (!storeIsLocked(myStore))) {
         // yes: set store lock, do creature act, advance sim, unset store lock
         myStore = makeChainOfActionDispatch(
             lockStore(),
-            doCreatureAct(myStore.creatureStore),
+            myStore.creatureStore.map((creature, i) => doCreatureAct(creature, i)),
             advanceSim(),
             unlockStore()
         )(myStore);
     }
 
-    // if UPDATE_FREQ_UI time has passed since last UI update
-    //  AND store NOT LOCKED, then update UI
-    if ( (performance.now() > (lastClock + UPDATE_FREQ_UI)) && (!storeIsLocked(myStore) )
+    // if UPDATE_FREQ_non-sim time has passed since last non-sim update
+    //  AND store NOT LOCKED, then update non-sim
+    if ((performance.now() > (lastClock + UPDATE_FREQ_NONSIM)) && (!storeIsLocked(myStore))
     ) {
         myStore = doNonSimUpdate(myStore);
+
+        lastClock = performance.now();
     }
 };

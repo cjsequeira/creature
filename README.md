@@ -1,4 +1,4 @@
-# Creature version 0.0.7
+# Creature version 0.0.8
 
 Eats, sleeps, and wanders - like a proper pet should!
 
@@ -7,6 +7,7 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2984688a-76b0-4643-83ee-39ee6b0fcf79/deploy-status)](https://app.netlify.com/sites/arrogantfool-draft-creature/deploys)
 
 ## Changelog:
+* **0.0.8**: Substantial upgrade to execution to enable multiple creatures
 * **0.0.7**: Major upgrade to timing loops; separated simulator update loop from UI update loop
 * **0.0.6**: Movement of physics code to own functions to simplify rulebook; revision of creature "act" function to take a physContainerType as input
 * **0.0.5**: Refactor of rulebook and data type usage to advance functional programming paradigm

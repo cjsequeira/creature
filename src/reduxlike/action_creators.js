@@ -68,10 +68,11 @@ export const addJournalEntry = (journal, message) => ({
 });
 
 
-// *** Perform creature action
-export const doCreatureAct = (pct) => ({
+// *** Perform action for creature at given index
+export const doCreatureAct = (pct, index) => ({
     type: ACTION_DO_CREATURE_ACT,
-    pct
+    pct, 
+    index
 });
 
 

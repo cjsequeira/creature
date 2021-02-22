@@ -17,7 +17,13 @@ import {
     ACTION_STOP_SIM
 } from './action_creators.js';
 import { simGetCurTime, simGetLastClock, storeIsLocked } from './store_getters.js';
-import { boundToRange, chartShiftData, hexRGBAFade, roundTo } from '../util.js';
+import {
+    boundToRange,
+    chartShiftData,
+    hexRGBAFade,
+    roundTo,
+    splice
+} from '../util.js';
 
 
 // *** Our constants
@@ -33,7 +39,12 @@ export const mutable_rootReducer = (store, action) => {
         case ACTION_DO_CREATURE_ACT:
             return {
                 ...store,
-                creatureStore: action.pct.physType.act(action.pct),
+                creatureStore: splice(
+                    store.creatureStore,
+                    action.index,
+                    1,
+                    action.pct.physType.act(action.pct)
+                ),
             }
 
         case ACTION_DO_NOTHING:
