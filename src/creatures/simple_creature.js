@@ -29,8 +29,8 @@ export const ActAsSimpleCreature = (pct) => (
 // idling behavior function
 // takes physContainerType
 // returns physContainerType
-const ActIdling = (pct) => {
-    return CheckBehavior(
+const ActIdling = (pct) =>
+    CheckBehavior(
         // pass in physContainerType object with specific glucose, neuro, accel
         physTypeUseConds(pct.physType,
             {
@@ -48,7 +48,6 @@ const ActIdling = (pct) => {
                 (physTypeGetCond(physType, 'neuro') > 85.0) ? 4.0 : 0.1,
         }
     );
-};
 
 // wandering behavior function
 // takes physContainerType
