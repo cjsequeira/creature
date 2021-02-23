@@ -3,6 +3,7 @@
 // ****** Code implementing laws of physics ******
 
 // *** Our imports
+// REFACTOR? Not happy about referencing app store directly - even if read-only
 import { myStore } from '../index.js';
 
 import { makeFuncChain, withinRange, boundToRange } from '../util.js';

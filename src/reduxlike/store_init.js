@@ -4,7 +4,9 @@
 
 // *** Our imports
 import Chart from 'chart.js';
-import { repeat } from '../util.js';
+import {
+    UPDATE_FREQ_SIM,
+} from '../const_vals.js';
 import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
 import { randGen, mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
@@ -221,12 +223,13 @@ const initialStore = {
 
         // internal sim time info
         curTime: 0.0,
-        timeStep: 0.0,
-
-        // system clock info
-        lastClock: 0.0,
+        timeStep: UPDATE_FREQ_SIM / 1000.0,
 
         // initial random number generator seed
+        /*
+        initSeed: 0,
+        */
+
         initSeed: Date.now(),
     },
 
@@ -235,66 +238,92 @@ const initialStore = {
 
     // initial creatures with no prior rule applied
     // type: physContainerType
-    creatureStore: [{
-        // the last rule node applied
-        lastRule: {},
+    creatureStore: [
+        // creature 1
+        {
+            // the last rule node applied
+            lastRule: {},
 
-        // the creature
-        // type: creatureType
-        physType: {
-            name: 'Vinny',
-            color: '#0000ccff',
-            act: ActAsSimpleCreature,
-            conds: {
-                // internal biology
-                glucose: 50.0,
-                neuro: 50.0,
+            // the creature
+            // type: creatureType
+            physType: {
+                name: 'Vinny',
+                color: '#0000ccff',
+                act: ActAsSimpleCreature,
+                conds: {
+                    // internal biology
+                    glucose: 50.0,
+                    neuro: 50.0,
 
-                // behavior
-                behavior: 'idling',
-                behavior_request: null,
+                    // behavior
+                    behavior: 'idling',
+                    behavior_request: null,
 
-                // location
-                x: 18.0 * Math.random() + 1.0,
-                y: 18.0 * Math.random() + 1.0,
+                    /*
+                    // location
+                    x: 15.0,
+                    y: 15.0,
+    
+                    // heading, speed, acceleration
+                    heading: 180.0 * Math.PI / 180.0,
+                    speed: 2.0,
+                    accel: 0.0,
+                    */
 
-                // heading, speed, acceleration
-                heading: 2.0 * Math.PI * Math.random(),
-                speed: Math.random(),
-                accel: 0.0,
+                    // location
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+
+                    // heading, speed, acceleration
+                    heading: 2.0 * Math.PI * Math.random(),
+                    speed: Math.random(),
+                    accel: 0.0,
+                },
             },
         },
-    },
-    {
-        // the last rule node applied
-        lastRule: {},
 
-        // the creature
-        // type: creatureType
-        physType: {
-            name: 'Eddie',
-            color: '#f7036cff',
-            act: ActAsSimpleCreature,
-            conds: {
-                // internal biology
-                glucose: 50.0,
-                neuro: 50.0,
+        // creature 2
+        {
+            // the last rule node applied
+            lastRule: {},
 
-                // behavior
-                behavior: 'idling',
-                behavior_request: null,
+            // the creature
+            // type: creatureType
+            physType: {
+                name: 'Eddie',
+                color: '#f7036cff',
+                act: ActAsSimpleCreature,
+                conds: {
+                    // internal biology
+                    glucose: 50.0,
+                    neuro: 50.0,
 
-                // location
-                x: 18.0 * Math.random() + 1.0,
-                y: 18.0 * Math.random() + 1.0,
+                    // behavior
+                    behavior: 'idling',
+                    behavior_request: null,
 
-                // heading, speed, acceleration
-                heading: 2.0 * Math.PI * Math.random(),
-                speed: Math.random(),
-                accel: 0.0,
+                    /*
+                    // location
+                    x: 5.0,
+                    y: 5.0,
+    
+                    // heading, speed, acceleration
+                    heading: 0.0 * Math.PI / 180.0,
+                    speed: 2.0,
+                    accel: 0.0,
+                    */
+
+                    // location
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+
+                    // heading, speed, acceleration
+                    heading: 2.0 * Math.PI * Math.random(),
+                    speed: Math.random(),
+                    accel: 0.0,
+                },
             },
-        },
-    }],
+        }],
 
     // initial food element
     // type: physContainerType
@@ -308,6 +337,11 @@ const initialStore = {
             name: 'Food',
             act: (pct) => pct,
             conds: {
+                /*
+                x: 10.0,
+                y: 10.0,
+                */
+
                 // location
                 x: 18.0 * Math.random() + 1.0,
                 y: 18.0 * Math.random() + 1.0,

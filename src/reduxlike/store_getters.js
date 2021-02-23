@@ -18,6 +18,7 @@ export const physTypeGetCond = (physType, argCond) => physType.conds[argCond];
 // return key value from physType
 export const physTypeGet = (physType, argCond) => physType[argCond];
 
+
 // *** Simulator getter functions
 // return current simulator time
 export const simGetCurTime = (store) => store.sim.curTime;
