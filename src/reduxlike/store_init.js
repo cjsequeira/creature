@@ -4,7 +4,9 @@
 
 // *** Our imports
 import Chart from 'chart.js';
-import { repeat } from '../util.js';
+import {
+    UPDATE_FREQ_SIM,
+} from '../const_vals.js';
 import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
 import { randGen, mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
@@ -221,13 +223,15 @@ const initialStore = {
 
         // internal sim time info
         curTime: 0.0,
-        timeStep: 0.0,
-
-        // system clock info
-        lastClock: 0.0,
+        timeStep: UPDATE_FREQ_SIM / 1000.0,
 
         // initial random number generator seed
+        /*
+        initSeed: 0,
+        */
+
         initSeed: Date.now(),
+
     },
 
     // array of store changes to render
@@ -253,6 +257,17 @@ const initialStore = {
                 // behavior
                 behavior: 'idling',
                 behavior_request: null,
+
+                /*
+                // location
+                x: 15.0,
+                y: 15.0,
+
+                // heading, speed, acceleration
+                heading: 180.0 * Math.PI / 180.0,
+                speed: 2.0,
+                accel: 0.0,
+                */
 
                 // location
                 x: 18.0 * Math.random() + 1.0,
@@ -284,6 +299,17 @@ const initialStore = {
                 behavior: 'idling',
                 behavior_request: null,
 
+                /*
+                // location
+                x: 5.0,
+                y: 5.0,
+
+                // heading, speed, acceleration
+                heading: 0.0 * Math.PI / 180.0,
+                speed: 2.0,
+                accel: 0.0,
+                */
+
                 // location
                 x: 18.0 * Math.random() + 1.0,
                 y: 18.0 * Math.random() + 1.0,
@@ -308,6 +334,11 @@ const initialStore = {
             name: 'Food',
             act: (pct) => pct,
             conds: {
+                /*
+                x: 10.0,
+                y: 10.0,
+                */
+
                 // location
                 x: 18.0 * Math.random() + 1.0,
                 y: 18.0 * Math.random() + 1.0,

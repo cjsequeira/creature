@@ -55,12 +55,7 @@ export const mutable_rootReducer = (store, action) => {
                 ...store,
                 sim: {
                     ...store.sim,
-                    lastClock: performance.now(),
-                    timeStep:
-                        boundToRange(performance.now() - simGetLastClock(store), 0.0, 250.0) / 1000.0,
-                    curTime:
-                        store.sim.curTime +
-                        boundToRange(performance.now() - simGetLastClock(store), 0.0, 250.0) / 1000.0,
+                    curTime: store.sim.curTime + store.sim.timeStep,
                 }
             }
 

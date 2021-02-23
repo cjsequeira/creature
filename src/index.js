@@ -8,6 +8,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
 
 // our own stuff
+import {
+    UPDATE_FREQ_NONSIM,
+    UPDATE_FREQ_SIM,
+} from './const_vals.js';
 import { makeArgChain } from './util.js';
 import {
     actionDispatch,
@@ -37,10 +41,6 @@ const makeChainOfActionDispatch = makeArgChain(actionDispatch);
 
 
 // *** Timing loop setup
-// how often (ideally) to update the non-sim and the simulator in milliseconds
-// simulator frequency should be MORE FREQUENT than non-sim
-const UPDATE_FREQ_NONSIM = 100.0;
-const UPDATE_FREQ_SIM = 50;
 let lastClock = 0.0;
 
 
@@ -80,8 +80,7 @@ function appUpdate() {
 
     // if UPDATE_FREQ_non-sim time has passed since last non-sim update
     //  AND store NOT LOCKED, then update non-sim
-    if ((performance.now() > (lastClock + UPDATE_FREQ_NONSIM)) && (!storeIsLocked(myStore))
-    ) {
+    if ((performance.now() > (lastClock + UPDATE_FREQ_NONSIM)) && (!storeIsLocked(myStore))) {
         myStore = doNonSimUpdate(myStore);
 
         lastClock = performance.now();
