@@ -3,38 +3,39 @@
 // ****** Simple Creature code ******
 
 // *** Imports
+// REFACTOR: Can this be refactored away?
 import { myStore } from '../index.js';
 
 import { resolveRules } from '../rulebook.js';
-import { geThan, boundToRange, excludeRange } from '../util.js';
+import { geThan, excludeRange } from '../util.js';
 import { physTypeGetCond, physTypeUseConds, simGetTimeStep } from '../reduxlike/store_getters.js';
 import { randGen, mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
 
 // *** Behavior functions unique to this creature
 // main dispatch function
+// if pct behavior not an object key, bracket search gives null,
+//  triggering (pct => pct), which returns given pct
 // takes physContainerType
 // returns physContainerType
-export const ActAsSimpleCreature = (pct) => {
-    switch (pct.physType.conds.behavior) {
-        case 'idling': return ActIdling(pct.physType)
-        case 'eating': return ActEating(pct.physType)
-        case 'sleeping': return ActSleeping(pct.physType)
-        case 'wandering': return ActWandering(pct.physType)
-        default: return pct
-    }
-};
+export const ActAsSimpleCreature = (pct) => (
+    {
+        'idling': ActIdling,
+        'eating': ActEating,
+        'sleeping': ActSleeping,
+        'wandering': ActWandering,
+    }[physTypeGetCond(pct.physType, 'behavior')] || (pct => pct))(pct);
 
 // idling behavior function
-// takes physType
+// takes physContainerType
 // returns physContainerType
-const ActIdling = (physType) => {
+const ActIdling = (pct) => {
     return CheckBehavior(
-        // pass in physType object with specific glucose, and neuro
-        physTypeUseConds(physType,
+        // pass in physContainerType object with specific glucose, neuro, accel
+        physTypeUseConds(pct.physType,
             {
-                glucose: physTypeGetCond(physType, 'glucose') - 3.0 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType, 'neuro') + 2.0 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(pct.physType, 'glucose') - 3.0 * simGetTimeStep(myStore),
+                neuro: physTypeGetCond(pct.physType, 'neuro') + 2.0 * simGetTimeStep(myStore),
                 accel: 0.0
             }),
         // pass in behavior change desires specific to this behavior function
@@ -50,9 +51,9 @@ const ActIdling = (physType) => {
 };
 
 // wandering behavior function
-// takes physType
+// takes physContainerType
 // returns physContainerType
-const ActWandering = (physType) => {
+const ActWandering = (pct) => {
     // declare: random acceleration that's at least 2.0 in magnitude
     const rand_a = excludeRange(mutableRandGen_seededRand(randGen, -4.0, 15.0), 2.0);
 
@@ -62,14 +63,14 @@ const ActWandering = (physType) => {
     return CheckBehavior(
         // pass in physType object with specific glucose, neuro, heading, accel
         // glucose and neuro impacts are more severe with higher accceleration magnitude
-        physTypeUseConds(physType,
+        physTypeUseConds(pct.physType,
             {
-                glucose: physTypeGetCond(physType, 'glucose') -
+                glucose: physTypeGetCond(pct.physType, 'glucose') -
                     (0.3 * Math.abs(rand_a)) * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType, 'neuro') +
+                neuro: physTypeGetCond(pct.physType, 'neuro') +
                     (0.2 * Math.abs(rand_a)) * simGetTimeStep(myStore),
 
-                heading: physTypeGetCond(physType, 'heading') + rand_hdg_nudge,
+                heading: physTypeGetCond(pct.physType, 'heading') + rand_hdg_nudge,
                 accel: rand_a,
             }),
         // pass in behavior change desires specific to this behavior function
@@ -87,15 +88,15 @@ const ActWandering = (physType) => {
 };
 
 // eating behavior function
-// takes physType
+// takes physContainerType
 // returns physContainerType
-const ActEating = (physType) =>
+const ActEating = (pct) =>
     CheckBehavior(
         // pass in physType object with specific glucose and neuro
-        physTypeUseConds(physType,
+        physTypeUseConds(pct.physType,
             {
-                glucose: physTypeGetCond(physType, 'glucose') + 6.0 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType, 'neuro') + 4.0 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(pct.physType, 'glucose') + 6.0 * simGetTimeStep(myStore),
+                neuro: physTypeGetCond(pct.physType, 'neuro') + 4.0 * simGetTimeStep(myStore),
             }),
         // pass in behavior change desires specific to this behavior function
         {
@@ -107,15 +108,15 @@ const ActEating = (physType) =>
     );
 
 // sleeping behavior function
-// takes physType
+// takes physContainerType
 // returns physContainerType
-const ActSleeping = (physType) =>
+const ActSleeping = (pct) =>
     CheckBehavior(
         // pass in physType object with specific glucose and neuro
-        physTypeUseConds(physType,
+        physTypeUseConds(pct.physType,
             {
-                glucose: physTypeGetCond(physType, 'glucose') - 1.4 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType, 'neuro') - 6.2 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(pct.physType, 'glucose') - 1.4 * simGetTimeStep(myStore),
+                neuro: physTypeGetCond(pct.physType, 'neuro') - 6.2 * simGetTimeStep(myStore),
             }),
         // pass in behavior change desires specific to this behavior function
         {
