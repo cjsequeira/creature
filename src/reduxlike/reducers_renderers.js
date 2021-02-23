@@ -4,30 +4,28 @@
 
 // *** Our imports
 import {
-    ACTION_ADD_JOURNAL_ENTRY,
-    ACTION_ADVANCE_SIM,
-    ACTION_DO_CREATURE_ACT,
+    ACTION_JOURNAL_ADD_ENTRY,
+    ACTION_SIM_ADVANCE,
+    ACTION_PHYSTYPE_DO_ACT,
     ACTION_DO_NOTHING,
-    ACTION_LOCK_STORE,
-    ACTION_UNLOCK_STORE,
+    ACTION_STORE_LOCK,
     ACTION_QUEUE_ADD_GEOCHART_DATA,
     ACTION_QUEUE_ADD_STATUS_MESSAGE,
     ACTION_QUEUE_ADD_TIMECHART_DATA,
-    ACTION_START_SIM,
-    ACTION_STOP_SIM
-} from './action_creators.js';
-import { simGetCurTime, simGetLastClock, storeIsLocked } from './store_getters.js';
+    ACTION_SIM_START,
+    ACTION_SIM_STOP,
+    ACTION_STORE_UNLOCK,
+} from '../const_vals.js';
 import {
-    boundToRange,
+    UI_NUM_TRAILS
+} from '../const_vals.js';
+import { simGetCurTime } from './store_getters.js';
+import {
     chartShiftData,
     hexRGBAFade,
     roundTo,
     splice
 } from '../util.js';
-
-
-// *** Our constants
-const UI_NUM_TRAILS = 20;
 
 
 // *** Root reducer 
@@ -36,7 +34,7 @@ const UI_NUM_TRAILS = 20;
 // returns store type
 export const mutable_rootReducer = (store, action) => {
     switch (action.type) {
-        case ACTION_DO_CREATURE_ACT:
+        case ACTION_PHYSTYPE_DO_ACT:
             return {
                 ...store,
                 creatureStore: splice(
@@ -50,7 +48,7 @@ export const mutable_rootReducer = (store, action) => {
         case ACTION_DO_NOTHING:
             return store;
 
-        case ACTION_ADVANCE_SIM:
+        case ACTION_SIM_ADVANCE:
             return {
                 ...store,
                 sim: {
@@ -59,7 +57,7 @@ export const mutable_rootReducer = (store, action) => {
                 }
             }
 
-        case ACTION_ADD_JOURNAL_ENTRY:
+        case ACTION_JOURNAL_ADD_ENTRY:
             return {
                 ...store,
                 journal: [
@@ -71,13 +69,13 @@ export const mutable_rootReducer = (store, action) => {
                 ],
             };
 
-        case ACTION_LOCK_STORE:
+        case ACTION_STORE_LOCK:
             return {
                 ...store,
                 locked: true,
             }
 
-        case ACTION_UNLOCK_STORE:
+        case ACTION_STORE_UNLOCK:
             return {
                 ...store,
                 locked: false,
@@ -113,7 +111,7 @@ export const mutable_rootReducer = (store, action) => {
                 ],
             };
 
-        case ACTION_START_SIM:
+        case ACTION_SIM_START:
             return {
                 ...store,
                 sim: {
@@ -122,7 +120,7 @@ export const mutable_rootReducer = (store, action) => {
                 }
             }
 
-        case ACTION_STOP_SIM:
+        case ACTION_SIM_STOP:
             return {
                 ...store,
                 sim: {

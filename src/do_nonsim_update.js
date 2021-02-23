@@ -31,6 +31,7 @@ const makeChainOfActionDispatch = makeArgChain(actionDispatch);
 
 
 // *** Creature behavior strings
+// REFACTOR
 const behaviorStrings = {
     idling: "is chillin'! Yeeeah...",
     eating: "is eating!! Nom...",

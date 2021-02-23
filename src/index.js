@@ -16,7 +16,7 @@ import { makeArgChain } from './util.js';
 import {
     actionDispatch,
     advanceSim,
-    doCreatureAct,
+    doPhysTypeAct,
     startSim,
     stopSim,
     lockStore,
@@ -72,7 +72,7 @@ function appUpdate() {
         // yes: set store lock, do creature act, advance sim, unset store lock
         myStore = makeChainOfActionDispatch(
             lockStore(),
-            myStore.creatureStore.map((creature, i) => doCreatureAct(creature, i)),
+            myStore.creatureStore.map((creature, i) => doPhysTypeAct(creature, i)),
             advanceSim(),
             unlockStore()
         )(myStore);

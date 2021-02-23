@@ -3,32 +3,20 @@
 // ****** Code for creating actions ******
 
 // *** Our imports
+import {
+    ACTION_JOURNAL_ADD_ENTRY,
+    ACTION_SIM_ADVANCE,
+    ACTION_PHYSTYPE_DO_ACT,
+    ACTION_DO_NOTHING,
+    ACTION_STORE_LOCK,
+    ACTION_QUEUE_ADD_GEOCHART_DATA,
+    ACTION_QUEUE_ADD_STATUS_MESSAGE,
+    ACTION_QUEUE_ADD_TIMECHART_DATA,
+    ACTION_SIM_START,
+    ACTION_SIM_STOP,
+    ACTION_STORE_UNLOCK
+} from '../const_vals.js';
 import { mutable_rootReducer } from './reducers_renderers.js';
-
-
-// *** Action names
-// queue update UI
-export const ACTION_QUEUE_ADD_TIMECHART_DATA = 'QUEUE_ADD_TIMECHART_DATA';
-export const ACTION_QUEUE_ADD_GEOCHART_DATA = 'QUEUE_ADD_GEOCHART_DATA';
-export const ACTION_QUEUE_ADD_STATUS_MESSAGE = 'QUEUE_ADD_STATUS_MESSAGE';
-
-// add journal entry
-export const ACTION_ADD_JOURNAL_ENTRY = 'ADD_JOURNAL_ENTRY';
-
-// do creature action
-export const ACTION_DO_CREATURE_ACT = 'DO_CREATURE_ACT';
-
-// control simulator
-export const ACTION_START_SIM = 'START_SIM';
-export const ACTION_STOP_SIM = 'STOP_SIM';
-export const ACTION_ADVANCE_SIM = 'ADVANCE_SIM';
-
-// control writing to store
-export const ACTION_LOCK_STORE = 'LOCK_STORE';
-export const ACTION_UNLOCK_STORE = 'UNLOCK_STORE';
-
-// do nothing
-export const ACTION_DO_NOTHING = 'DO_NOTHING';
 
 
 // *** Queue update UI
@@ -62,16 +50,16 @@ export const queue_addStatusMessage = (statusBox, message) => ({
 
 // *** Add journal entry
 export const addJournalEntry = (journal, message) => ({
-    type: ACTION_ADD_JOURNAL_ENTRY,
+    type: ACTION_JOURNAL_ADD_ENTRY,
     journal,
     message
 });
 
 
-// *** Perform action for creature at given index
-export const doCreatureAct = (pct, index) => ({
-    type: ACTION_DO_CREATURE_ACT,
-    pct, 
+// *** Perform action for physType at given index
+export const doPhysTypeAct = (pct, index) => ({
+    type: ACTION_PHYSTYPE_DO_ACT,
+    pct,
     index
 });
 
@@ -79,29 +67,29 @@ export const doCreatureAct = (pct, index) => ({
 // *** Sim control
 // start sim
 export const startSim = () => ({
-    type: ACTION_START_SIM,
+    type: ACTION_SIM_START,
 });
 
 // stop sim
 export const stopSim = () => ({
-    type: ACTION_STOP_SIM,
+    type: ACTION_SIM_STOP,
 });
 
 // advance sim time
 export const advanceSim = () => ({
-    type: ACTION_ADVANCE_SIM,
+    type: ACTION_SIM_ADVANCE,
 });
 
 
 // *** Lock and unlock for write access
 // lock store
 export const lockStore = () => ({
-    type: ACTION_LOCK_STORE,
+    type: ACTION_STORE_LOCK,
 });
 
 // unlock store
 export const unlockStore = () => ({
-    type: ACTION_UNLOCK_STORE,
+    type: ACTION_STORE_UNLOCK,
 })
 
 
