@@ -7,15 +7,19 @@
 import { myStore } from '../index.js';
 
 import { resolveRules } from '../rulebook.js';
-import { geThan, excludeRange } from '../util.js';
+import { excludeRange, geThan, sum } from '../util.js';
 import { physTypeGetCond, physTypeUseConds, simGetTimeStep } from '../reduxlike/store_getters.js';
-import { randGen, mutableRandGen_seededRand } from '../sim/seeded_rand.js';
+import { 
+    randGen, 
+    mutableRandGen_seededRand, 
+    mutableRandGen_seededWeightedRand 
+} from '../sim/seeded_rand.js';
 
 
 // *** Behavior functions unique to this creature
 // main dispatch function
-// if pct behavior not an object key, bracket search gives null,
-//  triggering (pct => pct), which returns given pct
+// if pct behavior is not an object key, 'behavior' bracket search gives null,
+//  triggering (pct => pct), which returns given pct unaltered
 // takes physContainerType
 // returns physContainerType
 export const ActAsSimpleCreature = (pct) => (
@@ -30,7 +34,7 @@ export const ActAsSimpleCreature = (pct) => (
 // takes physContainerType
 // returns physContainerType
 const ActIdling = (pct) =>
-    CheckBehavior(
+    checkBehavior(
         // pass in physContainerType object with specific glucose, neuro, accel
         physTypeUseConds(pct.physType,
             {
@@ -46,31 +50,26 @@ const ActIdling = (pct) =>
                 (physTypeGetCond(physType, 'glucose') < 50.0) ? 7.0 : 0.1,
             'sleeping': (physType) =>
                 (physTypeGetCond(physType, 'neuro') > 85.0) ? 4.0 : 0.1,
-        }
-    );
+        });
 
 // wandering behavior function
 // takes physContainerType
 // returns physContainerType
-const ActWandering = (pct) => {
-    // declare: random acceleration that's at least 2.0 in magnitude
-    const rand_a = excludeRange(mutableRandGen_seededRand(randGen, -4.0, 15.0), 2.0);
-
-    // declare: random heading nudge
-    const rand_hdg_nudge = mutableRandGen_seededRand(randGen, -0.1, 0.1);
-
-    return CheckBehavior(
+const ActWandering = (pct) =>
+    // return evaluation of anonymous function that takes an acceleration and 
+    //  heading nudge value...
+    (accel => hdg_nudge => checkBehavior(
         // pass in physType object with specific glucose, neuro, heading, accel
         // glucose and neuro impacts are more severe with higher accceleration magnitude
         physTypeUseConds(pct.physType,
             {
                 glucose: physTypeGetCond(pct.physType, 'glucose') -
-                    (0.3 * Math.abs(rand_a)) * simGetTimeStep(myStore),
+                    (0.3 * Math.abs(accel)) * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(pct.physType, 'neuro') +
-                    (0.2 * Math.abs(rand_a)) * simGetTimeStep(myStore),
+                    (0.2 * Math.abs(accel)) * simGetTimeStep(myStore),
 
-                heading: physTypeGetCond(pct.physType, 'heading') + rand_hdg_nudge,
-                accel: rand_a,
+                heading: physTypeGetCond(pct.physType, 'heading') + hdg_nudge,
+                accel: accel,
             }),
         // pass in behavior change desires specific to this behavior function
         {
@@ -82,15 +81,17 @@ const ActWandering = (pct) => {
                 (physTypeGetCond(physType, 'glucose') < 20.0) ? 7.0 : 0.1,
             'sleeping': (physType) =>
                 (physTypeGetCond(physType, 'neuro') > 85.0) ? 7.0 : 0.1,
-        }
-    );
-};
+        })
+        // ... with random acceleration at least 2.0 in magnitude...
+        // ... and random heading nudge (in radians)
+    )(excludeRange(mutableRandGen_seededRand(randGen, -4.0, 15.0), 2.0))        // accel
+        (mutableRandGen_seededRand(randGen, -0.1, 0.1));                        // heading nudge
 
 // eating behavior function
 // takes physContainerType
 // returns physContainerType
 const ActEating = (pct) =>
-    CheckBehavior(
+    checkBehavior(
         // pass in physType object with specific glucose and neuro
         physTypeUseConds(pct.physType,
             {
@@ -103,14 +104,13 @@ const ActEating = (pct) =>
                 5.0,
             'idling': (physType) =>
                 (physTypeGetCond(physType, 'glucose') > 40.0) ? 5.0 : 0.1
-        }
-    );
+        });
 
 // sleeping behavior function
 // takes physContainerType
 // returns physContainerType
 const ActSleeping = (pct) =>
-    CheckBehavior(
+    checkBehavior(
         // pass in physType object with specific glucose and neuro
         physTypeUseConds(pct.physType,
             {
@@ -123,39 +123,26 @@ const ActSleeping = (pct) =>
                 5.0,
             'idling': (physType) =>
                 (physTypeGetCond(physType, 'neuro') < 60.0) ? 5.0 : 0.1
-        }
-    );
+        });
 
 
 // *** Code common to all simple creatures
 // function to review and return appropriate behavior
 // takes physType and desireFuncType
 // returns physContainerType
-export const CheckBehavior = (physType, desireFuncType) => {
-    // declare: numerical desires as evaluation of each desire func with nifty shorthand
-    const numbers = Object.values(desireFuncType).map(f => f(physType));
-
-    // declare: numerical desires as cumulative array
-    const cum_numbers = numbers.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-
-    // declare: max value in cumulative array
-    const max_cum_numbers = cum_numbers.reduce((a, x) => Math.max(a, x));
-
-    // declare: random number in range of max value, as [0, max_cum_numbers]
-    // note: if max_cum_numbers = 0.0, value will be 0.0
-    const randInRange = mutableRandGen_seededRand(randGen, 0, max_cum_numbers);
-
-    // declare: first desire "box" that holds random number "target"
-    const chosenIndex = cum_numbers.findIndex(x => geThan(randInRange)(x));
-
+export const checkBehavior = (physType, desireFuncType) =>
     // return physContainerType object with: 
     //  lastRule: the rule node applied to this creature
-    //  physType: the creature, as a creatureType with behavior indicated via rulebook review of chosen desire
-    return resolveRules({
+    //  physType: the creature, as a creatureType with behavior indicated via rulebook review
+    //      of randomly-chosen desire based on weighted random draw using desire functions
+    resolveRules({
         ...physType,
         conds: {
             ...physType.conds,
-            behavior_request: Object.keys(desireFuncType)[chosenIndex]
+            behavior_request:
+                Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
+                    randGen,
+                    Object.values(desireFuncType).map(f => f(physType))
+                )]
         }
     });
-};

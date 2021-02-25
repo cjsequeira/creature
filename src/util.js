@@ -16,7 +16,7 @@ export const makeArgChain = func => (...args) => target =>
 // given a target and an array of functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
-// the array of arguments will be flattened up to three times
+// the array of functions will be flattened up to three times
 export const makeFuncChain = (...funcs) => target =>
     funcs.flat(3).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
 
@@ -38,10 +38,6 @@ export const repeat = input => n =>
 
 
 // *** Numerical utilities
-// within given range? as (min, max)
-// returns bool
-export const withinRange = (num, min = 0.0, max = 1.0) => (num > min) && (num < max);
-
 // bound input to [min, max] or [min, +Infinity) or (-Infinity, max]
 // returns number
 export const boundToRange = (num, min = -Infinity, max = +Infinity) =>
@@ -62,8 +58,30 @@ export const excludeRange = (num, bound) =>
             : boundToRange(num, bound, +Infinity);
 
 // round input to given number of digits
+// returns number
 export const roundTo = (num, digits = 0) =>
     Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits);
+
+// return an index into a list of weights, given a selector
+// takes an array of numerical weights and a numerical selector
+// returns number
+// returns -1 if the selector is not in the range of the cumulative weights
+export const selectWeight = weightsList => selector =>
+    // build cumulative array of weights
+    weightsList.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], [])
+
+        // find the first cumulative weight that "holds" the selector
+        //  returns -1 if the selector is not in the range of the cumulative weights
+        .findIndex(x => geThan(selector)(x));
+        
+// sum array elements
+// takes array of numbers
+// returns number
+export const sum = arr => arr.reduce((a, b) => a+b, 0)
+
+// within given range? as (min, max)
+// returns bool
+export const withinRange = (num, min = 0.0, max = 1.0) => (num > min) && (num < max);
 
 
 // *** UI utilities

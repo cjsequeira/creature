@@ -226,11 +226,12 @@ const initialStore = {
         timeStep: UPDATE_FREQ_SIM / 1000.0,
 
         // initial random number generator seed
-        /*
         initSeed: 0,
-        */
 
+        // initial random number generator seed
+        /*
         initSeed: Date.now(),
+        */
     },
 
     // array of store changes to render
@@ -259,25 +260,27 @@ const initialStore = {
                     behavior: 'idling',
                     behavior_request: null,
 
-                    /*
+
                     // location
                     x: 15.0,
                     y: 15.0,
-    
+
                     // heading, speed, acceleration
                     heading: 180.0 * Math.PI / 180.0,
                     speed: 2.0,
                     accel: 0.0,
-                    */
+
 
                     // location
+                    /*
                     x: 18.0 * Math.random() + 1.0,
                     y: 18.0 * Math.random() + 1.0,
-
+                    
                     // heading, speed, acceleration
                     heading: 2.0 * Math.PI * Math.random(),
                     speed: Math.random(),
                     accel: 0.0,
+                    */
                 },
             },
         },
@@ -302,18 +305,19 @@ const initialStore = {
                     behavior: 'idling',
                     behavior_request: null,
 
-                    /*
+
                     // location
                     x: 5.0,
                     y: 5.0,
-    
+
                     // heading, speed, acceleration
                     heading: 0.0 * Math.PI / 180.0,
                     speed: 2.0,
                     accel: 0.0,
-                    */
+
 
                     // location
+                    /*
                     x: 18.0 * Math.random() + 1.0,
                     y: 18.0 * Math.random() + 1.0,
 
@@ -321,6 +325,7 @@ const initialStore = {
                     heading: 2.0 * Math.PI * Math.random(),
                     speed: Math.random(),
                     accel: 0.0,
+                    */
                 },
             },
         }],
@@ -337,14 +342,16 @@ const initialStore = {
             name: 'Food',
             act: (pct) => pct,
             conds: {
-                /*
+
                 x: 10.0,
                 y: 10.0,
-                */
+
 
                 // location
+                /*
                 x: 18.0 * Math.random() + 1.0,
                 y: 18.0 * Math.random() + 1.0,
+                */
             },
         },
     },
