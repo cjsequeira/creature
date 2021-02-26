@@ -22,7 +22,8 @@ import {
 import { simGetCurTime } from './store_getters.js';
 import {
     chartShiftData,
-    interpRGBA,
+    concatSliceMap,
+    fadeColors,
     roundTo,
     splice
 } from '../util.js';
@@ -176,7 +177,7 @@ function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
     // revise time history chart x axis "window" if needed, for next chart update cycle
     const chart_x = chart.options.scales.xAxes[0].ticks;            // shorthand for x-axis ticks
     const chart_xWidth = chart_x.max - chart_x.min;                 // extents of x axis
-    const new_max = Math.ceil(timeValPair.time - chart_x.stepSize);   // potential different x axis max           
+    const new_max = Math.ceil(timeValPair.time - chart_x.stepSize); // potential different x axis max           
     const new_min = new_max - chart_xWidth;                         // potential different x axis min
 
     // MUTABLE: assign x axis min and max - shifted rightward if indicated by new_min and new_max
@@ -202,55 +203,36 @@ function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
 // takes chart reference, {x, y} pair
 // does not return anything!
 function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
+    // all of our slice limits are -UI_NUM_TRAILS, so define a shorthand 
+    //  function with that limit built in 
+    const concatSliceTrailsMap = concatElem => mapFunc => arr =>
+        concatSliceMap(concatElem)(-UI_NUM_TRAILS)(mapFunc)(arr);
+
+    // define a shorthand function specific to concatenating a color and 
+    //  mapping color list to a fade
+    const concatAndFade = concatSliceTrailsMap(color)(fadeColors);
+
     // MUTABLE: add data and colors to chart, then slice to max length, 
-    //  then fade colors if array length is at least 2
+    //  then fade colors 
     chart.data.datasets[dataIndex] = {
         ...chart.data.datasets[dataIndex],
 
-        backgroundColor: [chart.data.datasets[dataIndex].backgroundColor]
-            .flat()                                                 // flatten
-            .slice(-chart.data.datasets[dataIndex].data.length)     // slice to same length as datapoints arr
-            .concat(color)                                          // add
-            .slice(-UI_NUM_TRAILS)                                  // slice to max length
-            .map((_, i, arr) =>                                     // fade colors if array length at least 2
-                (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
-                    : arr[i]),
+        data: concatSliceTrailsMap
+            ({ x: xyPair.x, y: xyPair.y })                          // concatenate xyPair
+            (x => x)                                                // identity function for mapping
+            ([chart.data.datasets[dataIndex].data]),                // input: current chart xy data
 
-        borderColor: [chart.data.datasets[dataIndex].borderColor]
-            .flat()
-            .slice(-chart.data.datasets[dataIndex].data.length)
-            .concat(color)
-            .slice(-UI_NUM_TRAILS)
-            .map((_, i, arr) =>
-                (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
-                    : arr[i]),
+        backgroundColor:
+            concatAndFade([chart.data.datasets[dataIndex].backgroundColor]),
 
-        pointBackgroundColor: [chart.data.datasets[dataIndex].pointBackgroundColor]
-            .flat()
-            .slice(-chart.data.datasets[dataIndex].data.length)
-            .concat(color)
-            .slice(-UI_NUM_TRAILS)
-            .map((_, i, arr) =>
-                (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
-                    : arr[i]),
+        borderColor:
+            concatAndFade([chart.data.datasets[dataIndex].borderColor]),
 
-        pointBorderColor: [chart.data.datasets[dataIndex].pointBorderColor]
-            .flat()
-            .slice(-chart.data.datasets[dataIndex].data.length)
-            .concat(color)
-            .slice(-UI_NUM_TRAILS)
-            .map((_, i, arr) =>
-                (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
-                    : arr[i]),
+        pointBackgroundColor:
+            concatAndFade([chart.data.datasets[dataIndex].pointBackgroundColor]),
 
-        data: [chart.data.datasets[dataIndex].data]
-            .flat()
-            .concat({ x: xyPair.x, y: xyPair.y })
-            .slice(-UI_NUM_TRAILS),
+        pointBorderColor:
+            concatAndFade([chart.data.datasets[dataIndex].pointBorderColor]),
     };
 
     // MUTABLE: redraw the chart
