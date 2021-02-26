@@ -109,7 +109,7 @@ export const chartShiftData = (data, x) => {
 // fade one RGBA hex color to another, controlled by a [0, 1] fader
 // returns RGBA hex color
 // based on https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
-export const hexRGBAFade = (fader, hexStart = '#ffffffff', hexEnd = '#08080800') => {
+export const interpRGBA = (fader, hexStart = '#ffffffff', hexEnd = '#08080800') => {
     const rStart = parseInt(hexStart.slice(1, 3), 16),
         gStart = parseInt(hexStart.slice(3, 5), 16),
         bStart = parseInt(hexStart.slice(5, 7), 16),

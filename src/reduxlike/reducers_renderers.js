@@ -22,7 +22,7 @@ import {
 import { simGetCurTime } from './store_getters.js';
 import {
     chartShiftData,
-    hexRGBAFade,
+    interpRGBA,
     roundTo,
     splice
 } from '../util.js';
@@ -214,7 +214,7 @@ function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
             .slice(-UI_NUM_TRAILS)                                  // slice to max length
             .map((_, i, arr) =>                                     // fade colors if array length at least 2
                 (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
         borderColor: [chart.data.datasets[dataIndex].borderColor]
@@ -224,7 +224,7 @@ function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
             .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
         pointBackgroundColor: [chart.data.datasets[dataIndex].pointBackgroundColor]
@@ -234,7 +234,7 @@ function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
             .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
         pointBorderColor: [chart.data.datasets[dataIndex].pointBorderColor]
@@ -244,7 +244,7 @@ function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
             .slice(-UI_NUM_TRAILS)
             .map((_, i, arr) =>
                 (arr.length >= 2)
-                    ? (i < (arr.length - 1)) ? hexRGBAFade(0.5, arr[i + 1], '#cccccc00') : arr[i]
+                    ? (i < (arr.length - 1)) ? interpRGBA(0.5, arr[i + 1], '#cccccc00') : arr[i]
                     : arr[i]),
 
         data: [chart.data.datasets[dataIndex].data]
