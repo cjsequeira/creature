@@ -107,7 +107,7 @@ export const mutable_rootReducer = (store, action) => {
                 ...store,
                 changes: [
                     ...store.changes,
-                    () => mutable_updateTimeChartData(action.chart, action.dataIndex, action.yTimePair),
+                    () => mutable_updateTimeChartData(action.chart, action.dataIndex, action.timeValPair),
                 ],
             };
 
@@ -162,21 +162,21 @@ export function mutable_renderStoreChanges(store) {
 // MUTABLE: mutates "chart" argument
 // takes chart reference, chart data index, {time, value} pair
 // does not return anything!
-function mutable_updateTimeChartData(chart, dataIndex, yTimePair) {
+function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
     // MUTABLE: add data to chart
     chart.data.datasets[dataIndex] = {
         ...chart.data.datasets[dataIndex],
         data: chart.data.datasets[dataIndex].data.concat(
             {
-                x: yTimePair.time,
-                y: yTimePair.value
+                x: timeValPair.time,
+                y: timeValPair.value
             })
     };
 
     // revise time history chart x axis "window" if needed, for next chart update cycle
     const chart_x = chart.options.scales.xAxes[0].ticks;            // shorthand for x-axis ticks
     const chart_xWidth = chart_x.max - chart_x.min;                 // extents of x axis
-    const new_max = Math.ceil(yTimePair.time - chart_x.stepSize);   // potential different x axis max           
+    const new_max = Math.ceil(timeValPair.time - chart_x.stepSize);   // potential different x axis max           
     const new_min = new_max - chart_xWidth;                         // potential different x axis min
 
     // MUTABLE: assign x axis min and max - shifted rightward if indicated by new_min and new_max

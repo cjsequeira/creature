@@ -32,12 +32,12 @@ export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
 });
 
 // queue add time chart data
-// yTimePair is {time, value}
-export const queue_addTimeChartData = (chart, dataIndex, yTimePair) => ({
+// timeValPair is {time, value}
+export const queue_addTimeChartData = (chart, dataIndex, timeValPair) => ({
     type: ACTION_QUEUE_ADD_TIMECHART_DATA,
     chart,
     dataIndex,
-    yTimePair
+    timeValPair
 });
 
 // queue add status message
