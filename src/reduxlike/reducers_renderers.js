@@ -33,107 +33,99 @@ import {
 // MUTABLE: Can cause changes in application store and other parts of application!
 // takes store type and action type
 // returns store type
-export const mutable_rootReducer = (store, action) => {
-    switch (action.type) {
-        case ACTION_PHYSTYPE_DO_ACT:
-            return {
-                ...store,
-                creatureStore: splice(
-                    store.creatureStore,
-                    action.index,
-                    1,
-                    action.pct.physType.act(action.pct)
+export const mutable_rootReducer = (inStore, inAction) => (
+    {
+        [ACTION_PHYSTYPE_DO_ACT]: (store, action) => ({
+            ...store,
+            creatureStore: splice(
+                store.creatureStore,
+                action.index,
+                1,
+                action.pct.physType.act(action.pct)
+            ),
+        }),
+
+        [ACTION_DO_NOTHING]: (store, action) => store,
+
+        [ACTION_SIM_ADVANCE]: (store, action) => ({
+            ...store,
+            sim: {
+                ...store.sim,
+                curTime: store.sim.curTime + store.sim.timeStep,
+            }
+        }),
+
+        [ACTION_JOURNAL_ADD_ENTRY]: (store, action) => ({
+            ...store,
+            journal: [
+                ...store.journal,
+                {
+                    time: simGetCurTime(store),
+                    message: action.message,
+                }
+            ],
+        }),
+
+        [ACTION_STORE_LOCK]: (store, action) => ({
+            ...store,
+            locked: true,
+        }),
+
+        [ACTION_STORE_UNLOCK]: (store, action) => ({
+            ...store,
+            locked: false,
+        }),
+
+        [ACTION_QUEUE_ADD_GEOCHART_DATA]: (store, action) => ({
+            ...store,
+            changes: [
+                ...store.changes,
+                () => mutable_updateGeoChartData(action.chart, action.dataIndex, action.color, action.xyPair),
+            ],
+        }),
+
+        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (store, action) => ({
+            ...store,
+            changes: [
+                ...store.changes,
+                () => mutable_updateStatusBox(
+                    action.statusBox,
+                    'Time ' + roundTo(simGetCurTime(store), 2) + ': ' + action.message
                 ),
+            ],
+        }),
+
+        [ACTION_QUEUE_ADD_TIMECHART_DATA]: (store, action) => ({
+            ...store,
+            changes: [
+                ...store.changes,
+                () => mutable_updateTimeChartData(action.chart, action.dataIndex, action.timeValPair),
+            ],
+        }),
+
+        [ACTION_SIM_START]: (store, action) => ({
+            ...store,
+            sim: {
+                ...store.sim,
+                running: true,
             }
+        }),
 
-        case ACTION_DO_NOTHING:
-            return store;
-
-        case ACTION_SIM_ADVANCE:
-            return {
-                ...store,
-                sim: {
-                    ...store.sim,
-                    curTime: store.sim.curTime + store.sim.timeStep,
-                }
+        [ACTION_SIM_STOP]: (store, action) => ({
+            ...store,
+            sim: {
+                ...store.sim,
+                running: false,
             }
+        }),
 
-        case ACTION_JOURNAL_ADD_ENTRY:
-            return {
-                ...store,
-                journal: [
-                    ...store.journal,
-                    {
-                        time: simGetCurTime(store),
-                        message: action.message,
-                    }
-                ],
-            };
+        // use action.type as an entry key into the key-val list above
+        // key is used to get a function 
+        // if no key-val matches the entry key, return a func that echoes the given store
+    }[inAction.type] || ((store, action) => store)
 
-        case ACTION_STORE_LOCK:
-            return {
-                ...store,
-                locked: true,
-            }
-
-        case ACTION_STORE_UNLOCK:
-            return {
-                ...store,
-                locked: false,
-            }
-
-        case ACTION_QUEUE_ADD_GEOCHART_DATA:
-            return {
-                ...store,
-                changes: [
-                    ...store.changes,
-                    () => mutable_updateGeoChartData(action.chart, action.dataIndex, action.color, action.xyPair),
-                ],
-            };
-
-        case ACTION_QUEUE_ADD_STATUS_MESSAGE:
-            return {
-                ...store,
-                changes: [
-                    ...store.changes,
-                    () => mutable_updateStatusBox(
-                        action.statusBox,
-                        'Time ' + roundTo(simGetCurTime(store), 2) + ': ' + action.message
-                    ),
-                ],
-            };
-
-        case ACTION_QUEUE_ADD_TIMECHART_DATA:
-            return {
-                ...store,
-                changes: [
-                    ...store.changes,
-                    () => mutable_updateTimeChartData(action.chart, action.dataIndex, action.timeValPair),
-                ],
-            };
-
-        case ACTION_SIM_START:
-            return {
-                ...store,
-                sim: {
-                    ...store.sim,
-                    running: true,
-                }
-            }
-
-        case ACTION_SIM_STOP:
-            return {
-                ...store,
-                sim: {
-                    ...store.sim,
-                    running: false,
-                }
-            }
-
-        default:
-            return store;
-    }
-}
+    // evaluate the function with the given store and action to get a store type
+)(inStore, inAction);
 
 
 // *** Function to render store changes using an array of render functions

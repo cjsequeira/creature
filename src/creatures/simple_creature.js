@@ -9,26 +9,28 @@ import { myStore } from '../index.js';
 import { resolveRules } from '../rulebook.js';
 import { excludeRange, geThan, sum } from '../util.js';
 import { physTypeGetCond, physTypeUseConds, simGetTimeStep } from '../reduxlike/store_getters.js';
-import { 
-    randGen, 
-    mutableRandGen_seededRand, 
-    mutableRandGen_seededWeightedRand 
+import {
+    randGen,
+    mutableRandGen_seededRand,
+    mutableRandGen_seededWeightedRand
 } from '../sim/seeded_rand.js';
 
 
 // *** Behavior functions unique to this creature
 // main dispatch function
 // if pct behavior is not an object key, 'behavior' bracket search gives null,
-//  triggering (pct => pct), which returns given pct unaltered
+//  triggering (x => x), which returns given pct unaltered
 // takes physContainerType
 // returns physContainerType
-export const ActAsSimpleCreature = (pct) => (
-    {
-        'idling': ActIdling,
-        'eating': ActEating,
-        'sleeping': ActSleeping,
-        'wandering': ActWandering,
-    }[physTypeGetCond(pct.physType, 'behavior')] || (pct => pct))(pct);
+export const ActAsSimpleCreature = (pct) =>
+    (
+        {
+            'idling': ActIdling,
+            'eating': ActEating,
+            'sleeping': ActSleeping,
+            'wandering': ActWandering,
+        }[physTypeGetCond(pct.physType, 'behavior')] || (x => x)
+    )(pct);
 
 // idling behavior function
 // takes physContainerType
