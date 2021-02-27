@@ -20,6 +20,7 @@ import {
 
 
 // *** Default Simple Creature assembler
+// takes nothing
 // returns physType
 export const getDefaultSimpleCreature = () => ({
     name: 'New Simple Creature',
@@ -64,7 +65,7 @@ export const actAsSimpleCreature = (pct) =>
     )(pct);
 
 // idling behavior function
-// takes physContainerType
+// takes pct: physContainerType
 // returns physContainerType
 const actIdling = (pct) =>
     doBehavior(
@@ -86,7 +87,7 @@ const actIdling = (pct) =>
         });
 
 // wandering behavior function
-// takes physContainerType
+// takes pct: physContainerType
 // returns physContainerType
 const actWandering = (pct) =>
     // return evaluation of anonymous function that takes an acceleration and 
@@ -121,7 +122,7 @@ const actWandering = (pct) =>
         (mutableRandGen_seededRand(-0.1, 0.1));                        // heading nudge
 
 // eating behavior function
-// takes physContainerType
+// takes pct: physContainerType
 // returns physContainerType
 const actEating = (pct) =>
     doBehavior(
@@ -140,7 +141,7 @@ const actEating = (pct) =>
         });
 
 // sleeping behavior function
-// takes physContainerType
+// takes pct: physContainerType
 // returns physContainerType
 const actSleeping = (pct) =>
     doBehavior(
@@ -179,5 +180,3 @@ export const doBehavior = (physType, desireFuncType) =>
                 )]
         })
     );
-
-

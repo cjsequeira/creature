@@ -109,15 +109,18 @@ const ruleBook = {
 
 // *** Rulebook functions
 // general rulebook resolver
-// returns physContainerType with applied rule and record of rule used
 // REFACTOR IDEA:
 //  Determine whether to save last-used rule in a pct or some other structure 
 //  (e.g. a store list with a creature lookup)
+// takes: physType
+// returns physContainerType with applied rule and record of rule used
 export const resolveRules = (physType) => {
     // define: get physContainerType with selected rule and a physType to apply the rule to
     const pct_to_use = findRule(physType)(ruleBook);
 
-    // return physContainerType with lastRule: selected rule, and physType: with selected rule applied
+    // return physContainerType with: 
+    //  lastRule: selected rule
+    //  physType: given physType with selected rule applied
     return {
         ...pct_to_use,
         lastRule: pct_to_use.lastRule,
@@ -126,6 +129,9 @@ export const resolveRules = (physType) => {
 };
 
 // recursive rulebook node finder
+// takes:
+//  physType
+//  node: the rule node to use
 // returns physContainerType with function (named "func") that should be applied to the physType
 const findRule = (physType) => (node) => {
     // define: is pre-function undefined? if yes, use physType. if no, use preFunc(physType)

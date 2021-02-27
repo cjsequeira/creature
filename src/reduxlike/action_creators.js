@@ -23,7 +23,12 @@ import { rootReducer } from './reducers_renderers.js';
 // *** Queue update UI
 // *** App store does not change until mutable_renderStateChanges is applied
 // queue add geo chart data
-// xyPair is {x, y}
+// takes:
+//  chart: time chart
+//  dataIndex: chart data index
+//  color: color for the data
+//  xyPair: data coordinate, as {x, y}
+// returns actionType
 export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
     type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
     chart,
@@ -33,7 +38,11 @@ export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
 });
 
 // queue add time chart data
-// timeValPair is {time, value}
+// takes:
+//  chart: time chart
+//  dataIndex: chart data index
+//  timeValPair: data coordinate, as {time, value}
+// returns actionType
 export const queue_addTimeChartData = (chart, dataIndex, timeValPair) => ({
     type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
     chart,
@@ -42,6 +51,10 @@ export const queue_addTimeChartData = (chart, dataIndex, timeValPair) => ({
 });
 
 // queue add status message
+// takes:
+//  statusBox: HTML DOM status box reference
+//  message: message, as string
+// returns actionType
 export const queue_addStatusMessage = (statusBox, message) => ({
     type: ACTION_QUEUE_ADD_STATUS_MESSAGE,
     statusBox,
@@ -50,6 +63,10 @@ export const queue_addStatusMessage = (statusBox, message) => ({
 
 
 // *** Add journal entry
+// takes:
+//  journal: store journal, as journalType
+//  message: message, as string
+// returns actionType
 export const addJournalEntry = (journal, message) => ({
     type: ACTION_JOURNAL_ADD_ENTRY,
     journal,
@@ -57,7 +74,11 @@ export const addJournalEntry = (journal, message) => ({
 });
 
 
-// *** Perform action for physType at given index
+// *** Perform action for physContainerType at given index
+// takes:
+//  pct: physContainerType
+//  index: index into physContainerType store in app store
+// returns actionType
 export const doPhysTypeAct = (pct, index) => ({
     type: ACTION_PHYSTYPE_DO_ACT,
     pct,
@@ -67,22 +88,30 @@ export const doPhysTypeAct = (pct, index) => ({
 
 // *** Sim control
 // advance sim time
+// takes: nothing
+// returns actionType
 export const advanceSim = () => ({
     type: ACTION_SIM_ADVANCE,
 });
 
 // save system clock
+// takes: nothing
+// returns actionType
 export const saveClockForSim = (clock) => ({
     type: ACTION_SIM_SAVE_CLOCK,
     clock
 });
 
 // start sim
+// takes: nothing
+// returns actionType
 export const startSim = () => ({
     type: ACTION_SIM_START,
 });
 
 // stop sim
+// takes: nothing
+// returns actionType
 export const stopSim = () => ({
     type: ACTION_SIM_STOP,
 });
@@ -90,21 +119,31 @@ export const stopSim = () => ({
 
 // *** Lock and unlock for write access
 // lock store
+// takes: nothing
+// returns actionType
 export const lockStore = () => ({
     type: ACTION_STORE_LOCK,
 });
 
 // unlock store
+// takes: nothing
+// returns actionType
 export const unlockStore = () => ({
     type: ACTION_STORE_UNLOCK,
 })
 
 
 // *** Do nothing
+// takes: nothing
+// returns actionType
 export const doNothing = () => ({
     type: ACTION_DO_NOTHING,
 });
 
 
 // *** Action dispatcher function
+// takes:
+//  store: app store, as storeType
+//  action: action to dispatch, as actionType
+// returns storeType
 export const actionDispatch = (store, action) => rootReducer(store, action);

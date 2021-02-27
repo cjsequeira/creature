@@ -20,7 +20,6 @@ export const ACTION_SIM_SAVE_CLOCK = 'SIM_SAVE_CLOCK';
 export const ACTION_SIM_START = 'SIM_START';
 export const ACTION_SIM_STOP = 'SIM_STOP';
 
-
 // control writing to store
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
