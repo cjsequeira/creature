@@ -4,7 +4,11 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { physTypeGetCond, physTypeUseConds } from './reduxlike/store_getters.js';
+import {
+    physTypeGetCond,
+    physTypeUseConds
+} from './reduxlike/store_getters.js';
+
 import { physTypeDoPhysics } from './sim/physics.js';
 import { mutableRandGen_seededRand } from './sim/seeded_rand.js';
 
@@ -15,8 +19,9 @@ const ruleBook = {
     testFunc: (physType) => physType.hasOwnProperty('conds'),
     yes: {
         name: '-- YES! Glucose and neuro in range?',
-        testFunc: (physType) => (physTypeGetCond(physType, 'glucose') > 0.0)
-            && (physTypeGetCond(physType, 'neuro') < 100.0),
+        testFunc: (physType) =>
+            (physTypeGetCond(physType, 'glucose') > 0.0) &&
+            (physTypeGetCond(physType, 'neuro') < 100.0),
         yes: {
             // produce creatureType object with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
@@ -106,23 +111,24 @@ const ruleBook = {
 // general rulebook resolver
 // returns physContainerType with applied rule and record of rule used
 // REFACTOR IDEA:
-//  Determine whether to save last-used rule in a pct or some other structure (e.g. a store list with a creature lookup)
+//  Determine whether to save last-used rule in a pct or some other structure 
+//  (e.g. a store list with a creature lookup)
 export const resolveRules = (physType) => {
-    // get physContainerType with selected rule and a physType to apply the rule to
-    const pct_to_use = findRule(physType);
+    // define: get physContainerType with selected rule and a physType to apply the rule to
+    const pct_to_use = findRule(physType)(ruleBook);
 
     // return physContainerType with lastRule: selected rule, and physType: with selected rule applied
     return {
         ...pct_to_use,
         lastRule: pct_to_use.lastRule,
-        physType: pct_to_use.lastRule.func(pct_to_use.physType)
+        physType: pct_to_use.lastRule.func(pct_to_use.physType),
     }
-}
+};
 
-// rulebook node finder
+// recursive rulebook node finder
 // returns physContainerType with function (named "func") that should be applied to the physType
-const findRule = (physType, node = ruleBook) => {
-    // is pre-function undefined? if yes, go forward with physType. if no, go forward with preFunc(physType)
+const findRule = (physType) => (node) => {
+    // define: is pre-function undefined? if yes, use physType. if no, use preFunc(physType)
     const physType_to_use = (node.preFunc === undefined) ? physType : node.preFunc(physType);
 
     // is test function undefined?
@@ -130,14 +136,14 @@ const findRule = (physType, node = ruleBook) => {
         // yes: return the physContainerType
         ? {
             lastRule: node,
-            physType: physType_to_use
+            physType: physType_to_use,
         }
 
         // no: apply the test func to the physType
         : (node.testFunc(physType_to_use))
             // test func returned true? follow node.yes
-            ? findRule(physType_to_use, node.yes)
+            ? findRule(physType_to_use)(node.yes)
 
             // test func returned false? follow node.no
-            : findRule(physType_to_use, node.no)
-}
+            : findRule(physType_to_use)(node.no)
+};

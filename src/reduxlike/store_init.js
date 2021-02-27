@@ -222,6 +222,7 @@ const initial_store = {
         // internal sim time info
         curTime: 0.0,
         timeStep: UPDATE_FREQ_SIM / 1000.0,
+        savedClock: 0.0,
 
         // initial random number generator seed
         initSeed: 0,

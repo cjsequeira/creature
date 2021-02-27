@@ -9,9 +9,10 @@ import {
     ACTION_PHYSTYPE_DO_ACT,
     ACTION_DO_NOTHING,
     ACTION_STORE_LOCK,
-    ACTION_QUEUE_ADD_GEOCHART_DATA,
+    ACTION_QUEUE_ADD_GEO_CHART_DATA,
     ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_QUEUE_ADD_TIMECHART_DATA,
+    ACTION_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
@@ -77,7 +78,7 @@ export const rootReducer = (inStore, inAction) => (
             locked: false,
         }),
 
-        [ACTION_QUEUE_ADD_GEOCHART_DATA]: (store, action) => ({
+        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (store, action) => ({
             ...store,
             changes: [
                 ...store.changes,
@@ -96,12 +97,20 @@ export const rootReducer = (inStore, inAction) => (
             ],
         }),
 
-        [ACTION_QUEUE_ADD_TIMECHART_DATA]: (store, action) => ({
+        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (store, action) => ({
             ...store,
             changes: [
                 ...store.changes,
                 () => mutable_updateTimeChartData(action.chart, action.dataIndex, action.timeValPair),
             ],
+        }),
+
+        [ACTION_SIM_SAVE_CLOCK]: (store, action) => ({
+            ...store,
+            sim: {
+                ...store.sim,
+                savedClock: action.clock,
+            }
         }),
 
         [ACTION_SIM_START]: (store, action) => ({
@@ -199,12 +208,11 @@ function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
 function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
     // all of our slice limits are -UI_NUM_TRAILS, so define a shorthand 
     //  function with that limit built in 
-    const concatSliceTrailsMap = concatElem => mapFunc => arr =>
-        concatSliceMap(concatElem)(-UI_NUM_TRAILS)(mapFunc)(arr);
+    const concatSliceTrailsMap = concatSliceMap(-UI_NUM_TRAILS);
 
-    // define a shorthand function specific to concatenating a color and 
-    //  mapping color list to a fade
-    const concatAndFade = concatSliceTrailsMap(color)(fadeColors);
+    // define a shorthand function specific to concatenating a color 
+    //  and mapping color list to a fade
+    const concatAndFade = concatSliceTrailsMap(fadeColors)(color);
 
     // MUTABLE: add data and colors to chart, then slice to max length, 
     //  then fade colors 
@@ -212,9 +220,9 @@ function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
         ...chart.data.datasets[dataIndex],
 
         data: concatSliceTrailsMap
-            ({ x: xyPair.x, y: xyPair.y })                          // concatenate xyPair
             (x => x)                                                // identity function for mapping
-            ([chart.data.datasets[dataIndex].data]),                // input: current chart xy data
+            ({ x: xyPair.x, y: xyPair.y })                          // concatenate xyPair
+            ([chart.data.datasets[dataIndex].data]),                // array: current chart xy data
 
         backgroundColor:
             concatAndFade([chart.data.datasets[dataIndex].backgroundColor]),

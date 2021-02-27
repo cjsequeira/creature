@@ -9,9 +9,10 @@ import {
     ACTION_PHYSTYPE_DO_ACT,
     ACTION_DO_NOTHING,
     ACTION_STORE_LOCK,
-    ACTION_QUEUE_ADD_GEOCHART_DATA,
+    ACTION_QUEUE_ADD_GEO_CHART_DATA,
     ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_QUEUE_ADD_TIMECHART_DATA,
+    ACTION_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK
@@ -24,7 +25,7 @@ import { rootReducer } from './reducers_renderers.js';
 // queue add geo chart data
 // xyPair is {x, y}
 export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
-    type: ACTION_QUEUE_ADD_GEOCHART_DATA,
+    type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
     chart,
     dataIndex,
     color,
@@ -34,7 +35,7 @@ export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
 // queue add time chart data
 // timeValPair is {time, value}
 export const queue_addTimeChartData = (chart, dataIndex, timeValPair) => ({
-    type: ACTION_QUEUE_ADD_TIMECHART_DATA,
+    type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
     chart,
     dataIndex,
     timeValPair
@@ -65,6 +66,17 @@ export const doPhysTypeAct = (pct, index) => ({
 
 
 // *** Sim control
+// advance sim time
+export const advanceSim = () => ({
+    type: ACTION_SIM_ADVANCE,
+});
+
+// save system clock
+export const saveClockForSim = (clock) => ({
+    type: ACTION_SIM_SAVE_CLOCK,
+    clock
+});
+
 // start sim
 export const startSim = () => ({
     type: ACTION_SIM_START,
@@ -73,11 +85,6 @@ export const startSim = () => ({
 // stop sim
 export const stopSim = () => ({
     type: ACTION_SIM_STOP,
-});
-
-// advance sim time
-export const advanceSim = () => ({
-    type: ACTION_SIM_ADVANCE,
 });
 
 

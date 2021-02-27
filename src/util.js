@@ -4,31 +4,31 @@
 
 // *** Functional programming utilities
 // flatten, concatenate element, slice to a limit, and map using a mapping function
-// takes element to concatenate, length limit (PRESERVED SIGN), mapping function, and array
+// takes slice input (PRESERVED SIGN), mapping function, element to concat, and array to concat onto
 // returns processed array
-export const concatSliceMap = concatElem => lenLimit => mapFunc => arr =>
+export const concatSliceMap = (lenLimit) => (mapFunc) => (concatElem) => (arr) =>
     arr.flat().concat(concatElem).slice(lenLimit).map(mapFunc);
 
 // greater than or equal to
-export const geThan = x => y => (y >= x);
+export const geThan = (x) => (y) => (y >= x);
 
-// given a function, an array of arguments, and a target, apply function to the target and 
-//  first argument, then apply the same function to the result along with the next argument
+// given a function, a target, and an array of args, apply function to the target 
+//  and first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
 // the array of arguments will be flattened up to three times
-export const makeArgChain = func => (...args) => target =>
+export const makeArgChain = (func) => (target) => (...args) =>
     args.flat(3).reduce((accum, cur) => func(accum || target, cur), null);
 
 // given a target and an array of functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
 // the array of functions will be flattened up to three times
-export const makeFuncChain = (...funcs) => target =>
+export const makeFuncChain = (...funcs) => (target) =>
     funcs.flat(3).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
 
 // given an input of a single element or an array, return an array with the
 //  input repeated n times
-export const repeat = input => n =>
+export const repeat = (input) => (n) =>
     (n > 0)
         ? [...[input], repeat(input)(n - 1)].flat()
         : input;
@@ -72,7 +72,7 @@ export const roundTo = (num, digits = 0) =>
 // takes an array of numerical weights and a numerical selector
 // returns number
 // returns -1 if the selector is not in the range of the cumulative weights
-export const selectWeight = weightsList => selector =>
+export const selectWeight = (weightsList) => (selector) =>
     // build cumulative array of weights
     weightsList.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], [])
 
@@ -83,7 +83,7 @@ export const selectWeight = weightsList => selector =>
 // sum array elements
 // takes array of numbers
 // returns number
-export const sum = arr => arr.reduce((a, b) => a + b, 0)
+export const sum = (arr) => arr.reduce((a, b) => a + b, 0)
 
 // within given range? as (min, max)
 // returns bool

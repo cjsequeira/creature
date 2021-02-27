@@ -9,48 +9,48 @@ import './custom.css';
 
 // our own stuff
 import {
+    CREATURE_GEO_CHART,
+    CREATURE_TIME_CHART,
+    CREATURE_STATUS_BOX,
     UPDATE_FREQ_NONSIM,
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
+
 import { makeArgChain } from './util.js';
+
 import {
     actionDispatch,
     advanceSim,
     doPhysTypeAct,
+    saveClockForSim,
     startSim,
     stopSim,
     lockStore,
     unlockStore
 } from './reduxlike/action_creators.js';
+
 import {
+    simGetSavedClock,
     simGetRunning,
     storeIsLocked
 } from './reduxlike/store_getters.js';
+
 import { storeInit } from './reduxlike/store_init.js';
 import { doNonSimUpdate } from './do_nonsim_update.js';
 
 
-// *** HTML page references 
-const creature_time_chart = 'page_time_chart';
-const creature_geo_chart = 'page_geo_chart';
-const creature_status_box = 'page_creature_status';
-
-
-// *** Function-chaining function with our store action dispatcher already applied
-const makeChainOfActionDispatch = makeArgChain(actionDispatch);
-
-
-// *** Timing loop setup
-let lastClock = 0.0;
+// *** Define function-chaining function applied to our store action dispatcher
+const makeArgChainActionDispatch = makeArgChain(actionDispatch);
 
 
 // ***********************************************************************************
 // *** Code that actually does stuff
+
 // create a reference to an initialized store object
 export let myStore = storeInit(
-    document.getElementById(creature_time_chart).getContext('2d'),
-    document.getElementById(creature_geo_chart).getContext('2d'),
-    document.getElementById(creature_status_box)
+    document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
+    document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
+    document.getElementById(CREATURE_STATUS_BOX)
 );
 
 // change the sim status to running
@@ -67,22 +67,33 @@ let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
 
 // *** Time-based callback function
 function appUpdate() {
-    // is simulator running and store NOT LOCKED?
-    if (simGetRunning(myStore) && (!storeIsLocked(myStore))) {
+    // is simulator running and store lock not set?
+    if (
+        simGetRunning(myStore) &&
+        (!storeIsLocked(myStore))
+    ) {
         // yes: set store lock, do creature act, advance sim, unset store lock
-        myStore = makeChainOfActionDispatch(
+        myStore = makeArgChainActionDispatch(myStore)(
             lockStore(),
-            myStore.creatureStore.map((creature, i) => doPhysTypeAct(creature, i)),
+            myStore.creatureStore.map((this_creature, i) => doPhysTypeAct(this_creature, i)),
             advanceSim(),
             unlockStore()
-        )(myStore);
+        );
     }
 
-    // if UPDATE_FREQ_non-sim time has passed since last non-sim update
-    //  AND store NOT LOCKED, then update non-sim
-    if ((performance.now() > (lastClock + UPDATE_FREQ_NONSIM)) && (!storeIsLocked(myStore))) {
+
+    //myStore = doNonSimUpdate(myStore);
+
+    // if UPDATE_FREQ_NONSIM time has passed since last non-sim update
+    //  AND store lock not set, then update non-sim
+    if (
+        (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM)) &&
+        (!storeIsLocked(myStore))
+    ) {
+        // update the non-sim parts of our app store
         myStore = doNonSimUpdate(myStore);
 
-        lastClock = performance.now();
+        // remember the current time
+        myStore = actionDispatch(myStore, saveClockForSim(performance.now()));
     }
 };

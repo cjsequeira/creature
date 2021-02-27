@@ -24,7 +24,7 @@ export const physTypeGet = (physType, argCond) => physType[argCond];
 export const simGetCurTime = (store) => store.sim.curTime;
 
 // return last stored system clock time
-export const simGetLastClock = (store) => store.sim.lastClock;
+export const simGetSavedClock = (store) => store.sim.savedClock;
 
 // return simulator running status
 export const simGetRunning = (store) => store.sim.running;
