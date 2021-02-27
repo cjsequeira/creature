@@ -39,12 +39,14 @@ export const rootReducer = (inStore, inAction) => (
     {
         [ACTION_PHYSTYPE_DO_ACT]: (store, action) => ({
             ...store,
-            creatureStore: splice(
-                store.creatureStore,
-                action.index,
-                1,
-                action.pct.physType.act(action.pct)
-            ),
+
+            // set creature store to the given creatureStore with the pct
+            //  at the given index replaced with the pct returned from "act"
+            creatureStore: splice
+                (1)                                     // remove element...
+                (action.index)                          // ... at the given index...
+                (store.creatureStore)                   // ... in this creature store...
+                (action.pct.physType.act(action.pct)),  // ... and replace with pct from "act"
         }),
 
         [ACTION_DO_NOTHING]: (store, action) => store,
@@ -92,7 +94,7 @@ export const rootReducer = (inStore, inAction) => (
                 ...store.changes,
                 () => mutable_updateStatusBox(
                     action.statusBox,
-                    'Time ' + roundTo(simGetCurTime(store), 2) + ': ' + action.message
+                    'Time ' + roundTo(2)(simGetCurTime(store)) + ': ' + action.message
                 ),
             ],
         }),
@@ -191,11 +193,9 @@ function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
     };
 
     // MUTABLE: shift out data that have "fallen off" the left side of the chart
-    chart.data.datasets[dataIndex].data =
-        chartShiftData(
-            chart.data.datasets[dataIndex].data,
-            new_min - chart.options.scales.xAxes[0].ticks.stepSize,
-        );
+    chart.data.datasets[dataIndex].data = chartShiftData
+        (new_min - chart.options.scales.xAxes[0].ticks.stepSize)
+        (chart.data.datasets[dataIndex].data);
 
     // MUTABLE: redraw the chart
     chart.update();

@@ -117,7 +117,7 @@ const actWandering = (pct) =>
         })
         // ... with random acceleration at least 2.0 in magnitude...
         // ... and random heading nudge (in radians)
-    )(excludeRange(mutableRandGen_seededRand(-4.0, 15.0), 2.0))        // accel
+    )(excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))        // accel
         (mutableRandGen_seededRand(-0.1, 0.1));                        // heading nudge
 
 // eating behavior function

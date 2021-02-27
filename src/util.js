@@ -23,7 +23,7 @@ export const makeArgChain = (func) => (target) => (...args) =>
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
 // the array of functions will be flattened up to three times
-export const makeFuncChain = (...funcs) => (target) =>
+export const makeFuncChain = (target) => (...funcs) =>
     funcs.flat(3).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
 
 // given an input of a single element or an array, return an array with the
@@ -33,10 +33,11 @@ export const repeat = (input) => (n) =>
         ? [...[input], repeat(input)(n - 1)].flat()
         : input;
 
-// given an array, an index, and a list of elements, 
+// given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
+//  and the specified number of items removed at that index
 // based on https://vincent.billey.me/pure-javascript-immutable-array/#splice
-export const splice = (arr, start, deleteCount, ...items) => [
+export const splice = (deleteCount) => (start) => (arr) => (...items) => [
     ...arr.slice(0, start),
     ...items,
     ...arr.slice(start + deleteCount)
@@ -44,28 +45,30 @@ export const splice = (arr, start, deleteCount, ...items) => [
 
 
 // *** Numerical utilities
-// bound input to [min, max] or [min, +Infinity) or (-Infinity, max]
+// bound num to [min, max]
 // returns number
-export const boundToRange = (num, min = -Infinity, max = +Infinity) =>
+export const boundToRange = (min) => (max) => (num) =>
     (num < min)
         ? min
         : (num > max)
             ? max
             : num;
 
-// bump input so that it falls outside the given box around 0.0
-// if number is zero, bumps input to positive bound
+// bump num so that it falls outside the given bound around 0.0
+// if num is zero, bumps input to positive bound
 // returns number
-export const excludeRange = (num, bound) =>
+export const excludeRange = (bound) => (num) =>
     (num > 0.0)
-        ? boundToRange(num, bound, +Infinity)
+        ? boundToRange(bound)(+Infinity)(num)
         : (num < 0.0)
-            ? boundToRange(num, -Infinity, -bound)
-            : boundToRange(num, bound, +Infinity);
+            ? boundToRange(-Infinity)(-bound)(num)
 
-// round input to given number of digits
+            // bump to positive bound if num is 0.0
+            : boundToRange(bound)(+Infinity)(num);
+
+// round num to given number of digits
 // returns number
-export const roundTo = (num, digits = 0) =>
+export const roundTo = (digits) => (num) =>
     Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits);
 
 // return an index into a list of weights, given a selector
@@ -85,14 +88,14 @@ export const selectWeight = (weightsList) => (selector) =>
 // returns number
 export const sum = (arr) => arr.reduce((a, b) => a + b, 0)
 
-// within given range? as (min, max)
+// num contained within (min, max)?
 // returns bool
-export const withinRange = (num, min = 0.0, max = 1.0) => (num > min) && (num < max);
+export const withinRange = (min) => (max) => (num) => (num > min) && (num < max);
 
 
 // *** UI utilities
-// return provided chart parameters with different title
-export const chartParamsUseTitle = (chartParams, title) => ({
+// return given chart parameters with different title
+export const chartParamsUseTitle = (chartParams) => (title) => ({
     ...chartParams,
     options: {
         ...chartParams.options,
@@ -104,18 +107,16 @@ export const chartParamsUseTitle = (chartParams, title) => ({
 });
 
 // return chart data excluding all elements less than provided x
-export const chartShiftData = (data, x) => {
+// assumes x monotonically increases with increasing data array index
+export const chartShiftData = (x) => (data) =>
     // count how many points are less than the given x and should be excluded; could be zero
-    const numPoints = data.filter(elem => elem.x < x).length;
+    // then return data with excluded elements
+    data.slice(data.filter(elem => elem.x < x).length);
 
-    // return data with excluded elements
-    return data.slice(numPoints);
-};
-
-// fade one RGBA hex color to another, controlled by a [0, 1] fader
-// returns RGBA hex color
+// fade RGBA hex color between hexStart and hexEnd, controlled by a [0, 1] fader
+// returns RGBA hex color as a string
 // based on https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
-export const interpRGBA = (fader, hexStart = '#ffffffff', hexEnd = '#08080800') => {
+export const interpRGBA = (fader) => (hexEnd) => (hexStart) => {
     const rStart = parseInt(hexStart.slice(1, 3), 16),
         gStart = parseInt(hexStart.slice(3, 5), 16),
         bStart = parseInt(hexStart.slice(5, 7), 16),
@@ -136,7 +137,7 @@ export const interpRGBA = (fader, hexStart = '#ffffffff', hexEnd = '#08080800') 
 
 // fade colors to transparent gray if array length at least 2
 // takes "don't care", index, array of RGBA colors
-// returns array with 
+// returns array with colors faded
 export const fadeColors = (_, i, arr) =>
     // is array length at least 2?
     (arr.length >= 2)
@@ -144,7 +145,7 @@ export const fadeColors = (_, i, arr) =>
         ? (i < (arr.length - 1))
             // yes: map color at current index to a faded color in between the 
             //  color at the next index and a transparent gray
-            ? interpRGBA(0.5, arr[i + 1], '#cccccc00')
+            ? interpRGBA(0.5)('#cccccc00')(arr[i + 1])
 
             // no: map color at current index to itself
             : arr[i]

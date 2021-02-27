@@ -22,10 +22,10 @@ import {
 // *** Public consolidator for physType physics functions
 export const physTypeDoPhysics = (physType) =>
     // function chain: get physType with new location -> get physType with wall collisions checked
-    makeFuncChain(
+    makeFuncChain(physType)(
         physTypeDoMovements,
         physTypeCheckWallCollisions
-    )(physType);
+    );
 
 
 // *** Internal physics functions
@@ -50,8 +50,8 @@ const physTypeDoMovements = (physType) => physTypeUseConds(
 const physTypeCheckWallCollisions = (physType) =>
     // are x and y within world boundary?
     (
-        withinRange(physTypeGetCond(physType, 'x'), 0.1, 19.9) &&
-        withinRange(physTypeGetCond(physType, 'y'), 0.1, 19.9)
+        withinRange(0.1)(19.9)(physTypeGetCond(physType, 'x')) &&
+        withinRange(0.1)(19.9)(physTypeGetCond(physType, 'y'))
     )
         // yes: return given physType
         ? physType
@@ -61,10 +61,10 @@ const physTypeCheckWallCollisions = (physType) =>
             physType,
             {
                 // bound x to the boundary limit plus a small margin
-                x: boundToRange(physTypeGetCond(physType, 'x'), 0.1, 19.9),
+                x: boundToRange(0.1)(19.9)(physTypeGetCond(physType, 'x')),
 
                 // bound y to the boundary limit plus a small margin
-                y: boundToRange(physTypeGetCond(physType, 'y'), 0.1, 19.9),
+                y: boundToRange(0.1)(19.9)(physTypeGetCond(physType, 'y')),
 
                 // spin heading around a bit (in radians)
                 heading: physTypeGetCond(physType, 'heading') + 2.35,
