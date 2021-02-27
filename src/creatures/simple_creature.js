@@ -70,8 +70,9 @@ export const actAsSimpleCreature = (pct) =>
 const actIdling = (pct) =>
     doBehavior(
         // pass in physContainerType object with specific glucose, neuro, accel
-        physTypeUseConds(pct.physType,
-            {
+        physTypeUseConds
+            (pct.physType)
+            ({
                 glucose: physTypeGetCond(pct.physType, 'glucose') - 3.0 * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(pct.physType, 'neuro') + 2.0 * simGetTimeStep(myStore),
                 accel: 0.0
@@ -95,8 +96,9 @@ const actWandering = (pct) =>
     (accel => hdg_nudge => doBehavior(
         // pass in physType object with specific glucose, neuro, heading, accel
         // glucose and neuro impacts are more severe with higher accceleration magnitude
-        physTypeUseConds(pct.physType,
-            {
+        physTypeUseConds
+            (pct.physType)
+            ({
                 glucose: physTypeGetCond(pct.physType, 'glucose') -
                     (0.3 * Math.abs(accel)) * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(pct.physType, 'neuro') +
@@ -127,8 +129,9 @@ const actWandering = (pct) =>
 const actEating = (pct) =>
     doBehavior(
         // pass in physType object with specific glucose and neuro
-        physTypeUseConds(pct.physType,
-            {
+        physTypeUseConds
+            (pct.physType)
+            ({
                 glucose: physTypeGetCond(pct.physType, 'glucose') + 6.0 * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(pct.physType, 'neuro') + 4.0 * simGetTimeStep(myStore),
             }),
@@ -146,8 +149,9 @@ const actEating = (pct) =>
 const actSleeping = (pct) =>
     doBehavior(
         // pass in physType object with specific glucose and neuro
-        physTypeUseConds(pct.physType,
-            {
+        physTypeUseConds
+            (pct.physType)
+            ({
                 glucose: physTypeGetCond(pct.physType, 'glucose') - 1.4 * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(pct.physType, 'neuro') - 6.2 * simGetTimeStep(myStore),
             }),
@@ -169,8 +173,9 @@ export const doBehavior = (physType, desireFuncType) =>
     //  lastRule: the rule node applied to this creature
     //  physType: the creature, as a creatureType with behavior indicated via rulebook review
     //      of randomly-chosen desire based on weighted random draw using desire functions
-    resolveRules(physTypeUseConds(physType,
-        {
+    resolveRules(physTypeUseConds
+        (physType)
+        ({
             behavior_request:
                 // select behavior request from list of desire funcs using 
                 // a weighted random number selector

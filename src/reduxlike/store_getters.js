@@ -8,7 +8,7 @@
 //  physType: physType to use
 //  argConds: list of conditions to include, as ...{key, value}
 // returns physType
-export const physTypeUseConds = (physType, argConds) => ({
+export const physTypeUseConds = (physType) => (argConds) => ({
     ...physType,
     conds: {
         ...physType.conds,

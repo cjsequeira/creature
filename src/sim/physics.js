@@ -34,9 +34,9 @@ export const physTypeDoPhysics = (physType) =>
 // return physType with location updated based on speed and heading
 // takes: physType
 // returns physType
-const physTypeDoMovements = (physType) => physTypeUseConds(
-    physType,
-    {
+const physTypeDoMovements = (physType) => physTypeUseConds
+    (physType)
+    ({
         // compute x and y based on given speed and heading
         x: physTypeGetCond(physType, 'x') +
             simGetTimeStep(myStore) * physTypeGetCond(physType, 'speed') *
@@ -63,9 +63,9 @@ const physTypeCheckWallCollisions = (physType) =>
         ? physType
 
         // no: return physType with updated parameters due to wall collision
-        : physTypeUseConds(
-            physType,
-            {
+        : physTypeUseConds
+            (physType)
+            ({
                 // bound x to the boundary limit plus a small margin
                 x: boundToRange(0.1)(19.9)(physTypeGetCond(physType, 'x')),
 
