@@ -20,6 +20,8 @@ import {
 
 
 // *** Public consolidator for physType physics functions
+// takes: physType
+// returns physType
 export const physTypeDoPhysics = (physType) =>
     // function chain: get physType with new location -> get physType with wall collisions checked
     makeFuncChain(physType)(
@@ -30,6 +32,8 @@ export const physTypeDoPhysics = (physType) =>
 
 // *** Internal physics functions
 // return physType with location updated based on speed and heading
+// takes: physType
+// returns physType
 const physTypeDoMovements = (physType) => physTypeUseConds(
     physType,
     {
@@ -47,6 +51,8 @@ const physTypeDoMovements = (physType) => physTypeUseConds(
     });
 
 // return physType with parameters updated if wall collisions
+// takes: physType
+// returns physType
 const physTypeCheckWallCollisions = (physType) =>
     // are x and y within world boundary?
     (

@@ -48,6 +48,8 @@ const behaviorStrings = {
 // REFACTOR: Cannot currently reliably update UI in response to creature state changes, because code below
 //  may miss such changes since UI and sim update are now decoupled. Consider designing watchers
 //  to generate actions/messages/events in response to changes in certain things 
+// takes: store, as storeType
+// returns storeType
 export const doNonSimUpdate = (store) =>
     // is sim running AND store lock unset?    
     (simGetRunning(store) && !storeIsLocked(store))

@@ -19,7 +19,7 @@ let randGen = {
 // *** Random number utils
 // init random number generator
 // MUTABLE: Mutates randGen
-// takes random number generator, numerical seed
+// takes: numerical seed
 // returns the given seed
 export function mutableRandGen_initRandGen(initSeed = 0) {
     // MUTABLE: Store given seed in random number generator
@@ -31,6 +31,10 @@ export function mutableRandGen_initRandGen(initSeed = 0) {
 // get seeded random number
 // MUTABLE: Mutates randGen
 // reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+// takes:
+//  min: minimum bound of random number range
+//  max: maximum bound of random number range
+// returns number
 export function mutableRandGen_seededRand(min = 0.0, max = 1.0) {
     // calculate random value using current seed
     const value = min + ((randGen.seed * 9301 + 49297) % 233280) / 233280 * (max - min);
@@ -45,8 +49,9 @@ export function mutableRandGen_seededRand(min = 0.0, max = 1.0) {
 // using input rand generator and weights list, generate a random number
 //  to use for weight selection based on the weights list
 // MUTABLE: Mutates randGen
-// takes random number generator, numerical array of weights
-// returns numerical index into weights list
+// takes:
+//  weightsList: numerical array of weights
+// returns number: numerical index into weights list
 export const mutableRandGen_seededWeightedRand = (weightsList) =>
     selectWeight(weightsList)(mutableRandGen_seededRand(
         0, sum(weightsList)

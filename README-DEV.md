@@ -55,3 +55,7 @@ Description:
 ### **randGen**: The app's mutable random number generator - TO BE ADDED
 
 ### **storeType**: The application store data type - TO BE ADDED
+
+### **actionType**: The action type for action dispatching - TO BE ADDED
+
+### **journalType**: The type for the app journal - TO BE ADDED

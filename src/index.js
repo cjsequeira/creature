@@ -66,6 +66,8 @@ let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
 
 
 // *** Time-based callback function
+// takes: nothing
+// returns nothing
 function appUpdate() {
     // is simulator running and store lock not set?
     if (
@@ -80,9 +82,6 @@ function appUpdate() {
             unlockStore()
         );
     }
-
-
-    //myStore = doNonSimUpdate(myStore);
 
     // if UPDATE_FREQ_NONSIM time has passed since last non-sim update
     //  AND store lock not set, then update non-sim

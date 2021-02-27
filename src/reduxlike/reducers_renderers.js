@@ -31,8 +31,10 @@ import {
 
 
 // *** Root reducer 
-// takes inStore: store type, and inAction: action type
-// returns store type
+// takes:
+//  inStore: store to reduce into, as storeType 
+//  inAction: action to use for reduction, as actionType
+// returns storeType
 export const rootReducer = (inStore, inAction) => (
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
@@ -143,9 +145,9 @@ export const rootReducer = (inStore, inAction) => (
 
 // *** Function to render store changes using an array of render functions
 // MUTABLE: may apply functions that mutate the application store
-// takes store: store type
-// returns store type with empty render function array
 // ignores return values from renderFunc applications
+// takes store: storeType
+// returns storeType with empty render function array
 export function mutable_renderStoreChanges(store) {
     return {
         ...store,
@@ -166,8 +168,11 @@ export function mutable_renderStoreChanges(store) {
 // *** Reducer helpers
 // update time history chart data
 // MUTABLE: mutates "chart" argument
-// takes chart: chart reference, dataIndex: chart data index, timeValPair: {time, value} pair
-// does not return anything!
+// takes: 
+//  chart: HTML DOM chart reference
+//  dataIndex: chart data index
+//  timeValPair: data point, as {time, value}
+// returns nothing
 function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
     // MUTABLE: add data to chart
     chart.data.datasets[dataIndex] = {
@@ -203,8 +208,12 @@ function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
 
 // update geospatial chart data
 // MUTABLE: mutates "chart" argument
-// takes chart reference, {x, y} pair
-// does not return anything!
+// takes: 
+//  chart: HTML DOM chart reference, {x, y} pair
+//  dataIndex: chart data index
+//  color: color for data
+//  xyPair: datapoint to add, as {x, y}
+// returns nothing
 function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
     // all of our slice limits are -UI_NUM_TRAILS, so define a shorthand 
     //  function with that limit built in 
@@ -243,8 +252,10 @@ function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
 
 // update simulator status box with given HTML message
 // MUTABLE: Mutates "statusBox" argument
-// takes status box reference, message string
-// does not return anything!
+// takes:
+//  statusBox: HTML DOM status box reference
+//  message: message string
+// returns nothing
 export function mutable_updateStatusBox(statusBox, message) {
     // get status box scroll bar information
     const statusScrollTop = statusBox.scrollTop;
