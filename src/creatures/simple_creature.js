@@ -7,8 +7,12 @@
 import { myStore } from '../index.js';
 
 import { resolveRules } from '../rulebook.js';
-import { excludeRange, geThan, sum } from '../util.js';
-import { physTypeGetCond, physTypeUseConds, simGetTimeStep } from '../reduxlike/store_getters.js';
+import { excludeRange } from '../util.js';
+import {
+    physTypeGetCond,
+    physTypeUseConds,
+    simGetTimeStep
+} from '../reduxlike/store_getters.js';
 import {
     randGen,
     mutableRandGen_seededRand,
@@ -18,25 +22,26 @@ import {
 
 // *** Behavior functions unique to this creature
 // main dispatch function
-// if pct behavior is not an object key, 'behavior' bracket search gives null,
-//  triggering (x => x), which returns given pct unaltered
-// takes physContainerType
+// this function works by using the pct behavior to select a function to apply
+// if pct behavior is not a key in the object, 'behavior' bracket search gives null,
+//  causing return of identity function (x => x), which returns given pct unaltered
+// takes pct: physContainerType
 // returns physContainerType
-export const ActAsSimpleCreature = (pct) =>
+export const actAsSimpleCreature = (pct) =>
     (
         {
-            'idling': ActIdling,
-            'eating': ActEating,
-            'sleeping': ActSleeping,
-            'wandering': ActWandering,
+            'idling': actIdling,
+            'eating': actEating,
+            'sleeping': actSleeping,
+            'wandering': actWandering,
         }[physTypeGetCond(pct.physType, 'behavior')] || (x => x)
     )(pct);
 
 // idling behavior function
 // takes physContainerType
 // returns physContainerType
-const ActIdling = (pct) =>
-    checkBehavior(
+const actIdling = (pct) =>
+    doBehavior(
         // pass in physContainerType object with specific glucose, neuro, accel
         physTypeUseConds(pct.physType,
             {
@@ -57,10 +62,10 @@ const ActIdling = (pct) =>
 // wandering behavior function
 // takes physContainerType
 // returns physContainerType
-const ActWandering = (pct) =>
+const actWandering = (pct) =>
     // return evaluation of anonymous function that takes an acceleration and 
     //  heading nudge value...
-    (accel => hdg_nudge => checkBehavior(
+    (accel => hdg_nudge => doBehavior(
         // pass in physType object with specific glucose, neuro, heading, accel
         // glucose and neuro impacts are more severe with higher accceleration magnitude
         physTypeUseConds(pct.physType,
@@ -92,8 +97,8 @@ const ActWandering = (pct) =>
 // eating behavior function
 // takes physContainerType
 // returns physContainerType
-const ActEating = (pct) =>
-    checkBehavior(
+const actEating = (pct) =>
+    doBehavior(
         // pass in physType object with specific glucose and neuro
         physTypeUseConds(pct.physType,
             {
@@ -111,8 +116,8 @@ const ActEating = (pct) =>
 // sleeping behavior function
 // takes physContainerType
 // returns physContainerType
-const ActSleeping = (pct) =>
-    checkBehavior(
+const actSleeping = (pct) =>
+    doBehavior(
         // pass in physType object with specific glucose and neuro
         physTypeUseConds(pct.physType,
             {
@@ -132,19 +137,24 @@ const ActSleeping = (pct) =>
 // function to review and return appropriate behavior
 // takes physType and desireFuncType
 // returns physContainerType
-export const checkBehavior = (physType, desireFuncType) =>
+export const doBehavior = (physType, desireFuncType) =>
     // return physContainerType object with: 
     //  lastRule: the rule node applied to this creature
     //  physType: the creature, as a creatureType with behavior indicated via rulebook review
     //      of randomly-chosen desire based on weighted random draw using desire functions
-    resolveRules({
-        ...physType,
-        conds: {
-            ...physType.conds,
+    resolveRules(physTypeUseConds(physType,
+        {
             behavior_request:
+                // select behavior request from list of desire funcs using 
+                // a weighted random number selector
                 Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
+                    // random number generator for weighted random draw
                     randGen,
+
+                    // numerical list of desires, used as weights for random draw
                     Object.values(desireFuncType).map(f => f(physType))
                 )]
-        }
-    });
+        })
+    );
+
+

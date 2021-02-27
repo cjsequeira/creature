@@ -7,7 +7,7 @@ import Chart from 'chart.js';
 import {
     UPDATE_FREQ_SIM,
 } from '../const_vals.js';
-import { ActAsSimpleCreature } from '../creatures/simple_creature.js';
+import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { randGen, mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
 
@@ -250,7 +250,7 @@ const initialStore = {
             physType: {
                 name: 'Vinny',
                 color: '#0000ccff',
-                act: ActAsSimpleCreature,
+                act: actAsSimpleCreature,
                 conds: {
                     // internal biology
                     glucose: 50.0,
@@ -295,7 +295,7 @@ const initialStore = {
             physType: {
                 name: 'Eddie',
                 color: '#f7036cff',
-                act: ActAsSimpleCreature,
+                act: actAsSimpleCreature,
                 conds: {
                     // internal biology
                     glucose: 50.0,

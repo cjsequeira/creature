@@ -16,7 +16,7 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK
 } from '../const_vals.js';
-import { mutable_rootReducer } from './reducers_renderers.js';
+import { rootReducer } from './reducers_renderers.js';
 
 
 // *** Queue update UI
@@ -100,4 +100,4 @@ export const doNothing = () => ({
 
 
 // *** Action dispatcher function
-export const actionDispatch = (store, action) => mutable_rootReducer(store, action);
+export const actionDispatch = (store, action) => rootReducer(store, action);

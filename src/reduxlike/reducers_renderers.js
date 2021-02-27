@@ -30,10 +30,9 @@ import {
 
 
 // *** Root reducer 
-// MUTABLE: Can cause changes in application store and other parts of application!
-// takes store type and action type
+// takes inStore: store type, and inAction: action type
 // returns store type
-export const mutable_rootReducer = (inStore, inAction) => (
+export const rootReducer = (inStore, inAction) => (
     {
         [ACTION_PHYSTYPE_DO_ACT]: (store, action) => ({
             ...store,
@@ -119,8 +118,9 @@ export const mutable_rootReducer = (inStore, inAction) => (
             }
         }),
 
-        // use action.type as an entry key into the key-val list above
-        // key is used to get a function 
+        // use inAction.type as an entry key into the key-val list above
+        // key is used to select a function that takes a store type and action type 
+        //  and returns a store type
         // if no key-val matches the entry key, return a func that echoes the given store
     }[inAction.type] || ((store, action) => store)
 
@@ -130,7 +130,7 @@ export const mutable_rootReducer = (inStore, inAction) => (
 
 // *** Function to render store changes using an array of render functions
 // MUTABLE: may apply functions that mutate the application state
-// takes store type
+// takes store: store type
 // returns store type with empty render function array
 // ignores return values from renderFunc applications
 export function mutable_renderStoreChanges(store) {
@@ -153,7 +153,7 @@ export function mutable_renderStoreChanges(store) {
 // *** Reducer helpers
 // update time history chart data
 // MUTABLE: mutates "chart" argument
-// takes chart reference, chart data index, {time, value} pair
+// takes chart: chart reference, dataIndex: chart data index, timeValPair: {time, value} pair
 // does not return anything!
 function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
     // MUTABLE: add data to chart
