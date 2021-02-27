@@ -14,10 +14,36 @@ import {
     simGetTimeStep
 } from '../reduxlike/store_getters.js';
 import {
-    randGen,
     mutableRandGen_seededRand,
     mutableRandGen_seededWeightedRand
 } from '../sim/seeded_rand.js';
+
+
+// *** Default Simple Creature assembler
+// returns physType
+export const getDefaultSimpleCreature = () => ({
+    name: 'New Simple Creature',
+    color: '#00bb00ff',
+    act: actAsSimpleCreature,
+    conds: {
+        // internal biology
+        glucose: 50.0,
+        neuro: 50.0,
+
+        // behavior
+        behavior: 'idling',
+        behavior_request: null,
+
+        // location
+        x: 10.0,
+        y: 10.0,
+
+        // heading, speed, acceleration
+        heading: 0.0 * Math.PI / 180.0,
+        speed: 2.0,
+        accel: 0.0,
+    },
+});
 
 
 // *** Behavior functions unique to this creature
@@ -91,8 +117,8 @@ const actWandering = (pct) =>
         })
         // ... with random acceleration at least 2.0 in magnitude...
         // ... and random heading nudge (in radians)
-    )(excludeRange(mutableRandGen_seededRand(randGen, -4.0, 15.0), 2.0))        // accel
-        (mutableRandGen_seededRand(randGen, -0.1, 0.1));                        // heading nudge
+    )(excludeRange(mutableRandGen_seededRand(-4.0, 15.0), 2.0))        // accel
+        (mutableRandGen_seededRand(-0.1, 0.1));                        // heading nudge
 
 // eating behavior function
 // takes physContainerType
@@ -148,9 +174,6 @@ export const doBehavior = (physType, desireFuncType) =>
                 // select behavior request from list of desire funcs using 
                 // a weighted random number selector
                 Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
-                    // random number generator for weighted random draw
-                    randGen,
-
                     // numerical list of desires, used as weights for random draw
                     Object.values(desireFuncType).map(f => f(physType))
                 )]

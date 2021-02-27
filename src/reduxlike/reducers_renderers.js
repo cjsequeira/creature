@@ -16,10 +16,10 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
 } from '../const_vals.js';
-import {
-    UI_NUM_TRAILS
-} from '../const_vals.js';
+
+import { UI_NUM_TRAILS } from '../const_vals.js';
 import { simGetCurTime } from './store_getters.js';
+
 import {
     chartShiftData,
     concatSliceMap,
@@ -33,6 +33,8 @@ import {
 // takes inStore: store type, and inAction: action type
 // returns store type
 export const rootReducer = (inStore, inAction) => (
+    // list of "mini" reducer functions
+    // each function is associated with an action type, given in brackets
     {
         [ACTION_PHYSTYPE_DO_ACT]: (store, action) => ({
             ...store,
@@ -129,7 +131,7 @@ export const rootReducer = (inStore, inAction) => (
 
 
 // *** Function to render store changes using an array of render functions
-// MUTABLE: may apply functions that mutate the application state
+// MUTABLE: may apply functions that mutate the application store
 // takes store: store type
 // returns store type with empty render function array
 // ignores return values from renderFunc applications

@@ -6,8 +6,17 @@
 // REFACTOR? Not happy about referencing app store directly - even if read-only
 import { myStore } from '../index.js';
 
-import { makeFuncChain, withinRange, boundToRange } from '../util.js';
-import { physTypeGetCond, physTypeUseConds, simGetTimeStep } from '../reduxlike/store_getters.js';
+import {
+    makeFuncChain,
+    withinRange,
+    boundToRange
+} from '../util.js';
+
+import {
+    physTypeGetCond,
+    physTypeUseConds,
+    simGetTimeStep
+} from '../reduxlike/store_getters.js';
 
 
 // *** Public consolidator for physType physics functions

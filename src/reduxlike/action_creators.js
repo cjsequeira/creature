@@ -20,7 +20,7 @@ import { rootReducer } from './reducers_renderers.js';
 
 
 // *** Queue update UI
-// *** These functions don't change state until mutable_renderStateChanges is applied
+// *** App store does not change until mutable_renderStateChanges is applied
 // queue add geo chart data
 // xyPair is {x, y}
 export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
