@@ -205,7 +205,7 @@ export const fadeColors = (_, i, arr) =>
         ? (i < (arr.length - 1))
             // yes: map color at current index to a faded color in between the 
             //  color at the next index and a transparent gray
-            ? interpRGBA(0.5)('#cccccc00')(arr[i + 1])
+            ? interpRGBA(0.3)('#cccccc00')(arr[i + 1])
 
             // no: map color at current index to itself
             : arr[i]
