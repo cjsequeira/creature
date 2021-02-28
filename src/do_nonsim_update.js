@@ -67,18 +67,18 @@ export const doNonSimUpdate = (store) =>
                     // next, if creature behavior string is not the most-recent journal item,
                     //  update journal and queue update status box
                     (store.journal[store.journal.length - 1].message !=
-                        (physTypeGet(this_creature.physType, 'name') + ' ' +
-                            behaviorStrings[physTypeGetCond(this_creature.physType, 'behavior')]))
+                        (physTypeGet(this_creature.physType)('name') + ' ' +
+                            behaviorStrings[physTypeGetCond(this_creature.physType)('behavior')]))
                         ? [
                             addJournalEntry(
                                 store.journal,
-                                physTypeGet(this_creature.physType, 'name') + ' ' +
-                                behaviorStrings[physTypeGetCond(this_creature.physType, 'behavior')]
+                                physTypeGet(this_creature.physType)('name') + ' ' +
+                                behaviorStrings[physTypeGetCond(this_creature.physType)('behavior')]
                             ),
                             queue_addStatusMessage(
                                 store.ui.status_box,
-                                physTypeGet(this_creature.physType, 'name') + ' ' +
-                                behaviorStrings[physTypeGetCond(this_creature.physType, 'behavior')]
+                                physTypeGet(this_creature.physType)('name') + ' ' +
+                                behaviorStrings[physTypeGetCond(this_creature.physType)('behavior')]
                             )
                         ]
                         : doNothing(),
@@ -89,7 +89,7 @@ export const doNonSimUpdate = (store) =>
                         2 * index,
                         {
                             time: simGetCurTime(store),
-                            value: physTypeGetCond(this_creature.physType, 'glucose')
+                            value: physTypeGetCond(this_creature.physType)('glucose')
                         }),
 
                     // next, queue add neuro data to time chart
@@ -98,22 +98,22 @@ export const doNonSimUpdate = (store) =>
                         2 * index + 1,
                         {
                             time: simGetCurTime(store),
-                            value: physTypeGetCond(this_creature.physType, 'neuro')
+                            value: physTypeGetCond(this_creature.physType)('neuro')
                         }),
 
                     // next, queue add x-y data to geo chart
                     queue_addGeoChartData(
                         store.ui.creature_geo_chart,
                         index,
-                        physTypeGet(this_creature.physType, 'color'),
+                        physTypeGet(this_creature.physType)('color'),
                         {
-                            x: physTypeGetCond(this_creature.physType, 'x'),
-                            y: physTypeGetCond(this_creature.physType, 'y')
+                            x: physTypeGetCond(this_creature.physType)('x'),
+                            y: physTypeGetCond(this_creature.physType)('y')
                         }),
 
                     // next, if creature in given store is frozen, 
                     //  queue give termination message and stop simulator
-                    (physTypeGetCond(this_creature.physType, 'behavior') === 'frozen')
+                    (physTypeGetCond(this_creature.physType)('behavior') === 'frozen')
                         ? [
                             addJournalEntry(
                                 store.journal,
@@ -134,8 +134,8 @@ export const doNonSimUpdate = (store) =>
                     store.creatureStore.length,
                     '#008800ff',
                     {
-                        x: physTypeGetCond(store.foodStore.physType, 'x'),
-                        y: physTypeGetCond(store.foodStore.physType, 'y')
+                        x: physTypeGetCond(store.foodStore.physType)('x'),
+                        y: physTypeGetCond(store.foodStore.physType)('y')
                     }),
 
                 // next, unset store lock

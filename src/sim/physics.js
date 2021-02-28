@@ -38,16 +38,16 @@ const physTypeDoMovements = (physType) => physTypeUseConds
     (physType)
     ({
         // compute x and y based on given speed and heading
-        x: physTypeGetCond(physType, 'x') +
-            simGetTimeStep(myStore) * physTypeGetCond(physType, 'speed') *
-            Math.sin(physTypeGetCond(physType, 'heading')),
-        y: physTypeGetCond(physType, 'y') +
-            simGetTimeStep(myStore) * physTypeGetCond(physType, 'speed') *
-            Math.cos(physTypeGetCond(physType, 'heading')),
+        x: physTypeGetCond(physType)('x') +
+            simGetTimeStep(myStore) * physTypeGetCond(physType)('speed') *
+            Math.sin(physTypeGetCond(physType)('heading')),
+        y: physTypeGetCond(physType)('y') +
+            simGetTimeStep(myStore) * physTypeGetCond(physType)('speed') *
+            Math.cos(physTypeGetCond(physType)('heading')),
 
         // compute speed based on given accel
-        speed: physTypeGetCond(physType, 'speed') +
-            simGetTimeStep(myStore) * physTypeGetCond(physType, 'accel'),
+        speed: physTypeGetCond(physType)('speed') +
+            simGetTimeStep(myStore) * physTypeGetCond(physType)('accel'),
     });
 
 // return physType with parameters updated if wall collisions
@@ -56,8 +56,8 @@ const physTypeDoMovements = (physType) => physTypeUseConds
 const physTypeCheckWallCollisions = (physType) =>
     // are x and y within world boundary?
     (
-        withinRange(0.1)(19.9)(physTypeGetCond(physType, 'x')) &&
-        withinRange(0.1)(19.9)(physTypeGetCond(physType, 'y'))
+        withinRange(0.1)(19.9)(physTypeGetCond(physType)('x')) &&
+        withinRange(0.1)(19.9)(physTypeGetCond(physType)('y'))
     )
         // yes: return given physType
         ? physType
@@ -67,13 +67,13 @@ const physTypeCheckWallCollisions = (physType) =>
             (physType)
             ({
                 // bound x to the boundary limit plus a small margin
-                x: boundToRange(0.1)(19.9)(physTypeGetCond(physType, 'x')),
+                x: boundToRange(0.1)(19.9)(physTypeGetCond(physType)('x')),
 
                 // bound y to the boundary limit plus a small margin
-                y: boundToRange(0.1)(19.9)(physTypeGetCond(physType, 'y')),
+                y: boundToRange(0.1)(19.9)(physTypeGetCond(physType)('y')),
 
                 // spin heading around a bit (in radians)
-                heading: physTypeGetCond(physType, 'heading') + 2.35,
+                heading: physTypeGetCond(physType)('heading') + 2.35,
 
                 // establish a minimum speed
                 speed: 1.0,
