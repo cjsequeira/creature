@@ -105,7 +105,12 @@ export const rootReducer = (inStore, inAction) => (
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateTimeChartData(action.chart, action.dataIndex, action.timeValPair),
+                () => mutable_updateTimeChartData(
+                    action.chart,
+                    action.dataIndex,
+                    action.label,
+                    action.timeValPair
+                ),
             ],
         }),
 
@@ -171,12 +176,14 @@ export function mutable_renderStoreChanges(store) {
 // takes: 
 //  chart: HTML DOM chart reference
 //  dataIndex: chart data index
+//  label: data label for legend
 //  timeValPair: data point, as {time, value}
 // returns nothing
-function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
+function mutable_updateTimeChartData(chart, dataIndex, label, timeValPair) {
     // MUTABLE: add data to chart
     chart.data.datasets[dataIndex] = {
         ...chart.data.datasets[dataIndex],
+        label: label,
         data: chart.data.datasets[dataIndex].data.concat(
             {
                 x: timeValPair.time,

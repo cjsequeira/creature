@@ -96,6 +96,7 @@ export const doNonSimUpdate = (store) =>
                             queue_addTimeChartData(
                                 store.ui.creature_time_chart,
                                 2 * index,
+                                inGet('name') + ' glucose',
                                 {
                                     time: simGetCurTime(store),
                                     value: inGetCond('glucose')
@@ -105,6 +106,7 @@ export const doNonSimUpdate = (store) =>
                             queue_addTimeChartData(
                                 store.ui.creature_time_chart,
                                 2 * index + 1,
+                                inGet('name') + ' neuro',
                                 {
                                     time: simGetCurTime(store),
                                     value: inGetCond('neuro')
