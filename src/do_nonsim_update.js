@@ -62,13 +62,13 @@ export const doNonSimUpdate = (store) =>
                 // first, set store lock... OTHER CODE MUST CHECK FOR AND RESPECT THIS!
                 lockStore(),
 
-                // for all creatures...
-                store.creatureStore.map((this_creature, index) => {
-                    // define shorthand func to get this_creature physType keyval
-                    const inGet = physTypeGet(this_creature.physType);
+                // for all physContainerType objects in store...
+                store.pctStore.map((this_pct, index) => {
+                    // define shorthand func to get this_pct physType keyval
+                    const inGet = physTypeGet(this_pct.physType);
 
-                    // define shorthand func to get this_creature physType cond
-                    const inGetCond = physTypeGetCond(this_creature.physType);
+                    // define shorthand func to get this_pct physType cond
+                    const inGetCond = physTypeGetCond(this_pct.physType);
 
                     // dispatch these actions
                     return [
@@ -131,7 +131,7 @@ export const doNonSimUpdate = (store) =>
                 // next, queue add food to geo chart
                 queue_addGeoChartData(
                     store.ui.creature_geo_chart,
-                    store.creatureStore.length,
+                    store.pctStore.length,
                     '#008800ff',
                     {
                         x: physTypeGetCond(store.foodStore.physType)('x'),

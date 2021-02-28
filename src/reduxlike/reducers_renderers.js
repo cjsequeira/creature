@@ -42,12 +42,12 @@ export const rootReducer = (inStore, inAction) => (
         [ACTION_PHYSTYPE_DO_ACT]: (store, action) => ({
             ...store,
 
-            // set creature store to the given creatureStore with the pct
+            // set physType store to the given pctStore with the pct
             //  at the given index replaced with the pct returned from "act"
-            creatureStore: splice
+            pctStore: splice
                 (1)                                     // remove element...
                 (action.index)                          // ... at the given index...
-                (store.creatureStore)                   // ... in this creature store...
+                (store.pctStore)                        // ... in this physType store...
                 (action.pct.physType.act(action.pct)),  // ... and replace with pct from "act"
         }),
 

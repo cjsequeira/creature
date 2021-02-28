@@ -236,9 +236,8 @@ const initial_store = {
     // array of store changes to render
     changes: [],
 
-    // initial creatures with no prior rule applied
-    // type: physContainerType
-    creatureStore: [
+    // initial physContainerType objects with no prior rule applied
+    pctStore: [
         // creature 1
         {
             // the last rule node applied
