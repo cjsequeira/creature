@@ -147,7 +147,21 @@ const creature_geo_chart_params_init = {
                 pointBorderColor: []
             },
             {
-                label: 'Food',
+                label: 'Food 1',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: false,
+                fill: false,
+                tension: 0.2,
+                pointRadius: 3,
+                data: [],
+                backgroundColor: [],
+                borderColor: [],
+                pointBackgroundColor: [],
+                pointBorderColor: []
+            },
+            {
+                label: 'Food 2',
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
                 showLine: false,
@@ -328,7 +342,7 @@ const initial_store = {
             },
         },
 
-        // initial food element
+        // initial food element 1
         {
             // the last rule node applied
             lastRule: {},
@@ -336,13 +350,39 @@ const initial_store = {
             // the food
             // type: physType
             physType: {
-                name: 'Food',
+                name: 'Food 1',
                 color: '#008800ff',
                 act: (pct) => pct,
                 conds: {
 
-                    x: 10.0,
-                    y: 10.0,
+                    x: 8.0,
+                    y: 8.0,
+
+
+                    // location
+                    /*
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+                    */
+                },
+            },
+        },
+
+        // initial food element 2
+        {
+            // the last rule node applied
+            lastRule: {},
+
+            // the food
+            // type: physType
+            physType: {
+                name: 'Food 2',
+                color: '#008800ff',
+                act: (pct) => pct,
+                conds: {
+
+                    x: 12.0,
+                    y: 12.0,
 
 
                     // location
