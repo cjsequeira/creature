@@ -43,3 +43,9 @@ export const UI_NUM_TRAILS = 20;
 // simulator frequency should be MORE FREQUENT than non-sim
 export const UPDATE_FREQ_NONSIM = 100.0;
 export const UPDATE_FREQ_SIM = 50;
+
+
+// *** World constants
+// x and y sizes
+export const WORLD_SIZE_X = 20.0;
+export const WORLD_SIZE_Y = 20.0;

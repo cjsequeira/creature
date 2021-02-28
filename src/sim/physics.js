@@ -7,6 +7,11 @@
 import { myStore } from '../index.js';
 
 import {
+    WORLD_SIZE_X,
+    WORLD_SIZE_Y
+} from '../const_vals.js';
+
+import {
     makeFuncChain,
     withinRange,
     boundToRange
@@ -59,8 +64,8 @@ const physTypeCheckWallCollisions = (physType) => {
 
     // are x and y within world boundary?
     return (
-        withinRange(0.1)(19.9)(inGetCond('x')) &&
-        withinRange(0.1)(19.9)(inGetCond('y'))
+        withinRange(0.1)(WORLD_SIZE_X - 0.1)(inGetCond('x')) &&
+        withinRange(0.1)(WORLD_SIZE_Y - 0.1)(inGetCond('y'))
     )
         // yes: return given physType
         ? physType
@@ -69,11 +74,11 @@ const physTypeCheckWallCollisions = (physType) => {
         : physTypeUseConds
             (physType)
             ({
-                // bound x to the boundary limit plus a small margin
-                x: boundToRange(0.1)(19.9)(inGetCond('x')),
+                // bound x to the boundary limit minus a small margin
+                x: boundToRange(0.1)(WORLD_SIZE_X - 0.1)(inGetCond('x')),
 
-                // bound y to the boundary limit plus a small margin
-                y: boundToRange(0.1)(19.9)(inGetCond('y')),
+                // bound y to the boundary limit minus a small margin
+                y: boundToRange(0.1)(WORLD_SIZE_Y - 0.1)(inGetCond('y')),
 
                 // spin heading around a bit (in radians)
                 heading: inGetCond('heading') + 2.35,
