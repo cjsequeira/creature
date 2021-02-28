@@ -14,47 +14,47 @@ import { mutableRandGen_seededRand } from './sim/seeded_rand.js';
 
 
 // *** Rulebook test nodes
-const ruleTestIsCreatureType = {
-    name: '1. Is creatureType?',
+const isCreatureType = {
+    name: 'Is creatureType?',
     testFunc: (physType) => physType.hasOwnProperty('conds'),
 };
 
-const ruleTestGlucoseNeuroRange = {
-    name: '1.y. Glucose and neuro in range?',
+const isGlucoseNeuroRange = {
+    name: 'Glucose and neuro in range?',
     testFunc: (physType) =>
         (physTypeGetCond(physType)('glucose') > 0.0) &&
         (physTypeGetCond(physType)('neuro') < 100.0),
 };
 
-const ruleTestBehaviorRequestIdling = {
-    name: '1.y.y. Requesting behavior: idling?',
+const isBehaviorRequestIdling = {
+    name: 'Requesting behavior: idling?',
     testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'idling',
 };
 
-const ruleTestBehaviorRequestWandering = {
-    name: '1.y.y.n. Requesting behavior: wandering?',
+const isBehaviorRequestWandering = {
+    name: 'Requesting behavior: wandering?',
     testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'wandering',
 };
 
-const ruleTestBehaviorRequestEating = {
-    name: '1.y.y.n.n. Requesting behavior: eating?',
+const isBehaviorRequestEating = {
+    name: 'Requesting behavior: eating?',
     testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'eating',
 };
 
-const ruleTestBehaviorRequestFoodAvail = {
-    name: '1.y.y.n.n.y. Is food available?',
+const isBehaviorRequestFoodAvail = {
+    name: 'Is food available?',
     testFunc: (physType) => mutableRandGen_seededRand(0.0, 1.0) > 0.03,
 };
 
-const ruleTestBehaviorRequestSleeping = {
-    name: '1.y.y.n.n.n. Requested behavior: sleeping?',
+const isBehaviorRequestSleeping = {
+    name: 'Requested behavior: sleeping?',
     testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'sleeping',
 };
 
 
 // *** Rulebook leaf nodes
-const ruleLeafApproveIdling = {
-    name: '1.y.y.y. Behavior request approved: idling',
+const leafApproveIdling = {
+    name: 'Behavior request approved: idling',
     func: (physType) => physTypeUseConds
         (physType)
         ({
@@ -62,8 +62,8 @@ const ruleLeafApproveIdling = {
         }),
 };
 
-const ruleLeafApproveWandering = {
-    name: '1.y.y.n.y. Behavior request approved: wandering',
+const leafApproveWandering = {
+    name: 'Behavior request approved: wandering',
     func: (physType) => physTypeUseConds
         (physType)
         ({
@@ -71,8 +71,8 @@ const ruleLeafApproveWandering = {
         }),
 };
 
-const ruleLeafApproveEating = {
-    name: '1.y.y.n.n.y.y. Behavior request approved: eating',
+const leafApproveEating = {
+    name: 'Behavior request approved: eating',
     func: (physType) => physTypeUseConds
         (physType)
         ({
@@ -84,8 +84,8 @@ const ruleLeafApproveEating = {
         }),
 };
 
-const ruleLeafApproveSleeping = {
-    name: '1.y.y.n.n.n.y. Behavior request approved: sleeping',
+const leafApproveSleeping = {
+    name: 'Behavior request approved: sleeping',
     func: (physType) => physTypeUseConds
         (physType)
         ({
@@ -97,8 +97,8 @@ const ruleLeafApproveSleeping = {
         }),
 };
 
-const ruleLeafRejectEating = {
-    name: "1.y.y.n.n.y.n. Creature wants to eat but there's no food here!",
+const leafRejectEating = {
+    name: "Creature wants to eat but there's no food here!",
     func: (physType) => physTypeUseConds
         (physType)
         ({
@@ -107,8 +107,8 @@ const ruleLeafRejectEating = {
         }),
 };
 
-const ruleLeafCondsOOL = {
-    name: '1.y.n. Creature conditions out of limits!',
+const leafCondsOOL = {
+    name: 'Creature conditions out of limits!',
     func: (physType) => physTypeUseConds
         (physType)
         ({
@@ -116,49 +116,49 @@ const ruleLeafCondsOOL = {
         }),
 };
 
-const ruleLeafNotCreatureType = {
-    name: '1.n. Return given physType',
+const leafNotCreatureType = {
+    name: 'Return given physType',
     func: (physType) => physType,
 };
 
-const ruleLeafUnknownBehavior = {
-    name: '1.y.y.n.n.n.n. Unknown behavior!',
+const leafUnknownBehavior = {
+    name: 'Unknown behavior!',
     func: (physType) => physType
 };
 
 
 // *** The rulebook
 const ruleBook = {
-    testNode: ruleTestIsCreatureType,
+    testNode: isCreatureType,
     yes: {
-        testNode: ruleTestGlucoseNeuroRange,
+        testNode: isGlucoseNeuroRange,
         yes: {
-            // produce creatureType object with laws of physics applied
+            // first, produce creatureType object with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
 
-            testNode: ruleTestBehaviorRequestIdling,
-            yes: ruleLeafApproveIdling,
+            testNode: isBehaviorRequestIdling,
+            yes: leafApproveIdling,
             no: {
-                testNode: ruleTestBehaviorRequestWandering,
-                yes: ruleLeafApproveWandering,
+                testNode: isBehaviorRequestWandering,
+                yes: leafApproveWandering,
                 no: {
-                    testNode: ruleTestBehaviorRequestEating,
+                    testNode: isBehaviorRequestEating,
                     yes: {
-                        testNode: ruleTestBehaviorRequestFoodAvail,
-                        yes: ruleLeafApproveEating,
-                        no: ruleLeafRejectEating,
+                        testNode: isBehaviorRequestFoodAvail,
+                        yes: leafApproveEating,
+                        no: leafRejectEating,
                     },
                     no: {
-                        testNode: ruleTestBehaviorRequestSleeping,
-                        yes: ruleLeafApproveSleeping,
-                        no: ruleLeafUnknownBehavior,
+                        testNode: isBehaviorRequestSleeping,
+                        yes: leafApproveSleeping,
+                        no: leafUnknownBehavior,
                     },
                 },
             }
         },
-        no: ruleLeafCondsOOL,
+        no: leafCondsOOL,
     },
-    no: ruleLeafNotCreatureType,
+    no: leafNotCreatureType,
 };
 
 
