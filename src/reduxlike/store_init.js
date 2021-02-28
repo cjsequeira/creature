@@ -4,7 +4,13 @@
 
 // *** Our imports
 import Chart from 'chart.js';
-import { UPDATE_FREQ_SIM } from '../const_vals.js';
+
+import { 
+    UPDATE_FREQ_SIM,
+    WORLD_SIZE_X,
+    WORLD_SIZE_Y
+} from '../const_vals.js';
+
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
@@ -202,7 +208,7 @@ const creature_geo_chart_params_init = {
                 },
                 ticks: {
                     min: 0.0,
-                    max: 20.0,
+                    max: WORLD_SIZE_X,
                     stepSize: 1.0
                 }
             }],
@@ -214,7 +220,7 @@ const creature_geo_chart_params_init = {
                 },
                 ticks: {
                     min: 0.0,
-                    max: 20.0,
+                    max: WORLD_SIZE_Y,
                     stepSize: 1.0
                 }
             }]
