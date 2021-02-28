@@ -11,7 +11,7 @@
 //  arr: array to concat onto
 // returns processed array
 export const concatSliceMap = (lenLimit) => (mapFunc) => (concatElem) => (arr) =>
-    arr.flat().concat(concatElem).slice(lenLimit).map(mapFunc);
+    arr.flat(Infinity).concat(concatElem).slice(lenLimit).map(mapFunc);
 
 // is x greater than or equal to y?
 // takes: 
@@ -23,7 +23,7 @@ export const geThan = (x) => (y) => (y >= x);
 // given a function, a target, and an array of args, apply function to the target 
 //  and first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
-// the array of arguments will be flattened up to three times
+// the array of arguments will be completely flattened
 // assumes function always returns the type of the target
 // takes:
 //  func: function to apply
@@ -31,19 +31,19 @@ export const geThan = (x) => (y) => (y >= x);
 //  args: the array of arguments to use in function application
 // returns type of target
 export const makeArgChain = (func) => (target) => (...args) =>
-    args.flat(3).reduce((accum, cur) => func(accum || target, cur), null);
+    args.flat(Infinity).reduce((accum, cur) => func(accum || target, cur), null);
 
 // given a target and an array of functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
-// the array of functions will be flattened up to three times
+// the array of functions will be completely flattened
 // assumes all functions return the type of the target
 // takes:
 //  target: target that functions apply to
 //  funcs: array of functions to apply
 // returns type of target
 export const makeFuncChain = (target) => (...funcs) =>
-    funcs.flat(3).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
+    funcs.flat(Infinity).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
 
 // given an input of a single element or an array, return an array with the
 //  input repeated n times

@@ -20,41 +20,44 @@ const ruleBook = {
     yes: {
         name: '-- YES! Glucose and neuro in range?',
         testFunc: (physType) =>
-            (physTypeGetCond(physType, 'glucose') > 0.0) &&
-            (physTypeGetCond(physType, 'neuro') < 100.0),
+            (physTypeGetCond(physType)('glucose') > 0.0) &&
+            (physTypeGetCond(physType)('neuro') < 100.0),
         yes: {
             // produce creatureType object with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
             name: '-- -- YES! Requesting behavior: idling?',
-            testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'idling',
+            testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'idling',
             yes: {
                 name: '-- -- -- -- YES! Behavior request approved: idling',
-                func: (physType) => physTypeUseConds(physType,
-                    {
-                        behavior: physTypeGetCond(physType, 'behavior_request'),
+                func: (physType) => physTypeUseConds
+                    (physType)
+                    ({
+                        behavior: physTypeGetCond(physType)('behavior_request'),
                     }),
             },
             no: {
                 name: '-- -- -- NO! Requesting behavior: wandering?',
-                testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'wandering',
+                testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'wandering',
                 yes: {
                     name: '-- -- -- -- -- YES! Behavior request approved: wandering',
-                    func: (physType) => physTypeUseConds(physType,
-                        {
-                            behavior: physTypeGetCond(physType, 'behavior_request'),
+                    func: (physType) => physTypeUseConds
+                        (physType)
+                        ({
+                            behavior: physTypeGetCond(physType)('behavior_request'),
                         }),
                 },
                 no: {
                     name: '-- -- -- -- NO! Requesting behavior: eating?',
-                    testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'eating',
+                    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'eating',
                     yes: {
                         name: '-- -- -- -- -- YES! Is food available?',
                         testFunc: (physType) => mutableRandGen_seededRand(0.0, 1.0) > 0.03,
                         yes: {
                             name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
-                            func: (physType) => physTypeUseConds(physType,
-                                {
-                                    behavior: physTypeGetCond(physType, 'behavior_request'),
+                            func: (physType) => physTypeUseConds
+                                (physType)
+                                ({
+                                    behavior: physTypeGetCond(physType)('behavior_request'),
 
                                     // can't move if eating: no grab-and-go!
                                     speed: 0.0,
@@ -63,20 +66,22 @@ const ruleBook = {
                         },
                         no: {
                             name: "wants to eat but there's no food here!",
-                            func: (physType) => physTypeUseConds(physType,
-                                {
+                            func: (physType) => physTypeUseConds
+                                (physType)
+                                ({
                                     // reject behavior request
-                                    behavior: physTypeGetCond(physType, 'behavior'),
+                                    behavior: physTypeGetCond(physType)('behavior'),
                                 }),
                         }
                     },
                     no: {
                         name: '-- -- -- -- -- NO! Requested behavior: sleeping?',
-                        testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'sleeping',
+                        testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'sleeping',
                         yes: {
                             name: '-- -- -- -- -- -- YES! Behavior request approved',
-                            func: (physType) => physTypeUseConds(physType,
-                                {
+                            func: (physType) => physTypeUseConds
+                                (physType)
+                                ({
                                     behavior: 'sleeping',
 
                                     // can't move if sleeping!
@@ -94,8 +99,9 @@ const ruleBook = {
         },
         no: {
             name: 'conditions out of limits!',
-            func: (physType) => physTypeUseConds(physType,
-                {
+            func: (physType) => physTypeUseConds
+                (physType)
+                ({
                     behavior: 'frozen',
                 }),
         }

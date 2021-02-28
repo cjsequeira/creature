@@ -8,7 +8,7 @@
 //  physType: physType to use
 //  argConds: list of conditions to include, as ...{key, value}
 // returns physType
-export const physTypeUseConds = (physType, argConds) => ({
+export const physTypeUseConds = (physType) => (argConds) => ({
     ...physType,
     conds: {
         ...physType.conds,
@@ -21,14 +21,14 @@ export const physTypeUseConds = (physType, argConds) => ({
 //  physType: physType to use
 //  argCond: string name for key of condition to look at
 // returns condition value
-export const physTypeGetCond = (physType, argCond) => physType.conds[argCond];
+export const physTypeGetCond = (physType) => (argCond) => physType.conds[argCond];
 
 // return key value from physType
 // takes:
 //  physType: physType to use
 //  arg: string name for key of physType to look at
 // returns key value
-export const physTypeGet = (physType, arg) => physType[arg];
+export const physTypeGet = (physType) => (arg) => physType[arg];
 
 
 // *** Simulator getter functions
