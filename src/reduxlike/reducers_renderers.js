@@ -42,12 +42,12 @@ export const rootReducer = (inStore, inAction) => (
         [ACTION_PHYSTYPE_DO_ACT]: (store, action) => ({
             ...store,
 
-            // set creature store to the given creatureStore with the pct
+            // set physType store to the given pctStore with the pct
             //  at the given index replaced with the pct returned from "act"
-            creatureStore: splice
+            pctStore: splice
                 (1)                                     // remove element...
                 (action.index)                          // ... at the given index...
-                (store.creatureStore)                   // ... in this creature store...
+                (store.pctStore)                        // ... in this physType store...
                 (action.pct.physType.act(action.pct)),  // ... and replace with pct from "act"
         }),
 
@@ -105,7 +105,12 @@ export const rootReducer = (inStore, inAction) => (
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateTimeChartData(action.chart, action.dataIndex, action.timeValPair),
+                () => mutable_updateTimeChartData(
+                    action.chart,
+                    action.dataIndex,
+                    action.label,
+                    action.timeValPair
+                ),
             ],
         }),
 
@@ -171,12 +176,14 @@ export function mutable_renderStoreChanges(store) {
 // takes: 
 //  chart: HTML DOM chart reference
 //  dataIndex: chart data index
+//  label: data label for legend
 //  timeValPair: data point, as {time, value}
 // returns nothing
-function mutable_updateTimeChartData(chart, dataIndex, timeValPair) {
+function mutable_updateTimeChartData(chart, dataIndex, label, timeValPair) {
     // MUTABLE: add data to chart
     chart.data.datasets[dataIndex] = {
         ...chart.data.datasets[dataIndex],
+        label: label,
         data: chart.data.datasets[dataIndex].data.concat(
             {
                 x: timeValPair.time,

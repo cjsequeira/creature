@@ -41,12 +41,14 @@ export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
 // takes:
 //  chart: time chart
 //  dataIndex: chart data index
+//  label: label for legend
 //  timeValPair: data coordinate, as {time, value}
 // returns actionType
-export const queue_addTimeChartData = (chart, dataIndex, timeValPair) => ({
+export const queue_addTimeChartData = (chart, dataIndex, label, timeValPair) => ({
     type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
     chart,
     dataIndex,
+    label,
     timeValPair
 });
 
