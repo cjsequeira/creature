@@ -63,70 +63,70 @@ export const doNonSimUpdate = (store) =>
                 lockStore(),
 
                 // for all creatures...
-                store.creatureStore.map((this_creature, index) => [
-                    // next, if creature behavior string is not the most-recent journal item,
-                    //  update journal and queue update status box
-                    (store.journal[store.journal.length - 1].message !=
-                        (physTypeGet(this_creature.physType)('name') + ' ' +
-                            behaviorStrings[physTypeGetCond(this_creature.physType)('behavior')]))
-                        ? [
-                            addJournalEntry(
-                                store.journal,
-                                physTypeGet(this_creature.physType)('name') + ' ' +
-                                behaviorStrings[physTypeGetCond(this_creature.physType)('behavior')]
-                            ),
-                            queue_addStatusMessage(
-                                store.ui.status_box,
-                                physTypeGet(this_creature.physType)('name') + ' ' +
-                                behaviorStrings[physTypeGetCond(this_creature.physType)('behavior')]
-                            )
-                        ]
-                        : doNothing(),
+                store.creatureStore.map((this_creature, index) => {
+                    // define shorthand func to get this_creature physType keyval
+                    const inGet = physTypeGet(this_creature.physType);
 
-                    // next, queue add glucose data to time chart
-                    queue_addTimeChartData(
-                        store.ui.creature_time_chart,
-                        2 * index,
-                        {
-                            time: simGetCurTime(store),
-                            value: physTypeGetCond(this_creature.physType)('glucose')
-                        }),
+                    // define shorthand func to get this_creature physType cond
+                    const inGetCond = physTypeGetCond(this_creature.physType);
 
-                    // next, queue add neuro data to time chart
-                    queue_addTimeChartData(
-                        store.ui.creature_time_chart,
-                        2 * index + 1,
-                        {
-                            time: simGetCurTime(store),
-                            value: physTypeGetCond(this_creature.physType)('neuro')
-                        }),
+                    // dispatch these actions
+                    return [
+                        // next, if creature behavior string is not the most-recent journal item,
+                        //  update journal and queue update status box
+                        (store.journal[store.journal.length - 1].message !=
+                            (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]))
+                            ? [
+                                addJournalEntry(
+                                    store.journal,
+                                    inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
+                                ),
+                                queue_addStatusMessage(
+                                    store.ui.status_box,
+                                    inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
+                                )
+                            ]
+                            : doNothing(),
 
-                    // next, queue add x-y data to geo chart
-                    queue_addGeoChartData(
-                        store.ui.creature_geo_chart,
-                        index,
-                        physTypeGet(this_creature.physType)('color'),
-                        {
-                            x: physTypeGetCond(this_creature.physType)('x'),
-                            y: physTypeGetCond(this_creature.physType)('y')
-                        }),
+                        // next, queue add glucose data to time chart
+                        queue_addTimeChartData(
+                            store.ui.creature_time_chart,
+                            2 * index,
+                            {
+                                time: simGetCurTime(store),
+                                value: inGetCond('glucose')
+                            }),
 
-                    // next, if creature in given store is frozen, 
-                    //  queue give termination message and stop simulator
-                    (physTypeGetCond(this_creature.physType)('behavior') === 'frozen')
-                        ? [
-                            addJournalEntry(
-                                store.journal,
-                                "Simulation ended"
-                            ),
-                            queue_addStatusMessage(
-                                store.ui.status_box,
-                                "*** Simulation ended"
-                            ),
-                            stopSim()
-                        ]
-                        : doNothing()
-                ]),
+                        // next, queue add neuro data to time chart
+                        queue_addTimeChartData(
+                            store.ui.creature_time_chart,
+                            2 * index + 1,
+                            {
+                                time: simGetCurTime(store),
+                                value: inGetCond('neuro')
+                            }),
+
+                        // next, queue add x-y data to geo chart
+                        queue_addGeoChartData(
+                            store.ui.creature_geo_chart,
+                            index,
+                            inGet('color'),
+                            {
+                                x: inGetCond('x'),
+                                y: inGetCond('y')
+                            }),
+
+                        // next, if creature in given store is frozen, 
+                        //  queue give termination message and stop simulator
+                        (inGetCond('behavior') === 'frozen')
+                            ? [
+                                addJournalEntry(store.journal, "Simulation ended"),
+                                queue_addStatusMessage(store.ui.status_box, "*** Simulation ended"),
+                                stopSim()
+                            ]
+                            : doNothing()
+                    ]
+                }),
 
                 // next, queue add food to geo chart
                 queue_addGeoChartData(
