@@ -5,6 +5,8 @@
 // *** Imports
 import { makeArgChain } from './util.js';
 
+import { actAsSimpleCreature } from './creatures/simple_creature.js';
+
 import {
     actionDispatch,
     addJournalEntry,
@@ -53,97 +55,92 @@ const behaviorStrings = {
 export const doNonSimUpdate = (store) =>
     // is sim running AND store lock unset?    
     (simGetRunning(store) && !storeIsLocked(store))
-        // yes: return a rendered store type object that's built from the given store by...
-        ? mutable_renderStoreChanges(
-            // ... applying our action dispatcher repeatedly to the action creators
-            //  listed below, in top-to-bottom order...
-            // ... to the given store
-            makeArgChainActionDispatch(store)(
-                // first, set store lock... OTHER CODE MUST CHECK FOR AND RESPECT THIS!
-                lockStore(),
+        // yes: return a rendered store type object that's built from the given store by
+        //  applying our action dispatcher repeatedly to the action creators
+        //  listed below, in top-to-bottom order, with the given store
+        ? mutable_renderStoreChanges(makeArgChainActionDispatch(store)(
+            // first, set store lock... OTHER CODE MUST CHECK FOR AND RESPECT THIS!
+            lockStore(),
 
-                // for all physContainerType objects in store...
-                store.pctStore.map((this_pct, index) => {
-                    // define shorthand func to get this_pct physType keyval
-                    const inGet = physTypeGet(this_pct.physType);
+            // for all physContainerType objects in store...
+            store.pctStore.map((this_pct, index) => {
+                // define shorthand func to get this_pct physType keyval
+                const inGet = physTypeGet(this_pct.physType);
 
-                    // define shorthand func to get this_pct physType cond
-                    const inGetCond = physTypeGetCond(this_pct.physType);
+                // define shorthand func to get this_pct physType cond
+                const inGetCond = physTypeGetCond(this_pct.physType);
 
-                    // dispatch these actions
-                    return [
-                        // next, if creature behavior string is not the most-recent journal item,
-                        //  update journal and queue update status box
-                        (store.journal[store.journal.length - 1].message !=
-                            (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]))
-                            ? [
-                                addJournalEntry(
-                                    store.journal,
-                                    inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
-                                ),
-                                queue_addStatusMessage(
-                                    store.ui.status_box,
-                                    inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
-                                )
-                            ]
-                            : doNothing(),
+                // dispatch these actions
+                return [
+                    // is this_pct a Simple Creature?
+                    (this_pct.physType.act === actAsSimpleCreature)
+                        // yes
+                        ? [
+                            // if creature behavior string is not the most-recent journal item,
+                            //  update journal and queue update status box
+                            (store.journal[store.journal.length - 1].message !=
+                                (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]))
+                                ? [
+                                    addJournalEntry(
+                                        store.journal,
+                                        inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
+                                    ),
+                                    queue_addStatusMessage(
+                                        store.ui.status_box,
+                                        inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
+                                    )
+                                ]
+                                : doNothing(),
 
-                        // next, queue add glucose data to time chart
-                        queue_addTimeChartData(
-                            store.ui.creature_time_chart,
-                            2 * index,
-                            {
-                                time: simGetCurTime(store),
-                                value: inGetCond('glucose')
-                            }),
+                            // next, queue add glucose data to time chart
+                            queue_addTimeChartData(
+                                store.ui.creature_time_chart,
+                                2 * index,
+                                {
+                                    time: simGetCurTime(store),
+                                    value: inGetCond('glucose')
+                                }),
 
-                        // next, queue add neuro data to time chart
-                        queue_addTimeChartData(
-                            store.ui.creature_time_chart,
-                            2 * index + 1,
-                            {
-                                time: simGetCurTime(store),
-                                value: inGetCond('neuro')
-                            }),
+                            // next, queue add neuro data to time chart
+                            queue_addTimeChartData(
+                                store.ui.creature_time_chart,
+                                2 * index + 1,
+                                {
+                                    time: simGetCurTime(store),
+                                    value: inGetCond('neuro')
+                                }),
 
-                        // next, queue add x-y data to geo chart
-                        queue_addGeoChartData(
-                            store.ui.creature_geo_chart,
-                            index,
-                            inGet('color'),
-                            {
-                                x: inGetCond('x'),
-                                y: inGetCond('y')
-                            }),
+                            // next, if creature in given store is frozen, 
+                            //  queue give termination message and stop simulator
+                            (inGetCond('behavior') === 'frozen')
+                                ? [
+                                    addJournalEntry(store.journal, "Simulation ended"),
+                                    queue_addStatusMessage(store.ui.status_box, "*** Simulation ended"),
+                                    stopSim()
+                                ]
+                                : doNothing(),
+                        ]
 
-                        // next, if creature in given store is frozen, 
-                        //  queue give termination message and stop simulator
-                        (inGetCond('behavior') === 'frozen')
-                            ? [
-                                addJournalEntry(store.journal, "Simulation ended"),
-                                queue_addStatusMessage(store.ui.status_box, "*** Simulation ended"),
-                                stopSim()
-                            ]
-                            : doNothing()
-                    ]
-                }),
+                        // not a Simple Creature: don't do the stuff above
+                        : doNothing(),
 
-                // next, queue add food to geo chart
-                queue_addGeoChartData(
-                    store.ui.creature_geo_chart,
-                    store.pctStore.length,
-                    '#008800ff',
-                    {
-                        x: physTypeGetCond(store.foodStore.physType)('x'),
-                        y: physTypeGetCond(store.foodStore.physType)('y')
-                    }),
+                    // next, queue add x-y data to geo chart
+                    queue_addGeoChartData(
+                        store.ui.creature_geo_chart,
+                        index,
+                        inGet('color'),
+                        {
+                            x: inGetCond('x'),
+                            y: inGetCond('y')
+                        }),
+                ]
+            }),
 
-                // next, unset store lock
-                unlockStore()
-            )
+            // next, unset store lock
+            unlockStore()
 
-            // closing paren for mutable_renderStoreChanges(...)
-        )
+            // closing paren for makeArgChainActionDispatch, then for mutable_renderStoreChanges
+        ))
 
         // if sim is not running or store lock is set, just return the given store
         : store;

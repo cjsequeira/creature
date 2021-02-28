@@ -238,7 +238,7 @@ const initial_store = {
 
     // initial physContainerType objects with no prior rule applied
     pctStore: [
-        // creature 1
+        // Simple Creature Vinny
         {
             // the last rule node applied
             lastRule: {},
@@ -283,7 +283,7 @@ const initial_store = {
             },
         },
 
-        // creature 2
+        // Simple Creature Eddie
         {
             // the last rule node applied
             lastRule: {},
@@ -326,33 +326,34 @@ const initial_store = {
                     */
                 },
             },
-        }],
+        },
 
-    // initial food element
-    // type: physContainerType
-    foodStore: {
-        // the last rule node applied
-        lastRule: {},
+        // initial food element
+        {
+            // the last rule node applied
+            lastRule: {},
 
-        // the food
-        // type: physType
-        physType: {
-            name: 'Food',
-            act: (pct) => pct,
-            conds: {
+            // the food
+            // type: physType
+            physType: {
+                name: 'Food',
+                color: '#008800ff',
+                act: (pct) => pct,
+                conds: {
 
-                x: 10.0,
-                y: 10.0,
+                    x: 10.0,
+                    y: 10.0,
 
 
-                // location
-                /*
-                x: 18.0 * Math.random() + 1.0,
-                y: 18.0 * Math.random() + 1.0,
-                */
+                    // location
+                    /*
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+                    */
+                },
             },
         },
-    },
+    ],
 
     // initial journal
     journal: [{
