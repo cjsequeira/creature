@@ -13,103 +13,152 @@ import { physTypeDoPhysics } from './sim/physics.js';
 import { mutableRandGen_seededRand } from './sim/seeded_rand.js';
 
 
-// *** The rulebook
-const ruleBook = {
+// *** Rulebook test nodes
+const isCreatureType = {
     name: 'Is creatureType?',
     testFunc: (physType) => physType.hasOwnProperty('conds'),
-    yes: {
-        name: '-- YES! Glucose and neuro in range?',
-        testFunc: (physType) =>
-            (physTypeGetCond(physType)('glucose') > 0.0) &&
-            (physTypeGetCond(physType)('neuro') < 100.0),
-        yes: {
-            // produce creatureType object with laws of physics applied
-            preFunc: (physType) => physTypeDoPhysics(physType),
-            name: '-- -- YES! Requesting behavior: idling?',
-            testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'idling',
-            yes: {
-                name: '-- -- -- -- YES! Behavior request approved: idling',
-                func: (physType) => physTypeUseConds
-                    (physType)
-                    ({
-                        behavior: physTypeGetCond(physType)('behavior_request'),
-                    }),
-            },
-            no: {
-                name: '-- -- -- NO! Requesting behavior: wandering?',
-                testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'wandering',
-                yes: {
-                    name: '-- -- -- -- -- YES! Behavior request approved: wandering',
-                    func: (physType) => physTypeUseConds
-                        (physType)
-                        ({
-                            behavior: physTypeGetCond(physType)('behavior_request'),
-                        }),
-                },
-                no: {
-                    name: '-- -- -- -- NO! Requesting behavior: eating?',
-                    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'eating',
-                    yes: {
-                        name: '-- -- -- -- -- YES! Is food available?',
-                        testFunc: (physType) => mutableRandGen_seededRand(0.0, 1.0) > 0.03,
-                        yes: {
-                            name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
-                            func: (physType) => physTypeUseConds
-                                (physType)
-                                ({
-                                    behavior: physTypeGetCond(physType)('behavior_request'),
+};
 
-                                    // can't move if eating: no grab-and-go!
-                                    speed: 0.0,
-                                    accel: 0.0
-                                }),
-                        },
-                        no: {
-                            name: "wants to eat but there's no food here!",
-                            func: (physType) => physTypeUseConds
-                                (physType)
-                                ({
-                                    // reject behavior request
-                                    behavior: physTypeGetCond(physType)('behavior'),
-                                }),
-                        }
+const isGlucoseNeuroRange = {
+    name: 'Glucose and neuro in range?',
+    testFunc: (physType) =>
+        (physTypeGetCond(physType)('glucose') > 0.0) &&
+        (physTypeGetCond(physType)('neuro') < 100.0),
+};
+
+const isBehaviorRequestIdling = {
+    name: 'Requesting behavior: idling?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'idling',
+};
+
+const isBehaviorRequestWandering = {
+    name: 'Requesting behavior: wandering?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'wandering',
+};
+
+const isBehaviorRequestEating = {
+    name: 'Requesting behavior: eating?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'eating',
+};
+
+const isBehaviorRequestFoodAvail = {
+    name: 'Is food available?',
+    testFunc: (physType) => mutableRandGen_seededRand(0.0, 1.0) > 0.03,
+};
+
+const isBehaviorRequestSleeping = {
+    name: 'Requested behavior: sleeping?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'sleeping',
+};
+
+
+// *** Rulebook leaf nodes
+const leafApproveIdling = {
+    name: 'Behavior request approved: idling',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+        }),
+};
+
+const leafApproveWandering = {
+    name: 'Behavior request approved: wandering',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+        }),
+};
+
+const leafApproveEating = {
+    name: 'Behavior request approved: eating',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+
+            // can't move if eating: no grab-and-go!
+            speed: 0.0,
+            accel: 0.0
+        }),
+};
+
+const leafApproveSleeping = {
+    name: 'Behavior request approved: sleeping',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: 'sleeping',
+
+            // can't move if sleeping!
+            speed: 0.0,
+            accel: 0.0
+        }),
+};
+
+const leafRejectEating = {
+    name: "Creature wants to eat but there's no food here!",
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            // reject behavior request
+            behavior: physTypeGetCond(physType)('behavior'),
+        }),
+};
+
+const leafCondsOOL = {
+    name: 'Creature conditions out of limits!',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: 'frozen',
+        }),
+};
+
+const leafNotCreatureType = {
+    name: 'Return given physType',
+    func: (physType) => physType,
+};
+
+const leafUnknownBehavior = {
+    name: 'Unknown behavior!',
+    func: (physType) => physType
+};
+
+
+// *** The rulebook
+const ruleBook = {
+    testNode: isCreatureType,
+    yes: {
+        testNode: isGlucoseNeuroRange,
+        yes: {
+            // first, produce creatureType object with laws of physics applied
+            preFunc: (physType) => physTypeDoPhysics(physType),
+
+            testNode: isBehaviorRequestIdling,
+            yes: leafApproveIdling,
+            no: {
+                testNode: isBehaviorRequestWandering,
+                yes: leafApproveWandering,
+                no: {
+                    testNode: isBehaviorRequestEating,
+                    yes: {
+                        testNode: isBehaviorRequestFoodAvail,
+                        yes: leafApproveEating,
+                        no: leafRejectEating,
                     },
                     no: {
-                        name: '-- -- -- -- -- NO! Requested behavior: sleeping?',
-                        testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'sleeping',
-                        yes: {
-                            name: '-- -- -- -- -- -- YES! Behavior request approved',
-                            func: (physType) => physTypeUseConds
-                                (physType)
-                                ({
-                                    behavior: 'sleeping',
-
-                                    // can't move if sleeping!
-                                    speed: 0.0,
-                                    accel: 0.0
-                                }),
-                        },
-                        no: {
-                            name: '-- -- -- -- -- -- NO! Unknown behavior!',
-                            func: (physType) => physType
-                        }
+                        testNode: isBehaviorRequestSleeping,
+                        yes: leafApproveSleeping,
+                        no: leafUnknownBehavior,
                     },
                 },
             }
         },
-        no: {
-            name: 'conditions out of limits!',
-            func: (physType) => physTypeUseConds
-                (physType)
-                ({
-                    behavior: 'frozen',
-                }),
-        }
+        no: leafCondsOOL,
     },
-    no: {
-        name: '-- NO! Return given physType',
-        func: (physType) => physType,
-    }
+    no: leafNotCreatureType,
 };
 
 
@@ -120,19 +169,24 @@ const ruleBook = {
 //  (e.g. a store list with a creature lookup)
 // takes: physType
 // returns physContainerType with applied rule and record of rule used
-export const resolveRules = (physType) => {
-    // define: get physContainerType with selected rule and a physType to apply the rule to
-    const pct_to_use = findRule(physType)(ruleBook);
-
-    // return physContainerType with: 
+export const resolveRules = (physType) =>
+    // return evaluation of anonymous function that takes a physContainerType
+    // and returns a physContainerType with: 
     //  lastRule: selected rule
     //  physType: given physType with selected rule applied
-    return {
-        ...pct_to_use,
-        lastRule: pct_to_use.lastRule,
-        physType: pct_to_use.lastRule.func(pct_to_use.physType),
-    }
-};
+    (
+        (pctToUse) => ({
+            ...pctToUse,
+            lastRule: pctToUse.lastRule,
+            physType: pctToUse.lastRule.func(pctToUse.physType),
+        })
+    )
+        // anonymous function argument:
+        //  find a rule in the rulebook for this physType, 
+        //  then apply the rule to get a physContainerType
+        //  and use that physContainerType as argument to anonymous function
+        (findRule(physType)(ruleBook));
+
 
 // recursive rulebook node finder
 // takes:
@@ -140,19 +194,21 @@ export const resolveRules = (physType) => {
 //  node: the rule node to use
 // returns physContainerType with function (named "func") that should be applied to the physType
 const findRule = (physType) => (node) => {
-    // define: is pre-function undefined? if yes, use physType. if no, use preFunc(physType)
-    const physType_to_use = (node.preFunc === undefined) ? physType : node.preFunc(physType);
+    // define: is pre-function undefined? 
+    //  if yes, apply (x => x) to physType
+    //  if no, apply pre-function to physType
+    const physType_to_use = (node.preFunc || (x => x))(physType)
 
-    // is test function undefined?
-    return (node.testFunc === undefined)
+    // is test node undefined?
+    return (node.testNode === undefined)
         // yes: return the physContainerType
         ? {
             lastRule: node,
             physType: physType_to_use,
         }
 
-        // no: apply the test func to the physType
-        : (node.testFunc(physType_to_use))
+        // no: apply the test node's test func to the physType
+        : (node.testNode.testFunc(physType_to_use))
             // test func returned true? follow node.yes
             ? findRule(physType_to_use)(node.yes)
 
