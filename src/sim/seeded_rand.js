@@ -53,6 +53,6 @@ export function mutableRandGen_seededRand(min = 0.0, max = 1.0) {
 //  weightsList: numerical array of weights
 // returns number: numerical index into weights list
 export const mutableRandGen_seededWeightedRand = (weightsList) =>
-    selectWeight(weightsList)(mutableRandGen_seededRand(
-        0, sum(weightsList)
-    ));
+    selectWeight
+        (weightsList)
+        (mutableRandGen_seededRand(0, sum(weightsList)));

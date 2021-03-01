@@ -62,18 +62,18 @@ export const doNonSimUpdate = (store) =>
             // first, set store lock... OTHER CODE MUST CHECK FOR AND RESPECT THIS!
             lockStore(),
 
-            // for all physContainerType objects in store...
-            store.pctStore.map((this_pct, index) => {
-                // define shorthand func to get this_pct physType keyval
-                const inGet = physTypeGet(this_pct.physType);
+            // for all physType objects in store...
+            store.physTypeStore.map((this_physType, index) => {
+                // define shorthand func to get this_physType keyval
+                const inGet = physTypeGet(this_physType);
 
-                // define shorthand func to get this_pct physType cond
-                const inGetCond = physTypeGetCond(this_pct.physType);
+                // define shorthand func to get this_physType cond
+                const inGetCond = physTypeGetCond(this_physType);
 
                 // dispatch these actions
                 return [
-                    // is this_pct a Simple Creature?
-                    (this_pct.physType.act === actAsSimpleCreature)
+                    // is this_physType a Simple Creature?
+                    (this_physType.act === actAsSimpleCreature)
                         // yes
                         ? [
                             // if creature behavior string is not the most-recent journal item,

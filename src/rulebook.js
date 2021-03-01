@@ -164,35 +164,18 @@ const ruleBook = {
 
 // *** Rulebook functions
 // general rulebook resolver
-// REFACTOR IDEA:
-//  Determine whether to save last-used rule in a pct or some other structure 
-//  (e.g. a store list with a creature lookup)
+//  find a rule in the rulebook for this physType, 
+//  then apply the rule to get a physType
 // takes: physType
-// returns physContainerType with applied rule and record of rule used
-export const resolveRules = (physType) =>
-    // return evaluation of anonymous function that takes a physContainerType
-    // and returns a physContainerType with: 
-    //  lastRule: selected rule
-    //  physType: given physType with selected rule applied
-    (
-        (pctToUse) => ({
-            ...pctToUse,
-            lastRule: pctToUse.lastRule,
-            physType: pctToUse.lastRule.func(pctToUse.physType),
-        })
-    )
-        // anonymous function argument:
-        //  find a rule in the rulebook for this physType, 
-        //  then apply the rule to get a physContainerType
-        //  and use that physContainerType as argument to anonymous function
-        (findRule(physType)(ruleBook));
-
+// returns physType with applied rule
+export const resolveRules = (physType) => findRule(physType)(ruleBook);
 
 // recursive rulebook node finder
+// assumes a rule exists in the rulebook for every possible physType
 // takes:
 //  physType
 //  node: the rule node to use
-// returns physContainerType with function (named "func") that should be applied to the physType
+// returns physType with selected rule applied
 const findRule = (physType) => (node) => {
     // define: is pre-function undefined? 
     //  if yes, apply (x => x) to physType
@@ -201,11 +184,8 @@ const findRule = (physType) => (node) => {
 
     // is test node undefined?
     return (node.testNode === undefined)
-        // yes: return the physContainerType
-        ? {
-            lastRule: node,
-            physType: physType_to_use,
-        }
+        // yes: return the physType with the rule applied
+        ? node.func(physType_to_use)
 
         // no: apply the test node's test func to the physType
         : (node.testNode.testFunc(physType_to_use))

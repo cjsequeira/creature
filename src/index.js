@@ -74,10 +74,10 @@ function appUpdate() {
         simGetRunning(myStore) &&
         (!storeIsLocked(myStore))
     ) {
-        // yes: set store lock, do physContainerType act, advance sim, unset store lock
+        // yes: set store lock, do physType act, advance sim, unset store lock
         myStore = makeArgChainActionDispatch(myStore)(
             lockStore(),
-            myStore.pctStore.map((this_pct, i) => doPhysTypeAct(this_pct, i)),
+            myStore.physTypeStore.map((this_physType, i) => doPhysTypeAct(this_physType, i)),
             advanceSim(),
             unlockStore()
         );
