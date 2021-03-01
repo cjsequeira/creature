@@ -58,7 +58,7 @@ export const doNonSimUpdate = (store) =>
         // yes: return a rendered store type object that's built from the given store by
         //  applying our action dispatcher repeatedly to the action creators
         //  listed below, in top-to-bottom order, with the given store
-        ? mutable_renderStoreChanges(applyArgChainActionDispatch(store)(
+        ? applyArgChainActionDispatch(store)(
             // first, set store lock... OTHER CODE MUST CHECK FOR AND RESPECT THIS!
             lockStore(),
 
@@ -140,7 +140,7 @@ export const doNonSimUpdate = (store) =>
             unlockStore()
 
             // closing paren for applyArgChainActionDispatch, then for mutable_renderStoreChanges
-        ))
+        )
 
         // if sim is not running or store lock is set, just return the given store
         : store;

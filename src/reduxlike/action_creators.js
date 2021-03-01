@@ -15,9 +15,17 @@ import {
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
-    ACTION_STORE_UNLOCK
+    ACTION_STORE_UNLOCK,
+    ACTION_MUTABLE_RENDER
 } from '../const_vals.js';
 import { rootReducer } from './reducers_renderers.js';
+
+
+// *** Perform renders that may mutate application beyond the app store (e.g. UI renders)
+export const mutableRender = () =>
+({
+    type: ACTION_MUTABLE_RENDER,
+})
 
 
 // *** Queue update UI

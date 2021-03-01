@@ -27,7 +27,8 @@ import {
     startSim,
     stopSim,
     lockStore,
-    unlockStore
+    unlockStore,
+    mutableRender
 } from './reduxlike/action_creators.js';
 
 import {
@@ -58,6 +59,7 @@ myStore = actionDispatch(myStore)(startSim());
 
 // do the initial non-sim draw
 myStore = doNonSimUpdate(myStore);
+myStore = actionDispatch(myStore)(mutableRender());
 
 // start repeatedly updating our application at sim frequency
 let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -93,6 +95,9 @@ function appUpdate() {
     ) {
         // update the non-sim parts of our app store
         myStore = doNonSimUpdate(myStore);
+
+        // render the application
+        myStore = actionDispatch(myStore)(mutableRender());
 
         // remember the current time
         myStore = actionDispatch(myStore)(saveClockForSim(performance.now()));

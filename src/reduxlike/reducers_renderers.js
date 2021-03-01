@@ -16,6 +16,7 @@ import {
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
+    ACTION_MUTABLE_RENDER,
 } from '../const_vals.js';
 
 import { UI_NUM_TRAILS } from '../const_vals.js';
@@ -39,6 +40,10 @@ export const rootReducer = (inStore) => (inAction) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_DO_NOTHING]: (store) => (action) => store,
+
+        [ACTION_MUTABLE_RENDER]: (store) => (action) => mutable_renderStoreChanges(store),
+
         [ACTION_PHYSTYPE_DO_ACT]: (store) => (action) =>
         ({
             ...store,
@@ -50,41 +55,6 @@ export const rootReducer = (inStore) => (inAction) =>
                 (action.index)                              // ... at the given index...
                 (store.physTypeStore)                       // ... in this physType store...
                 (action.physType.act(action.physType)),     // ... and replace with physType from "act"
-        }),
-
-        [ACTION_DO_NOTHING]: (store) => (action) => store,
-
-        [ACTION_SIM_ADVANCE]: (store) => (action) =>
-        ({
-            ...store,
-            sim: {
-                ...store.sim,
-                curTime: store.sim.curTime + store.sim.timeStep,
-            }
-        }),
-
-        [ACTION_JOURNAL_ADD_ENTRY]: (store) => (action) =>
-        ({
-            ...store,
-            journal: [
-                ...store.journal,
-                {
-                    time: simGetCurTime(store),
-                    message: action.message,
-                }
-            ],
-        }),
-
-        [ACTION_STORE_LOCK]: (store) => (action) =>
-        ({
-            ...store,
-            locked: true,
-        }),
-
-        [ACTION_STORE_UNLOCK]: (store) => (action) =>
-        ({
-            ...store,
-            locked: false,
         }),
 
         [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (store) => (action) =>
@@ -127,6 +97,15 @@ export const rootReducer = (inStore) => (inAction) =>
             ],
         }),
 
+        [ACTION_SIM_ADVANCE]: (store) => (action) =>
+        ({
+            ...store,
+            sim: {
+                ...store.sim,
+                curTime: store.sim.curTime + store.sim.timeStep,
+            }
+        }),
+
         [ACTION_SIM_SAVE_CLOCK]: (store) => (action) =>
         ({
             ...store,
@@ -154,18 +133,42 @@ export const rootReducer = (inStore) => (inAction) =>
             }
         }),
 
+        [ACTION_STORE_LOCK]: (store) => (action) =>
+        ({
+            ...store,
+            locked: true,
+        }),
+
+        [ACTION_STORE_UNLOCK]: (store) => (action) =>
+        ({
+            ...store,
+            locked: false,
+        }),
+
+        [ACTION_JOURNAL_ADD_ENTRY]: (store) => (action) =>
+        ({
+            ...store,
+            journal: [
+                ...store.journal,
+                {
+                    time: simGetCurTime(store),
+                    message: action.message,
+                }
+            ],
+        }),
+
         // use inAction.type as an entry key into the key-val list above
         // key is used to select a function that takes a store type and action type 
         //  and returns a store type
         // if no key-val matches the entry key, return a func that echoes the given store
-    }[inAction.type] || ((store) => (action) => store)
-
+    }[inAction.type] || ((store) => (action) => store))
         // evaluate the function with the given store and action to get a store type
-    )(inStore)(inAction);
+        (inStore)
+        (inAction);
 
 
 // *** Function to render store changes using an array of render functions
-// MUTABLE: may apply functions that mutate the application store
+// MUTABLE: may apply functions that mutate the application beyond the app store
 // ignores return values from renderFunc applications
 // takes store: storeType
 // returns storeType with empty render function array

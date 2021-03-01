@@ -3,6 +3,9 @@
 // ****** All constant values in the application ******
 
 // *** Action names
+// perform rendering that may mutate parts of the application beyond the store
+export const ACTION_MUTABLE_RENDER = 'MUTABLE_RENDER';
+
 // queue update UI
 export const ACTION_QUEUE_ADD_TIME_CHART_DATA = 'QUEUE_ADD_TIME_CHART_DATA';
 export const ACTION_QUEUE_ADD_GEO_CHART_DATA = 'QUEUE_ADD_GEO_CHART_DATA';
