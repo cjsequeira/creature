@@ -19,7 +19,7 @@ const isCreatureType = {
     testFunc: (physType) => physType.hasOwnProperty('conds'),
 };
 
-const isGlucoseNeuroRange = {
+const isGlucoseNeuroInRange = {
     name: 'Glucose and neuro in range?',
     testFunc: (physType) =>
         (physTypeGetCond(physType)('glucose') > 0.0) &&
@@ -117,7 +117,7 @@ const leafCondsOOL = {
 };
 
 const leafNotCreatureType = {
-    name: 'Return given physType',
+    name: 'Not a creatureType!',
     func: (physType) => physType,
 };
 
@@ -131,9 +131,9 @@ const leafUnknownBehavior = {
 const ruleBook = {
     testNode: isCreatureType,
     yes: {
-        testNode: isGlucoseNeuroRange,
+        testNode: isGlucoseNeuroInRange,
         yes: {
-            // first, produce creatureType object with laws of physics applied
+            // first, produce creatureType with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
 
             testNode: isBehaviorRequestIdling,

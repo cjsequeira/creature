@@ -15,9 +15,52 @@ import {
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
-    ACTION_STORE_UNLOCK
+    ACTION_STORE_UNLOCK,
+    ACTION_MUTABLE_RENDER
 } from '../const_vals.js';
 import { rootReducer } from './reducers_renderers.js';
+
+
+// *** Add journal entry
+// takes:
+//  journal: store journal, as journalType
+//  message: message, as string
+// returns actionType
+export const addJournalEntry = (journal) => (message) => 
+({
+    type: ACTION_JOURNAL_ADD_ENTRY,
+    journal,
+    message
+});
+
+
+// *** Do action for physType at given index
+// takes:
+//  physType
+//  index: index into physType store in app store
+// returns actionType
+export const doPhysTypeAct = (physType) => (index) => 
+({
+    type: ACTION_PHYSTYPE_DO_ACT,
+    physType,
+    index
+});
+
+
+// *** Do nothing
+// takes: nothing
+// returns actionType
+export const doNothing = () => 
+({
+    type: ACTION_DO_NOTHING,
+});
+
+
+// *** Mutable render that may mutate application beyond the app store (e.g. UI renders)
+export const mutableRender = () =>
+({
+    type: ACTION_MUTABLE_RENDER,
+});
 
 
 // *** Queue update UI
@@ -29,7 +72,8 @@ import { rootReducer } from './reducers_renderers.js';
 //  color: color for the data
 //  xyPair: data coordinate, as {x, y}
 // returns actionType
-export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
+export const queue_addGeoChartData = (chart) => (dataIndex) => (color) => (xyPair) => 
+({
     type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
     chart,
     dataIndex,
@@ -44,7 +88,8 @@ export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
 //  label: label for legend
 //  timeValPair: data coordinate, as {time, value}
 // returns actionType
-export const queue_addTimeChartData = (chart, dataIndex, label, timeValPair) => ({
+export const queue_addTimeChartData = (chart) => (dataIndex) => (label) => (timeValPair) => 
+({
     type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
     chart,
     dataIndex,
@@ -57,34 +102,11 @@ export const queue_addTimeChartData = (chart, dataIndex, label, timeValPair) => 
 //  statusBox: HTML DOM status box reference
 //  message: message, as string
 // returns actionType
-export const queue_addStatusMessage = (statusBox, message) => ({
+export const queue_addStatusMessage = (statusBox) => (message) => 
+({
     type: ACTION_QUEUE_ADD_STATUS_MESSAGE,
     statusBox,
     message
-});
-
-
-// *** Add journal entry
-// takes:
-//  journal: store journal, as journalType
-//  message: message, as string
-// returns actionType
-export const addJournalEntry = (journal, message) => ({
-    type: ACTION_JOURNAL_ADD_ENTRY,
-    journal,
-    message
-});
-
-
-// *** Perform action for physType at given index
-// takes:
-//  physType
-//  index: index into physType store in app store
-// returns actionType
-export const doPhysTypeAct = (physType, index) => ({
-    type: ACTION_PHYSTYPE_DO_ACT,
-    physType,
-    index
 });
 
 
@@ -92,14 +114,16 @@ export const doPhysTypeAct = (physType, index) => ({
 // advance sim time
 // takes: nothing
 // returns actionType
-export const advanceSim = () => ({
+export const advanceSim = () => 
+({
     type: ACTION_SIM_ADVANCE,
 });
 
 // save system clock
 // takes: nothing
 // returns actionType
-export const saveClockForSim = (clock) => ({
+export const saveClockForSim = (clock) => 
+({
     type: ACTION_SIM_SAVE_CLOCK,
     clock
 });
@@ -107,40 +131,36 @@ export const saveClockForSim = (clock) => ({
 // start sim
 // takes: nothing
 // returns actionType
-export const startSim = () => ({
+export const startSim = () => 
+({
     type: ACTION_SIM_START,
 });
 
 // stop sim
 // takes: nothing
 // returns actionType
-export const stopSim = () => ({
+export const stopSim = () => 
+({
     type: ACTION_SIM_STOP,
 });
 
 
-// *** Lock and unlock for write access
+// *** Store: Lock and unlock for write access
 // lock store
 // takes: nothing
 // returns actionType
-export const lockStore = () => ({
+export const lockStore = () => 
+({
     type: ACTION_STORE_LOCK,
 });
 
 // unlock store
 // takes: nothing
 // returns actionType
-export const unlockStore = () => ({
+export const unlockStore = () => 
+({
     type: ACTION_STORE_UNLOCK,
 })
-
-
-// *** Do nothing
-// takes: nothing
-// returns actionType
-export const doNothing = () => ({
-    type: ACTION_DO_NOTHING,
-});
 
 
 // *** Action dispatcher function
@@ -148,4 +168,4 @@ export const doNothing = () => ({
 //  store: app store, as storeType
 //  action: action to dispatch, as actionType
 // returns storeType
-export const actionDispatch = (store, action) => rootReducer(store, action);
+export const actionDispatch = (store) => (action) => rootReducer(store)(action);

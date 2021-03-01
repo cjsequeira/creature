@@ -231,7 +231,7 @@ const creature_geo_chart_params_init = {
 
 // *** Initial store
 const initial_store = {
-    // store locked or unlocked for writing
+    // initial store locked / unlocked for writing
     locked: false,
 
     // simulator properties
@@ -253,15 +253,13 @@ const initial_store = {
         */
     },
 
-    // array of store changes to render
+    // initial array of store changes to render
     changes: [],
 
-    // initial physType objects with no prior rule applied
+    // initial physTypeStore
     physTypeStore: [
         // Simple Creature Vinny
         {
-            // the creature
-            // type: creatureType
             name: 'Vinny',
             color: '#0000ccff',
             act: actAsSimpleCreature,
@@ -300,8 +298,6 @@ const initial_store = {
 
         // Simple Creature Eddie
         {
-            // the creature
-            // type: creatureType
             name: 'Eddie',
             color: '#f7036cff',
             act: actAsSimpleCreature,
@@ -340,8 +336,6 @@ const initial_store = {
 
         // initial food element 1
         {
-            // the food
-            // type: physType
             name: 'Food 1',
             color: '#008800ff',
             act: (physType) => physType,
@@ -360,8 +354,6 @@ const initial_store = {
         },
 
         // initial food element 2
-        // the food
-        // type: physType
         {
             name: 'Food 2',
             color: '#008800ff',

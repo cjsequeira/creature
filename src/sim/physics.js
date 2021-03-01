@@ -12,7 +12,7 @@ import {
 } from '../const_vals.js';
 
 import {
-    makeFuncChain,
+    applyFuncChain,
     withinRange,
     boundToRange
 } from '../util.js';
@@ -31,10 +31,11 @@ export const physTypeDoPhysics = (physType) =>
     // function chain: 
     //  get physType with new location 
     //  -> get physType with wall collisions checked
-    makeFuncChain(physType)(
-        physTypeDoMovements,
-        physTypeCheckWallCollisions
-    );
+    applyFuncChain(physType)
+        (
+            physTypeDoMovements,
+            physTypeCheckWallCollisions
+        );
 
 
 // *** Internal physics functions

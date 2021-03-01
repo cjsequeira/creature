@@ -22,7 +22,8 @@ import {
 // *** Default Simple Creature assembler
 // takes: nothing
 // returns physType
-export const getDefaultSimpleCreature = () => ({
+export const getDefaultSimpleCreature = () =>
+({
     name: 'New Simple Creature',
     color: '#00bb00ff',
     act: actAsSimpleCreature,
@@ -47,7 +48,7 @@ export const getDefaultSimpleCreature = () => ({
 });
 
 
-// *** Behavior functions unique to this creature
+// *** Behavior functions unique to Simple Creature
 // main dispatch function
 // this function works by using the physType behavior to select a function to apply
 // if behavior is not a key in the object, 'behavior' bracket search gives null,
@@ -68,17 +69,18 @@ export const actAsSimpleCreature = (physType) =>
 // takes: physType
 // returns physType
 const actIdling = (physType) =>
-    doBehavior(
+    doBehavior
         // pass in physType object with specific glucose, neuro, accel
-        physTypeUseConds
+        (physTypeUseConds
             (physType)
             ({
                 glucose: physTypeGetCond(physType)('glucose') - 3.0 * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(physType)('neuro') + 2.0 * simGetTimeStep(myStore),
                 accel: 0.0
-            }),
+            })
+        )
         // pass in behavior change desires specific to this behavior function
-        {
+        ({
             'idling': () =>
                 4.0,
             'wandering': (physType) =>
@@ -94,10 +96,10 @@ const actWandering = (physType) =>
     // return evaluation of anonymous function that takes an acceleration  
     //  and heading nudge value
     (
-        (accel) => (hdg_nudge) => doBehavior(
+        (accel) => (hdg_nudge) => doBehavior
             // pass in physType object with specific glucose, neuro, heading, accel
             // glucose and neuro impacts are more severe with higher accceleration magnitude
-            physTypeUseConds
+            (physTypeUseConds
                 (physType)
                 ({
                     glucose: physTypeGetCond(physType)('glucose') -
@@ -107,9 +109,10 @@ const actWandering = (physType) =>
 
                     heading: physTypeGetCond(physType)('heading') + hdg_nudge,
                     accel: accel,
-                }),
+                })
+            )
             // pass in behavior change desires specific to this behavior function
-            {
+            ({
                 'wandering': () =>
                     7.0,
                 'idling': () =>
@@ -130,16 +133,17 @@ const actWandering = (physType) =>
 // takes physType
 // returns physType
 const actEating = (physType) =>
-    doBehavior(
+    doBehavior
         // pass in physType object with specific glucose and neuro
-        physTypeUseConds
+        (physTypeUseConds
             (physType)
             ({
                 glucose: physTypeGetCond(physType)('glucose') + 6.0 * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(physType)('neuro') + 4.0 * simGetTimeStep(myStore),
-            }),
+            })
+        )
         // pass in behavior change desires specific to this behavior function
-        {
+        ({
             'eating': () =>
                 5.0,
             'idling': (physType) =>
@@ -150,16 +154,17 @@ const actEating = (physType) =>
 // takes physType
 // returns physType
 const actSleeping = (physType) =>
-    doBehavior(
+    doBehavior
         // pass in physType object with specific glucose and neuro
-        physTypeUseConds
+        (physTypeUseConds
             (physType)
             ({
                 glucose: physTypeGetCond(physType)('glucose') - 1.4 * simGetTimeStep(myStore),
                 neuro: physTypeGetCond(physType)('neuro') - 6.2 * simGetTimeStep(myStore),
-            }),
+            })
+        )
         // pass in behavior change desires specific to this behavior function
-        {
+        ({
             'sleeping': () =>
                 5.0,
             'idling': (physType) =>
@@ -171,7 +176,7 @@ const actSleeping = (physType) =>
 // function to review and return appropriate behavior
 // takes physType and desireFuncType
 // returns physType
-export const doBehavior = (physType, desireFuncType) =>
+const doBehavior = (physType) => (desireFuncType) =>
     // return physType object that is the creature, as a creatureType 
     //  with behavior indicated via rulebook review of randomly-chosen desire 
     //  based on weighted random draw using given desire functions

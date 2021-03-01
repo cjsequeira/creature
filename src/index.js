@@ -16,7 +16,7 @@ import {
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
 
-import { makeArgChain } from './util.js';
+import { applyArgChain } from './util.js';
 
 import {
     actionDispatch,
@@ -26,8 +26,11 @@ import {
     startSim,
     stopSim,
     lockStore,
-    unlockStore
+    unlockStore,
+    mutableRender
 } from './reduxlike/action_creators.js';
+
+import { actionGroup_NonsimActions } from './reduxlike/actiongroup_nonsimactions.js';
 
 import {
     simGetSavedClock,
@@ -36,28 +39,33 @@ import {
 } from './reduxlike/store_getters.js';
 
 import { storeInit } from './reduxlike/store_init.js';
-import { doNonSimUpdate } from './do_nonsim_update.js';
 
 
-// *** Define function-chaining function applied to our store action dispatcher
-const makeArgChainActionDispatch = makeArgChain(actionDispatch);
+// *** Define argument-chaining function applied to our store action dispatcher
+const applyArgChainActionDispatch = applyArgChain(actionDispatch);
 
 
 // ***********************************************************************************
 // *** Code that actually does stuff
 
-// create a reference to an initialized store object
+// create our store by referencing an initialized store object
 export let myStore = storeInit(
     document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
     document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
     document.getElementById(CREATURE_STATUS_BOX)
 );
 
-// change the sim status to running
-myStore = actionDispatch(myStore, startSim());
+// dispatch a series of actions to our store
+myStore = applyArgChainActionDispatch(myStore)(
+    // change the sim status to running
+    startSim(),
 
-// do the initial non-sim draw
-myStore = doNonSimUpdate(myStore);
+    // dispatch non-sim-related actions such as queuing initial chart draws
+    actionGroup_NonsimActions(myStore),
+
+    // do the initial UI draws
+    mutableRender()
+);
 
 // start repeatedly updating our application at sim frequency
 let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -74,25 +82,46 @@ function appUpdate() {
         simGetRunning(myStore) &&
         (!storeIsLocked(myStore))
     ) {
-        // yes: set store lock, do physType act, advance sim, unset store lock
-        myStore = makeArgChainActionDispatch(myStore)(
+        // yes: dispatch a series of actions to the store to update the sim
+        myStore = applyArgChainActionDispatch(myStore)(
+            // set store lock
             lockStore(),
-            myStore.physTypeStore.map((this_physType, i) => doPhysTypeAct(this_physType, i)),
+
+            // do physType acts
+            myStore.physTypeStore.map(
+                (this_physType, i) => doPhysTypeAct(this_physType)(i)
+            ),
+
+            // advance sim
             advanceSim(),
+
+            // unset store lock
             unlockStore()
         );
     }
 
-    // if UPDATE_FREQ_NONSIM time has passed since last non-sim update
-    //  AND store lock not set, then update non-sim
+    // has UPDATE_FREQ_NONSIM time passed since last non-sim update
+    //  and store lock not set?
     if (
         (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM)) &&
         (!storeIsLocked(myStore))
     ) {
-        // update the non-sim parts of our app store
-        myStore = doNonSimUpdate(myStore);
+        // yes: dispatch a series of actions to the store to update the non-sim stuff
+        myStore = applyArgChainActionDispatch(myStore)(
+            // set store lock
+            lockStore(),
 
-        // remember the current time
-        myStore = actionDispatch(myStore, saveClockForSim(performance.now()));
+            // update the non-sim parts of our app store
+            actionGroup_NonsimActions(myStore),
+
+            // render the application
+            mutableRender(),
+
+            // remember the current time
+            saveClockForSim(performance.now()),
+
+            // unset store lock
+            unlockStore()
+        )
     }
 };

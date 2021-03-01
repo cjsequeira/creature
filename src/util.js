@@ -24,25 +24,27 @@ export const geThan = (x) => (y) => (y >= x);
 //  and first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
 // the array of arguments will be completely flattened
-// assumes function always returns the type of the target
+// assumes function is of form:
+//  f = target => argument, returns target type
 // takes:
 //  func: function to apply
 //  target: target that function applies to
 //  args: the array of arguments to use in function application
 // returns type of target
-export const makeArgChain = (func) => (target) => (...args) =>
-    args.flat(Infinity).reduce((accum, cur) => func(accum || target, cur), null);
+export const applyArgChain = (func) => (target) => (...args) =>
+    args.flat(Infinity).reduce((accum, cur) => func(accum || target)(cur), null);
 
 // given a target and an array of functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
 // the array of functions will be completely flattened
-// assumes all functions return the type of the target
+// assumes function is of form:
+//  f = target, returns target type
 // takes:
 //  target: target that functions apply to
 //  funcs: array of functions to apply
 // returns type of target
-export const makeFuncChain = (target) => (...funcs) =>
+export const applyFuncChain = (target) => (...funcs) =>
     funcs.flat(Infinity).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
 
 // given an input of a single element or an array, return an array with the
