@@ -16,7 +16,8 @@ import {
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
 
-import { makeArgChain } from './util.js';
+import { doNonSimUpdate } from './do_nonsim_update.js';
+import { applyArgChain } from './util.js';
 
 import {
     actionDispatch,
@@ -36,11 +37,10 @@ import {
 } from './reduxlike/store_getters.js';
 
 import { storeInit } from './reduxlike/store_init.js';
-import { doNonSimUpdate } from './do_nonsim_update.js';
 
 
 // *** Define function-chaining function applied to our store action dispatcher
-const makeArgChainActionDispatch = makeArgChain(actionDispatch);
+const applyArgChainActionDispatch = applyArgChain(actionDispatch);
 
 
 // ***********************************************************************************
@@ -54,7 +54,7 @@ export let myStore = storeInit(
 );
 
 // change the sim status to running
-myStore = actionDispatch(myStore, startSim());
+myStore = actionDispatch(myStore)(startSim());
 
 // do the initial non-sim draw
 myStore = doNonSimUpdate(myStore);
@@ -75,16 +75,18 @@ function appUpdate() {
         (!storeIsLocked(myStore))
     ) {
         // yes: set store lock, do physType act, advance sim, unset store lock
-        myStore = makeArgChainActionDispatch(myStore)(
+        myStore = applyArgChainActionDispatch(myStore)(
             lockStore(),
-            myStore.physTypeStore.map((this_physType, i) => doPhysTypeAct(this_physType, i)),
+            myStore.physTypeStore.map(
+                (this_physType, i) => doPhysTypeAct(this_physType)(i)
+            ),
             advanceSim(),
             unlockStore()
         );
     }
 
-    // if UPDATE_FREQ_NONSIM time has passed since last non-sim update
-    //  AND store lock not set, then update non-sim
+    // has UPDATE_FREQ_NONSIM time passed since last non-sim update
+    //  AND store lock not set?
     if (
         (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM)) &&
         (!storeIsLocked(myStore))
@@ -93,6 +95,6 @@ function appUpdate() {
         myStore = doNonSimUpdate(myStore);
 
         // remember the current time
-        myStore = actionDispatch(myStore, saveClockForSim(performance.now()));
+        myStore = actionDispatch(myStore)(saveClockForSim(performance.now()));
     }
 };

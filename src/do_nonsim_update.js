@@ -3,7 +3,7 @@
 // ****** Code to update the non-sim parts of the application ******
 
 // *** Imports
-import { makeArgChain } from './util.js';
+import { applyArgChain } from './util.js';
 
 import { actAsSimpleCreature } from './creatures/simple_creature.js';
 
@@ -32,7 +32,7 @@ import {
 
 
 // *** Define function-chaining function applied to our store action dispatcher
-const makeArgChainActionDispatch = makeArgChain(actionDispatch);
+const applyArgChainActionDispatch = applyArgChain(actionDispatch);
 
 
 // *** Creature behavior strings
@@ -58,7 +58,7 @@ export const doNonSimUpdate = (store) =>
         // yes: return a rendered store type object that's built from the given store by
         //  applying our action dispatcher repeatedly to the action creators
         //  listed below, in top-to-bottom order, with the given store
-        ? mutable_renderStoreChanges(makeArgChainActionDispatch(store)(
+        ? mutable_renderStoreChanges(applyArgChainActionDispatch(store)(
             // first, set store lock... OTHER CODE MUST CHECK FOR AND RESPECT THIS!
             lockStore(),
 
@@ -73,7 +73,7 @@ export const doNonSimUpdate = (store) =>
                 // dispatch these actions
                 return [
                     // is this_physType a Simple Creature?
-                    (this_physType.act === actAsSimpleCreature)
+                    (inGet('act') === actAsSimpleCreature)
                         // yes
                         ? [
                             // if creature behavior string is not the most-recent journal item,
@@ -81,33 +81,31 @@ export const doNonSimUpdate = (store) =>
                             (store.journal[store.journal.length - 1].message !=
                                 (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]))
                                 ? [
-                                    addJournalEntry(
-                                        store.journal,
-                                        inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
-                                    ),
-                                    queue_addStatusMessage(
-                                        store.ui.status_box,
-                                        inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]
-                                    )
+                                    addJournalEntry
+                                        (store.journal)
+                                        (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]),
+                                    queue_addStatusMessage
+                                        (store.ui.status_box)
+                                        (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')])
                                 ]
                                 : doNothing(),
 
                             // next, queue add glucose data to time chart
-                            queue_addTimeChartData(
-                                store.ui.creature_time_chart,
-                                2 * index,
-                                inGet('name') + ' glucose',
-                                {
+                            queue_addTimeChartData
+                                (store.ui.creature_time_chart)
+                                (2 * index)
+                                (inGet('name') + ' glucose')
+                                ({
                                     time: simGetCurTime(store),
                                     value: inGetCond('glucose')
                                 }),
 
                             // next, queue add neuro data to time chart
-                            queue_addTimeChartData(
-                                store.ui.creature_time_chart,
-                                2 * index + 1,
-                                inGet('name') + ' neuro',
-                                {
+                            queue_addTimeChartData
+                                (store.ui.creature_time_chart)
+                                (2 * index + 1)
+                                (inGet('name') + ' neuro')
+                                ({
                                     time: simGetCurTime(store),
                                     value: inGetCond('neuro')
                                 }),
@@ -116,8 +114,8 @@ export const doNonSimUpdate = (store) =>
                             //  queue give termination message and stop simulator
                             (inGetCond('behavior') === 'frozen')
                                 ? [
-                                    addJournalEntry(store.journal, "Simulation ended"),
-                                    queue_addStatusMessage(store.ui.status_box, "*** Simulation ended"),
+                                    addJournalEntry(store.journal)("Simulation ended"),
+                                    queue_addStatusMessage(store.ui.status_box)("*** Simulation ended"),
                                     stopSim()
                                 ]
                                 : doNothing(),
@@ -127,21 +125,21 @@ export const doNonSimUpdate = (store) =>
                         : doNothing(),
 
                     // next, queue add x-y data to geo chart
-                    queue_addGeoChartData(
-                        store.ui.creature_geo_chart,
-                        index,
-                        inGet('color'),
-                        {
+                    queue_addGeoChartData
+                        (store.ui.creature_geo_chart)
+                        (index)
+                        (inGet('color'))
+                        ({
                             x: inGetCond('x'),
                             y: inGetCond('y')
-                        }),
+                        })
                 ]
             }),
 
             // next, unset store lock
             unlockStore()
 
-            // closing paren for makeArgChainActionDispatch, then for mutable_renderStoreChanges
+            // closing paren for applyArgChainActionDispatch, then for mutable_renderStoreChanges
         ))
 
         // if sim is not running or store lock is set, just return the given store

@@ -39,7 +39,7 @@ export function mutableRandGen_seededRand(min = 0.0, max = 1.0) {
     // calculate random value using current seed
     const value = min + ((randGen.seed * 9301 + 49297) % 233280) / 233280 * (max - min);
 
-    // MUTABLE: generate new seed and save in in random generator mutable state
+    // MUTABLE: generate new seed and save in random generator mutable state
     randGen.seed = (randGen.seed * 9301 + 49297) % 233280;
 
     // return calculated random value

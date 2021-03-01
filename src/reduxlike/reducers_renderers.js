@@ -35,11 +35,12 @@ import {
 //  inStore: store to reduce into, as storeType 
 //  inAction: action to use for reduction, as actionType
 // returns storeType
-export const rootReducer = (inStore, inAction) => (
+export const rootReducer = (inStore) => (inAction) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
-    {
-        [ACTION_PHYSTYPE_DO_ACT]: (store, action) => ({
+    ({
+        [ACTION_PHYSTYPE_DO_ACT]: (store) => (action) =>
+        ({
             ...store,
 
             // set physType store to the given physTypeStore with the physType
@@ -51,9 +52,10 @@ export const rootReducer = (inStore, inAction) => (
                 (action.physType.act(action.physType)),     // ... and replace with physType from "act"
         }),
 
-        [ACTION_DO_NOTHING]: (store, action) => store,
+        [ACTION_DO_NOTHING]: (store) => (action) => store,
 
-        [ACTION_SIM_ADVANCE]: (store, action) => ({
+        [ACTION_SIM_ADVANCE]: (store) => (action) =>
+        ({
             ...store,
             sim: {
                 ...store.sim,
@@ -61,7 +63,8 @@ export const rootReducer = (inStore, inAction) => (
             }
         }),
 
-        [ACTION_JOURNAL_ADD_ENTRY]: (store, action) => ({
+        [ACTION_JOURNAL_ADD_ENTRY]: (store) => (action) =>
+        ({
             ...store,
             journal: [
                 ...store.journal,
@@ -72,25 +75,34 @@ export const rootReducer = (inStore, inAction) => (
             ],
         }),
 
-        [ACTION_STORE_LOCK]: (store, action) => ({
+        [ACTION_STORE_LOCK]: (store) => (action) =>
+        ({
             ...store,
             locked: true,
         }),
 
-        [ACTION_STORE_UNLOCK]: (store, action) => ({
+        [ACTION_STORE_UNLOCK]: (store) => (action) =>
+        ({
             ...store,
             locked: false,
         }),
 
-        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (store, action) => ({
+        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (store) => (action) =>
+        ({
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateGeoChartData(action.chart, action.dataIndex, action.color, action.xyPair),
+                () => mutable_updateGeoChartData(
+                    action.chart,
+                    action.dataIndex,
+                    action.color,
+                    action.xyPair
+                ),
             ],
         }),
 
-        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (store, action) => ({
+        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (store) => (action) =>
+        ({
             ...store,
             changes: [
                 ...store.changes,
@@ -101,7 +113,8 @@ export const rootReducer = (inStore, inAction) => (
             ],
         }),
 
-        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (store, action) => ({
+        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (store) => (action) =>
+        ({
             ...store,
             changes: [
                 ...store.changes,
@@ -114,7 +127,8 @@ export const rootReducer = (inStore, inAction) => (
             ],
         }),
 
-        [ACTION_SIM_SAVE_CLOCK]: (store, action) => ({
+        [ACTION_SIM_SAVE_CLOCK]: (store) => (action) =>
+        ({
             ...store,
             sim: {
                 ...store.sim,
@@ -122,7 +136,8 @@ export const rootReducer = (inStore, inAction) => (
             }
         }),
 
-        [ACTION_SIM_START]: (store, action) => ({
+        [ACTION_SIM_START]: (store) => (action) =>
+        ({
             ...store,
             sim: {
                 ...store.sim,
@@ -130,7 +145,8 @@ export const rootReducer = (inStore, inAction) => (
             }
         }),
 
-        [ACTION_SIM_STOP]: (store, action) => ({
+        [ACTION_SIM_STOP]: (store) => (action) =>
+        ({
             ...store,
             sim: {
                 ...store.sim,
@@ -142,10 +158,10 @@ export const rootReducer = (inStore, inAction) => (
         // key is used to select a function that takes a store type and action type 
         //  and returns a store type
         // if no key-val matches the entry key, return a func that echoes the given store
-    }[inAction.type] || ((store, action) => store)
+    }[inAction.type] || ((store) => (action) => store)
 
-    // evaluate the function with the given store and action to get a store type
-)(inStore, inAction);
+        // evaluate the function with the given store and action to get a store type
+    )(inStore)(inAction);
 
 
 // *** Function to render store changes using an array of render functions
@@ -153,21 +169,16 @@ export const rootReducer = (inStore, inAction) => (
 // ignores return values from renderFunc applications
 // takes store: storeType
 // returns storeType with empty render function array
-export function mutable_renderStoreChanges(store) {
-    return {
-        ...store,
+export const mutable_renderStoreChanges = (store) =>
+({
+    ...store,
 
-        // apply each provided render func to store in order, resulting in empty render function array
-        // MUTABLE: may apply functions that mutate the application state
-        changes: store.changes.filter(renderFunc => {
-            // apply the renderFunc to the store, ignoring return value
-            renderFunc(store);
-
-            // returning "false" causes the renderFunc to be filtered out of the changes array
-            return false;
-        })
-    }
-};
+    // apply each provided render func to store in order, 
+    //  then return false, resulting in empty render function array
+    //  returning false causes the render func to be filtered out of changes array
+    // MUTABLE: may apply functions that mutate the application state
+    changes: store.changes.filter(renderFunc => renderFunc(store) && false)
+});
 
 
 // *** Reducer helpers
@@ -263,7 +274,7 @@ function mutable_updateGeoChartData(chart, dataIndex, color, xyPair) {
 //  statusBox: HTML DOM status box reference
 //  message: message string
 // returns nothing
-export function mutable_updateStatusBox(statusBox, message) {
+function mutable_updateStatusBox(statusBox, message) {
     // get status box scroll bar information
     const statusScrollTop = statusBox.scrollTop;
     const statusScrollHeight = statusBox.scrollHeight;
