@@ -31,7 +31,7 @@ import {
 } from './store_getters.js';
 
 
-// *** Define function-chaining function applied to our store action dispatcher
+// *** Define argument-chaining function applied to our store action dispatcher
 const applyArgChainActionDispatch = applyArgChain(actionDispatch);
 
 
@@ -62,27 +62,13 @@ export const actionGroup_NonsimActions = (store) =>
         // define shorthand func to get this_physType cond
         const inGetCond = physTypeGetCond(this_physType);
 
-        // return an array of actions to be dispatched
+        // return an array of actions to be dispatched for this_physType
         return [
             // is this_physType a Simple Creature?
             (inGet('act') === actAsSimpleCreature)
                 // yes
                 ? [
-                    // if creature behavior string is not the most-recent journal item,
-                    //  update journal and queue update status box
-                    (store.journal[store.journal.length - 1].message !=
-                        (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]))
-                        ? [
-                            addJournalEntry
-                                (store.journal)
-                                (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')]),
-                            queue_addStatusMessage
-                                (store.ui.status_box)
-                                (inGet('name') + ' ' + behaviorStrings[inGetCond('behavior')])
-                        ]
-                        : doNothing(),
-
-                    // next, queue add glucose data to time chart
+                    // queue add glucose data to time chart
                     queue_addTimeChartData
                         (store.ui.creature_time_chart)
                         (2 * index)
@@ -102,7 +88,7 @@ export const actionGroup_NonsimActions = (store) =>
                             value: inGetCond('neuro')
                         }),
 
-                    // next, if creature in given store is frozen, 
+                    // next, if creature is frozen, 
                     //  queue give termination message and stop simulator
                     (inGetCond('behavior') === 'frozen')
                         ? [
@@ -116,7 +102,7 @@ export const actionGroup_NonsimActions = (store) =>
                 // not a Simple Creature: don't return the actions above
                 : doNothing(),
 
-            // next, queue add x-y data to geo chart
+            // next, queue add x-y data to geo chart for this_physType
             queue_addGeoChartData
                 (store.ui.creature_geo_chart)
                 (index)

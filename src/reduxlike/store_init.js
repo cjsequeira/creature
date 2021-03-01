@@ -394,31 +394,29 @@ const initial_store = {
 
 
 // *** Store initializer function
-export const storeInit = (
-    creature_time_chart_context,
-    creature_geo_chart_context,
-    status_box_context) => ({
-        ...initial_store,
+export const storeInit = (creature_time_chart_context, creature_geo_chart_context, status_box_context) =>
+({
+    ...initial_store,
 
-        // Simulator
-        sim: {
-            ...initial_store.sim,
+    // Simulator
+    sim: {
+        ...initial_store.sim,
 
-            // initRandGen just gives back the input seed
-            initSeed: mutableRandGen_initRandGen(initial_store.sim.initSeed),
-        },
+        // initRandGen just gives back the input seed
+        initSeed: mutableRandGen_initRandGen(initial_store.sim.initSeed),
+    },
 
-        // UI
-        ui: {
-            ...initial_store.ui,
+    // UI
+    ui: {
+        ...initial_store.ui,
 
-            // time chart
-            creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
+        // time chart
+        creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
 
-            // geo chart
-            creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
+        // geo chart
+        creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
 
-            // status box
-            status_box: status_box_context
-        }
-    });
+        // status box
+        status_box: status_box_context
+    }
+});

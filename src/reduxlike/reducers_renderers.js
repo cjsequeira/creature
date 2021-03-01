@@ -33,7 +33,7 @@ import {
 
 // *** Root reducer 
 // takes:
-//  inStore: store to reduce into, as storeType 
+//  inStore: store to use as template for reduction, as storeType 
 //  inAction: action to use for reduction, as actionType
 // returns storeType
 export const rootReducer = (inStore) => (inAction) =>
@@ -170,7 +170,7 @@ export const rootReducer = (inStore) => (inAction) =>
 // *** Function to render store changes using an array of render functions
 // MUTABLE: may apply functions that mutate the application beyond the app store
 // ignores return values from renderFunc applications
-// takes store: storeType
+// takes: store, as storeType
 // returns storeType with empty render function array
 export const mutable_renderStoreChanges = (store) =>
 ({
@@ -179,8 +179,8 @@ export const mutable_renderStoreChanges = (store) =>
     // apply each provided render func to store in order, 
     //  then return false, resulting in empty render function array
     //  returning false causes the render func to be filtered out of changes array
-    // MUTABLE: may apply functions that mutate the application state
-    changes: store.changes.filter(renderFunc => renderFunc(store) && false)
+    // MUTABLE: may apply functions that mutate the application beyond the app store
+    changes: store.changes.filter(renderFunc => renderFunc(store) && false),
 });
 
 

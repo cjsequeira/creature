@@ -112,7 +112,7 @@ export const excludeRange = (bound) => (num) =>
 export const roundTo = (digits) => (num) =>
     Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits);
 
-// return an index into a list of weights, given a selector
+// return an index into a list of weights, given a numerical selector
 // takes: 
 //  weightsList: array of numerical weights 
 //  selector: selector, as number
@@ -121,7 +121,6 @@ export const roundTo = (digits) => (num) =>
 export const selectWeight = (weightsList) => (selector) =>
     // build cumulative array of weights
     weightsList.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], [])
-
         // find the first cumulative weight that "holds" the selector
         //  returns -1 if the selector is not in the range of the cumulative weights
         .findIndex(x => geThan(selector)(x));

@@ -3,6 +3,9 @@
 // ****** All constant values in the application ******
 
 // *** Action names
+// do nothing
+export const ACTION_DO_NOTHING = 'DO_NOTHING';
+
 // perform rendering that may mutate parts of the application beyond the store
 export const ACTION_MUTABLE_RENDER = 'MUTABLE_RENDER';
 
@@ -26,9 +29,6 @@ export const ACTION_SIM_STOP = 'SIM_STOP';
 // control writing to store
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
-
-// do nothing
-export const ACTION_DO_NOTHING = 'DO_NOTHING';
 
 
 // *** HTML page references 

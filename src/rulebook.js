@@ -133,7 +133,7 @@ const ruleBook = {
     yes: {
         testNode: isGlucoseNeuroInRange,
         yes: {
-            // first, produce creatureType with laws of physics applied
+            // first, produce physType with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
 
             testNode: isBehaviorRequestIdling,
@@ -184,10 +184,12 @@ const findRule = (physType) => (node) => {
 
     // is test node undefined?
     return (node.testNode === undefined)
-        // yes: return the physType with the rule applied
+        // yes: we assume the given node is a leaf node with a rule to apply
+        // so, return the physType with the rule applied
         ? node.func(physType_to_use)
 
-        // no: apply the test node's test func to the physType
+        // no: we assume the given node is a test node with a test function
+        // so, apply the given node's test func to the physType
         : (node.testNode.testFunc(physType_to_use))
             // test func returned true? follow node.yes
             ? findRule(physType_to_use)(node.yes)
