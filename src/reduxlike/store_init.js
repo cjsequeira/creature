@@ -5,7 +5,7 @@
 // *** Our imports
 import Chart from 'chart.js';
 
-import { 
+import {
     UPDATE_FREQ_SIM,
     WORLD_SIZE_X,
     WORLD_SIZE_Y
@@ -256,147 +256,127 @@ const initial_store = {
     // array of store changes to render
     changes: [],
 
-    // initial physContainerType objects with no prior rule applied
-    pctStore: [
+    // initial physType objects with no prior rule applied
+    physTypeStore: [
         // Simple Creature Vinny
         {
-            // the last rule node applied
-            lastRule: {},
-
             // the creature
             // type: creatureType
-            physType: {
-                name: 'Vinny',
-                color: '#0000ccff',
-                act: actAsSimpleCreature,
-                conds: {
-                    // internal biology
-                    glucose: 50.0,
-                    neuro: 50.0,
+            name: 'Vinny',
+            color: '#0000ccff',
+            act: actAsSimpleCreature,
+            conds: {
+                // internal biology
+                glucose: 50.0,
+                neuro: 50.0,
 
-                    // behavior
-                    behavior: 'idling',
-                    behavior_request: null,
-
-
-                    // location
-                    x: 15.0,
-                    y: 15.0,
-
-                    // heading, speed, acceleration
-                    heading: 180.0 * Math.PI / 180.0,
-                    speed: 2.0,
-                    accel: 0.0,
+                // behavior
+                behavior: 'idling',
+                behavior_request: null,
 
 
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-                    
-                    // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * Math.random(),
-                    speed: Math.random(),
-                    accel: 0.0,
-                    */
-                },
+                // location
+                x: 15.0,
+                y: 15.0,
+
+                // heading, speed, acceleration
+                heading: 180.0 * Math.PI / 180.0,
+                speed: 2.0,
+                accel: 0.0,
+
+
+                // location
+                /*
+                x: 18.0 * Math.random() + 1.0,
+                y: 18.0 * Math.random() + 1.0,
+                
+                // heading, speed, acceleration
+                heading: 2.0 * Math.PI * Math.random(),
+                speed: Math.random(),
+                accel: 0.0,
+                */
             },
         },
 
         // Simple Creature Eddie
         {
-            // the last rule node applied
-            lastRule: {},
-
             // the creature
             // type: creatureType
-            physType: {
-                name: 'Eddie',
-                color: '#f7036cff',
-                act: actAsSimpleCreature,
-                conds: {
-                    // internal biology
-                    glucose: 50.0,
-                    neuro: 50.0,
+            name: 'Eddie',
+            color: '#f7036cff',
+            act: actAsSimpleCreature,
+            conds: {
+                // internal biology
+                glucose: 50.0,
+                neuro: 50.0,
 
-                    // behavior
-                    behavior: 'idling',
-                    behavior_request: null,
-
-
-                    // location
-                    x: 5.0,
-                    y: 5.0,
-
-                    // heading, speed, acceleration
-                    heading: 0.0 * Math.PI / 180.0,
-                    speed: 2.0,
-                    accel: 0.0,
+                // behavior
+                behavior: 'idling',
+                behavior_request: null,
 
 
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
+                // location
+                x: 5.0,
+                y: 5.0,
 
-                    // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * Math.random(),
-                    speed: Math.random(),
-                    accel: 0.0,
-                    */
-                },
+                // heading, speed, acceleration
+                heading: 0.0 * Math.PI / 180.0,
+                speed: 2.0,
+                accel: 0.0,
+
+
+                // location
+                /*
+                x: 18.0 * Math.random() + 1.0,
+                y: 18.0 * Math.random() + 1.0,
+
+                // heading, speed, acceleration
+                heading: 2.0 * Math.PI * Math.random(),
+                speed: Math.random(),
+                accel: 0.0,
+                */
             },
         },
 
         // initial food element 1
         {
-            // the last rule node applied
-            lastRule: {},
-
             // the food
             // type: physType
-            physType: {
-                name: 'Food 1',
-                color: '#008800ff',
-                act: (pct) => pct,
-                conds: {
+            name: 'Food 1',
+            color: '#008800ff',
+            act: (physType) => physType,
+            conds: {
 
-                    x: 8.0,
-                    y: 8.0,
+                x: 8.0,
+                y: 8.0,
 
 
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-                    */
-                },
+                // location
+                /*
+                x: 18.0 * Math.random() + 1.0,
+                y: 18.0 * Math.random() + 1.0,
+                */
             },
         },
 
         // initial food element 2
+        // the food
+        // type: physType
         {
-            // the last rule node applied
-            lastRule: {},
+            name: 'Food 2',
+            color: '#008800ff',
+            act: (physType) => physType,
+            conds: {
 
-            // the food
-            // type: physType
-            physType: {
-                name: 'Food 2',
-                color: '#008800ff',
-                act: (pct) => pct,
-                conds: {
-
-                    x: 12.0,
-                    y: 12.0,
+                x: 12.0,
+                y: 12.0,
 
 
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-                    */
-                },
+                // location
+                /*
+                x: 18.0 * Math.random() + 1.0,
+                y: 18.0 * Math.random() + 1.0,
+                */
             },
         },
     ],

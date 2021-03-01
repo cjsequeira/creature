@@ -76,14 +76,14 @@ export const addJournalEntry = (journal, message) => ({
 });
 
 
-// *** Perform action for physContainerType at given index
+// *** Perform action for physType at given index
 // takes:
-//  pct: physContainerType
-//  index: index into physContainerType store in app store
+//  physType
+//  index: index into physType store in app store
 // returns actionType
-export const doPhysTypeAct = (pct, index) => ({
+export const doPhysTypeAct = (physType, index) => ({
     type: ACTION_PHYSTYPE_DO_ACT,
-    pct,
+    physType,
     index
 });
 

@@ -28,7 +28,9 @@ import {
 // takes: physType
 // returns physType
 export const physTypeDoPhysics = (physType) =>
-    // function chain: get physType with new location -> get physType with wall collisions checked
+    // function chain: 
+    //  get physType with new location 
+    //  -> get physType with wall collisions checked
     makeFuncChain(physType)(
         physTypeDoMovements,
         physTypeCheckWallCollisions
