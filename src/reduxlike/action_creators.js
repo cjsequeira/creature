@@ -21,11 +21,46 @@ import {
 import { rootReducer } from './reducers_renderers.js';
 
 
-// *** Perform renders that may mutate application beyond the app store (e.g. UI renders)
+// *** Add journal entry
+// takes:
+//  journal: store journal, as journalType
+//  message: message, as string
+// returns actionType
+export const addJournalEntry = (journal) => (message) => 
+({
+    type: ACTION_JOURNAL_ADD_ENTRY,
+    journal,
+    message
+});
+
+
+// *** Do action for physType at given index
+// takes:
+//  physType
+//  index: index into physType store in app store
+// returns actionType
+export const doPhysTypeAct = (physType) => (index) => 
+({
+    type: ACTION_PHYSTYPE_DO_ACT,
+    physType,
+    index
+});
+
+
+// *** Do nothing
+// takes: nothing
+// returns actionType
+export const doNothing = () => 
+({
+    type: ACTION_DO_NOTHING,
+});
+
+
+// *** Mutable render that may mutate application beyond the app store (e.g. UI renders)
 export const mutableRender = () =>
 ({
     type: ACTION_MUTABLE_RENDER,
-})
+});
 
 
 // *** Queue update UI
@@ -75,32 +110,6 @@ export const queue_addStatusMessage = (statusBox) => (message) =>
 });
 
 
-// *** Add journal entry
-// takes:
-//  journal: store journal, as journalType
-//  message: message, as string
-// returns actionType
-export const addJournalEntry = (journal) => (message) => 
-({
-    type: ACTION_JOURNAL_ADD_ENTRY,
-    journal,
-    message
-});
-
-
-// *** Perform action for physType at given index
-// takes:
-//  physType
-//  index: index into physType store in app store
-// returns actionType
-export const doPhysTypeAct = (physType) => (index) => 
-({
-    type: ACTION_PHYSTYPE_DO_ACT,
-    physType,
-    index
-});
-
-
 // *** Sim control
 // advance sim time
 // takes: nothing
@@ -136,7 +145,7 @@ export const stopSim = () =>
 });
 
 
-// *** Lock and unlock for write access
+// *** Store: Lock and unlock for write access
 // lock store
 // takes: nothing
 // returns actionType
@@ -152,15 +161,6 @@ export const unlockStore = () =>
 ({
     type: ACTION_STORE_UNLOCK,
 })
-
-
-// *** Do nothing
-// takes: nothing
-// returns actionType
-export const doNothing = () => 
-({
-    type: ACTION_DO_NOTHING,
-});
 
 
 // *** Action dispatcher function
