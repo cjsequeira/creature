@@ -91,37 +91,40 @@ const actIdling = (pct) =>
 // takes pct: physContainerType
 // returns physContainerType
 const actWandering = (pct) =>
-    // return evaluation of anonymous function that takes an acceleration and 
-    //  heading nudge value...
-    (accel => hdg_nudge => doBehavior(
-        // pass in physType object with specific glucose, neuro, heading, accel
-        // glucose and neuro impacts are more severe with higher accceleration magnitude
-        physTypeUseConds
-            (pct.physType)
-            ({
-                glucose: physTypeGetCond(pct.physType)('glucose') -
-                    (0.3 * Math.abs(accel)) * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(pct.physType)('neuro') +
-                    (0.2 * Math.abs(accel)) * simGetTimeStep(myStore),
+    // return evaluation of anonymous function that takes an acceleration  
+    //  and heading nudge value
+    (
+        (accel) => (hdg_nudge) => doBehavior(
+            // pass in physType object with specific glucose, neuro, heading, accel
+            // glucose and neuro impacts are more severe with higher accceleration magnitude
+            physTypeUseConds
+                (pct.physType)
+                ({
+                    glucose: physTypeGetCond(pct.physType)('glucose') -
+                        (0.3 * Math.abs(accel)) * simGetTimeStep(myStore),
+                    neuro: physTypeGetCond(pct.physType)('neuro') +
+                        (0.2 * Math.abs(accel)) * simGetTimeStep(myStore),
 
-                heading: physTypeGetCond(pct.physType)('heading') + hdg_nudge,
-                accel: accel,
-            }),
-        // pass in behavior change desires specific to this behavior function
-        {
-            'wandering': () =>
-                7.0,
-            'idling': () =>
-                0.1,
-            'eating': (physType) =>
-                (physTypeGetCond(physType)('glucose') < 20.0) ? 7.0 : 0.1,
-            'sleeping': (physType) =>
-                (physTypeGetCond(physType)('neuro') > 85.0) ? 7.0 : 0.1,
-        })
-        // ... with random acceleration at least 2.0 in magnitude...
-        // ... and random heading nudge (in radians)
-    )(excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))        // accel
-        (mutableRandGen_seededRand(-0.1, 0.1));                        // heading nudge
+                    heading: physTypeGetCond(pct.physType)('heading') + hdg_nudge,
+                    accel: accel,
+                }),
+            // pass in behavior change desires specific to this behavior function
+            {
+                'wandering': () =>
+                    7.0,
+                'idling': () =>
+                    0.1,
+                'eating': (physType) =>
+                    (physTypeGetCond(physType)('glucose') < 20.0) ? 7.0 : 0.1,
+                'sleeping': (physType) =>
+                    (physTypeGetCond(physType)('neuro') > 85.0) ? 7.0 : 0.1,
+            })
+    )
+        // anonymous function arguments:
+        //  random acceleration at least 2.0 in magnitude...
+        //  random heading nudge (in radians)
+        (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))      // accel
+        (mutableRandGen_seededRand(-0.1, 0.1));                         // heading nudge
 
 // eating behavior function
 // takes pct: physContainerType

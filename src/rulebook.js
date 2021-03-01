@@ -169,19 +169,24 @@ const ruleBook = {
 //  (e.g. a store list with a creature lookup)
 // takes: physType
 // returns physContainerType with applied rule and record of rule used
-export const resolveRules = (physType) => {
-    // define: get physContainerType with selected rule and a physType to apply the rule to
-    const pct_to_use = findRule(physType)(ruleBook);
-
-    // return physContainerType with: 
+export const resolveRules = (physType) =>
+    // return evaluation of anonymous function that takes a physContainerType
+    // and returns a physContainerType with: 
     //  lastRule: selected rule
     //  physType: given physType with selected rule applied
-    return {
-        ...pct_to_use,
-        lastRule: pct_to_use.lastRule,
-        physType: pct_to_use.lastRule.func(pct_to_use.physType),
-    }
-};
+    (
+        (pctToUse) => ({
+            ...pctToUse,
+            lastRule: pctToUse.lastRule,
+            physType: pctToUse.lastRule.func(pctToUse.physType),
+        })
+    )
+        // anonymous function argument:
+        //  find a rule in the rulebook for this physType, 
+        //  then apply the rule to get a physContainerType
+        //  and use that physContainerType as argument to anonymous function
+        (findRule(physType)(ruleBook));
+
 
 // recursive rulebook node finder
 // takes:
@@ -189,10 +194,10 @@ export const resolveRules = (physType) => {
 //  node: the rule node to use
 // returns physContainerType with function (named "func") that should be applied to the physType
 const findRule = (physType) => (node) => {
-    // define: is pre-function undefined? if yes, use physType. if no, use preFunc(physType)
-    const physType_to_use = (node.preFunc === undefined)
-        ? physType
-        : node.preFunc(physType);
+    // define: is pre-function undefined? 
+    //  if yes, apply (x => x) to physType
+    //  if no, apply pre-function to physType
+    const physType_to_use = (node.preFunc || (x => x))(physType)
 
     // is test node undefined?
     return (node.testNode === undefined)
