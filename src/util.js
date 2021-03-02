@@ -47,6 +47,17 @@ export const applyArgChain = (func) => (target) => (...args) =>
 export const applyFuncChain = (target) => (...funcs) =>
     funcs.flat(Infinity).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || target), null);
 
+// get the value at a nested property of an object
+// takes:
+//  obj: the object to look at
+//  prop: the nested property, as a string, e.g. 'nest1.nest2.property'
+// will also work with a non-nested property, e.g. 'toplevelproperty'
+// returns the value at the nested property - could be undefined
+export const getNestedProp = (obj) => (prop) =>
+    prop.split('.').reduce(
+        (accum_obj, this_prop) => accum_obj[this_prop], 
+        obj);
+
 // given an input of a single element or an array, return an array with the
 //  input repeated n times
 // takes:
