@@ -47,9 +47,6 @@ const behaviorStrings = {
 
 
 // *** Dispatch actions for the non-sim parts of the application
-// REFACTOR: Cannot currently reliably update UI in response to creature state changes, because code below
-//  may miss such changes since UI and sim update are now decoupled. Consider designing watchers
-//  to generate actions/messages/events in response to changes in certain things 
 // takes: store, as storeType
 // returns array of action dispatchers
 export const actionGroup_NonsimActions = (store) =>

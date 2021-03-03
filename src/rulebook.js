@@ -9,7 +9,6 @@ import {
     physTypeUseConds
 } from './reduxlike/store_getters.js';
 
-import { watchProps } from './reduxlike/watch_props.js';
 import { physTypeDoPhysics } from './sim/physics.js';
 import { mutableRandGen_seededRand } from './sim/seeded_rand.js';
 

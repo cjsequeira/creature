@@ -27,10 +27,13 @@ import {
     stopSim,
     lockStore,
     unlockStore,
-    mutableRender
+    mutableRender,
+    queue_addStatusMessage
 } from './reduxlike/action_creators.js';
 
 import { actionGroup_NonsimActions } from './reduxlike/actiongroup_nonsimactions.js';
+
+import { watchProps } from './reduxlike/watch_props.js';
 
 import {
     simGetSavedClock,
@@ -74,6 +77,11 @@ let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
 
 
 // *** Time-based callback function
+// REFACTOR WATCHER IDEA:
+//  Consider an action type that saves the current version of a given object,
+//  then another action type that checks the saved object against a different version of that object
+//  and makes an object containing changes, that could be reviewed (e.g. with getCond?), and the
+//  review could trigger the dispatching of an action, per code like the code below
 // takes: nothing
 // returns nothing
 function appUpdate() {

@@ -30,6 +30,8 @@ import {
     splice
 } from '../util.js';
 
+import { watchProps } from './watch_props.js';
+
 
 // *** Root reducer 
 // takes:
