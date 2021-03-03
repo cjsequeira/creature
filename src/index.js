@@ -122,39 +122,37 @@ function appUpdate() {
 
                     // do the physType "act"
                     doPhysTypeAct(this_physType)(i),
-                    /*
-                                        // compare the new state of this physType to saved state 
-                                        //  and queue additional actions
-                                        queue_comparePhysType
-                                            ((creatureType) =>
-                                                // creatureType behavior changed?
-                                                (physTypePropChanged(creatureType)('conds.behavior'))
-                                                    // yes:
-                                                    ? [
-                                                        // announce in journal
-                                                        addJournalEntry
-                                                            (myStore.journal)
-                                                            (
-                                                                physTypeGet(creatureType)('name') + ' ' +
-                                                                behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                                                            ),
-                    
-                                                        // announce in status box
-                                                        queue_addStatusMessage
-                                                            (myStore.ui.status_box)
-                                                            (
-                                                                physTypeGet(creatureType)('name') + ' ' +
-                                                                behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                                                            )
-                                                    ]
-                    
-                                                    // no, or not a creatureType: do nothing
-                                                    : doNothing()
-                                            )
-                                            ('conds.behavior')
-                                            (i)
-                    
-                                            */
+
+                    // compare the new state of this physType to saved state 
+                    //  and queue additional actions
+                    queue_comparePhysType
+                        ((creatureType) =>
+                            // creatureType behavior changed?
+                            (physTypePropChanged(creatureType)('conds.behavior'))
+                                // yes:
+                                ? [
+                                    // announce in journal
+                                    addJournalEntry
+                                        (myStore.journal)
+                                        (
+                                            physTypeGet(creatureType)('name') + ' ' +
+                                            behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                                        ),
+
+                                    // announce in status box
+                                    queue_addStatusMessage
+                                        (myStore.ui.status_box)
+                                        (
+                                            physTypeGet(creatureType)('name') + ' ' +
+                                            behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                                        )
+                                ]
+
+                                // no, or not a creatureType: do nothing
+                                : doNothing()
+                        )
+                        ('conds.behavior')
+                        (i)
                 ]
             ),
 
