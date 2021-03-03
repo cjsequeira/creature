@@ -25,8 +25,8 @@ import {
     saveClockForSim,
     startSim,
     stopSim,
-    saveObj,
-    queue_compareObj,
+    savePhysType,
+    queue_comparePhysType,
     lockStore,
     unlockStore,
     mutableRender,
@@ -98,9 +98,9 @@ function appUpdate() {
             // do physType acts
             myStore.physTypeStore.map(
                 (this_physType, i) => [
-                    saveObj(this_physType)(i),
+                    savePhysType(this_physType)(i),
                     doPhysTypeAct(this_physType)(i),
-                    queue_compareObj
+                    queue_comparePhysType
                         (physType => {
                             if (physType._watchProps_changes['conds.behavior']) {
                                 console.log('*** ' + physType.name + ' behavior changed!');

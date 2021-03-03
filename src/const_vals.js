@@ -30,8 +30,8 @@ export const ACTION_SIM_STOP = 'SIM_STOP';
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
 
-// actions for watching objects
-export const ACTION_WATCH_SAVE_OBJ = 'WATCH_SAVE_OBJ';
+// actions for watching physTypes and dealing with changes
+export const ACTION_WATCH_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
 export const ACTION_WATCH_QUEUE_COMPARE_SAVED = 'WATCH_QUEUE_COMPARE_SAVED';
 
 

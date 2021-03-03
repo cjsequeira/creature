@@ -17,7 +17,7 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
     ACTION_MUTABLE_RENDER,
-    ACTION_WATCH_SAVE_OBJ,
+    ACTION_WATCH_SAVE_PHYSTYPE,
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
 } from '../const_vals.js';
 import { rootReducer } from './reducers_renderers.js';
@@ -165,13 +165,13 @@ export const unlockStore = () =>
 })
 
 
-// *** Watching objects: save and compare objects
-// save object for watching
-// takes: object
+// *** Watching physTypes: save and compare physTypes
+// save physType for watching
+// takes: physType
 // returns actionType
-export const saveObj = (obj) => (index) =>
+export const savePhysType = (obj) => (index) =>
 ({
-    type: ACTION_WATCH_SAVE_OBJ,
+    type: ACTION_WATCH_SAVE_PHYSTYPE,
     obj,
     index
 })
@@ -182,7 +182,7 @@ export const saveObj = (obj) => (index) =>
 //  index) that has a _watchProp_changes object added as a key-val
 // takes: object
 // returns actionType
-export const queue_compareObj = (handleFunc) => (...props) => (index) =>
+export const queue_comparePhysType = (handleFunc) => (...props) => (index) =>
 ({
     type: ACTION_WATCH_QUEUE_COMPARE_SAVED,
     handleFunc,

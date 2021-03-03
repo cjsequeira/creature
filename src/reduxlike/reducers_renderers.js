@@ -17,8 +17,7 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
     ACTION_MUTABLE_RENDER,
-    ACTION_WATCH_SAVE_OBJ,
-    ACTION_WATCH_COMPARE_SAVED,
+    ACTION_WATCH_SAVE_PHYSTYPE,
     ACTION_WATCH_QUEUE_COMPARE_SAVED
 } from '../const_vals.js';
 
@@ -162,13 +161,13 @@ export const rootReducer = (inStore) => (inAction) =>
             ],
         }),
 
-        [ACTION_WATCH_SAVE_OBJ]: (store) => (action) =>
+        [ACTION_WATCH_SAVE_PHYSTYPE]: (store) => (action) =>
         ({
             ...store,
-            savedObjStore: splice
+            savedPhysTypeStore: splice
                 (1)                                         // remove one element...
                 (action.index)                              // ... at the given index...
-                (store.savedObjStore)                       // ... in this saved object store...
+                (store.savedPhysTypeStore)                  // ... in this saved physType store...
                 (action.obj),                               // ... and replace with action.obj
         }),
 
@@ -180,9 +179,9 @@ export const rootReducer = (inStore) => (inAction) =>
                 ...store.changes,
                 () => action.handleFunc(
                     watchProps
-                        (store.savedObjStore[action.index])
-                        (store.physTypeStore[action.index])
-                        (action.props)
+                        (store.savedPhysTypeStore[action.index])    // compare the saved physType[index]...
+                        (store.physTypeStore[action.index])         // ...to the current physType[index]...
+                        (action.props)                              // ... observing the given props
                 ),
             ],
         }),
