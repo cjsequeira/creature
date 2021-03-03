@@ -1,4 +1,4 @@
-# Creature version 0.0.8 - README for developers
+# Creature version 0.0.9 - README for developers
 
 ## Complex data types:
 ### **physType**: The basic type for physical objects that act in the world
