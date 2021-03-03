@@ -36,12 +36,26 @@ import {
 import { actionGroup_NonsimActions } from './reduxlike/actiongroup_nonsimactions.js';
 
 import {
+    physTypeGet,
+    physTypeGetCond,
+    physTypePropChanged,
     simGetSavedClock,
     simGetRunning,
     storeIsLocked
 } from './reduxlike/store_getters.js';
 
 import { storeInit } from './reduxlike/store_init.js';
+
+
+// *** Creature behavior strings
+// REFACTOR
+const behaviorStrings = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
+};
 
 
 // *** Define argument-chaining function applied to our store action dispatcher
@@ -98,14 +112,16 @@ function appUpdate() {
             // do physType acts
             myStore.physTypeStore.map(
                 (this_physType, i) => [
+                    // save the current state of this physType
                     savePhysType(this_physType)(i),
+
+                    // do the physType "act"
                     doPhysTypeAct(this_physType)(i),
+
+                    // compare the new state of this physType to saved state 
+                    //  and queue additional actions
                     queue_comparePhysType
-                        (physType => {
-                            if (physType._watchProps_changes['conds.behavior']) {
-                                console.log('*** ' + physType.name + ' behavior changed!');
-                            }
-                        })
+                        (doCreatureSpeechActions)
                         ('conds.behavior')
                         (i)
                 ]
@@ -144,3 +160,10 @@ function appUpdate() {
         )
     }
 };
+
+
+function doCreatureSpeechActions(physType) {
+    if (physTypePropChanged(physType)('conds.behavior')) {
+        console.log('*** ' + physType.name + ' new behavior: ' + physTypeGetCond(physType)('behavior'));
+    }
+}

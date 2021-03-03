@@ -52,6 +52,10 @@ export const UPDATE_FREQ_NONSIM = 100.0;
 export const UPDATE_FREQ_SIM = 50;
 
 
+// *** Name for object property updated by watchProps
+export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
+
+
 // *** World constants
 // x and y sizes
 export const WORLD_SIZE_X = 20.0;

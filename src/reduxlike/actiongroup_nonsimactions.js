@@ -35,17 +35,6 @@ import {
 const applyArgChainActionDispatch = applyArgChain(actionDispatch);
 
 
-// *** Creature behavior strings
-// REFACTOR
-const behaviorStrings = {
-    idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
-    sleeping: "is sleeping! Zzzz...",
-    wandering: "is wandering! Wiggity whack!",
-    frozen: "is frozen! Brrrr....."
-};
-
-
 // *** Dispatch actions for the non-sim parts of the application
 // takes: store, as storeType
 // returns array of action dispatchers

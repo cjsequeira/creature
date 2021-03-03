@@ -3,6 +3,7 @@
 // ****** Code to watch properties and report on changes ******
 
 // *** Our imports
+import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
 import { getNestedProp } from '../util.js';
 
 
@@ -13,7 +14,7 @@ import { getNestedProp } from '../util.js';
 //  before: object before changes
 //  after: object after changes
 //  ...props: list of props to watch
-// returns "after" object with added/updated property 'changes', containing
+// returns "after" object with added/updated property [WATCHPROP_CHANGESPROP], containing
 //  each watched prop and a boolean answering 'did this property change?'
 export const watchProps = (beforeObj) => (afterObj) => (...props) =>
 // build an object composed of: 
@@ -22,7 +23,7 @@ export const watchProps = (beforeObj) => (afterObj) => (...props) =>
 ({
     ...afterObj,
 
-    _watchProps_changes: Object.fromEntries(
+    [WATCHPROP_CHANGESPROP]: Object.fromEntries(
         // build an array of properties, and compare the given 'before' object to
         //  the 'after' object to see whether the listed properties 
         //  changed or not

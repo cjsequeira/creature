@@ -2,6 +2,10 @@
 
 // ****** Functions to get information from store
 
+import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
+import { getNestedProp } from '../util.js';
+
+
 // *** physType getter functions
 // return physType with given conditions
 // takes:
@@ -29,6 +33,13 @@ export const physTypeGetCond = (physType) => (argCond) => physType.conds[argCond
 //  arg: string name for key of physType to look at
 // returns key value
 export const physTypeGet = (physType) => (arg) => physType[arg];
+
+// did given prop in given physType change due to watchProps?
+// takes:
+//  physType: physType to use
+//  prop: string name for prop to check - could be a nested prop, with '.'
+// returns bool
+export const physTypePropChanged = (physType) => (prop) => physType[WATCHPROP_CHANGESPROP][prop]
 
 
 // *** Simulator getter functions
