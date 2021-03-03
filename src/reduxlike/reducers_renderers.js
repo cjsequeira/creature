@@ -17,6 +17,9 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
     ACTION_MUTABLE_RENDER,
+    ACTION_WATCH_SAVE_PHYSTYPE,
+    ACTION_WATCH_QUEUE_COMPARE_SAVED,
+    ACTION_CLEAR_ACTION_QUEUE
 } from '../const_vals.js';
 
 import { UI_NUM_TRAILS } from '../const_vals.js';
@@ -30,16 +33,25 @@ import {
     splice
 } from '../util.js';
 
+import { watchProps } from './watch_props.js';
+import { actionDispatch } from './action_creators.js';
+
 
 // *** Root reducer 
 // takes:
-//  inStore: store to reduce into, as storeType 
+//  inStore: store to use as template for reduction, as storeType 
 //  inAction: action to use for reduction, as actionType
 // returns storeType
 export const rootReducer = (inStore) => (inAction) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_CLEAR_ACTION_QUEUE]: (store) => (action) =>
+        ({
+            ...store,
+            actionQueue: []
+        }),
+
         [ACTION_DO_NOTHING]: (store) => (action) => store,
 
         [ACTION_MUTABLE_RENDER]: (store) => (action) => mutable_renderStoreChanges(store),
@@ -62,7 +74,7 @@ export const rootReducer = (inStore) => (inAction) =>
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateGeoChartData(
+                (store) => mutable_updateGeoChartData(
                     action.chart,
                     action.dataIndex,
                     action.color,
@@ -76,7 +88,7 @@ export const rootReducer = (inStore) => (inAction) =>
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateStatusBox(
+                (store) => mutable_updateStatusBox(
                     action.statusBox,
                     'Time ' + roundTo(2)(simGetCurTime(store)) + ': ' + action.message
                 ),
@@ -88,7 +100,7 @@ export const rootReducer = (inStore) => (inAction) =>
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateTimeChartData(
+                (store) => mutable_updateTimeChartData(
                     action.chart,
                     action.dataIndex,
                     action.label,
@@ -157,6 +169,33 @@ export const rootReducer = (inStore) => (inAction) =>
             ],
         }),
 
+        [ACTION_WATCH_SAVE_PHYSTYPE]: (store) => (action) =>
+        ({
+            ...store,
+            savedPhysTypeStore: splice
+                (1)                                         // remove one element...
+                (action.index)                              // ... at the given index...
+                (store.savedPhysTypeStore)                  // ... in this saved physType store...
+                (action.obj),                               // ... and replace with action.obj
+        }),
+
+        [ACTION_WATCH_QUEUE_COMPARE_SAVED]: (store) => (action) =>
+        ({
+            ...store,
+
+            actionQueue: [
+                ...store.actionQueue,
+
+                // append actions returned by handleFunc
+                action.handleFunc(
+                    watchProps                                      // get an object via these steps:
+                        (store.savedPhysTypeStore[action.index])    // compare the saved physType[index]...
+                        (store.physTypeStore[action.index])         // ...to the current physType[index]...
+                        (action.props)                              // ... observing the given props
+                ),
+            ],
+        }),
+
         // use inAction.type as an entry key into the key-val list above
         // key is used to select a function that takes a store type and action type 
         //  and returns a store type
@@ -170,7 +209,7 @@ export const rootReducer = (inStore) => (inAction) =>
 // *** Function to render store changes using an array of render functions
 // MUTABLE: may apply functions that mutate the application beyond the app store
 // ignores return values from renderFunc applications
-// takes store: storeType
+// takes: store, as storeType
 // returns storeType with empty render function array
 export const mutable_renderStoreChanges = (store) =>
 ({
@@ -179,8 +218,8 @@ export const mutable_renderStoreChanges = (store) =>
     // apply each provided render func to store in order, 
     //  then return false, resulting in empty render function array
     //  returning false causes the render func to be filtered out of changes array
-    // MUTABLE: may apply functions that mutate the application state
-    changes: store.changes.filter(renderFunc => renderFunc(store) && false)
+    // MUTABLE: may apply functions that mutate the application beyond the app store
+    changes: store.changes.filter(renderFunc => renderFunc(store) && false),
 });
 
 

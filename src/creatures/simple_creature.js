@@ -173,22 +173,27 @@ const actSleeping = (physType) =>
 
 
 // *** Code common to all simple creatures
-// function to review and return appropriate behavior
+// function to review Simple Creature desires and return appropriate behavior
 // takes physType and desireFuncType
 // returns physType
 const doBehavior = (physType) => (desireFuncType) =>
     // return physType object that is the creature, as a creatureType 
-    //  with behavior indicated via rulebook review of randomly-chosen desire 
-    //  based on weighted random draw using given desire functions
-    resolveRules(physTypeUseConds
-        (physType)
-        ({
-            behavior_request:
-                // select behavior request from list of desire funcs using 
-                // a weighted random number selector
-                Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
-                    // numerical list of desires, used as weights for random draw
-                    Object.values(desireFuncType).map(f => f(physType))
-                )]
-        })
+    //  with behavior indicated via rulebook review of requested behavior,
+    //  which comes from weighted random draw using given desire functions
+    // the rulebook may assign the requested behavior, or may reject the
+    //  requested behavior and assign a different behavior
+    resolveRules(
+        physTypeUseConds
+            (physType)
+            ({
+                behavior_request:
+                    // select behavior request from list of desire funcs using 
+                    // a weighted random number selector
+                    Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
+                        // numerical list of desires, used as weights for random draw
+                        // the code below maps each desire function to a numerical weight
+                        //  by evaluating it using the given physType
+                        Object.values(desireFuncType).map(f => f(physType))
+                    )]
+            })
     );

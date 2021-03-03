@@ -3,6 +3,12 @@
 // ****** All constant values in the application ******
 
 // *** Action names
+// clear action queue
+export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
+
+// do nothing
+export const ACTION_DO_NOTHING = 'DO_NOTHING';
+
 // perform rendering that may mutate parts of the application beyond the store
 export const ACTION_MUTABLE_RENDER = 'MUTABLE_RENDER';
 
@@ -27,8 +33,9 @@ export const ACTION_SIM_STOP = 'SIM_STOP';
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
 
-// do nothing
-export const ACTION_DO_NOTHING = 'DO_NOTHING';
+// actions for watching physTypes and dealing with changes
+export const ACTION_WATCH_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
+export const ACTION_WATCH_QUEUE_COMPARE_SAVED = 'WATCH_QUEUE_COMPARE_SAVED';
 
 
 // *** HTML page references 
@@ -46,6 +53,10 @@ export const UI_NUM_TRAILS = 20;
 // simulator frequency should be MORE FREQUENT than non-sim
 export const UPDATE_FREQ_NONSIM = 100.0;
 export const UPDATE_FREQ_SIM = 50;
+
+
+// *** Name for object property updated by watchProps
+export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
 
 
 // *** World constants
