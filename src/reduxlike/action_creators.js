@@ -16,7 +16,9 @@ import {
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
-    ACTION_MUTABLE_RENDER
+    ACTION_MUTABLE_RENDER,
+    ACTION_WATCH_SAVE_OBJ,
+    ACTION_WATCH_QUEUE_COMPARE_SAVED,
 } from '../const_vals.js';
 import { rootReducer } from './reducers_renderers.js';
 
@@ -162,6 +164,33 @@ export const unlockStore = () =>
     type: ACTION_STORE_UNLOCK,
 })
 
+
+// *** Watching objects: save and compare objects
+// save object for watching
+// takes: object
+// returns actionType
+export const saveObj = (obj) => (index) =>
+({
+    type: ACTION_WATCH_SAVE_OBJ,
+    obj,
+    index
+})
+
+// compare given props of physType at given physType store index against 
+//  given props of saved object at same index in saved object store, then 
+//  queue application of handleFunc to a version of the physType (at the given
+//  index) that has a _watchProp_changes object added as a key-val
+// takes: object
+// returns actionType
+export const queue_compareObj = (handleFunc) => (...props) => (index) =>
+({
+    type: ACTION_WATCH_QUEUE_COMPARE_SAVED,
+    handleFunc,
+    props,
+    index
+})
+
+// handle object changes by 
 
 // *** Action dispatcher function
 // takes:

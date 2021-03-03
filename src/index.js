@@ -25,6 +25,8 @@ import {
     saveClockForSim,
     startSim,
     stopSim,
+    saveObj,
+    queue_compareObj,
     lockStore,
     unlockStore,
     mutableRender,
@@ -32,8 +34,6 @@ import {
 } from './reduxlike/action_creators.js';
 
 import { actionGroup_NonsimActions } from './reduxlike/actiongroup_nonsimactions.js';
-
-import { watchProps } from './reduxlike/watch_props.js';
 
 import {
     simGetSavedClock,
@@ -78,10 +78,10 @@ let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
 
 // *** Time-based callback function
 // REFACTOR WATCHER IDEA:
-//  Consider an action type that saves the current version of a given object,
-//  then another action type that checks the saved object against a different version of that object
-//  and makes an object containing changes, that could be reviewed (e.g. with getCond?), and the
-//  review could trigger the dispatching of an action, per code like the code below
+//  Consider an action type that saves a given object, then an action type that 
+//  compares a given object with the saved object and calls an action-generating
+//  callback function. That call-back function would always give an action,
+//  which could be "do nothing"
 // takes: nothing
 // returns nothing
 function appUpdate() {
@@ -97,7 +97,18 @@ function appUpdate() {
 
             // do physType acts
             myStore.physTypeStore.map(
-                (this_physType, i) => doPhysTypeAct(this_physType)(i)
+                (this_physType, i) => [
+                    saveObj(this_physType)(i),
+                    doPhysTypeAct(this_physType)(i),
+                    queue_compareObj
+                        (physType => {
+                            if (physType._watchProps_changes['conds.behavior']) {
+                                console.log('*** ' + physType.name + ' behavior changed!');
+                            }
+                        })
+                        ('conds.behavior')
+                        (i)
+                ]
             ),
 
             // advance sim

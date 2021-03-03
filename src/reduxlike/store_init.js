@@ -256,6 +256,9 @@ const initial_store = {
     // initial array of store changes to render
     changes: [],
 
+    // initial saved object array
+    savedObjStore: [{}],
+
     // initial physTypeStore
     physTypeStore: [
         // Simple Creature Vinny

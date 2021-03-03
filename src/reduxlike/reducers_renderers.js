@@ -17,6 +17,9 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_UNLOCK,
     ACTION_MUTABLE_RENDER,
+    ACTION_WATCH_SAVE_OBJ,
+    ACTION_WATCH_COMPARE_SAVED,
+    ACTION_WATCH_QUEUE_COMPARE_SAVED
 } from '../const_vals.js';
 
 import { UI_NUM_TRAILS } from '../const_vals.js';
@@ -156,6 +159,31 @@ export const rootReducer = (inStore) => (inAction) =>
                     time: simGetCurTime(store),
                     message: action.message,
                 }
+            ],
+        }),
+
+        [ACTION_WATCH_SAVE_OBJ]: (store) => (action) =>
+        ({
+            ...store,
+            savedObjStore: splice
+                (1)                                         // remove one element...
+                (action.index)                              // ... at the given index...
+                (store.savedObjStore)                       // ... in this saved object store...
+                (action.obj),                               // ... and replace with action.obj
+        }),
+
+        [ACTION_WATCH_QUEUE_COMPARE_SAVED]: (store) => (action) =>
+        ({
+            ...store,
+
+            changes: [
+                ...store.changes,
+                () => action.handleFunc(
+                    watchProps
+                        (store.savedObjStore[action.index])
+                        (store.physTypeStore[action.index])
+                        (action.props)
+                ),
             ],
         }),
 

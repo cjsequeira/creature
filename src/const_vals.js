@@ -30,6 +30,10 @@ export const ACTION_SIM_STOP = 'SIM_STOP';
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
 
+// actions for watching objects
+export const ACTION_WATCH_SAVE_OBJ = 'WATCH_SAVE_OBJ';
+export const ACTION_WATCH_QUEUE_COMPARE_SAVED = 'WATCH_QUEUE_COMPARE_SAVED';
+
 
 // *** HTML page references 
 export const CREATURE_GEO_CHART = 'page_geo_chart';
