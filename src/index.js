@@ -20,20 +20,22 @@ import { applyArgChain } from './util.js';
 
 import {
     actionDispatch,
+    addJournalEntry,
     advanceSim,
+    doNothing,
     doPhysTypeAct,
+    lockStore,
+    mutableRender,
+    queue_addStatusMessage,
+    queue_comparePhysType,
     saveClockForSim,
+    savePhysType,
     startSim,
     stopSim,
-    savePhysType,
-    queue_comparePhysType,
-    lockStore,
     unlockStore,
-    mutableRender,
-    queue_addStatusMessage
 } from './reduxlike/action_creators.js';
 
-import { actionGroup_NonsimActions } from './reduxlike/actiongroup_nonsimactions.js';
+import { actionGroup_dispatchActionQueue, actionGroup_NonsimActions } from './reduxlike/actiongroups.js';
 
 import {
     physTypeGet,
@@ -109,6 +111,9 @@ function appUpdate() {
             // set store lock
             lockStore(),
 
+            // dispatch actions in myStore queue
+            actionGroup_dispatchActionQueue(myStore),
+
             // do physType acts
             myStore.physTypeStore.map(
                 (this_physType, i) => [
@@ -117,13 +122,39 @@ function appUpdate() {
 
                     // do the physType "act"
                     doPhysTypeAct(this_physType)(i),
-
-                    // compare the new state of this physType to saved state 
-                    //  and queue additional actions
-                    queue_comparePhysType
-                        (doCreatureSpeechActions)
-                        ('conds.behavior')
-                        (i)
+                    /*
+                                        // compare the new state of this physType to saved state 
+                                        //  and queue additional actions
+                                        queue_comparePhysType
+                                            ((creatureType) =>
+                                                // creatureType behavior changed?
+                                                (physTypePropChanged(creatureType)('conds.behavior'))
+                                                    // yes:
+                                                    ? [
+                                                        // announce in journal
+                                                        addJournalEntry
+                                                            (myStore.journal)
+                                                            (
+                                                                physTypeGet(creatureType)('name') + ' ' +
+                                                                behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                                                            ),
+                    
+                                                        // announce in status box
+                                                        queue_addStatusMessage
+                                                            (myStore.ui.status_box)
+                                                            (
+                                                                physTypeGet(creatureType)('name') + ' ' +
+                                                                behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                                                            )
+                                                    ]
+                    
+                                                    // no, or not a creatureType: do nothing
+                                                    : doNothing()
+                                            )
+                                            ('conds.behavior')
+                                            (i)
+                    
+                                            */
                 ]
             ),
 
@@ -146,6 +177,9 @@ function appUpdate() {
             // set store lock
             lockStore(),
 
+            // dispatch actions in myStore queue
+            actionGroup_dispatchActionQueue(myStore),
+
             // update the non-sim parts of our app store
             actionGroup_NonsimActions(myStore),
 
@@ -160,10 +194,3 @@ function appUpdate() {
         )
     }
 };
-
-
-function doCreatureSpeechActions(physType) {
-    if (physTypePropChanged(physType)('conds.behavior')) {
-        console.log('*** ' + physType.name + ' new behavior: ' + physTypeGetCond(physType)('behavior'));
-    }
-}

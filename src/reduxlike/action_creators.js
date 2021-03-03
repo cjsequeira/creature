@@ -19,6 +19,7 @@ import {
     ACTION_MUTABLE_RENDER,
     ACTION_WATCH_SAVE_PHYSTYPE,
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
+    ACTION_CLEAR_ACTION_QUEUE,
 } from '../const_vals.js';
 import { rootReducer } from './reducers_renderers.js';
 
@@ -34,6 +35,15 @@ export const addJournalEntry = (journal) => (message) =>
     journal,
     message
 });
+
+
+// *** Clear action queue
+// takes: don't care
+// returns actionType
+export const clearActionQueue = (_) =>
+({
+    type: ACTION_CLEAR_ACTION_QUEUE,
+})
 
 
 // *** Do action for physType at given index
@@ -177,10 +187,13 @@ export const savePhysType = (obj) => (index) =>
 })
 
 // compare given props of physType at given physType store index against 
-//  given props of saved object at same index in saved object store, then 
+//  given props of saved physType at same index in "saved physType" store, then 
 //  queue application of handleFunc to a version of the physType (at the given
-//  index) that has a _watchProp_changes object added as a key-val
-// takes: object
+//  index) that has a [WATCHPROPS_CHANGES] object added as a key-val
+// takes: 
+//  handleFunc: function that returns an actionType
+//  ...props: list of props to compare
+//  index: index into physType store and "saved physType" store
 // returns actionType
 export const queue_comparePhysType = (handleFunc) => (...props) => (index) =>
 ({

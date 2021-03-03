@@ -18,7 +18,8 @@ import {
     ACTION_STORE_UNLOCK,
     ACTION_MUTABLE_RENDER,
     ACTION_WATCH_SAVE_PHYSTYPE,
-    ACTION_WATCH_QUEUE_COMPARE_SAVED
+    ACTION_WATCH_QUEUE_COMPARE_SAVED,
+    ACTION_CLEAR_ACTION_QUEUE
 } from '../const_vals.js';
 
 import { UI_NUM_TRAILS } from '../const_vals.js';
@@ -33,6 +34,7 @@ import {
 } from '../util.js';
 
 import { watchProps } from './watch_props.js';
+import { actionDispatch } from './action_creators.js';
 
 
 // *** Root reducer 
@@ -44,6 +46,12 @@ export const rootReducer = (inStore) => (inAction) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_CLEAR_ACTION_QUEUE]: (store) => (action) =>
+        ({
+            ...store,
+            actionQueue: []
+        }),
+
         [ACTION_DO_NOTHING]: (store) => (action) => store,
 
         [ACTION_MUTABLE_RENDER]: (store) => (action) => mutable_renderStoreChanges(store),
@@ -66,7 +74,7 @@ export const rootReducer = (inStore) => (inAction) =>
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateGeoChartData(
+                (store) => mutable_updateGeoChartData(
                     action.chart,
                     action.dataIndex,
                     action.color,
@@ -80,7 +88,7 @@ export const rootReducer = (inStore) => (inAction) =>
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateStatusBox(
+                (store) => mutable_updateStatusBox(
                     action.statusBox,
                     'Time ' + roundTo(2)(simGetCurTime(store)) + ': ' + action.message
                 ),
@@ -92,7 +100,7 @@ export const rootReducer = (inStore) => (inAction) =>
             ...store,
             changes: [
                 ...store.changes,
-                () => mutable_updateTimeChartData(
+                (store) => mutable_updateTimeChartData(
                     action.chart,
                     action.dataIndex,
                     action.label,
@@ -175,10 +183,12 @@ export const rootReducer = (inStore) => (inAction) =>
         ({
             ...store,
 
-            changes: [
-                ...store.changes,
-                () => action.handleFunc(
-                    watchProps
+            actionQueue: [
+                ...store.actionQueue,
+
+                // append actions returned by handleFunc
+                action.handleFunc(
+                    watchProps                                      // get an object via these steps:
                         (store.savedPhysTypeStore[action.index])    // compare the saved physType[index]...
                         (store.physTypeStore[action.index])         // ...to the current physType[index]...
                         (action.props)                              // ... observing the given props

@@ -1,6 +1,6 @@
 'use strict'
 
-// ****** Code to update the non-sim parts of the application ******
+// ****** Code to dispatch actions collected into groups ******
 
 // *** Imports
 import { applyArgChain } from '../util.js';
@@ -17,7 +17,8 @@ import {
     queue_addStatusMessage,
     queue_addTimeChartData,
     startSim,
-    stopSim
+    stopSim,
+    clearActionQueue
 } from './action_creators.js';
 
 import { mutable_renderStoreChanges } from './reducers_renderers.js';
@@ -33,6 +34,14 @@ import {
 
 // *** Define argument-chaining function applied to our store action dispatcher
 const applyArgChainActionDispatch = applyArgChain(actionDispatch);
+
+
+// *** Dispatch actions in the action queue, then dispatch action to clear the action queue
+export const actionGroup_dispatchActionQueue = (store) =>
+([
+    ...store.actionQueue,
+    clearActionQueue(),
+]);
 
 
 // *** Dispatch actions for the non-sim parts of the application

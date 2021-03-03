@@ -3,6 +3,9 @@
 // ****** All constant values in the application ******
 
 // *** Action names
+// clear action queue
+export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
+
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';
 
