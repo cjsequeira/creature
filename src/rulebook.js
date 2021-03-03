@@ -4,140 +4,196 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { physTypeGetCond, physTypeUseConds } from './reduxlike/store_getters.js';
+import {
+    physTypeGetCond,
+    physTypeUseConds
+} from './reduxlike/store_getters.js';
+
 import { physTypeDoPhysics } from './sim/physics.js';
-import { randGen, mutableRandGen_seededRand } from './sim/seeded_rand.js';
+import { mutableRandGen_seededRand } from './sim/seeded_rand.js';
+
+
+// *** Rulebook test nodes
+const isCreatureType = {
+    name: 'Is creatureType?',
+    testFunc: (physType) => physType.hasOwnProperty('conds'),
+};
+
+const isGlucoseNeuroInRange = {
+    name: 'Glucose and neuro in range?',
+    testFunc: (physType) =>
+        (physTypeGetCond(physType)('glucose') > 0.0) &&
+        (physTypeGetCond(physType)('neuro') < 100.0),
+};
+
+const isBehaviorRequestIdling = {
+    name: 'Requesting behavior: idling?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'idling',
+};
+
+const isBehaviorRequestWandering = {
+    name: 'Requesting behavior: wandering?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'wandering',
+};
+
+const isBehaviorRequestEating = {
+    name: 'Requesting behavior: eating?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'eating',
+};
+
+const isBehaviorRequestFoodAvail = {
+    name: 'Is food available?',
+    testFunc: (physType) => mutableRandGen_seededRand(0.0, 1.0) > 0.03,
+};
+
+const isBehaviorRequestSleeping = {
+    name: 'Requested behavior: sleeping?',
+    testFunc: (physType) => physTypeGetCond(physType)('behavior_request') === 'sleeping',
+};
+
+
+// *** Rulebook leaf nodes
+const leafApproveIdling = {
+    name: 'Behavior request approved: idling',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+        }),
+};
+
+const leafApproveWandering = {
+    name: 'Behavior request approved: wandering',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+        }),
+};
+
+const leafApproveEating = {
+    name: 'Behavior request approved: eating',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+
+            // can't move if eating: no grab-and-go!
+            speed: 0.0,
+            accel: 0.0
+        }),
+};
+
+const leafApproveSleeping = {
+    name: 'Behavior request approved: sleeping',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: 'sleeping',
+
+            // can't move if sleeping!
+            speed: 0.0,
+            accel: 0.0
+        }),
+};
+
+const leafRejectEating = {
+    name: "Creature wants to eat but there's no food here!",
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            // reject behavior request
+            behavior: physTypeGetCond(physType)('behavior'),
+        }),
+};
+
+const leafCondsOOL = {
+    name: 'Creature conditions out of limits!',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: 'frozen',
+        }),
+};
+
+const leafNotCreatureType = {
+    name: 'Not a creatureType!',
+    func: (physType) => physType,
+};
+
+const leafUnknownBehavior = {
+    name: 'Unknown behavior!',
+    func: (physType) => physType
+};
 
 
 // *** The rulebook
 const ruleBook = {
-    name: 'Is creatureType?',
-    testFunc: (physType) => physType.hasOwnProperty('conds'),
+    testNode: isCreatureType,
     yes: {
-        name: '-- YES! Glucose and neuro in range?',
-        testFunc: (physType) => (physTypeGetCond(physType, 'glucose') > 0.0)
-            && (physTypeGetCond(physType, 'neuro') < 100.0),
+        testNode: isGlucoseNeuroInRange,
         yes: {
-            // produce creatureType object with laws of physics applied
+            // first, produce physType with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
-            name: '-- -- YES! Requesting behavior: idling?',
-            testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'idling',
-            yes: {
-                name: '-- -- -- -- YES! Behavior request approved: idling',
-                func: (physType) => physTypeUseConds(physType,
-                    {
-                        behavior: physTypeGetCond(physType, 'behavior_request'),
-                    }),
-            },
-            no: {
-                name: '-- -- -- NO! Requesting behavior: wandering?',
-                testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'wandering',
-                yes: {
-                    name: '-- -- -- -- -- YES! Behavior request approved: wandering',
-                    func: (physType) => physTypeUseConds(physType,
-                        {
-                            behavior: physTypeGetCond(physType, 'behavior_request'),
-                        }),
-                },
-                no: {
-                    name: '-- -- -- -- NO! Requesting behavior: eating?',
-                    testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'eating',
-                    yes: {
-                        name: '-- -- -- -- -- YES! Is food available?',
-                        testFunc: (physType) => mutableRandGen_seededRand(randGen, 0.0, 1.0) > 0.03,
-                        yes: {
-                            name: '-- -- -- -- -- -- YES! Behavior request approved: eating',
-                            func: (physType) => physTypeUseConds(physType,
-                                {
-                                    behavior: physTypeGetCond(physType, 'behavior_request'),
 
-                                    // can't move if eating: no grab-and-go!
-                                    speed: 0.0,
-                                    accel: 0.0
-                                }),
-                        },
-                        no: {
-                            name: "wants to eat but there's no food here!",
-                            func: (physType) => physTypeUseConds(physType,
-                                {
-                                    // reject behavior request
-                                    behavior: physTypeGetCond(physType, 'behavior'),
-                                }),
-                        }
+            testNode: isBehaviorRequestIdling,
+            yes: leafApproveIdling,
+            no: {
+                testNode: isBehaviorRequestWandering,
+                yes: leafApproveWandering,
+                no: {
+                    testNode: isBehaviorRequestEating,
+                    yes: {
+                        testNode: isBehaviorRequestFoodAvail,
+                        yes: leafApproveEating,
+                        no: leafRejectEating,
                     },
                     no: {
-                        name: '-- -- -- -- -- NO! Requested behavior: sleeping?',
-                        testFunc: (physType) => physTypeGetCond(physType, 'behavior_request') === 'sleeping',
-                        yes: {
-                            name: '-- -- -- -- -- -- YES! Behavior request approved',
-                            func: (physType) => physTypeUseConds(physType,
-                                {
-                                    behavior: 'sleeping',
-
-                                    // can't move if sleeping!
-                                    speed: 0.0,
-                                    accel: 0.0
-                                }),
-                        },
-                        no: {
-                            name: '-- -- -- -- -- -- NO! Unknown behavior!',
-                            func: (physType) => physType
-                        }
+                        testNode: isBehaviorRequestSleeping,
+                        yes: leafApproveSleeping,
+                        no: leafUnknownBehavior,
                     },
                 },
             }
         },
-        no: {
-            name: 'conditions out of limits!',
-            func: (physType) => physTypeUseConds(physType,
-                {
-                    behavior: 'frozen',
-                }),
-        }
+        no: leafCondsOOL,
     },
-    no: {
-        name: '-- NO! Return given physType',
-        func: (physType) => physType,
-    }
+    no: leafNotCreatureType,
 };
 
 
 // *** Rulebook functions
 // general rulebook resolver
-// returns physContainerType with applied rule and record of rule used
-// REFACTOR IDEA:
-//  Determine whether to save last-used rule in a pct or some other structure (e.g. a store list with a creature lookup)
-export const resolveRules = (physType) => {
-    // get physContainerType with selected rule and a physType to apply the rule to
-    const pct_to_use = findRule(physType);
+//  find a rule in the rulebook for this physType, 
+//  then apply the rule to get a physType
+// takes: physType
+// returns physType with applied rule
+export const resolveRules = (physType) => findRule(physType)(ruleBook);
 
-    // return physContainerType with lastRule: selected rule, and physType: with selected rule applied
-    return {
-        ...pct_to_use,
-        lastRule: pct_to_use.lastRule,
-        physType: pct_to_use.lastRule.func(pct_to_use.physType)
-    }
-}
+// recursive rulebook node finder
+// assumes a rule exists in the rulebook for every possible physType
+// takes:
+//  physType
+//  node: the rule node to use
+// returns physType with selected rule applied
+const findRule = (physType) => (node) => {
+    // define: is pre-function undefined? 
+    //  if yes, apply (x => x) to physType
+    //  if no, apply pre-function to physType
+    const physType_to_use = (node.preFunc || (x => x))(physType)
 
-// rulebook node finder
-// returns physContainerType with function (named "func") that should be applied to the physType
-const findRule = (physType, node = ruleBook) => {
-    // is pre-function undefined? if yes, go forward with physType. if no, go forward with preFunc(physType)
-    const physType_to_use = (node.preFunc === undefined) ? physType : node.preFunc(physType);
+    // is test node undefined?
+    return (node.testNode === undefined)
+        // yes: we assume the given node is a leaf node with a rule to apply
+        // so, return the physType with the rule applied
+        ? node.func(physType_to_use)
 
-    // is test function undefined?
-    return (node.testFunc === undefined)
-        // yes: return the physContainerType
-        ? {
-            lastRule: node,
-            physType: physType_to_use
-        }
-
-        // no: apply the test func to the physType
-        : (node.testFunc(physType_to_use))
+        // no: we assume the given node is a test node with a test function
+        // so, apply the given node's test func to the physType
+        : (node.testNode.testFunc(physType_to_use))
             // test func returned true? follow node.yes
-            ? findRule(physType_to_use, node.yes)
+            ? findRule(physType_to_use)(node.yes)
 
             // test func returned false? follow node.no
-            : findRule(physType_to_use, node.no)
-}
+            : findRule(physType_to_use)(node.no)
+};

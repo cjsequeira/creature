@@ -9,22 +9,84 @@ import {
     ACTION_PHYSTYPE_DO_ACT,
     ACTION_DO_NOTHING,
     ACTION_STORE_LOCK,
-    ACTION_QUEUE_ADD_GEOCHART_DATA,
+    ACTION_QUEUE_ADD_GEO_CHART_DATA,
     ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_QUEUE_ADD_TIMECHART_DATA,
+    ACTION_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
-    ACTION_STORE_UNLOCK
+    ACTION_STORE_UNLOCK,
+    ACTION_MUTABLE_RENDER,
+    ACTION_WATCH_SAVE_PHYSTYPE,
+    ACTION_WATCH_QUEUE_COMPARE_SAVED,
+    ACTION_CLEAR_ACTION_QUEUE,
 } from '../const_vals.js';
-import { mutable_rootReducer } from './reducers_renderers.js';
+import { rootReducer } from './reducers_renderers.js';
+
+
+// *** Add journal entry
+// takes:
+//  journal: store journal, as journalType
+//  message: message, as string
+// returns actionType
+export const addJournalEntry = (journal) => (message) => 
+({
+    type: ACTION_JOURNAL_ADD_ENTRY,
+    journal,
+    message
+});
+
+
+// *** Clear action queue
+// takes: don't care
+// returns actionType
+export const clearActionQueue = (_) =>
+({
+    type: ACTION_CLEAR_ACTION_QUEUE,
+})
+
+
+// *** Do action for physType at given index
+// takes:
+//  physType
+//  index: index into physType store in app store
+// returns actionType
+export const doPhysTypeAct = (physType) => (index) => 
+({
+    type: ACTION_PHYSTYPE_DO_ACT,
+    physType,
+    index
+});
+
+
+// *** Do nothing
+// takes: nothing
+// returns actionType
+export const doNothing = () => 
+({
+    type: ACTION_DO_NOTHING,
+});
+
+
+// *** Mutable render that may mutate application beyond the app store (e.g. UI renders)
+export const mutableRender = () =>
+({
+    type: ACTION_MUTABLE_RENDER,
+});
 
 
 // *** Queue update UI
-// *** These functions don't change state until mutable_renderStateChanges is applied
+// *** App store does not change until mutable_renderStateChanges is applied
 // queue add geo chart data
-// xyPair is {x, y}
-export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
-    type: ACTION_QUEUE_ADD_GEOCHART_DATA,
+// takes:
+//  chart: time chart
+//  dataIndex: chart data index
+//  color: color for the data
+//  xyPair: data coordinate, as {x, y}
+// returns actionType
+export const queue_addGeoChartData = (chart) => (dataIndex) => (color) => (xyPair) => 
+({
+    type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
     chart,
     dataIndex,
     color,
@@ -32,72 +94,120 @@ export const queue_addGeoChartData = (chart, dataIndex, color, xyPair) => ({
 });
 
 // queue add time chart data
-// yTimePair is {time, value}
-export const queue_addTimeChartData = (chart, dataIndex, yTimePair) => ({
-    type: ACTION_QUEUE_ADD_TIMECHART_DATA,
+// takes:
+//  chart: time chart
+//  dataIndex: chart data index
+//  label: label for legend
+//  timeValPair: data coordinate, as {time, value}
+// returns actionType
+export const queue_addTimeChartData = (chart) => (dataIndex) => (label) => (timeValPair) => 
+({
+    type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
     chart,
     dataIndex,
-    yTimePair
+    label,
+    timeValPair
 });
 
 // queue add status message
-export const queue_addStatusMessage = (statusBox, message) => ({
+// takes:
+//  statusBox: HTML DOM status box reference
+//  message: message, as string
+// returns actionType
+export const queue_addStatusMessage = (statusBox) => (message) => 
+({
     type: ACTION_QUEUE_ADD_STATUS_MESSAGE,
     statusBox,
     message
 });
 
 
-// *** Add journal entry
-export const addJournalEntry = (journal, message) => ({
-    type: ACTION_JOURNAL_ADD_ENTRY,
-    journal,
-    message
-});
-
-
-// *** Perform action for physType at given index
-export const doPhysTypeAct = (pct, index) => ({
-    type: ACTION_PHYSTYPE_DO_ACT,
-    pct,
-    index
-});
-
-
 // *** Sim control
+// advance sim time
+// takes: nothing
+// returns actionType
+export const advanceSim = () => 
+({
+    type: ACTION_SIM_ADVANCE,
+});
+
+// save system clock
+// takes: nothing
+// returns actionType
+export const saveClockForSim = (clock) => 
+({
+    type: ACTION_SIM_SAVE_CLOCK,
+    clock
+});
+
 // start sim
-export const startSim = () => ({
+// takes: nothing
+// returns actionType
+export const startSim = () => 
+({
     type: ACTION_SIM_START,
 });
 
 // stop sim
-export const stopSim = () => ({
+// takes: nothing
+// returns actionType
+export const stopSim = () => 
+({
     type: ACTION_SIM_STOP,
 });
 
-// advance sim time
-export const advanceSim = () => ({
-    type: ACTION_SIM_ADVANCE,
-});
 
-
-// *** Lock and unlock for write access
+// *** Store: Lock and unlock for write access
 // lock store
-export const lockStore = () => ({
+// takes: nothing
+// returns actionType
+export const lockStore = () => 
+({
     type: ACTION_STORE_LOCK,
 });
 
 // unlock store
-export const unlockStore = () => ({
+// takes: nothing
+// returns actionType
+export const unlockStore = () => 
+({
     type: ACTION_STORE_UNLOCK,
 })
 
 
-// *** Do nothing
-export const doNothing = () => ({
-    type: ACTION_DO_NOTHING,
-});
+// *** Watching physTypes: save and compare physTypes
+// save physType for watching
+// takes: physType
+// returns actionType
+export const savePhysType = (obj) => (index) =>
+({
+    type: ACTION_WATCH_SAVE_PHYSTYPE,
+    obj,
+    index
+})
 
+// compare given props of physType at given physType store index against 
+//  given props of saved physType at same index in "saved physType" store, then 
+//  queue application of handleFunc to a version of the physType (at the given
+//  index) that has a [WATCHPROPS_CHANGES] object added as a key-val
+// takes: 
+//  handleFunc: function that returns an actionType
+//  ...props: list of props to compare
+//  index: index into physType store and "saved physType" store
+// returns actionType
+export const queue_comparePhysType = (handleFunc) => (...props) => (index) =>
+({
+    type: ACTION_WATCH_QUEUE_COMPARE_SAVED,
+    handleFunc,
+    props,
+    index
+})
+
+// handle object changes by 
 
 // *** Action dispatcher function
-export const actionDispatch = (store, action) => mutable_rootReducer(store, action);
+// takes:
+//  store: app store, as storeType
+//  action: action to dispatch, as actionType
+// returns storeType
+export const actionDispatch = (store) => (action) => rootReducer(store)(action);
