@@ -32,10 +32,6 @@ import {
 } from './store_getters.js';
 
 
-// *** Define argument-chaining function applied to our store action dispatcher
-const applyArgChainActionDispatch = applyArgChain(actionDispatch);
-
-
 // *** Dispatch actions in the action queue, then dispatch action to clear the action queue
 export const actionGroup_dispatchActionQueue = (store) =>
 ([

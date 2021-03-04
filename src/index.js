@@ -60,10 +60,6 @@ const behaviorStrings = {
 };
 
 
-// *** Define argument-chaining function applied to our store action dispatcher
-const applyArgChainActionDispatch = applyArgChain(actionDispatch);
-
-
 // ***********************************************************************************
 // *** Code that actually does stuff
 
@@ -75,7 +71,7 @@ export let myStore = storeInit(
 );
 
 // dispatch a series of actions to our store
-myStore = applyArgChainActionDispatch(myStore)(
+myStore = actionDispatch(myStore)([
     // change the sim status to running
     startSim(),
 
@@ -84,7 +80,7 @@ myStore = applyArgChainActionDispatch(myStore)(
 
     // do the initial UI draws
     mutableRender()
-);
+]);
 
 // start repeatedly updating our application at sim frequency
 let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -107,7 +103,7 @@ function appUpdate() {
         (!storeIsLocked(myStore))
     ) {
         // yes: dispatch a series of actions to the store to update the sim
-        myStore = applyArgChainActionDispatch(myStore)(
+        myStore = actionDispatch(myStore)([
             // set store lock
             lockStore(),
 
@@ -161,7 +157,7 @@ function appUpdate() {
 
             // unset store lock
             unlockStore()
-        );
+        ]);
     }
 
     // has UPDATE_FREQ_NONSIM time passed since last non-sim update
@@ -171,7 +167,7 @@ function appUpdate() {
         (!storeIsLocked(myStore))
     ) {
         // yes: dispatch a series of actions to the store to update the non-sim stuff
-        myStore = applyArgChainActionDispatch(myStore)(
+        myStore = actionDispatch(myStore)([
             // set store lock
             lockStore(),
 
@@ -189,6 +185,6 @@ function appUpdate() {
 
             // unset store lock
             unlockStore()
-        )
+        ])
     }
 };
