@@ -35,7 +35,7 @@ import {
     unlockStore,
 } from './reduxlike/action_creators.js';
 
-import { actionGroup_dispatchActionQueue, actionGroup_NonsimActions } from './reduxlike/actiongroups.js';
+import { actionGroup_createActionsFromFuncQueue, actionGroup_NonsimActions } from './reduxlike/actiongroups.js';
 
 import {
     physTypeGet,
@@ -60,10 +60,6 @@ const behaviorStrings = {
 };
 
 
-// *** Define argument-chaining function applied to our store action dispatcher
-const applyArgChainActionDispatch = applyArgChain(actionDispatch);
-
-
 // ***********************************************************************************
 // *** Code that actually does stuff
 
@@ -75,16 +71,16 @@ export let myStore = storeInit(
 );
 
 // dispatch a series of actions to our store
-myStore = applyArgChainActionDispatch(myStore)(
+myStore = actionDispatch(myStore)([
     // change the sim status to running
     startSim(),
 
     // dispatch non-sim-related actions such as queuing initial chart draws
-    actionGroup_NonsimActions(myStore),
+    actionGroup_NonsimActions(),
 
     // do the initial UI draws
     mutableRender()
-);
+]);
 
 // start repeatedly updating our application at sim frequency
 let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -107,12 +103,12 @@ function appUpdate() {
         (!storeIsLocked(myStore))
     ) {
         // yes: dispatch a series of actions to the store to update the sim
-        myStore = applyArgChainActionDispatch(myStore)(
+        myStore = actionDispatch(myStore)([
             // set store lock
             lockStore(),
 
             // dispatch actions in myStore queue
-            actionGroup_dispatchActionQueue(myStore),
+            actionGroup_createActionsFromFuncQueue(),
 
             // do physType acts
             myStore.physTypeStore.map(
@@ -161,7 +157,7 @@ function appUpdate() {
 
             // unset store lock
             unlockStore()
-        );
+        ]);
     }
 
     // has UPDATE_FREQ_NONSIM time passed since last non-sim update
@@ -171,15 +167,15 @@ function appUpdate() {
         (!storeIsLocked(myStore))
     ) {
         // yes: dispatch a series of actions to the store to update the non-sim stuff
-        myStore = applyArgChainActionDispatch(myStore)(
+        myStore = actionDispatch(myStore)([
             // set store lock
             lockStore(),
 
             // dispatch actions in myStore queue
-            actionGroup_dispatchActionQueue(myStore),
+            actionGroup_createActionsFromFuncQueue(),
 
             // update the non-sim parts of our app store
-            actionGroup_NonsimActions(myStore),
+            actionGroup_NonsimActions(),
 
             // render the application
             mutableRender(),
@@ -189,6 +185,6 @@ function appUpdate() {
 
             // unset store lock
             unlockStore()
-        )
+        ])
     }
 };

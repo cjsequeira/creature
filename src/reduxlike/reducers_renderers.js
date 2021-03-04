@@ -40,170 +40,174 @@ import { actionDispatch } from './action_creators.js';
 // *** Root reducer 
 // takes:
 //  inStore: store to use as template for reduction, as storeType 
-//  inAction: action to use for reduction, as actionType
+//  ...inActions: array of actions to use sequentially for reduction, as actionType
 // returns storeType
-export const rootReducer = (inStore) => (inAction) =>
-    // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
-    ({
-        [ACTION_CLEAR_ACTION_QUEUE]: (store) => (action) =>
+export const rootReducer = (inStore) => (...inActions) =>
+    // apply each of the actions to the input store in sequential order
+    inActions.flat(Infinity).reduce((accum, curAction) =>
+        // list of "mini" reducer functions
+        // each function is associated with an action type, given in brackets
         ({
-            ...store,
-            actionQueue: []
-        }),
+            [ACTION_CLEAR_ACTION_QUEUE]: (store) => (action) =>
+            ({
+                ...store,
+                actionFuncQueue: []
+            }),
 
-        [ACTION_DO_NOTHING]: (store) => (action) => store,
+            [ACTION_DO_NOTHING]: (store) => (action) => store,
 
-        [ACTION_MUTABLE_RENDER]: (store) => (action) => mutable_renderStoreChanges(store),
+            [ACTION_MUTABLE_RENDER]: (store) => (action) => mutable_renderStoreChanges(store),
 
-        [ACTION_PHYSTYPE_DO_ACT]: (store) => (action) =>
-        ({
-            ...store,
+            [ACTION_PHYSTYPE_DO_ACT]: (store) => (action) =>
+            ({
+                ...store,
 
-            // set physType store to the given physTypeStore with the physType
-            //  at the given index replaced with the physType returned from "act"
-            physTypeStore: splice
-                (1)                                         // remove one element...
-                (action.index)                              // ... at the given index...
-                (store.physTypeStore)                       // ... in this physType store...
-                (action.physType.act(action.physType)),     // ... and replace with physType from "act"
-        }),
+                // set physType store to the given physTypeStore with the physType
+                //  at the given index replaced with the physType returned from "act"
+                physTypeStore: splice
+                    (1)                                         // remove one element...
+                    (action.index)                              // ... at the given index...
+                    (store.physTypeStore)                       // ... in this physType store...
+                    (action.physType.act(action.physType)),     // ... and replace with physType from "act"
+            }),
 
-        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (store) => (action) =>
-        ({
-            ...store,
-            changes: [
-                ...store.changes,
-                (store) => mutable_updateGeoChartData(
-                    action.chart,
-                    action.dataIndex,
-                    action.color,
-                    action.xyPair
-                ),
-            ],
-        }),
+            [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (store) => (action) =>
+            ({
+                ...store,
+                changes: [
+                    ...store.changes,
+                    (store) => mutable_updateGeoChartData(
+                        action.chart,
+                        action.dataIndex,
+                        action.color,
+                        action.xyPair
+                    ),
+                ],
+            }),
 
-        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (store) => (action) =>
-        ({
-            ...store,
-            changes: [
-                ...store.changes,
-                (store) => mutable_updateStatusBox(
-                    action.statusBox,
-                    'Time ' + roundTo(2)(simGetCurTime(store)) + ': ' + action.message
-                ),
-            ],
-        }),
+            [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (store) => (action) =>
+            ({
+                ...store,
+                changes: [
+                    ...store.changes,
+                    (store) => mutable_updateStatusBox(
+                        action.statusBox,
+                        'Time ' + roundTo(2)(simGetCurTime(store)) + ': ' + action.message
+                    ),
+                ],
+            }),
 
-        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (store) => (action) =>
-        ({
-            ...store,
-            changes: [
-                ...store.changes,
-                (store) => mutable_updateTimeChartData(
-                    action.chart,
-                    action.dataIndex,
-                    action.label,
-                    action.timeValPair
-                ),
-            ],
-        }),
+            [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (store) => (action) =>
+            ({
+                ...store,
+                changes: [
+                    ...store.changes,
+                    (store) => mutable_updateTimeChartData(
+                        action.chart,
+                        action.dataIndex,
+                        action.label,
+                        action.timeValPair
+                    ),
+                ],
+            }),
 
-        [ACTION_SIM_ADVANCE]: (store) => (action) =>
-        ({
-            ...store,
-            sim: {
-                ...store.sim,
-                curTime: store.sim.curTime + store.sim.timeStep,
-            }
-        }),
-
-        [ACTION_SIM_SAVE_CLOCK]: (store) => (action) =>
-        ({
-            ...store,
-            sim: {
-                ...store.sim,
-                savedClock: action.clock,
-            }
-        }),
-
-        [ACTION_SIM_START]: (store) => (action) =>
-        ({
-            ...store,
-            sim: {
-                ...store.sim,
-                running: true,
-            }
-        }),
-
-        [ACTION_SIM_STOP]: (store) => (action) =>
-        ({
-            ...store,
-            sim: {
-                ...store.sim,
-                running: false,
-            }
-        }),
-
-        [ACTION_STORE_LOCK]: (store) => (action) =>
-        ({
-            ...store,
-            locked: true,
-        }),
-
-        [ACTION_STORE_UNLOCK]: (store) => (action) =>
-        ({
-            ...store,
-            locked: false,
-        }),
-
-        [ACTION_JOURNAL_ADD_ENTRY]: (store) => (action) =>
-        ({
-            ...store,
-            journal: [
-                ...store.journal,
-                {
-                    time: simGetCurTime(store),
-                    message: action.message,
+            [ACTION_SIM_ADVANCE]: (store) => (action) =>
+            ({
+                ...store,
+                sim: {
+                    ...store.sim,
+                    curTime: store.sim.curTime + store.sim.timeStep,
                 }
-            ],
-        }),
+            }),
 
-        [ACTION_WATCH_SAVE_PHYSTYPE]: (store) => (action) =>
-        ({
-            ...store,
-            savedPhysTypeStore: splice
-                (1)                                         // remove one element...
-                (action.index)                              // ... at the given index...
-                (store.savedPhysTypeStore)                  // ... in this saved physType store...
-                (action.obj),                               // ... and replace with action.obj
-        }),
+            [ACTION_SIM_SAVE_CLOCK]: (store) => (action) =>
+            ({
+                ...store,
+                sim: {
+                    ...store.sim,
+                    savedClock: action.clock,
+                }
+            }),
 
-        [ACTION_WATCH_QUEUE_COMPARE_SAVED]: (store) => (action) =>
-        ({
-            ...store,
+            [ACTION_SIM_START]: (store) => (action) =>
+            ({
+                ...store,
+                sim: {
+                    ...store.sim,
+                    running: true,
+                }
+            }),
 
-            actionQueue: [
-                ...store.actionQueue,
+            [ACTION_SIM_STOP]: (store) => (action) =>
+            ({
+                ...store,
+                sim: {
+                    ...store.sim,
+                    running: false,
+                }
+            }),
 
-                // append actions returned by handleFunc
-                action.handleFunc(
-                    watchProps                                      // get an object via these steps:
-                        (store.savedPhysTypeStore[action.index])    // compare the saved physType[index]...
-                        (store.physTypeStore[action.index])         // ...to the current physType[index]...
-                        (action.props)                              // ... observing the given props
-                ),
-            ],
-        }),
+            [ACTION_STORE_LOCK]: (store) => (action) =>
+            ({
+                ...store,
+                locked: true,
+            }),
 
-        // use inAction.type as an entry key into the key-val list above
-        // key is used to select a function that takes a store type and action type 
-        //  and returns a store type
-        // if no key-val matches the entry key, return a func that echoes the given store
-    }[inAction.type] || ((store) => (action) => store))
-        // evaluate the function with the given store and action to get a store type
-        (inStore)
-        (inAction);
+            [ACTION_STORE_UNLOCK]: (store) => (action) =>
+            ({
+                ...store,
+                locked: false,
+            }),
+
+            [ACTION_JOURNAL_ADD_ENTRY]: (store) => (action) =>
+            ({
+                ...store,
+                journal: [
+                    ...store.journal,
+                    {
+                        time: simGetCurTime(store),
+                        message: action.message,
+                    }
+                ],
+            }),
+
+            [ACTION_WATCH_SAVE_PHYSTYPE]: (store) => (action) =>
+            ({
+                ...store,
+                savedPhysTypeStore: splice
+                    (1)                                         // remove one element...
+                    (action.index)                              // ... at the given index...
+                    (store.savedPhysTypeStore)                  // ... in this saved physType store...
+                    (action.obj),                               // ... and replace with action.obj
+            }),
+
+            [ACTION_WATCH_QUEUE_COMPARE_SAVED]: (store) => (action) =>
+            ({
+                ...store,
+
+                actionFuncQueue: [
+                    ...store.actionFuncQueue,
+
+                    // append actions returned by handleFunc
+                    action.handleFunc(
+                        watchProps                                      // get an object via these steps:
+                            (store.savedPhysTypeStore[action.index])    // compare the saved physType[index]...
+                            (store.physTypeStore[action.index])         // ...to the current physType[index]...
+                            (action.props)                              // ... observing the given props
+                    ),
+                ],
+            }),
+
+            // use inAction.type as an entry key into the key-val list above
+            // key is used to select a function that takes a storeType and actionType 
+            //  and returns a storeType
+            // if no key-val matches the entry key, return a func that echoes the given storeType
+        }[curAction.type] || ((store) => (action) => store))
+            // evaluate the function with the storeType accumulator and current action to get a storeType
+            (accum || inStore)
+            (curAction),
+
+        null);
 
 
 // *** Function to render store changes using an array of render functions

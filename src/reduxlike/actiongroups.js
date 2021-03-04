@@ -18,7 +18,7 @@ import {
     queue_addTimeChartData,
     startSim,
     stopSim,
-    clearActionQueue
+    clearActionFuncQueue
 } from './action_creators.js';
 
 import { mutable_renderStoreChanges } from './reducers_renderers.js';
@@ -32,22 +32,19 @@ import {
 } from './store_getters.js';
 
 
-// *** Define argument-chaining function applied to our store action dispatcher
-const applyArgChainActionDispatch = applyArgChain(actionDispatch);
-
-
-// *** Dispatch actions in the action queue, then dispatch action to clear the action queue
-export const actionGroup_dispatchActionQueue = (store) =>
+// *** Create actions from the action func queue, 
+//  then create action to clear the func action queue
+export const actionGroup_createActionsFromFuncQueue = () => (store) =>
 ([
-    ...store.actionQueue,
-    clearActionQueue(),
+    store.actionFuncQueue.flat(Infinity).map(action => action(store)),
+    clearActionFuncQueue()(store),
 ]);
 
 
-// *** Dispatch actions for the non-sim parts of the application
+// *** Create actions for the non-sim parts of the application
 // takes: store, as storeType
-// returns array of action dispatchers
-export const actionGroup_NonsimActions = (store) =>
+// returns array of created actions
+export const actionGroup_NonsimActions = () => (store) =>
 ([
     // for all physType objects in store...
     store.physTypeStore.map((this_physType, index) => {
@@ -108,4 +105,6 @@ export const actionGroup_NonsimActions = (store) =>
                 })
         ]
     }),
-])
+// apply each of the action funcs in the array (produced above) to the store to 
+//  get an array of actionType objects
+].flat(Infinity).map(action => action(store)));
