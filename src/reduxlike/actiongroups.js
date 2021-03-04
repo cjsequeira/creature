@@ -18,7 +18,7 @@ import {
     queue_addTimeChartData,
     startSim,
     stopSim,
-    clearActionQueue
+    clearActionFuncQueue
 } from './action_creators.js';
 
 import { mutable_renderStoreChanges } from './reducers_renderers.js';
@@ -32,17 +32,18 @@ import {
 } from './store_getters.js';
 
 
-// *** Dispatch actions in the action queue, then dispatch action to clear the action queue
-export const actionGroup_dispatchActionQueue = () => (store) =>
+// *** Create actions from the action func queue, 
+//  then create action to clear the func action queue
+export const actionGroup_createActionsFromFuncQueue = () => (store) =>
 ([
-    store.actionQueue.flat(Infinity).map(action => action(store)),
-    clearActionQueue()(store),
+    store.actionFuncQueue.flat(Infinity).map(action => action(store)),
+    clearActionFuncQueue()(store),
 ]);
 
 
-// *** Dispatch actions for the non-sim parts of the application
+// *** Create actions for the non-sim parts of the application
 // takes: store, as storeType
-// returns array of action dispatchers
+// returns array of created actions
 export const actionGroup_NonsimActions = () => (store) =>
 ([
     // for all physType objects in store...
@@ -67,8 +68,7 @@ export const actionGroup_NonsimActions = () => (store) =>
                         ({
                             time: simGetCurTime(store),
                             value: inGetCond('glucose')
-                        })
-                        (store),
+                        }),
 
                     // next, queue add neuro data to time chart
                     queue_addTimeChartData
@@ -78,22 +78,21 @@ export const actionGroup_NonsimActions = () => (store) =>
                         ({
                             time: simGetCurTime(store),
                             value: inGetCond('neuro')
-                        })
-                        (store),
+                        }),
 
                     // next, if creature is frozen, 
                     //  queue give termination message and stop simulator
                     (inGetCond('behavior') === 'frozen')
                         ? [
-                            addJournalEntry(store.journal)("Simulation ended")(store),
-                            queue_addStatusMessage(store.ui.status_box)("*** Simulation ended")(store),
-                            stopSim()(store)
+                            addJournalEntry(store.journal)("Simulation ended"),
+                            queue_addStatusMessage(store.ui.status_box)("*** Simulation ended"),
+                            stopSim()
                         ]
-                        : doNothing()(store),
+                        : doNothing(),
                 ]
 
                 // not a Simple Creature: don't return the actions above
-                : doNothing()(store),
+                : doNothing(),
 
             // next, queue add x-y data to geo chart for this_physType
             queue_addGeoChartData
@@ -104,7 +103,8 @@ export const actionGroup_NonsimActions = () => (store) =>
                     x: inGetCond('x'),
                     y: inGetCond('y')
                 })
-                (store)
         ]
     }),
-])
+// apply each of the action funcs in the array (produced above) to the store to 
+//  get an array of actionType objects
+].flat(Infinity).map(action => action(store)));

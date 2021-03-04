@@ -40,17 +40,18 @@ import { actionDispatch } from './action_creators.js';
 // *** Root reducer 
 // takes:
 //  inStore: store to use as template for reduction, as storeType 
-//  inAction: action to use for reduction, as actionType
+//  ...inActions: array of actions to use sequentially for reduction, as actionType
 // returns storeType
 export const rootReducer = (inStore) => (...inActions) =>
-    inActions.flat(Infinity).reduce((accum, inAction) =>
+    // apply each of the actions to the input store in sequential order
+    inActions.flat(Infinity).reduce((accum, curAction) =>
         // list of "mini" reducer functions
         // each function is associated with an action type, given in brackets
         ({
             [ACTION_CLEAR_ACTION_QUEUE]: (store) => (action) =>
             ({
                 ...store,
-                actionQueue: []
+                actionFuncQueue: []
             }),
 
             [ACTION_DO_NOTHING]: (store) => (action) => store,
@@ -184,8 +185,8 @@ export const rootReducer = (inStore) => (...inActions) =>
             ({
                 ...store,
 
-                actionQueue: [
-                    ...store.actionQueue,
+                actionFuncQueue: [
+                    ...store.actionFuncQueue,
 
                     // append actions returned by handleFunc
                     action.handleFunc(
@@ -198,14 +199,14 @@ export const rootReducer = (inStore) => (...inActions) =>
             }),
 
             // use inAction.type as an entry key into the key-val list above
-            // key is used to select a function that takes a store type and action type 
-            //  and returns a store type
-            // if no key-val matches the entry key, return a func that echoes the given store
-        }[inAction.type] || ((store) => (action) => store))
-            // evaluate the function with the given store and action to get a store type
+            // key is used to select a function that takes a storeType and actionType 
+            //  and returns a storeType
+            // if no key-val matches the entry key, return a func that echoes the given storeType
+        }[curAction.type] || ((store) => (action) => store))
+            // evaluate the function with the storeType accumulator and current action to get a storeType
             (accum || inStore)
-            (inAction),
-            
+            (curAction),
+
         null);
 
 

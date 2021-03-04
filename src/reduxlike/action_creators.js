@@ -40,7 +40,7 @@ export const addJournalEntry = (journal) => (message) => (store) =>
 // *** Clear action queue
 // takes: don't care
 // returns actionType
-export const clearActionQueue = (_) => (store) =>
+export const clearActionFuncQueue = (_) => (store) =>
 ({
     type: ACTION_CLEAR_ACTION_QUEUE,
 })
@@ -207,12 +207,12 @@ export const queue_comparePhysType = (handleFunc) => (...props) => (index) => (s
 // *** Action dispatcher function
 // takes:
 //  store: app store, as storeType
-//  action: action to dispatch, as actionType
+//  actionFunc: action-creating function to apply, returning actionType
 // returns storeType
-export const actionDispatch = (store) => (...actions) =>
+export const actionDispatch = (store) => (...actionFuncs) =>
     rootReducer
         (store)
         (
-            actions.flat(Infinity).map(action => action(store))
+            actionFuncs.flat(Infinity).map(actionFunc => actionFunc(store))
         );
 

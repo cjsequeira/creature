@@ -35,7 +35,7 @@ import {
     unlockStore,
 } from './reduxlike/action_creators.js';
 
-import { actionGroup_dispatchActionQueue, actionGroup_NonsimActions } from './reduxlike/actiongroups.js';
+import { actionGroup_createActionsFromFuncQueue, actionGroup_NonsimActions } from './reduxlike/actiongroups.js';
 
 import {
     physTypeGet,
@@ -58,10 +58,6 @@ const behaviorStrings = {
     wandering: "is wandering! Wiggity whack!",
     frozen: "is frozen! Brrrr....."
 };
-
-
-// *** Define argument-chaining function applied to our store action dispatcher
-const applyArgChainActionDispatch = applyArgChain(actionDispatch);
 
 
 // ***********************************************************************************
@@ -112,7 +108,7 @@ function appUpdate() {
             lockStore(),
 
             // dispatch actions in myStore queue
-            actionGroup_dispatchActionQueue(myStore),
+            actionGroup_createActionsFromFuncQueue(),
 
             // do physType acts
             myStore.physTypeStore.map(
@@ -176,7 +172,7 @@ function appUpdate() {
             lockStore(),
 
             // dispatch actions in myStore queue
-            actionGroup_dispatchActionQueue(),
+            actionGroup_createActionsFromFuncQueue(),
 
             // update the non-sim parts of our app store
             actionGroup_NonsimActions(),

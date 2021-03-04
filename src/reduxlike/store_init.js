@@ -254,7 +254,7 @@ const initial_store = {
     },
 
     // initial action queue
-    actionQueue: [],
+    actionFuncQueue: [],
     
     // initial array of store changes to render
     changes: [],
