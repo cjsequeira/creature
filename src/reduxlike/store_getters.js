@@ -3,7 +3,6 @@
 // ****** Functions to get information from store
 
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
-import { getNestedProp } from '../util.js';
 
 
 // *** physType getter functions
@@ -30,41 +29,47 @@ export const physTypeGetCond = (physType) => (argCond) => physType.conds[argCond
 // return key value from physType
 // takes:
 //  physType: physType to use
-//  arg: string name for key of physType to look at
+//  argStringType: string name for key of physType to look at
 // returns key value
-export const physTypeGet = (physType) => (arg) => physType[arg];
+export const physTypeGet = (physType) => (argStringType) => physType[argStringType];
 
 // did given prop in given physType change due to watchProps?
 // takes:
 //  physType: physType to use
-//  prop: string name for prop to check - could be a nested prop, with '.'
+//  propStringType: string name for prop to check - could be a nested prop, with '.'
 // returns bool
-export const physTypePropChanged = (physType) => (prop) => physType[WATCHPROP_CHANGESPROP][prop]
+export const physTypePropChanged = (physType) => (propStringType) =>
+    physType[WATCHPROP_CHANGESPROP][propStringType]
 
 
 // *** Simulator getter functions
 // return current simulator time
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns number
-export const simGetCurTime = (store) => store.sim.curTime;
+export const simGetCurTime = (storeType) => storeType.sim.curTime;
 
 // return last stored system clock time
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns number
-export const simGetSavedClock = (store) => store.sim.savedClock;
+export const simGetSavedClock = (storeType) => storeType.sim.savedClock;
 
 // return simulator running status
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns bool
-export const simGetRunning = (store) => store.sim.running;
+export const simGetRunning = (storeType) => storeType.sim.running;
 
 // return simulator timestep
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns number
-export const simGetTimeStep = (store) => store.sim.timeStep;
+export const simGetTimeStep = (storeType) => storeType.sim.timeStep;
 
 
 // *** Get store lock status
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns bool
-export const storeIsLocked = (store) => store.locked;
+export const storeIsLocked = (storeType) => storeType.locked;

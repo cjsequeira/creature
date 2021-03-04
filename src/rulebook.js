@@ -6,7 +6,7 @@
 // *** Our imports
 import {
     physTypeGetCond,
-    physTypeUseConds
+    physTypeUseConds,
 } from './reduxlike/store_getters.js';
 
 import { physTypeDoPhysics } from './sim/physics.js';

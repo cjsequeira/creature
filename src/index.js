@@ -10,40 +10,40 @@ import './custom.css';
 // our own stuff
 import {
     CREATURE_GEO_CHART,
-    CREATURE_TIME_CHART,
     CREATURE_STATUS_BOX,
+    CREATURE_TIME_CHART,
     UPDATE_FREQ_NONSIM,
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
-
-import { applyArgChain } from './util.js';
 
 import {
     actionDispatch,
     addJournalEntry,
     advanceSim,
     doNothing,
-    doPhysTypeAct,
     lockStore,
     mutableRender,
+    physTypeDoAct,
     queue_addStatusMessage,
     queue_comparePhysType,
     saveClockForSim,
     savePhysType,
     startSim,
-    stopSim,
     unlockStore,
 } from './reduxlike/action_creators.js';
 
-import { actionGroup_createActionsFromFuncQueue, actionGroup_NonsimActions } from './reduxlike/actiongroups.js';
+import {
+    actionGroup_createActionsFromFuncQueue,
+    actionGroup_NonsimActions
+} from './reduxlike/actiongroups.js';
 
 import {
     physTypeGet,
     physTypeGetCond,
     physTypePropChanged,
-    simGetSavedClock,
     simGetRunning,
-    storeIsLocked
+    simGetSavedClock,
+    storeIsLocked,
 } from './reduxlike/store_getters.js';
 
 import { storeInit } from './reduxlike/store_init.js';
@@ -73,30 +73,26 @@ export let myStore = storeInit(
 // dispatch a series of actions to our store
 myStore = actionDispatch(myStore)([
     // change the sim status to running
-    startSim(),
+    startSim,
 
     // dispatch non-sim-related actions such as queuing initial chart draws
-    actionGroup_NonsimActions(),
+    actionGroup_NonsimActions,
 
     // do the initial UI draws
-    mutableRender()
+    mutableRender
 ]);
 
 // start repeatedly updating our application at sim frequency
-let requestId = setInterval(appUpdate, UPDATE_FREQ_SIM);
+setInterval(appUpdate, UPDATE_FREQ_SIM);
 
 // ***********************************************************************************
 
 
 // *** Time-based callback function
-// REFACTOR WATCHER IDEA:
-//  Consider an action type that saves a given object, then an action type that 
-//  compares a given object with the saved object and calls an action-generating
-//  callback function. That call-back function would always give an action,
-//  which could be "do nothing"
-// takes: nothing
+// takes: 
+//  don't care
 // returns nothing
-function appUpdate() {
+function appUpdate(_) {
     // is simulator running and store lock not set?
     if (
         simGetRunning(myStore) &&
@@ -105,10 +101,10 @@ function appUpdate() {
         // yes: dispatch a series of actions to the store to update the sim
         myStore = actionDispatch(myStore)([
             // set store lock
-            lockStore(),
+            lockStore,
 
-            // dispatch actions in myStore queue
-            actionGroup_createActionsFromFuncQueue(),
+            // create actions from myStore action func queue
+            actionGroup_createActionsFromFuncQueue,
 
             // do physType acts
             myStore.physTypeStore.map(
@@ -117,9 +113,9 @@ function appUpdate() {
                     savePhysType(this_physType)(i),
 
                     // do the physType "act"
-                    doPhysTypeAct(this_physType)(i),
+                    physTypeDoAct(this_physType)(i),
 
-                    // compare the new state of this physType to saved state 
+                    // use a callback to compare the new state of this physType to saved state 
                     //  and queue additional actions
                     queue_comparePhysType
                         ((creatureType) =>
@@ -129,7 +125,6 @@ function appUpdate() {
                                 ? [
                                     // announce in journal
                                     addJournalEntry
-                                        (myStore.journal)
                                         (
                                             physTypeGet(creatureType)('name') + ' ' +
                                             behaviorStrings[physTypeGetCond(creatureType)('behavior')]
@@ -145,7 +140,7 @@ function appUpdate() {
                                 ]
 
                                 // no, or not a creatureType: do nothing
-                                : doNothing()
+                                : doNothing
                         )
                         ('conds.behavior')
                         (i)
@@ -153,10 +148,10 @@ function appUpdate() {
             ),
 
             // advance sim
-            advanceSim(),
+            advanceSim,
 
             // unset store lock
-            unlockStore()
+            unlockStore
         ]);
     }
 
@@ -169,22 +164,22 @@ function appUpdate() {
         // yes: dispatch a series of actions to the store to update the non-sim stuff
         myStore = actionDispatch(myStore)([
             // set store lock
-            lockStore(),
+            lockStore,
 
-            // dispatch actions in myStore queue
-            actionGroup_createActionsFromFuncQueue(),
+            // create actions from myStore action func queue
+            actionGroup_createActionsFromFuncQueue,
 
             // update the non-sim parts of our app store
-            actionGroup_NonsimActions(),
+            actionGroup_NonsimActions,
 
             // render the application
-            mutableRender(),
+            mutableRender,
 
             // remember the current time
             saveClockForSim(performance.now()),
 
             // unset store lock
-            unlockStore()
+            unlockStore
         ])
     }
 };
