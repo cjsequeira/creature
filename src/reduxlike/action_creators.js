@@ -29,7 +29,7 @@ import { rootReducer } from './reducers_renderers.js';
 //  journal: store journal, as journalType
 //  message: message, as string
 // returns actionType
-export const addJournalEntry = (journal) => (message) => 
+export const addJournalEntry = (journal) => (message) =>
 ({
     type: ACTION_JOURNAL_ADD_ENTRY,
     journal,
@@ -51,7 +51,7 @@ export const clearActionQueue = (_) =>
 //  physType
 //  index: index into physType store in app store
 // returns actionType
-export const doPhysTypeAct = (physType) => (index) => 
+export const doPhysTypeAct = (physType) => (index) =>
 ({
     type: ACTION_PHYSTYPE_DO_ACT,
     physType,
@@ -62,7 +62,7 @@ export const doPhysTypeAct = (physType) => (index) =>
 // *** Do nothing
 // takes: nothing
 // returns actionType
-export const doNothing = () => 
+export const doNothing = () =>
 ({
     type: ACTION_DO_NOTHING,
 });
@@ -84,7 +84,7 @@ export const mutableRender = () =>
 //  color: color for the data
 //  xyPair: data coordinate, as {x, y}
 // returns actionType
-export const queue_addGeoChartData = (chart) => (dataIndex) => (color) => (xyPair) => 
+export const queue_addGeoChartData = (chart) => (dataIndex) => (color) => (xyPair) =>
 ({
     type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
     chart,
@@ -100,7 +100,7 @@ export const queue_addGeoChartData = (chart) => (dataIndex) => (color) => (xyPai
 //  label: label for legend
 //  timeValPair: data coordinate, as {time, value}
 // returns actionType
-export const queue_addTimeChartData = (chart) => (dataIndex) => (label) => (timeValPair) => 
+export const queue_addTimeChartData = (chart) => (dataIndex) => (label) => (timeValPair) =>
 ({
     type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
     chart,
@@ -114,7 +114,7 @@ export const queue_addTimeChartData = (chart) => (dataIndex) => (label) => (time
 //  statusBox: HTML DOM status box reference
 //  message: message, as string
 // returns actionType
-export const queue_addStatusMessage = (statusBox) => (message) => 
+export const queue_addStatusMessage = (statusBox) => (message) =>
 ({
     type: ACTION_QUEUE_ADD_STATUS_MESSAGE,
     statusBox,
@@ -126,7 +126,7 @@ export const queue_addStatusMessage = (statusBox) => (message) =>
 // advance sim time
 // takes: nothing
 // returns actionType
-export const advanceSim = () => 
+export const advanceSim = () =>
 ({
     type: ACTION_SIM_ADVANCE,
 });
@@ -134,7 +134,7 @@ export const advanceSim = () =>
 // save system clock
 // takes: nothing
 // returns actionType
-export const saveClockForSim = (clock) => 
+export const saveClockForSim = (clock) =>
 ({
     type: ACTION_SIM_SAVE_CLOCK,
     clock
@@ -143,7 +143,7 @@ export const saveClockForSim = (clock) =>
 // start sim
 // takes: nothing
 // returns actionType
-export const startSim = () => 
+export const startSim = () =>
 ({
     type: ACTION_SIM_START,
 });
@@ -151,7 +151,7 @@ export const startSim = () =>
 // stop sim
 // takes: nothing
 // returns actionType
-export const stopSim = () => 
+export const stopSim = () =>
 ({
     type: ACTION_SIM_STOP,
 });
@@ -161,7 +161,7 @@ export const stopSim = () =>
 // lock store
 // takes: nothing
 // returns actionType
-export const lockStore = () => 
+export const lockStore = () =>
 ({
     type: ACTION_STORE_LOCK,
 });
@@ -169,7 +169,7 @@ export const lockStore = () =>
 // unlock store
 // takes: nothing
 // returns actionType
-export const unlockStore = () => 
+export const unlockStore = () =>
 ({
     type: ACTION_STORE_UNLOCK,
 })
@@ -203,11 +203,11 @@ export const queue_comparePhysType = (handleFunc) => (...props) => (index) =>
     index
 })
 
-// handle object changes by 
 
 // *** Action dispatcher function
 // takes:
 //  store: app store, as storeType
 //  action: action to dispatch, as actionType
 // returns storeType
-export const actionDispatch = (store) => (action) => rootReducer(store)(action);
+export const actionDispatch = (store) => (...actions) =>
+    actions.flat(Infinity).reduce((accum, action) => rootReducer(accum || store)(action), null);
