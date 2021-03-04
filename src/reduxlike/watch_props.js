@@ -13,10 +13,10 @@ import { getNestedProp } from '../util.js';
 // takes:
 //  before: object before changes
 //  after: object after changes
-//  ...props: list of props to watch
+//  ...propStringTypes: list of props to watch, as strings
 // returns "after" object with added/updated property [WATCHPROP_CHANGESPROP], containing
 //  each watched prop and a boolean answering 'did this property change?'
-export const watchProps = (beforeObj) => (afterObj) => (...props) =>
+export const watchProps = (beforeObj) => (afterObj) => (...propStringTypes) =>
 // build an object composed of: 
 //  'afterObj': the given "after" object
 //  a 'changes' property containing an object of given props and whether they changed
@@ -29,13 +29,13 @@ export const watchProps = (beforeObj) => (afterObj) => (...props) =>
         //  changed or not
         // true: property changed from 'before' to 'after'
         // false: property did not change from 'before' to 'after'
-        props.flat(Infinity).reduce((accum, prop) =>
-            // build an array...
+        propStringTypes.flat(Infinity).reduce((accumProp, propStringType) =>
+            // build an array of properties...
             [
-                ...accum,
+                ...accumProp,
                 [
-                    prop,
-                    (getNestedProp(beforeObj)(prop) === getNestedProp(afterObj)(prop))
+                    propStringType,
+                    (getNestedProp(beforeObj)(propStringType) === getNestedProp(afterObj)(propStringType))
                         ? false
                         : true
                 ]

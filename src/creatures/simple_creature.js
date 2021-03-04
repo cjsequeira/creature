@@ -20,9 +20,9 @@ import {
 
 
 // *** Default Simple Creature assembler
-// takes: nothing
+// takes: don't care
 // returns physType
-export const getDefaultSimpleCreature = () =>
+export const getDefaultSimpleCreature = (_) =>
 ({
     name: 'New Simple Creature',
     color: '#00bb00ff',

@@ -8,7 +8,7 @@ import Chart from 'chart.js';
 import {
     UPDATE_FREQ_SIM,
     WORLD_SIZE_X,
-    WORLD_SIZE_Y
+    WORLD_SIZE_Y,
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';

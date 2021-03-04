@@ -3,51 +3,45 @@
 // ****** Code to dispatch actions collected into groups ******
 
 // *** Imports
-import { applyArgChain } from '../util.js';
-
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 import {
-    actionDispatch,
     addJournalEntry,
+    clearActionFuncQueue,
     doNothing,
-    lockStore,
-    unlockStore,
     queue_addGeoChartData,
     queue_addStatusMessage,
     queue_addTimeChartData,
-    startSim,
     stopSim,
-    clearActionFuncQueue
 } from './action_creators.js';
-
-import { mutable_renderStoreChanges } from './reducers_renderers.js';
 
 import {
     physTypeGet,
     physTypeGetCond,
     simGetCurTime,
-    simGetRunning,
-    storeIsLocked
 } from './store_getters.js';
 
 
 // *** Create actions from the action func queue, 
 //  then create action to clear the func action queue
-export const actionGroup_createActionsFromFuncQueue = () => (store) =>
+// takes:
+//  storeType: the store to use
+// returns array of actionType objects
+export const actionGroup_createActionsFromFuncQueue = (storeType) =>
 ([
-    store.actionFuncQueue.flat(Infinity).map(action => action(store)),
-    clearActionFuncQueue()(store),
+    storeType.actionFuncQueue.flat(Infinity).map(action => action(storeType)),
+    clearActionFuncQueue(storeType),
 ]);
 
 
 // *** Create actions for the non-sim parts of the application
-// takes: store, as storeType
-// returns array of created actions
-export const actionGroup_NonsimActions = () => (store) =>
+// takes:
+//  storeType: the store to use
+// returns array of actionType objects
+export const actionGroup_NonsimActions = (storeType) =>
 ([
     // for all physType objects in store...
-    store.physTypeStore.map((this_physType, index) => {
+    storeType.physTypeStore.map((this_physType, index) => {
         // define shorthand func to get this_physType keyval
         const inGet = physTypeGet(this_physType);
 
@@ -62,21 +56,21 @@ export const actionGroup_NonsimActions = () => (store) =>
                 ? [
                     // queue add glucose data to time chart
                     queue_addTimeChartData
-                        (store.ui.creature_time_chart)
+                        (storeType.ui.creature_time_chart)
                         (2 * index)
                         (inGet('name') + ' glucose')
                         ({
-                            time: simGetCurTime(store),
+                            time: simGetCurTime(storeType),
                             value: inGetCond('glucose')
                         }),
 
                     // next, queue add neuro data to time chart
                     queue_addTimeChartData
-                        (store.ui.creature_time_chart)
+                        (storeType.ui.creature_time_chart)
                         (2 * index + 1)
                         (inGet('name') + ' neuro')
                         ({
-                            time: simGetCurTime(store),
+                            time: simGetCurTime(storeType),
                             value: inGetCond('neuro')
                         }),
 
@@ -84,19 +78,19 @@ export const actionGroup_NonsimActions = () => (store) =>
                     //  queue give termination message and stop simulator
                     (inGetCond('behavior') === 'frozen')
                         ? [
-                            addJournalEntry(store.journal)("Simulation ended"),
-                            queue_addStatusMessage(store.ui.status_box)("*** Simulation ended"),
-                            stopSim()
+                            addJournalEntry("Simulation ended"),
+                            queue_addStatusMessage(storeType.ui.status_box)("*** Simulation ended"),
+                            stopSim
                         ]
-                        : doNothing(),
+                        : doNothing,
                 ]
 
                 // not a Simple Creature: don't return the actions above
-                : doNothing(),
+                : doNothing,
 
             // next, queue add x-y data to geo chart for this_physType
             queue_addGeoChartData
-                (store.ui.creature_geo_chart)
+                (storeType.ui.creature_geo_chart)
                 (index)
                 (inGet('color'))
                 ({
@@ -105,6 +99,6 @@ export const actionGroup_NonsimActions = () => (store) =>
                 })
         ]
     }),
-// apply each of the action funcs in the array (produced above) to the store to 
+// apply each of the action funcs in the array (produced above) to the given storeType to 
 //  get an array of actionType objects
-].flat(Infinity).map(action => action(store)));
+].flat(Infinity).map(action => action(storeType)));

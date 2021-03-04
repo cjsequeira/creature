@@ -8,19 +8,19 @@ import { myStore } from '../index.js';
 
 import {
     WORLD_SIZE_X,
-    WORLD_SIZE_Y
+    WORLD_SIZE_Y,
 } from '../const_vals.js';
 
 import {
     applyFuncChain,
+    boundToRange,
     withinRange,
-    boundToRange
 } from '../util.js';
 
 import {
     physTypeGetCond,
     physTypeUseConds,
-    simGetTimeStep
+    simGetTimeStep,
 } from '../reduxlike/store_getters.js';
 
 
