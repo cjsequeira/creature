@@ -106,7 +106,7 @@ function appUpdate(_) {
             // create actions from myStore action func queue
             actionGroup_createActionsFromFuncQueue,
 
-            // do physType acts
+            // do physType act for each physType in physType store
             myStore.physTypeStore.map(
                 (this_physType, i) => [
                     // save the current state of this physType
@@ -142,8 +142,8 @@ function appUpdate(_) {
                                 // no, or not a creatureType: do nothing
                                 : doNothing
                         )
-                        ('conds.behavior')
-                        (i)
+                        ('conds.behavior')      // physType property to watch
+                        (i)                     // index into physType store for this physType
                 ]
             ),
 
