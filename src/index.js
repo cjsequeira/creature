@@ -60,6 +60,10 @@ const behaviorStrings = {
 };
 
 
+// *** Define argument-chaining function applied to our store action dispatcher
+const applyArgChainActionDispatch = applyArgChain(actionDispatch);
+
+
 // ***********************************************************************************
 // *** Code that actually does stuff
 
@@ -76,7 +80,7 @@ myStore = actionDispatch(myStore)([
     startSim(),
 
     // dispatch non-sim-related actions such as queuing initial chart draws
-    actionGroup_NonsimActions(myStore),
+    actionGroup_NonsimActions(),
 
     // do the initial UI draws
     mutableRender()
@@ -172,10 +176,10 @@ function appUpdate() {
             lockStore(),
 
             // dispatch actions in myStore queue
-            actionGroup_dispatchActionQueue(myStore),
+            actionGroup_dispatchActionQueue(),
 
             // update the non-sim parts of our app store
-            actionGroup_NonsimActions(myStore),
+            actionGroup_NonsimActions(),
 
             // render the application
             mutableRender(),

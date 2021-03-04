@@ -33,17 +33,17 @@ import {
 
 
 // *** Dispatch actions in the action queue, then dispatch action to clear the action queue
-export const actionGroup_dispatchActionQueue = (store) =>
+export const actionGroup_dispatchActionQueue = () => (store) =>
 ([
-    ...store.actionQueue,
-    clearActionQueue(),
+    store.actionQueue.flat(Infinity).map(action => action(store)),
+    clearActionQueue()(store),
 ]);
 
 
 // *** Dispatch actions for the non-sim parts of the application
 // takes: store, as storeType
 // returns array of action dispatchers
-export const actionGroup_NonsimActions = (store) =>
+export const actionGroup_NonsimActions = () => (store) =>
 ([
     // for all physType objects in store...
     store.physTypeStore.map((this_physType, index) => {
@@ -67,7 +67,8 @@ export const actionGroup_NonsimActions = (store) =>
                         ({
                             time: simGetCurTime(store),
                             value: inGetCond('glucose')
-                        }),
+                        })
+                        (store),
 
                     // next, queue add neuro data to time chart
                     queue_addTimeChartData
@@ -77,21 +78,22 @@ export const actionGroup_NonsimActions = (store) =>
                         ({
                             time: simGetCurTime(store),
                             value: inGetCond('neuro')
-                        }),
+                        })
+                        (store),
 
                     // next, if creature is frozen, 
                     //  queue give termination message and stop simulator
                     (inGetCond('behavior') === 'frozen')
                         ? [
-                            addJournalEntry(store.journal)("Simulation ended"),
-                            queue_addStatusMessage(store.ui.status_box)("*** Simulation ended"),
-                            stopSim()
+                            addJournalEntry(store.journal)("Simulation ended")(store),
+                            queue_addStatusMessage(store.ui.status_box)("*** Simulation ended")(store),
+                            stopSim()(store)
                         ]
-                        : doNothing(),
+                        : doNothing()(store),
                 ]
 
                 // not a Simple Creature: don't return the actions above
-                : doNothing(),
+                : doNothing()(store),
 
             // next, queue add x-y data to geo chart for this_physType
             queue_addGeoChartData
@@ -102,6 +104,7 @@ export const actionGroup_NonsimActions = (store) =>
                     x: inGetCond('x'),
                     y: inGetCond('y')
                 })
+                (store)
         ]
     }),
 ])
