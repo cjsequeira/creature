@@ -56,50 +56,6 @@ const isBehaviorRequestSleeping = {
 
 
 // *** Rulebook leaf nodes
-const leafApproveIdling = {
-    name: 'Behavior request approved: idling',
-    func: (physType) => physTypeUseConds
-        (physType)
-        ({
-            behavior: physTypeGetCond(physType)('behavior_request'),
-        }),
-};
-
-const leafApproveWandering = {
-    name: 'Behavior request approved: wandering',
-    func: (physType) => physTypeUseConds
-        (physType)
-        ({
-            behavior: physTypeGetCond(physType)('behavior_request'),
-        }),
-};
-
-const leafApproveEating = {
-    name: 'Behavior request approved: eating',
-    func: (physType) => physTypeUseConds
-        (physType)
-        ({
-            behavior: physTypeGetCond(physType)('behavior_request'),
-
-            // can't move if eating: no grab-and-go!
-            speed: 0.0,
-            accel: 0.0
-        }),
-};
-
-const leafApproveSleeping = {
-    name: 'Behavior request approved: sleeping',
-    func: (physType) => physTypeUseConds
-        (physType)
-        ({
-            behavior: 'sleeping',
-
-            // can't move if sleeping!
-            speed: 0.0,
-            accel: 0.0
-        }),
-};
-
 const leafApproveBehavior = {
     name: 'Behavior request approved',
     func: (physType) => physTypeUseConds
@@ -121,12 +77,12 @@ const leafApproveBehaviorStopMovement = {
         }),
 };
 
-const leafRejectEating = {
-    name: "Creature wants to eat but there's no food here!",
+const leafRejectBehavior = {
+    name: 'Behavior request rejected!',
     func: (physType) => physTypeUseConds
         (physType)
         ({
-            // reject behavior request
+            // reject behavior request by re-assigning input physType
             behavior: physTypeGetCond(physType)('behavior'),
         }),
 };
@@ -173,12 +129,12 @@ const ruleBook = {
             testNode: isBehaviorRequestEating,
             yes: {
                 testNode: isBehaviorRequestFoodAvail,
-                yes: leafApproveEating,
-                no: leafRejectEating,
+                yes: leafApproveBehaviorStopMovement,
+                no: leafRejectBehavior,
             },
             no: {
                 testNode: isBehaviorRequestSleeping,
-                yes: leafApproveSleeping,
+                yes: leafApproveBehaviorStopMovement,
                 no: {
                     testNode: orTestRules(isBehaviorRequestIdling, isBehaviorRequestWandering),
                     yes: leafApproveBehavior,
