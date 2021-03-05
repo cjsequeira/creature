@@ -2,8 +2,11 @@
 
 // ****** Simulation rulebook ******
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
+// REFACTOR IDEA: Rulebook should return an ACTION (or array of actions), not a PHYSTYPE!
 
 // *** Our imports
+import { orTests } from './util.js';
+
 import {
     physTypeGetCond,
     physTypeUseConds,
@@ -97,6 +100,27 @@ const leafApproveSleeping = {
         }),
 };
 
+const leafApproveBehavior = {
+    name: 'Behavior request approved',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+        }),
+};
+
+const leafApproveBehaviorStopMovement = {
+    name: 'Behavior request approved and movement stopped',
+    func: (physType) => physTypeUseConds
+        (physType)
+        ({
+            behavior: physTypeGetCond(physType)('behavior_request'),
+
+            speed: 0.0,
+            accel: 0.0
+        }),
+};
+
 const leafRejectEating = {
     name: "Creature wants to eat but there's no food here!",
     func: (physType) => physTypeUseConds
@@ -127,6 +151,16 @@ const leafUnknownBehavior = {
 };
 
 
+// *** Functional programming helper functions
+// link together rulebook test nodes with logical "or"
+// takes:
+//  ...testRules: array of rulebook test nodes
+// returns object with testFunc property combining test nodes with logical "or"
+const orTestRules = (...testRules) => ({
+    testFunc: orTests(testRules.map(rule => rule.testFunc))
+});
+
+
 // *** The rulebook
 const ruleBook = {
     testNode: isCreatureType,
@@ -136,25 +170,21 @@ const ruleBook = {
             // first, produce physType with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
 
-            testNode: isBehaviorRequestIdling,
-            yes: leafApproveIdling,
+            testNode: isBehaviorRequestEating,
+            yes: {
+                testNode: isBehaviorRequestFoodAvail,
+                yes: leafApproveEating,
+                no: leafRejectEating,
+            },
             no: {
-                testNode: isBehaviorRequestWandering,
-                yes: leafApproveWandering,
+                testNode: isBehaviorRequestSleeping,
+                yes: leafApproveSleeping,
                 no: {
-                    testNode: isBehaviorRequestEating,
-                    yes: {
-                        testNode: isBehaviorRequestFoodAvail,
-                        yes: leafApproveEating,
-                        no: leafRejectEating,
-                    },
-                    no: {
-                        testNode: isBehaviorRequestSleeping,
-                        yes: leafApproveSleeping,
-                        no: leafUnknownBehavior,
-                    },
+                    testNode: orTestRules(isBehaviorRequestIdling, isBehaviorRequestWandering),
+                    yes: leafApproveBehavior,
+                    no: leafUnknownBehavior,
                 },
-            }
+            },
         },
         no: leafCondsOOL,
     },
