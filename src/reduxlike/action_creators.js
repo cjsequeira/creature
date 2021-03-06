@@ -22,7 +22,7 @@ import {
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
-import { queueReducer } from './reducer_queue.js';
+import { changesQueueReducer } from './reducer_changesqueue.js';
 import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
 
@@ -235,10 +235,13 @@ export const queue_comparePhysType = (handleFunc) => (...propsStringType) => (in
 //  storeType: app store, as storeType
 //  ...actionFuncs: action-creating functions to apply, each returning actionType
 // returns storeType
+
+// storeType template with reducers for specific properties
 const storeTypeTemplate = {
     sim: simReducer,
-    queue: queueReducer,
+    changes: changesQueueReducer,
 };
 
+// action dispatch function
 export const actionDispatch = (storeType) => (...actionFuncs) =>
     combineReducersWithRemainder(storeTypeTemplate)(remainderReducer)(storeType)(actionFuncs);

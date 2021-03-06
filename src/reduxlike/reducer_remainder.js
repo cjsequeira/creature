@@ -9,9 +9,6 @@ import {
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_MUTABLE_RENDER,
     ACTION_PHYSTYPE_DO_ACT,
-    ACTION_QUEUE_ADD_GEO_CHART_DATA,
-    ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_QUEUE_ADD_TIME_CHART_DATA,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
@@ -79,46 +76,6 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 (actionType.physType.act(                   // ... and replace with physType from "act"
                     actionType.physType)
                 ),
-        }),
-
-        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (storeType) => (actionType) =>
-        ({
-            ...storeType,
-            changes: [
-                ...storeType.changes,
-                (_) => mutable_updateGeoChartData(
-                    actionType.chart,
-                    actionType.dataIndexIntType,
-                    actionType.colorStringType,
-                    actionType.xyFloatTuple
-                ),
-            ],
-        }),
-
-        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
-        ({
-            ...storeType,
-            changes: [
-                ...storeType.changes,
-                (storeType) => mutable_updateStatusBox(
-                    actionType.statusBox,
-                    'Time ' + roundTo(2)(simGetCurTime(storeType)) + ': ' + actionType.msgStringType
-                ),
-            ],
-        }),
-
-        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
-        ({
-            ...storeType,
-            changes: [
-                ...storeType.changes,
-                (_) => mutable_updateTimeChartData(
-                    actionType.chart,
-                    actionType.dataIndexIntType,
-                    actionType.labelStringType,
-                    actionType.timeValFloatTuple
-                ),
-            ],
         }),
 
         [ACTION_STORE_LOCK]: (storeType) => (_) =>

@@ -6,18 +6,21 @@
 // main reducer combining function
 // allows the use of multiple reducers, each reducing to a different store property
 // takes:
-//  templateStoreType, as 
+//  templateStoreType, as:
 //      {
 //          ...
 //          property1: reducerFunc1
 //          property2: reducerFunc2
 //          ...
 //      }
-//  storeType
 //  ...actionFuncs: array of functions returning actionType
 // returns storetype
 export const combineReducers = (templateStoreType) => (storeType) => (...actionFuncs) =>
+// build an object
 ({
+    // include the given storeType object
+    ...storeType,
+
     // ... produce storeType property objects from entries...
     ...Object.fromEntries(
         // ... generated using the property objects from the template storeType
@@ -52,7 +55,13 @@ export const combineReducers = (templateStoreType) => (storeType) => (...actionF
 
 // reducer combining function with remainder
 // takes:
-//  templateStoreType, as storeType
+//  templateStoreType, as:
+//      {
+//          ...
+//          property1: reducerFunc1
+//          property2: reducerFunc2
+//          ...
+//      }
 //  remainderFunc: remainder reducer function giving storeType
 //  storeType
 //  ...actionFuncs: array of functions returning actionType
@@ -61,18 +70,19 @@ export const combineReducersWithRemainder =
     (templateStoreType) => (remainderFunc) => (storeType) => (...actionFuncs) =>
     // produce an object
     ({
+        // include the given storeType object
+        ...storeType,
+        
         // for each action function in the list of action funcs...
         ...actionFuncs.flat(Infinity).reduce((accumStoreType, curActionFunc) =>
             // ... evaluate the remainder reducer function with the storeType accumulator 
             //  and current action (as created through applying action function to the
             //  accumulated storeType) to get a storeType
             remainderFunc
-                (accumStoreType || storeType)
-                (curActionFunc(accumStoreType || storeType)),
-            // we start our reduction with a null storeType
-            null),
+                (accumStoreType)
+                (curActionFunc(accumStoreType)),
 
-        // merge in the result objects from the other reducer functions as given in 
-        //  the template storeType
-        ...combineReducers(templateStoreType)(storeType)(actionFuncs),
+            // we start our reduction with a storeType that is the result of applying the  
+            //  other reducer functions as given in the template storeType
+            combineReducers(templateStoreType)(storeType)(actionFuncs)),
     });
