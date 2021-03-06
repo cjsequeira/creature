@@ -23,7 +23,9 @@ import {
 } from '../const_vals.js';
 import {
     combineReducers,
+    combineReducersWithRemainder,
     remainderReducer,
+    simReducer,
 } from './reducers_renderers.js';
 
 
@@ -233,9 +235,9 @@ export const queue_comparePhysType = (handleFunc) => (...propsStringType) => (in
 //  storeType: app store, as storeType
 //  ...actionFuncs: action-creating functions to apply, each returning actionType
 // returns storeType
-export const actionDispatch = (storeType) => (...actionFuncs) => ({
-    ...remainderReducer
-        (storeType)
-        (actionFuncs.flat(Infinity).map(actionFunc => actionFunc(storeType))),
+const storeTypeTemplate = {
+    sim: simReducer,
+};
 
-});
+export const actionDispatch = (storeType) => (...actionFuncs) =>
+    combineReducersWithRemainder(storeTypeTemplate)(remainderReducer)(storeType)(actionFuncs);

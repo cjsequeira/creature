@@ -36,6 +36,56 @@ import {
 import { watchProps } from './watch_props.js';
 
 
+// *** Sim reducer 
+// reducer for "sim" property of app store
+// takes:
+//  inStoreType: store to use as template for reduction, as storeType 
+//  ...inActionTypes: array of actions to use sequentially for reduction, as actionType
+// returns storeType
+export const simReducer = (inStoreType) => (...inActionTypes) =>
+    // apply each of the actions to the input store in sequential order
+    inActionTypes.flat(Infinity).reduce((accumStoreType, curActionType) =>
+        // list of "mini" reducer functions
+        // each function is associated with an action type, given in brackets
+        ({
+            [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
+            ({
+                ...storeType.sim,
+                curTime: storeType.sim.curTime + storeType.sim.timeStep,
+            }),
+
+            [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>
+            ({
+                ...storeType.sim,
+                savedClock: actionType.clockFloatType,
+            }),
+
+            [ACTION_SIM_START]: (storeType) => (_) =>
+            ({
+                ...storeType.sim,
+                running: true,
+
+            }),
+
+            [ACTION_SIM_STOP]: (storeType) => (_) =>
+            ({
+                ...storeType.sim,
+                running: false,
+            }),
+
+            // use curActionType.type as an entry key into the key-val list above
+            // key is used to select a function that takes a storeType and actionType 
+            //  and returns a storeType
+            // if no key-val matches the entry key, return a func that echoes the given storeType
+        }[curActionType.type] || ((storeType) => (_) => storeType))
+            // evaluate the function with the storeType accumulator and current action to get a storeType
+            (accumStoreType || inStoreType)
+            (curActionType),
+
+        // we start our reduction with a null storeType
+        null);
+
+
 // *** Remainder reducer 
 // takes:
 //  inStoreType: store to use as template for reduction, as storeType 
@@ -124,42 +174,6 @@ export const remainderReducer = (inStoreType) => (...inActionTypes) =>
                 ],
             }),
 
-            [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
-            ({
-                ...storeType,
-                sim: {
-                    ...storeType.sim,
-                    curTime: storeType.sim.curTime + storeType.sim.timeStep,
-                }
-            }),
-
-            [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>
-            ({
-                ...storeType,
-                sim: {
-                    ...storeType.sim,
-                    savedClock: actionType.clockFloatType,
-                }
-            }),
-
-            [ACTION_SIM_START]: (storeType) => (_) =>
-            ({
-                ...storeType,
-                sim: {
-                    ...storeType.sim,
-                    running: true,
-                }
-            }),
-
-            [ACTION_SIM_STOP]: (storeType) => (_) =>
-            ({
-                ...storeType,
-                sim: {
-                    ...storeType.sim,
-                    running: false,
-                }
-            }),
-
             [ACTION_STORE_LOCK]: (storeType) => (_) =>
             ({
                 ...storeType,
@@ -216,28 +230,6 @@ export const remainderReducer = (inStoreType) => (...inActionTypes) =>
 
         // we start our reduction with a null storeType
         null);
-
-
-// *** Reducer combining function
-// allows the use of multiple reducers, each reducing to a different store property
-// takes:
-//  templateStoreType, as storeType
-//  inStoreType, as storeType
-//  inActionType, as actionType
-export const combineReducers = (templateStoreType) => (storeType) => (...actionFuncs) => ({
-    ...Object.fromEntries(
-        Object.entries(templateStoreType).reduce(
-            (accum, curEntry) => ([
-                ...accum,
-                [
-                    curEntry[0],
-                    curEntry[1](storeType)(
-                        actionFuncs.flat(Infinity).map(actionFunc => actionFunc(storeType))
-                    )
-                ]
-            ]), [])
-    )
-});
 
 
 // *** Function to render store changes using an array of render functions
@@ -364,3 +356,48 @@ function mutable_updateStatusBox(statusBox, msgStringType) {
         statusBox.scrollTop = statusScrollHeight;
     }
 }
+
+
+// *** Reducer combining functions
+// main reducer combining function
+// allows the use of multiple reducers, each reducing to a different store property
+// takes:
+//  templateStoreType, as 
+//      {
+//          ...
+//          property: reducerFunc
+//          ...
+//      }
+//  inStoreType, as storeType
+//  inActionType, as actionType
+// returns storetype
+export const combineReducers = (templateStoreType) => (storeType) => (...actionFuncs) => ({
+    ...Object.fromEntries(
+        Object.entries(templateStoreType).reduce(
+            (accum, curEntry) => ([
+                ...accum,
+                [
+                    curEntry[0],
+                    curEntry[1](storeType)(
+                        actionFuncs.flat(Infinity).map(actionFunc => actionFunc(storeType))
+                    )
+                ]
+            ]), [])
+    )
+});
+
+// reducer combining function with remainder
+// takes:
+//  templateStoreType, as storeType
+//  remainderFunc: remainder reducer function giving storeType
+//  inStoreType, as storeType
+//  inActionType, as actionType
+// returns storeType
+export const combineReducersWithRemainder = (templateStoreType) => (remainderFunc) =>
+    (storeType) => (...actionFuncs) => ({
+        ...remainderFunc(storeType)(
+            actionFuncs.flat(Infinity).map(actionFunc => actionFunc(storeType))
+        ),
+
+        ...combineReducers(templateStoreType)(storeType)(actionFuncs),
+    });
