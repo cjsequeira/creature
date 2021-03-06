@@ -21,7 +21,10 @@ import {
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
-import { rootReducer } from './reducers_renderers.js';
+import {
+    combineReducers,
+    remainderReducer,
+} from './reducers_renderers.js';
 
 
 // *** Add journal entry
@@ -228,12 +231,11 @@ export const queue_comparePhysType = (handleFunc) => (...propsStringType) => (in
 // *** Action dispatcher function
 // takes:
 //  storeType: app store, as storeType
-//  actionFunc: action-creating function to apply, returning actionType
+//  ...actionFuncs: action-creating functions to apply, each returning actionType
 // returns storeType
-export const actionDispatch = (storeType) => (...actionFuncs) =>
-    rootReducer
+export const actionDispatch = (storeType) => (...actionFuncs) => ({
+    ...remainderReducer
         (storeType)
-        (
-            actionFuncs.flat(Infinity).map(actionFunc => actionFunc(storeType))
-        );
+        (actionFuncs.flat(Infinity).map(actionFunc => actionFunc(storeType))),
 
+});
