@@ -16,7 +16,7 @@ import {
 // takes:
 //  inStoreTypeSim: store "sim" property object to use as template for reduction 
 //  inActionType: action to use for reduction, as actionType
-// returns storeType
+// returns storeType "sim" property object
 export const simReducer = (inStoreTypeSim) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
