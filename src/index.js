@@ -1,6 +1,8 @@
 'use strict'
 
 // ****** Main code ******
+// REFACTOR: Must implement store getter methods so that store properties can be
+//  accessed "in the middle" of generating new object for myStore
 
 // *** Imports
 // styling and libraries
@@ -20,6 +22,7 @@ import {
     actionDispatch,
     addJournalEntry,
     advanceSim,
+    clearActionFuncQueue,
     doNothing,
     lockStore,
     mutableRender,
@@ -33,7 +36,6 @@ import {
 } from './reduxlike/action_creators.js';
 
 import {
-    actionGroup_createActionsFromFuncQueue,
     actionGroup_NonsimActions
 } from './reduxlike/actiongroups.js';
 
@@ -76,7 +78,8 @@ myStore = actionDispatch(myStore)([
     startSim,
 
     // dispatch non-sim-related actions such as queuing initial chart draws
-    actionGroup_NonsimActions,
+    // REFACTOR
+    actionGroup_NonsimActions(myStore),
 
     // do the initial UI draws
     mutableRender
@@ -98,13 +101,15 @@ function appUpdate(_) {
         simGetRunning(myStore) &&
         (!storeIsLocked(myStore))
     ) {
-        // yes: dispatch a series of actions to the store to update the sim
+        // yes: dispatch a series of actions to the store to update it
         myStore = actionDispatch(myStore)([
             // set store lock
             lockStore,
 
             // create actions from myStore action func queue
-            actionGroup_createActionsFromFuncQueue,
+            // REFACTOR
+            myStore.actionFuncQueue,
+            clearActionFuncQueue,
 
             // do physType act for each physType in physType store
             myStore.physTypeStore.map(
@@ -150,36 +155,26 @@ function appUpdate(_) {
             // advance sim
             advanceSim,
 
+            // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
+            (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM))
+                // yes: dispatch a series of actions to the store to update the non-sim stuff
+                ? [
+                    // update the non-sim parts of our app store
+                    // REFACTOR
+                    actionGroup_NonsimActions(myStore),
+
+                    // render the application
+                    mutableRender,
+
+                    // remember the current time
+                    saveClockForSim(performance.now()),
+                ]
+
+                // no: do nothing
+                : doNothing,
+
             // unset store lock
-            unlockStore
+            unlockStore,
         ]);
-    }
-
-    // has UPDATE_FREQ_NONSIM time passed since last non-sim update
-    //  and store lock not set?
-    if (
-        (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM)) &&
-        (!storeIsLocked(myStore))
-    ) {
-        // yes: dispatch a series of actions to the store to update the non-sim stuff
-        myStore = actionDispatch(myStore)([
-            // set store lock
-            lockStore,
-
-            // create actions from myStore action func queue
-            actionGroup_createActionsFromFuncQueue,
-
-            // update the non-sim parts of our app store
-            actionGroup_NonsimActions,
-
-            // render the application
-            mutableRender,
-
-            // remember the current time
-            saveClockForSim(performance.now()),
-
-            // unset store lock
-            unlockStore
-        ])
     }
 };

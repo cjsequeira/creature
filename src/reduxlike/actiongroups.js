@@ -22,18 +22,6 @@ import {
 } from './store_getters.js';
 
 
-// *** Create actions from the action func queue, 
-//  then create action to clear the func action queue
-// takes:
-//  storeType: the store to use
-// returns array of actionType objects
-export const actionGroup_createActionsFromFuncQueue = (storeType) =>
-([
-    storeType.actionFuncQueue.flat(Infinity).map(action => action(storeType)),
-    clearActionFuncQueue(storeType),
-]);
-
-
 // *** Create actions for the non-sim parts of the application
 // takes:
 //  storeType: the store to use
@@ -99,6 +87,4 @@ export const actionGroup_NonsimActions = (storeType) =>
                 })
         ]
     }),
-// apply each of the action funcs in the array (produced above) to the given storeType to 
-//  get an array of actionType objects
-].flat(Infinity).map(action => action(storeType)));
+]);
