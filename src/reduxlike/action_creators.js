@@ -25,7 +25,7 @@ import {
 import {
     remainderReducer,
     simReducer,
-} from './reducers_renderers.js';
+} from './reducers.js';
 
 import {
     combineReducersWithRemainder,
