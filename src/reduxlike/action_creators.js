@@ -21,12 +21,15 @@ import {
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
+
 import {
-    combineReducers,
-    combineReducersWithRemainder,
     remainderReducer,
     simReducer,
 } from './reducers_renderers.js';
+
+import {
+    combineReducersWithRemainder,
+} from './reduxlike_utils.js'
 
 
 // *** Add journal entry
