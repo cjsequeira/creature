@@ -6,7 +6,7 @@
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // takes:
 //  lenLimitIntType: slice input (PRESERVED SIGN), as int
-//  mapFunc: mapping function
+//  mapFunc: mapping function returning any
 //  concatElemAnyType: element to concat, as any
 //  arrAnyType: array to concat onto, as any
 // returns processed array, as array type

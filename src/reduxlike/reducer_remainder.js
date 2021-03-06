@@ -1,6 +1,6 @@
 'use strict'
 
-// ****** Functions to produce store based on given store and action, and render store changes
+// *** Reducer for remainder properties of storeType
 
 // *** Our imports
 import {
@@ -12,10 +12,6 @@ import {
     ACTION_QUEUE_ADD_GEO_CHART_DATA,
     ACTION_QUEUE_ADD_STATUS_MESSAGE,
     ACTION_QUEUE_ADD_TIME_CHART_DATA,
-    ACTION_SIM_ADVANCE,
-    ACTION_SIM_SAVE_CLOCK,
-    ACTION_SIM_START,
-    ACTION_SIM_STOP,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
@@ -37,53 +33,6 @@ import {
 } from './renderers.js';
 
 import { watchProps } from './watch_props.js';
-
-
-// *** Sim reducer 
-// reducer for "sim" property of app store
-// takes:
-//  inStoreTypeSim: store "sim" property object to use as template for reduction 
-//  inActionType: action to use for reduction, as actionType
-// returns storeType
-export const simReducer = (inStoreTypeSim) => (inActionType) =>
-    // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
-    ({
-        [ACTION_SIM_ADVANCE]: (storeTypeSim) => (_) =>
-        ({
-            ...storeTypeSim,
-            curTime: storeTypeSim.curTime + storeTypeSim.timeStep,
-        }),
-
-        [ACTION_SIM_SAVE_CLOCK]: (storeTypeSim) => (actionType) =>
-        ({
-            ...storeTypeSim,
-            savedClock: actionType.clockFloatType,
-        }),
-
-        [ACTION_SIM_START]: (storeTypeSim) => (_) =>
-        ({
-            ...storeTypeSim,
-            running: true,
-
-        }),
-
-        [ACTION_SIM_STOP]: (storeTypeSim) => (_) =>
-        ({
-            ...storeTypeSim,
-            running: false,
-        }),
-
-        // use inActionType.type as an entry key into the key-val list above
-        // key is used to select a function that takes a storeType "sim" property object  
-        //  and actionType and returns a storeType
-        // if no key-val matches the entry key, return a func that echoes 
-        //  the given storeType "sim" property object
-    }[inActionType.type] || ((storeTypeSim) => (_) => storeTypeSim))
-        // evaluate the function with the storeType "sim" property object 
-        //  and actionType to get a storeType "sim" property object
-        (inStoreTypeSim)
-        (inActionType);
 
 
 // *** Remainder reducer 

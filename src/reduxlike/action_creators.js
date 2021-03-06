@@ -22,14 +22,9 @@ import {
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
-import {
-    remainderReducer,
-    simReducer,
-} from './reducers.js';
-
-import {
-    combineReducersWithRemainder,
-} from './reduxlike_utils.js'
+import { simReducer } from './reducer_sim.js';
+import { remainderReducer } from './reducer_remainder.js';
+import { combineReducersWithRemainder } from './reduxlike_utils.js'
 
 
 // *** Add journal entry
