@@ -7,7 +7,7 @@
 import {
     selectWeight,
     sum,
-} from '../util.js';
+} from '../utils.js';
 
 
 // *** Our random number generator state, defined with 0 seed

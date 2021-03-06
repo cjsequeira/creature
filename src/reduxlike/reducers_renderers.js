@@ -31,7 +31,7 @@ import {
     fadeColors,
     roundTo,
     splice
-} from '../util.js';
+} from '../utils.js';
 
 import { watchProps } from './watch_props.js';
 

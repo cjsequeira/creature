@@ -5,7 +5,7 @@
 // REFACTOR IDEA: Rulebook should return an ACTION (or array of actions), not a PHYSTYPE!
 
 // *** Our imports
-import { orTests } from './util.js';
+import { orTests } from './utils.js';
 
 import {
     physTypeGetCond,
