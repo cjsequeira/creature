@@ -5,6 +5,7 @@
 
 // *** Our imports
 import {
+    ACTION_MUTABLE_RENDER,
     ACTION_QUEUE_ADD_GEO_CHART_DATA,
     ACTION_QUEUE_ADD_STATUS_MESSAGE,
     ACTION_QUEUE_ADD_TIME_CHART_DATA,
@@ -15,6 +16,7 @@ import { simGetCurTime } from './store_getters.js';
 import { roundTo } from '../utils.js';
 
 import {
+    mutable_renderStoreChanges,
     mutable_updateGeoChartData,
     mutable_updateStatusBox,
     mutable_updateTimeChartData,
@@ -24,16 +26,18 @@ import {
 // *** Changes queue reducer
 // reducer for "changes" property of storeType 
 // takes:
-//  inStoreTypeChanges: store "changes" property object to use as template for reduction 
+//  inStoreType: store to use as template for reduction, as storeType 
 //  inActionType: action to use for reduction, as actionType
 // returns storeType "changes" property object
-export const changesQueueReducer = (inStoreTypeChanges) => (inActionType) =>
+export const changesQueueReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
-        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (storeTypeChanges) => (actionType) =>
+        [ACTION_MUTABLE_RENDER]: (storeType) => (_) => mutable_renderStoreChanges(storeType),
+
+        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (storeType) => (actionType) =>
         ([
-            ...storeTypeChanges,
+            ...storeType.changes,
             (_) => mutable_updateGeoChartData(
                 actionType.chart,
                 actionType.dataIndexIntType,
@@ -42,18 +46,18 @@ export const changesQueueReducer = (inStoreTypeChanges) => (inActionType) =>
             ),
         ]),
 
-        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (storeTypeChanges) => (actionType) =>
+        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
         ([
-            ...storeTypeChanges,
+            ...storeType.changes,
             (storeType) => mutable_updateStatusBox(
                 actionType.statusBox,
                 'Time ' + roundTo(2)(simGetCurTime(storeType)) + ': ' + actionType.msgStringType
             ),
         ]),
 
-        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (storeTypeChanges) => (actionType) =>
+        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
         ([
-            ...storeTypeChanges,
+            ...storeType.changes,
             (_) => mutable_updateTimeChartData(
                 actionType.chart,
                 actionType.dataIndexIntType,
@@ -63,12 +67,12 @@ export const changesQueueReducer = (inStoreTypeChanges) => (inActionType) =>
         ]),
 
         // use inActionType.type as an entry key into the key-val list above
-        // key is used to select a function that takes a storeType "changes" prop obj and actionType 
+        // key is used to select a function that takes a storeType and actionType 
         //  and returns a storeType
         // if no key-val matches the entry key, return a func that echoes 
-        //  the given storeType "changes" prop obj
-    }[inActionType.type] || ((storeTypeChanges) => (_) => storeTypeChanges))
-        // evaluate the function with the storeType "changes" obj (or an empty array if null)
-        //  and actionType to get a storeType "changes" obj
-        (inStoreTypeChanges || [])
+        //  the given storeType "changes" property obj
+    }[inActionType.type] || ((storeType) => (_) => ([...storeType.changes])))
+        // evaluate the function with the storeType and actionType 
+        //  to get a storeType "changes" property object
+        (inStoreType)
         (inActionType);

@@ -72,4 +72,4 @@ export const simGetTimeStep = (storeType) => storeType.sim.timeStep;
 // takes: 
 //  storeType: store, as storeType
 // returns bool
-export const storeIsLocked = (storeType) => storeType.locked;
+export const storeIsLocked = (storeType) => storeType.remainder.locked;

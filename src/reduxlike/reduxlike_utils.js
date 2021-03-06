@@ -16,73 +16,31 @@
 //  ...actionFuncs: array of functions returning actionType
 // returns storetype
 export const combineReducers = (templateStoreType) => (storeType) => (...actionFuncs) =>
-// build an object
-({
-    // include the given storeType object
-    ...storeType,
+    // for each action function in the given action functions list...
+    actionFuncs.flat(Infinity).reduce((accumStoreTypefromFuncs, curActionFunc) =>
+        // ... for each property-object pair in the template storeType...
+        Object.entries(templateStoreType).reduce((accumStoreTypefromEntries, curEntry) =>
+        ({
+            // include the storeType object built so far
+            ...accumStoreTypefromEntries,
 
-    // ... produce storeType property objects from entries...
-    ...Object.fromEntries(
-        // ... generated using the property objects from the template storeType
-        Object.entries(templateStoreType).reduce((accumEntries, curEntry) =>
-        ([
-            // include all property object entries generated so far
-            ...accumEntries,
+            // include the property and associated object built from the 
+            //  current [property, reducer function] pair in the template storeType
+            ...Object.fromEntries(
+                [
+                    // make an entry
+                    [
+                        // property name
+                        curEntry[0],
 
-            // add an object entry
-            [
-                // for the property of the current object entry...
-                curEntry[0],
-
-                // ... build an object by reducing the list of action functions through
-                //  applying the template-specified reducer for this property (in curEntry[1])
-                //  to the accumulated storeType property object and each action below (as produced  
-                //  through evaluation of each action function with the accumulated storeType)
-                actionFuncs.flat(Infinity).reduce((accumStoreTypePropObj, curActionFunc) =>
-                    curEntry[1]
-                        (accumStoreTypePropObj || storeType[curEntry[0]])
-                        (curActionFunc(accumStoreTypePropObj || storeType[curEntry[0]])),
-
-                    // start with a null object
-                    null)
-            ]
-        ]),
-            // we start our template storeType reduction with a null array of object entries
-            [])
-    )
-});
-
-
-// reducer combining function with remainder
-// takes:
-//  templateStoreType, as:
-//      {
-//          ...
-//          property1: reducerFunc1
-//          property2: reducerFunc2
-//          ...
-//      }
-//  remainderFunc: remainder reducer function giving storeType
-//  storeType
-//  ...actionFuncs: array of functions returning actionType
-// returns storeType
-export const combineReducersWithRemainder =
-    (templateStoreType) => (remainderFunc) => (storeType) => (...actionFuncs) =>
-    // produce an object
-    ({
-        // include the given storeType object
-        ...storeType,
-        
-        // for each action function in the list of action funcs...
-        ...actionFuncs.flat(Infinity).reduce((accumStoreType, curActionFunc) =>
-            // ... evaluate the remainder reducer function with the storeType accumulator 
-            //  and current action (as created through applying action function to the
-            //  accumulated storeType) to get a storeType
-            remainderFunc
-                (accumStoreType)
-                (curActionFunc(accumStoreType)),
-
-            // we start our reduction with a storeType that is the result of applying the  
-            //  other reducer functions as given in the template storeType
-            combineReducers(templateStoreType)(storeType)(actionFuncs)),
-    });
+                        // object associated with property, built by applying the reducer func
+                        //  located in curEntry[1] to the accumulated storeType and current action
+                        curEntry[1](accumStoreTypefromEntries)(curActionFunc(accumStoreTypefromEntries))
+                    ]
+                ]
+            )
+        }),
+            // start building inner storeType using the accumulated outer storeType from actionFunc reduction
+            accumStoreTypefromFuncs),
+        // start building outer storeType using the given storeType
+        storeType);

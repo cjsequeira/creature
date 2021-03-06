@@ -16,17 +16,15 @@ import {
 // MUTABLE: may apply functions that mutate the application beyond the app store
 // ignores return values from renderFunc applications
 // takes: store, as storeType
-// returns storeType with empty render function array
+// returns empty storeType "changes" property array
 export const mutable_renderStoreChanges = (storeType) =>
-({
-    ...storeType,
-
+([
     // apply each provided render func to store in order, 
     //  then return false, resulting in empty render function array
     //  returning false causes the render func to be filtered out of changes array
     // MUTABLE: may apply functions that mutate the application beyond the app store
-    changes: storeType.changes.filter(renderFunc => renderFunc(storeType) && false),
-});
+    ...storeType.changes.filter(renderFunc => renderFunc(storeType) && false),
+]);
 
 
 // *** App store UI rendering functions

@@ -29,7 +29,7 @@ import {
 export const actionGroup_NonsimActions = (storeType) =>
 ([
     // for all physType objects in store...
-    storeType.physTypeStore.map((this_physType, index) => {
+    storeType.remainder.physTypeStore.map((this_physType, index) => {
         // define shorthand func to get this_physType keyval
         const inGet = physTypeGet(this_physType);
 

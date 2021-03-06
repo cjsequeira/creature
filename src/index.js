@@ -112,7 +112,7 @@ function appUpdate(_) {
             clearActionFuncQueue,
 
             // do physType act for each physType in physType store
-            myStore.physTypeStore.map(
+            myStore.remainder.physTypeStore.map(
                 (this_physType, i) => [
                     // save the current state of this physType
                     savePhysType(this_physType)(i),
