@@ -13,11 +13,11 @@
 //          property2: reducerFunc2
 //          ...
 //      }
-//  ...actionFuncs: array of functions returning actionType
+//  ...actions: array of actions creators returning actionType
 // returns storetype
-export const combineReducers = (templateStoreType) => (storeType) => (...actionFuncs) =>
-    // for each action function in the given action functions list...
-    actionFuncs.flat(Infinity).reduce((accumStoreTypefromFuncs, curActionFunc) =>
+export const combineReducers = (templateStoreType) => (storeType) => (...actions) =>
+    // for each action in the given actions list...
+    actions.flat(Infinity).reduce((accumStoreTypefromFuncs, curAction) =>
         // ... for each property-object pair in the template storeType...
         Object.entries(templateStoreType).reduce((accumStoreTypefromEntries, curEntry) =>
         ({
@@ -35,12 +35,12 @@ export const combineReducers = (templateStoreType) => (storeType) => (...actionF
 
                         // object associated with property, built by applying the reducer func
                         //  located in curEntry[1] to the accumulated storeType and current action
-                        curEntry[1](accumStoreTypefromEntries)(curActionFunc(accumStoreTypefromEntries))
+                        curEntry[1](accumStoreTypefromEntries)(curAction)
                     ]
                 ]
             )
         }),
-            // start building inner storeType using the accumulated outer storeType from actionFunc reduction
+            // start building inner storeType using the accumulated outer storeType from action reduction
             accumStoreTypefromFuncs),
         // start building outer storeType using the given storeType
         storeType);

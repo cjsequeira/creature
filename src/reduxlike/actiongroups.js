@@ -1,9 +1,6 @@
 'use strict'
 
 // ****** Code to dispatch actions collected into groups ******
-// REFACTOR: Maybe this code gets executed from reducer that handles action func queue?
-// Then all these actions would get queued - then queue must be processed at some point!
-
 
 // *** Imports
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
@@ -39,33 +36,8 @@ const behaviorStrings = {
 };
 
 
-// REFACTOR?
-const checkBehaviorChanged = (storeType) => (creatureType) =>
-    // creatureType behavior changed?
-    (physTypePropChanged(creatureType)('conds.behavior'))
-        // yes:
-        ? [
-            // announce in journal
-            addJournalEntry
-                (
-                    physTypeGet(creatureType)('name') + ' ' +
-                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                ),
-
-            // announce in status box
-            queue_addStatusMessage
-                (getUIProp(storeType)('status_box'))
-                (
-                    physTypeGet(creatureType)('name') + ' ' +
-                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                ),
-        ]
-
-        // no, or not a creatureType: do nothing
-        : doNothing;
-
-
-// *** Update all physTypes
+// *** Action group functions
+// update all physType objects
 // takes:
 //  storeType: the store to use
 // returns array of action-creating functions
@@ -83,8 +55,7 @@ export const actionGroup_updateAllPhysTypes = (storeType) =>
     ),
 ]);
 
-
-// *** Create actions for the non-sim parts of the application
+// create actions for the non-sim parts of the application
 // takes:
 //  storeType: the store to use
 // returns array of action-creating functions
@@ -132,13 +103,14 @@ export const actionGroup_NonsimActions = (storeType) =>
                             queue_addStatusMessage
                                 (getUIProp(storeType)('status_box'))
                                 ("*** Simulation ended"),
-                            stopSim
+
+                            stopSim(),
                         ]
-                        : doNothing,
+                        : doNothing(),
                 ]
 
                 // not a Simple Creature: don't return the actions above
-                : doNothing,
+                : doNothing(),
 
             // next, queue add x-y data to geo chart for this_physType
             queue_addGeoChartData
@@ -148,7 +120,7 @@ export const actionGroup_NonsimActions = (storeType) =>
                 ({
                     x: inGetCond('x'),
                     y: inGetCond('y')
-                })
+                }),
         ]
     }),
 ]);

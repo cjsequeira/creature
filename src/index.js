@@ -54,14 +54,14 @@ export let myStore = storeInit(
 // dispatch a series of actions to our store
 myStore = actionDispatch(myStore)(
     // do the initial UI draws
-    mutableRender,
+    mutableRender(),
 
     // queue dispatch non-sim-related actions
     // these actions will be dispatched on the *next* call to actionDispatch
     queueAction_doActionGroup(actionGroup_NonsimActions),
 
     // change the sim status to running
-    startSim,
+    startSim(),
 );
 
 // start repeatedly updating our application at sim frequency
@@ -87,14 +87,14 @@ function appUpdate(_) {
             queueAction_doActionGroup(actionGroup_updateAllPhysTypes),
 
             // advance sim
-            advanceSim,
+            advanceSim(),
 
             // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
             (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
                 ? [
                     // render the application
-                    mutableRender,
+                    mutableRender(),
 
                     // remember the current time
                     saveClockForSim(performance.now()),
@@ -105,9 +105,7 @@ function appUpdate(_) {
                 ]
 
                 // no: do nothing
-                : doNothing,
+                : doNothing(),
         );
     }
 };
-
-

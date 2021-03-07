@@ -18,7 +18,7 @@ import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 // *** Initial store
 const initial_store = {
     // initial action queue
-    actionFuncQueue: [],
+    actionQueue: [],
 
     // initial array of store changes to render
     changes: [],

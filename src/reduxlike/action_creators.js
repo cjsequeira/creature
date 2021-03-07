@@ -27,8 +27,8 @@ import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
 
 import { combineReducers } from './reduxlike_utils.js'
-import { actionFuncQueueReducer } from './reducer_actionfunc_queue.js';
-import { getActionFuncQueue } from './store_getters.js';
+import { actionQueueReducer } from './reducer_action_queue.js';
+import { getActionQueue } from './store_getters.js';
 import { applyArgChain } from '../utils.js';
 
 
@@ -37,7 +37,7 @@ import { applyArgChain } from '../utils.js';
 //  msgStringType: message, as string
 //  don't care: storeType
 // returns actionType
-export const addJournalEntry = (msgStringType) => (_) =>
+export const addJournalEntry = (msgStringType) =>
 ({
     type: ACTION_JOURNAL_ADD_ENTRY,
     msgStringType
@@ -48,7 +48,7 @@ export const addJournalEntry = (msgStringType) => (_) =>
 // takes: 
 //  don't care: storeType
 // returns actionType
-export const clearActionFuncQueue = (_) =>
+export const clearActionQueue = (_) =>
 ({
     type: ACTION_CLEAR_ACTION_QUEUE,
 });
@@ -59,7 +59,7 @@ export const clearActionFuncQueue = (_) =>
 //  actionGroupFunc: actiongroup function with signature (storeType) => [actionType]
 //  don't care: storeType
 // returns actionType
-export const queueAction_doActionGroup = (actionGroupFunc) => (_) =>
+export const queueAction_doActionGroup = (actionGroupFunc) =>
 ({
     type: ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     actionGroupFunc,
@@ -72,7 +72,7 @@ export const queueAction_doActionGroup = (actionGroupFunc) => (_) =>
 //  indexIntType: index into physType store in app store
 //  don't care: storeType
 // returns actionType
-export const physTypeDoAct = (physType) => (indexIntType) => (_) =>
+export const physTypeDoAct = (physType) => (indexIntType) =>
 ({
     type: ACTION_PHYSTYPE_DO_ACT,
     physType,
@@ -111,7 +111,7 @@ export const mutableRender = (_) =>
 //  don't care: storeType
 // returns actionType
 export const queue_addGeoChartData = (chart) => (dataIndexIntType) =>
-    (colorStringType) => (xyFloatTuple) => (_) =>
+    (colorStringType) => (xyFloatTuple) =>
     ({
         type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
         chart,
@@ -129,7 +129,7 @@ export const queue_addGeoChartData = (chart) => (dataIndexIntType) =>
 //  don't care: storeType
 // returns actionType
 export const queue_addTimeChartData = (chart) => (dataIndexIntType) =>
-    (labelStringType) => (timeValFloatTuple) => (_) =>
+    (labelStringType) => (timeValFloatTuple) =>
     ({
         type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
         chart,
@@ -144,7 +144,7 @@ export const queue_addTimeChartData = (chart) => (dataIndexIntType) =>
 //  msgStringType: message, as string
 //  don't care: storeType
 // returns actionType
-export const queue_addStatusMessage = (statusBox) => (msgStringType) => (_) =>
+export const queue_addStatusMessage = (statusBox) => (msgStringType) =>
 ({
     type: ACTION_QUEUE_ADD_STATUS_MESSAGE,
     statusBox,
@@ -167,7 +167,7 @@ export const advanceSim = (_) =>
 //  clockFloatType: clock value, as float
 //  don't care: storeType
 // returns actionType
-export const saveClockForSim = (clockFloatType) => (_) =>
+export const saveClockForSim = (clockFloatType) =>
 ({
     type: ACTION_SIM_SAVE_CLOCK,
     clockFloatType
@@ -219,7 +219,7 @@ export const unlockStore = (_) =>
 //  indexIntType: index of physType in physType store
 //  don't care: storeType
 // returns actionType
-export const savePhysType = (physType) => (indexIntType) => (_) =>
+export const savePhysType = (physType) => (indexIntType) =>
 ({
     type: ACTION_WATCH_SAVE_PHYSTYPE,
     physType,
@@ -229,53 +229,56 @@ export const savePhysType = (physType) => (indexIntType) => (_) =>
 
 // *** storeType template with reducers for specific properties
 const storeTypeTemplate = {
-    actionFuncQueue: actionFuncQueueReducer,
+    actionQueue: actionQueueReducer,
     changes: changesQueueReducer,
     sim: simReducer,
 
     remainder: remainderReducer,
 };
 
+
 // REFACTOR
-const special_doActionQueue = () => { };
+const special_doActionQueue = (_) => ({
+    type: 'SPECIAL',
+ });
 
 
 // *** Action dispatcher functions
 // private action dispatch function
 // takes:
 //  storeType: app store, as storeType
-//  ...actionFuncs: action-creating functions to apply, each returning actionType
+//  ...actions: action creators to apply, each returning actionType
 // returns storeType
-const actionDispatchPrivate = (storeType) => (...actionFuncs) =>
+const actionDispatchPrivate = (storeType) => (...actions) =>
     combineReducers
         (storeTypeTemplate)
         (storeType)
         (
             // is the first action to do a special action?
             // REFACTOR
-            (actionFuncs[0] === special_doActionQueue)
-                // yes: use the storeType actionFunc queue and ignore 
+            (actions[0].type === 'SPECIAL')
+                // yes: use the storeType action queue and ignore 
                 //  the remainder of the given action list
-                ? getActionFuncQueue(storeType)
+                ? getActionQueue(storeType)
 
                 // no: use the given action list
-                : actionFuncs
+                : actions
         );
 
 // public action dispatch function
 // takes:
 //  storeType: app store, as storeType
-//  ...actionFuncs: action-creating functions to apply, each returning actionType
+//  ...actions: action creators to apply, each returning actionType
 // returns storeType
-export const actionDispatch = (storeType) => (...actionFuncs) =>
+export const actionDispatch = (storeType) => (...actions) =>
     // chain up actions to dispatch
     applyArgChain
         (actionDispatchPrivate)
         (storeType)
         (
-            lockStore,              // lock the store
-            special_doActionQueue,  // dispatch actions in store queue
-            clearActionFuncQueue,   // clear action func queue
-            actionFuncs,            // dispatch given actions
-            unlockStore             // unlock the store
+            lockStore(),                // lock the store
+            special_doActionQueue(),    // dispatch actions in store queue
+            clearActionQueue(),         // clear action queue
+            actions,                    // dispatch given actions
+            unlockStore(),              // unlock the store
         )

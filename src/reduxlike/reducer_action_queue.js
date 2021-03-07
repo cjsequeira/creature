@@ -1,6 +1,6 @@
 'use strict'
 
-// *** Reducer for "actionFuncQueue" properties of storeType
+// *** Reducer for "actionQueue" properties of storeType
 
 // *** Our imports
 import {
@@ -9,19 +9,19 @@ import {
 } from '../const_vals.js';
 
 
-// *** ActionFunc queue reducer 
-// reducer for "actionFuncQueue" property of storeType 
+// *** Action queue reducer 
+// reducer for "actionQueue" property of storeType 
 // takes:
 //  inStoreType: store to use as template for reduction, as storeType 
 //  inActionType: action to use for reduction, as actionType
-// returns storeType "actionFuncQueue" property object
-export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
+// returns storeType "actionQueue" property object
+export const actionQueueReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
         [ACTION_ACTION_QUEUE_DO_ACTION_GROUP]: (storeType) => (actionType) =>
         ([
-            ...storeType.actionFuncQueue,
+            ...storeType.actionQueue,
 
             actionType.actionGroupFunc(storeType),
         ]),
@@ -32,9 +32,9 @@ export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
         // key is used to select a function that takes a storeType and actionType 
         //  and returns a storeType
         // if no key-val matches the entry key, return a func that echoes 
-        //  the "actionFuncQueue" property of the given storeType
-    }[inActionType.type] || ((storeType) => (_) => ([...storeType.actionFuncQueue])))
+        //  the "actionQueue" property of the given storeType
+    }[inActionType.type] || ((storeType) => (_) => ([...storeType.actionQueue])))
         // evaluate the function with the storeType and actionType 
-        //  to get a storeType "actionFuncQueue" property object
+        //  to get a storeType "actionQueue" property object
         (inStoreType)
         (inActionType);
