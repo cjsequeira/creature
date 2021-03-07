@@ -10,12 +10,13 @@ import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 import {
     addJournalEntry,
-    clearActionFuncQueue,
     doNothing,
+    physTypeDoAct,
     queue_addGeoChartData,
     queue_addStatusMessage,
     queue_addTimeChartData,
-    stopSim,
+    queue_comparePhysType,
+    savePhysType,
 } from './action_creators.js';
 
 import {
@@ -23,8 +24,72 @@ import {
     getUIProp,
     physTypeGet,
     physTypeGetCond,
+    physTypePropChanged,
     simGetCurTime,
 } from './store_getters.js';
+
+
+// *** Creature behavior strings
+// REFACTOR
+const behaviorStrings = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
+};
+
+
+// REFACTOR?
+const checkBehaviorChanged = (storeType) => (creatureType) =>
+    // creatureType behavior changed?
+    (physTypePropChanged(creatureType)('conds.behavior'))
+        // yes:
+        ? [
+            // announce in journal
+            addJournalEntry
+                (
+                    physTypeGet(creatureType)('name') + ' ' +
+                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                ),
+
+            // announce in status box
+            queue_addStatusMessage
+                (getUIProp(storeType)('status_box'))
+                (
+                    physTypeGet(creatureType)('name') + ' ' +
+                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                )
+        ]
+
+        // no, or not a creatureType: do nothing
+        : doNothing;
+
+
+// *** Update all physTypes
+// takes:
+//  storeType: the store to use
+// returns array of action-creating functions
+export const actionGroup_updateAllPhysTypes = (storeType) =>
+([
+    // do physType act for each physType in physType store
+    storeType.remainder.physTypeStore.map(
+        (this_physType, i) => [
+            // save the current state of this physType
+            savePhysType(this_physType)(i),
+
+            // do the physType "act"
+            physTypeDoAct(this_physType)(i),
+
+            // use a callback to compare the new state of this physType to saved state 
+            //  and queue additional actions
+            queue_comparePhysType
+                (checkBehaviorChanged)  // callback taking storeType and creatureType
+                ('conds.behavior')      // physType property to watch
+                (i)                     // index into physType store for this physType
+        ]
+    ),
+]);
 
 
 // *** Create actions for the non-sim parts of the application

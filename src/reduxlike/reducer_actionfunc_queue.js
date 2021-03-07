@@ -36,7 +36,7 @@ export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
             ...storeType.actionFuncQueue,
 
             // append actions returned by handleFunc
-            actionType.handleFunc(
+            actionType.handleFunc(storeType)(
                 // get a physType for handleFunc via these steps:
                 watchProps
                     // compare the saved physType[index]...        

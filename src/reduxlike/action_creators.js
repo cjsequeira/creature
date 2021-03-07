@@ -231,7 +231,7 @@ export const savePhysType = (physType) => (indexIntType) => (_) =>
 //  queue application of handleFunc to a version of the physType (at the given
 //  index) that has a [WATCHPROPS_CHANGES] object added as a key-val
 // takes: 
-//  handleFunc: function that returns an actionType
+//  handleFunc: function with signature (storeType) => (physType) => actionType
 //  ...propsStringType: list of props to compare, as string
 //  indexIntType: index into physType store and "saved physType" store, as int
 //  don't care: storeType

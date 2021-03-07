@@ -20,48 +20,25 @@ import {
 
 import {
     actionDispatch,
-    addJournalEntry,
     advanceSim,
-    clearActionFuncQueue,
     doNothing,
-    lockStore,
     mutableRender,
-    physTypeDoAct,
     queueAction_doActionGroup,
-    queue_addStatusMessage,
-    queue_comparePhysType,
     saveClockForSim,
-    savePhysType,
     startSim,
-    unlockStore,
 } from './reduxlike/action_creators.js';
 
 import {
-    actionGroup_NonsimActions
+    actionGroup_NonsimActions, actionGroup_updateAllPhysTypes
 } from './reduxlike/actiongroups.js';
 
 import {
-    getUIProp,
-    physTypeGet,
-    physTypeGetCond,
-    physTypePropChanged,
     simGetRunning,
     simGetSavedClock,
     storeIsLocked,
 } from './reduxlike/store_getters.js';
 
 import { storeInit } from './reduxlike/store_init.js';
-
-
-// *** Creature behavior strings
-// REFACTOR
-const behaviorStrings = {
-    idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
-    sleeping: "is sleeping! Zzzz...",
-    wandering: "is wandering! Wiggity whack!",
-    frozen: "is frozen! Brrrr....."
-};
 
 
 // ***********************************************************************************
@@ -105,24 +82,9 @@ function appUpdate(_) {
     ) {
         // yes: dispatch a series of actions to the store to update it
         myStore = actionDispatch(myStore)(
-            // do physType act for each physType in physType store
-            // REFACTOR
-            myStore.remainder.physTypeStore.map(
-                (this_physType, i) => [
-                    // save the current state of this physType
-                    savePhysType(this_physType)(i),
-
-                    // do the physType "act"
-                    physTypeDoAct(this_physType)(i),
-
-                    // use a callback to compare the new state of this physType to saved state 
-                    //  and queue additional actions
-                    queue_comparePhysType
-                        (checkBehaviorChanged)  // callback taking creatureType
-                        ('conds.behavior')      // physType property to watch
-                        (i)                     // index into physType store for this physType
-                ]
-            ),
+            // queue update of all physTypes
+            // these actions will be dispatched on the *next* call to actionDispatch
+            queueAction_doActionGroup(actionGroup_updateAllPhysTypes),
 
             // advance sim
             advanceSim,
@@ -149,27 +111,3 @@ function appUpdate(_) {
 };
 
 
-function checkBehaviorChanged(creatureType) {
-    // creatureType behavior changed?
-    return (physTypePropChanged(creatureType)('conds.behavior'))
-        // yes:
-        ? [
-            // announce in journal
-            addJournalEntry
-                (
-                    physTypeGet(creatureType)('name') + ' ' +
-                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                ),
-
-            // announce in status box
-            queue_addStatusMessage
-                (getUIProp(myStore)('status_box'))
-                (
-                    physTypeGet(creatureType)('name') + ' ' +
-                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                )
-        ]
-
-        // no, or not a creatureType: do nothing
-        : doNothing
-};
