@@ -15,7 +15,6 @@ import {
     queue_addGeoChartData,
     queue_addStatusMessage,
     queue_addTimeChartData,
-    queue_comparePhysType,
     savePhysType,
 } from './action_creators.js';
 
@@ -59,7 +58,7 @@ const checkBehaviorChanged = (storeType) => (creatureType) =>
                 (
                     physTypeGet(creatureType)('name') + ' ' +
                     behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                )
+                ),
         ]
 
         // no, or not a creatureType: do nothing
@@ -80,13 +79,6 @@ export const actionGroup_updateAllPhysTypes = (storeType) =>
 
             // do the physType "act"
             physTypeDoAct(this_physType)(i),
-
-            // use a callback to compare the new state of this physType to saved state 
-            //  and queue additional actions
-            queue_comparePhysType
-                (checkBehaviorChanged)  // callback taking storeType and creatureType
-                ('conds.behavior')      // physType property to watch
-                (i)                     // index into physType store for this physType
         ]
     ),
 ]);

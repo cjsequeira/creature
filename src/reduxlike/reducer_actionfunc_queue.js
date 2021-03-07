@@ -6,11 +6,7 @@
 import {
     ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     ACTION_CLEAR_ACTION_QUEUE,
-    ACTION_WATCH_QUEUE_COMPARE_SAVED,
 } from '../const_vals.js';
-import { getPhysTypeStore, getSavedPhysTypeStore } from './store_getters.js';
-
-import { watchProps } from './watch_props.js';
 
 
 // *** ActionFunc queue reducer 
@@ -26,29 +22,11 @@ export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
         [ACTION_ACTION_QUEUE_DO_ACTION_GROUP]: (storeType) => (actionType) =>
         ([
             ...storeType.actionFuncQueue,
+
             actionType.actionGroupFunc(storeType),
         ]),
 
         [ACTION_CLEAR_ACTION_QUEUE]: (_) => (_) => ([]),
-
-        [ACTION_WATCH_QUEUE_COMPARE_SAVED]: (storeType) => (actionType) =>
-        ([
-            ...storeType.actionFuncQueue,
-
-            // append actions returned by handleFunc
-            actionType.handleFunc(storeType)(
-                // get a physType for handleFunc via these steps:
-                watchProps
-                    // compare the saved physType[index]...        
-                    (getSavedPhysTypeStore(storeType)[actionType.indexIntType])
-
-                    // ...to the current physType[index]...
-                    (getPhysTypeStore(storeType)[actionType.indexIntType])
-
-                    // ... observing the given props
-                    (actionType.propsStringType)
-            )
-        ]),
 
         // use inActionType.type as an entry key into the key-val list above
         // key is used to select a function that takes a storeType and actionType 

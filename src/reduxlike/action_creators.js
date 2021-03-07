@@ -19,7 +19,6 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
-    ACTION_WATCH_QUEUE_COMPARE_SAVED,
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
@@ -30,6 +29,7 @@ import { remainderReducer } from './reducer_remainder.js';
 import { combineReducers } from './reduxlike_utils.js'
 import { actionFuncQueueReducer } from './reducer_actionfunc_queue.js';
 import { getActionFuncQueue } from './store_getters.js';
+import { applyArgChain } from '../utils.js';
 
 
 // *** Add journal entry
@@ -226,32 +226,8 @@ export const savePhysType = (physType) => (indexIntType) => (_) =>
     indexIntType
 })
 
-// compare given props of physType at given physType store index against 
-//  given props of saved physType at same index in "saved physType" store, then 
-//  queue application of handleFunc to a version of the physType (at the given
-//  index) that has a [WATCHPROPS_CHANGES] object added as a key-val
-// takes: 
-//  handleFunc: function with signature (storeType) => (physType) => actionType
-//  ...propsStringType: list of props to compare, as string
-//  indexIntType: index into physType store and "saved physType" store, as int
-//  don't care: storeType
-// returns actionType
-export const queue_comparePhysType = (handleFunc) => (...propsStringType) => (indexIntType) => (_) =>
-({
-    type: ACTION_WATCH_QUEUE_COMPARE_SAVED,
-    handleFunc,
-    propsStringType,
-    indexIntType
-})
 
-
-// *** Action dispatcher function
-// takes:
-//  storeType: app store, as storeType
-//  ...actionFuncs: action-creating functions to apply, each returning actionType
-// returns storeType
-
-// storeType template with reducers for specific properties
+// *** storeType template with reducers for specific properties
 const storeTypeTemplate = {
     actionFuncQueue: actionFuncQueueReducer,
     changes: changesQueueReducer,
@@ -260,10 +236,46 @@ const storeTypeTemplate = {
     remainder: remainderReducer,
 };
 
-// action dispatch function
+// REFACTOR
+const special_doActionQueue = () => { };
+
+
+// *** Action dispatcher functions
+// private action dispatch function
+// takes:
+//  storeType: app store, as storeType
+//  ...actionFuncs: action-creating functions to apply, each returning actionType
 // returns storeType
-export const actionDispatch = (storeType) => (...actionFuncs) =>
+const actionDispatchPrivate = (storeType) => (...actionFuncs) =>
     combineReducers
         (storeTypeTemplate)
         (storeType)
-        (lockStore, getActionFuncQueue(storeType), clearActionFuncQueue, actionFuncs, unlockStore);
+        (
+            // is the first action to do a special action?
+            // REFACTOR
+            (actionFuncs[0] === special_doActionQueue)
+                // yes: use the storeType actionFunc queue and ignore 
+                //  the remainder of the given action list
+                ? getActionFuncQueue(storeType)
+
+                // no: use the given action list
+                : actionFuncs
+        );
+
+// public action dispatch function
+// takes:
+//  storeType: app store, as storeType
+//  ...actionFuncs: action-creating functions to apply, each returning actionType
+// returns storeType
+export const actionDispatch = (storeType) => (...actionFuncs) =>
+    // chain up actions to dispatch
+    applyArgChain
+        (actionDispatchPrivate)
+        (storeType)
+        (
+            lockStore,              // lock the store
+            special_doActionQueue,  // dispatch actions in store queue
+            clearActionFuncQueue,   // clear action func queue
+            actionFuncs,            // dispatch given actions
+            unlockStore             // unlock the store
+        )

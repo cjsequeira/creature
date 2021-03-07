@@ -5,7 +5,6 @@
 // *** Action names
 // operate on action queue
 export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
-export const ACTION_WATCH_QUEUE_COMPARE_SAVED = 'WATCH_QUEUE_COMPARE_SAVED';
 export const ACTION_ACTION_QUEUE_DO_ACTION_GROUP = 'ACTION_QUEUE_DO_ACTION_GROUP';
 
 // do nothing
