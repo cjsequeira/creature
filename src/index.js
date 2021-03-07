@@ -103,11 +103,9 @@ function appUpdate(_) {
         (!storeIsLocked(myStore))
     ) {
         // yes: dispatch a series of actions to the store to update it
-        myStore = actionDispatch(myStore)([
-            // set store lock
-            lockStore,
-
+        myStore = actionDispatch(myStore)(
             // do physType act for each physType in physType store
+            // REFACTOR
             myStore.remainder.physTypeStore.map(
                 (this_physType, i) => [
                     // save the current state of this physType
@@ -119,30 +117,7 @@ function appUpdate(_) {
                     // use a callback to compare the new state of this physType to saved state 
                     //  and queue additional actions
                     queue_comparePhysType
-                        ((creatureType) =>
-                            // creatureType behavior changed?
-                            (physTypePropChanged(creatureType)('conds.behavior'))
-                                // yes:
-                                ? [
-                                    // announce in journal
-                                    addJournalEntry
-                                        (
-                                            physTypeGet(creatureType)('name') + ' ' +
-                                            behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                                        ),
-
-                                    // announce in status box
-                                    queue_addStatusMessage
-                                        (getUIProp(myStore)('status_box'))
-                                        (
-                                            physTypeGet(creatureType)('name') + ' ' +
-                                            behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                                        )
-                                ]
-
-                                // no, or not a creatureType: do nothing
-                                : doNothing
-                        )
+                        (checkBehaviorChanged)  // callback taking creatureType
                         ('conds.behavior')      // physType property to watch
                         (i)                     // index into physType store for this physType
                 ]
@@ -168,9 +143,32 @@ function appUpdate(_) {
 
                 // no: do nothing
                 : doNothing,
-
-            // unset store lock
-            unlockStore,
-        ]);
+        );
     }
+};
+
+
+function checkBehaviorChanged(creatureType) {
+    // creatureType behavior changed?
+    return (physTypePropChanged(creatureType)('conds.behavior'))
+        // yes:
+        ? [
+            // announce in journal
+            addJournalEntry
+                (
+                    physTypeGet(creatureType)('name') + ' ' +
+                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                ),
+
+            // announce in status box
+            queue_addStatusMessage
+                (getUIProp(myStore)('status_box'))
+                (
+                    physTypeGet(creatureType)('name') + ' ' +
+                    behaviorStrings[physTypeGetCond(creatureType)('behavior')]
+                )
+        ]
+
+        // no, or not a creatureType: do nothing
+        : doNothing
 };

@@ -253,4 +253,4 @@ export const actionDispatch = (storeType) => (...actionFuncs) =>
     combineReducers
         (storeTypeTemplate)
         (storeType)
-        (getActionFuncQueue(storeType), clearActionFuncQueue, actionFuncs);
+        (lockStore, getActionFuncQueue(storeType), clearActionFuncQueue, actionFuncs, unlockStore);
