@@ -12,7 +12,13 @@ import {
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
-import { simGetCurTime } from './store_getters.js';
+import {
+    getJournal,
+    getPhysTypeStore,
+    getSavedPhysTypeStore,
+    simGetCurTime
+} from './store_getters.js';
+
 import { splice } from '../utils.js';
 
 
@@ -32,7 +38,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.remainder,
             journal: [
-                ...storeType.remainder.journal,
+                ...getJournal(storeType),
                 {
                     time: simGetCurTime(storeType),
                     message: actionType.msgStringType,
@@ -49,9 +55,10 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             physTypeStore: splice
                 (1)                                         // remove one element...
                 (actionType.indexIntType)                   // ... at the given index...
-                (storeType.remainder.physTypeStore)         // ... in this physType store...
-                (actionType.physType.act(                   // ... and replace with physType from "act"
-                    actionType.physType)
+                (getPhysTypeStore(storeType))               // ... in this physType store...
+                (actionType.physType.act                    // ... and replace with physType from "act"
+                    (storeType)
+                    (actionType.physType)
                 ),
         }),
 
@@ -73,7 +80,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             savedPhysTypeStore: splice
                 (1)                                         // remove one element...
                 (actionType.indexIntType)                   // ... at the given index...
-                (storeType.remainder.savedPhysTypeStore)    // ... in this saved physType store...
+                (getSavedPhysTypeStore(storeType))          // ... in this saved physType store...
                 (actionType.physType),                      // ... and replace with actionType.physType
         }),
 

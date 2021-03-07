@@ -10,6 +10,11 @@ import {
     ACTION_SIM_STOP,
 } from '../const_vals.js';
 
+import {
+    simGetCurTime,
+    simGetTimeStep
+} from './store_getters.js';
+
 
 // *** Sim reducer 
 // reducer for "sim" property of app store
@@ -24,7 +29,7 @@ export const simReducer = (inStoreType) => (inActionType) =>
         [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
         ({
             ...storeType.sim,
-            curTime: storeType.sim.curTime + storeType.sim.timeStep,
+            curTime: simGetCurTime(storeType) + simGetTimeStep(storeType),
         }),
 
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>

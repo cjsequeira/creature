@@ -1,8 +1,7 @@
 'use strict'
 
 // ****** Main code ******
-// REFACTOR: Must implement store getter methods so that store properties can be
-//  accessed "in the middle" of generating new object for myStore
+// REFACTOR: Figure out how to compare objects and announce based on comparison
 
 // *** Imports
 // styling and libraries
@@ -20,46 +19,26 @@ import {
 
 import {
     actionDispatch,
-    addJournalEntry,
     advanceSim,
-    clearActionFuncQueue,
     doNothing,
-    lockStore,
     mutableRender,
-    physTypeDoAct,
-    queue_addStatusMessage,
-    queue_comparePhysType,
+    queueAction_doActionGroup,
     saveClockForSim,
-    savePhysType,
     startSim,
-    unlockStore,
 } from './reduxlike/action_creators.js';
 
 import {
-    actionGroup_NonsimActions
+    actionGroup_NonsimActions, 
+    actionGroup_updateAllPhysTypes
 } from './reduxlike/actiongroups.js';
 
 import {
-    physTypeGet,
-    physTypeGetCond,
-    physTypePropChanged,
     simGetRunning,
     simGetSavedClock,
     storeIsLocked,
 } from './reduxlike/store_getters.js';
 
 import { storeInit } from './reduxlike/store_init.js';
-
-
-// *** Creature behavior strings
-// REFACTOR
-const behaviorStrings = {
-    idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
-    sleeping: "is sleeping! Zzzz...",
-    wandering: "is wandering! Wiggity whack!",
-    frozen: "is frozen! Brrrr....."
-};
 
 
 // ***********************************************************************************
@@ -73,17 +52,16 @@ export let myStore = storeInit(
 );
 
 // dispatch a series of actions to our store
-myStore = actionDispatch(myStore)([
-    // change the sim status to running
-    startSim,
-
-    // dispatch non-sim-related actions such as queuing initial chart draws
-    // REFACTOR
-    actionGroup_NonsimActions(myStore),
-
+myStore = actionDispatch(myStore)(
     // do the initial UI draws
-    mutableRender
-]);
+    mutableRender(),
+
+    // change the sim status to running
+    startSim(),
+
+    // queue dispatch of non-sim-related actions
+    queueAction_doActionGroup(actionGroup_NonsimActions),
+);
 
 // start repeatedly updating our application at sim frequency
 setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -102,79 +80,29 @@ function appUpdate(_) {
         (!storeIsLocked(myStore))
     ) {
         // yes: dispatch a series of actions to the store to update it
-        myStore = actionDispatch(myStore)([
-            // set store lock
-            lockStore,
-
-            // create actions from myStore action func queue
-            // REFACTOR
-            myStore.actionFuncQueue,
-            clearActionFuncQueue,
-
-            // do physType act for each physType in physType store
-            myStore.remainder.physTypeStore.map(
-                (this_physType, i) => [
-                    // save the current state of this physType
-                    savePhysType(this_physType)(i),
-
-                    // do the physType "act"
-                    physTypeDoAct(this_physType)(i),
-
-                    // use a callback to compare the new state of this physType to saved state 
-                    //  and queue additional actions
-                    queue_comparePhysType
-                        ((creatureType) =>
-                            // creatureType behavior changed?
-                            (physTypePropChanged(creatureType)('conds.behavior'))
-                                // yes:
-                                ? [
-                                    // announce in journal
-                                    addJournalEntry
-                                        (
-                                            physTypeGet(creatureType)('name') + ' ' +
-                                            behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                                        ),
-
-                                    // announce in status box
-                                    queue_addStatusMessage
-                                        (myStore.ui.status_box)
-                                        (
-                                            physTypeGet(creatureType)('name') + ' ' +
-                                            behaviorStrings[physTypeGetCond(creatureType)('behavior')]
-                                        )
-                                ]
-
-                                // no, or not a creatureType: do nothing
-                                : doNothing
-                        )
-                        ('conds.behavior')      // physType property to watch
-                        (i)                     // index into physType store for this physType
-                ]
-            ),
-
+        myStore = actionDispatch(myStore)(
             // advance sim
-            advanceSim,
+            advanceSim(),
 
             // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
             (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
                 ? [
-                    // update the non-sim parts of our app store
-                    // REFACTOR
-                    actionGroup_NonsimActions(myStore),
-
                     // render the application
-                    mutableRender,
+                    mutableRender(),
 
                     // remember the current time
                     saveClockForSim(performance.now()),
+
+                    // queue update of the non-sim parts of our app store
+                    queueAction_doActionGroup(actionGroup_NonsimActions),
                 ]
 
                 // no: do nothing
-                : doNothing,
+                : doNothing(),
 
-            // unset store lock
-            unlockStore,
-        ]);
+            // queue update of all physTypes
+            queueAction_doActionGroup(actionGroup_updateAllPhysTypes),
+        );
     }
 };

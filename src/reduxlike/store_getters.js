@@ -1,6 +1,7 @@
 'use strict'
 
 // ****** Functions to get information from store
+// REFACTOR: clean up names / order
 
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
 
@@ -73,3 +74,40 @@ export const simGetTimeStep = (storeType) => storeType.sim.timeStep;
 //  storeType: store, as storeType
 // returns bool
 export const storeIsLocked = (storeType) => storeType.remainder.locked;
+
+// *** Get physType store
+// takes: 
+//  storeType: store, as storeType
+// returns array of physType objects
+export const getPhysTypeStore = (storeType) => storeType.remainder.physTypeStore;
+
+// *** Get saved physType store
+// takes: 
+//  storeType: store, as storeType
+// returns array of physType objects
+export const getSavedPhysTypeStore = (storeType) => storeType.remainder.savedPhysTypeStore;
+
+// *** Get journal
+// takes: 
+//  storeType: store, as storeType
+// returns journalType
+export const getJournal = (storeType) => storeType.remainder.journal;
+
+// *** Get UI property val
+// takes:
+//  storeType: store, as storeType
+//  propStringType: string name for prop of store UI object to look at
+// returns value, as any
+export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStringType];
+
+// *** Get changes array
+// takes:
+//  storeType: store, as storeType
+// returns storeType changes array
+export const getChangesArray = (storeType) => storeType.changes;
+
+// *** Get action queue
+// takes:
+//  storeType: store, as storeType
+// returns storeType action queue array
+export const getActionQueue = (storeType) => storeType.actionQueue;
