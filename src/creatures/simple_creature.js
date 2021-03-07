@@ -3,9 +3,6 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-// REFACTOR: Can this be refactored away?
-import { myStore } from '../index.js';
-
 import { resolveRules } from '../rulebook.js';
 import { excludeRange } from '../utils.js';
 import {
@@ -53,29 +50,34 @@ export const getDefaultSimpleCreature = (_) =>
 // this function works by using the physType behavior to select a function to apply
 // if behavior is not a key in the object, 'behavior' bracket search gives null,
 //  causing return of identity function (x => x), which returns given physType unaltered
-// takes: physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-export const actAsSimpleCreature = (physType) =>
+export const actAsSimpleCreature = (storeType) => (physType) =>
     (
         {
             'idling': actIdling,
             'eating': actEating,
             'sleeping': actSleeping,
             'wandering': actWandering,
-        }[physTypeGetCond(physType)('behavior')] || (x => x)
-    )(physType);
+        }[physTypeGetCond(physType)('behavior')] || (_ => x => x)
+    )(storeType)(physType);
 
 // idling behavior function
-// takes: physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-const actIdling = (physType) =>
+const actIdling = (storeType) => (physType) =>
     doBehavior
+        (storeType)
         // pass in physType object with specific glucose, neuro, accel
         (physTypeUseConds
             (physType)
             ({
-                glucose: physTypeGetCond(physType)('glucose') - 3.0 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType)('neuro') + 2.0 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(physType)('glucose') - 3.0 * simGetTimeStep(storeType),
+                neuro: physTypeGetCond(physType)('neuro') + 2.0 * simGetTimeStep(storeType),
                 accel: 0.0
             })
         )
@@ -90,22 +92,25 @@ const actIdling = (physType) =>
         });
 
 // wandering behavior function
-// takes: physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-const actWandering = (physType) =>
+const actWandering = (storeType) => (physType) =>
     // return evaluation of anonymous function that takes an acceleration  
     //  and heading nudge value
     (
         (accel) => (hdg_nudge) => doBehavior
+            (storeType)
             // pass in physType object with specific glucose, neuro, heading, accel
             // glucose and neuro impacts are more severe with higher accceleration magnitude
             (physTypeUseConds
                 (physType)
                 ({
                     glucose: physTypeGetCond(physType)('glucose') -
-                        (0.3 * Math.abs(accel)) * simGetTimeStep(myStore),
+                        (0.3 * Math.abs(accel)) * simGetTimeStep(storeType),
                     neuro: physTypeGetCond(physType)('neuro') +
-                        (0.2 * Math.abs(accel)) * simGetTimeStep(myStore),
+                        (0.2 * Math.abs(accel)) * simGetTimeStep(storeType),
 
                     heading: physTypeGetCond(physType)('heading') + hdg_nudge,
                     accel: accel,
@@ -130,16 +135,19 @@ const actWandering = (physType) =>
         (mutableRandGen_seededRand(-0.1, 0.1));                         // heading nudge
 
 // eating behavior function
-// takes physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-const actEating = (physType) =>
+const actEating = (storeType) => (physType) =>
     doBehavior
+        (storeType)
         // pass in physType object with specific glucose and neuro
         (physTypeUseConds
             (physType)
             ({
-                glucose: physTypeGetCond(physType)('glucose') + 6.0 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType)('neuro') + 4.0 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(physType)('glucose') + 6.0 * simGetTimeStep(storeType),
+                neuro: physTypeGetCond(physType)('neuro') + 4.0 * simGetTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
@@ -151,16 +159,19 @@ const actEating = (physType) =>
         });
 
 // sleeping behavior function
-// takes physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-const actSleeping = (physType) =>
+const actSleeping = (storeType) => (physType) =>
     doBehavior
+        (storeType)
         // pass in physType object with specific glucose and neuro
         (physTypeUseConds
             (physType)
             ({
-                glucose: physTypeGetCond(physType)('glucose') - 1.4 * simGetTimeStep(myStore),
-                neuro: physTypeGetCond(physType)('neuro') - 6.2 * simGetTimeStep(myStore),
+                glucose: physTypeGetCond(physType)('glucose') - 1.4 * simGetTimeStep(storeType),
+                neuro: physTypeGetCond(physType)('neuro') - 6.2 * simGetTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
@@ -174,26 +185,31 @@ const actSleeping = (physType) =>
 
 // *** Code common to all simple creatures
 // function to review Simple Creature desires and return appropriate behavior
-// takes physType and desireFuncType
+// takes: 
+//  storeType
+//  physType
+//  desireFuncType: object of behavior keys with desire functions as property-vals
 // returns physType
-const doBehavior = (physType) => (desireFuncType) =>
+const doBehavior = (storeType) => (physType) => (desireFuncType) =>
     // return physType object that is the creature, as a creatureType 
     //  with behavior indicated via rulebook review of requested behavior,
     //  which comes from weighted random draw using given desire functions
     // the rulebook may assign the requested behavior, or may reject the
     //  requested behavior and assign a different behavior
-    resolveRules(
-        physTypeUseConds
-            (physType)
-            ({
-                behavior_request:
-                    // select behavior request from list of desire funcs using 
-                    // a weighted random number selector
-                    Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
-                        // numerical list of desires, used as weights for random draw
-                        // the code below maps each desire function to a numerical weight
-                        //  by evaluating it using the given physType
-                        Object.values(desireFuncType).map(f => f(physType))
-                    )]
-            })
-    );
+    resolveRules
+        (storeType)
+        (
+            physTypeUseConds
+                (physType)
+                ({
+                    behavior_request:
+                        // select behavior request from list of desire funcs using 
+                        // a weighted random number selector
+                        Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
+                            // numerical list of desires, used as weights for random draw
+                            // the code below maps each desire function to a numerical weight
+                            //  by evaluating it using the given physType
+                            Object.values(desireFuncType).map(f => f(physType))
+                        )]
+                })
+        );

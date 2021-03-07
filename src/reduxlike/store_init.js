@@ -128,7 +128,7 @@ const initial_store = {
             {
                 name: 'Food 1',
                 color: '#008800ff',
-                act: (physType) => physType,
+                act: (_) => (physType) => physType,
                 conds: {
 
                     x: 8.0,
@@ -147,7 +147,7 @@ const initial_store = {
             {
                 name: 'Food 2',
                 color: '#008800ff',
-                act: (physType) => physType,
+                act: (_) => (physType) => physType,
                 conds: {
 
                     x: 12.0,

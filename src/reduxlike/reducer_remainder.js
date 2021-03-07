@@ -50,8 +50,9 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 (1)                                         // remove one element...
                 (actionType.indexIntType)                   // ... at the given index...
                 (getPhysTypeStore(storeType))               // ... in this physType store...
-                (actionType.physType.act(                   // ... and replace with physType from "act"
-                    actionType.physType)
+                (actionType.physType.act                    // ... and replace with physType from "act"
+                    (storeType)
+                    (actionType.physType)
                 ),
         }),
 
