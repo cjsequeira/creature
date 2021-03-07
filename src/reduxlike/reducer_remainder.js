@@ -12,7 +12,13 @@ import {
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
-import { getJournal, getPhysTypeStore, getSavedPhysTypeStore, simGetCurTime } from './store_getters.js';
+import {
+    getJournal,
+    getPhysTypeStore,
+    getSavedPhysTypeStore,
+    simGetCurTime
+} from './store_getters.js';
+
 import { splice } from '../utils.js';
 
 

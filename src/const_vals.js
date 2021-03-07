@@ -3,38 +3,38 @@
 // ****** All constant values in the application ******
 
 // *** Action names
-// operate on action queue
+// action queue operations
 export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
 export const ACTION_ACTION_QUEUE_DO_ACTION_GROUP = 'ACTION_QUEUE_DO_ACTION_GROUP';
 
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';
 
-// perform rendering that may mutate parts of the application beyond the store
+// mutable rendering; may mutate parts of the application beyond the store
 export const ACTION_MUTABLE_RENDER = 'MUTABLE_RENDER';
 
-// queue update UI
-export const ACTION_QUEUE_ADD_TIME_CHART_DATA = 'QUEUE_ADD_TIME_CHART_DATA';
-export const ACTION_QUEUE_ADD_GEO_CHART_DATA = 'QUEUE_ADD_GEO_CHART_DATA';
-export const ACTION_QUEUE_ADD_STATUS_MESSAGE = 'QUEUE_ADD_STATUS_MESSAGE';
-
-// add journal entry
+// journal: add entry
 export const ACTION_JOURNAL_ADD_ENTRY = 'JOURNAL_ADD_ENTRY';
 
-// do creature action
+// physType: do act
 export const ACTION_PHYSTYPE_DO_ACT = 'PHYSTYPE_DO_ACT';
 
-// control simulator
+// render: queue rendering operations
+export const ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA = 'RENDER_QUEUE_ADD_TIME_CHART_DATA';
+export const ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA = 'RENDER_QUEUE_ADD_GEO_CHART_DATA';
+export const ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE = 'RENDER_QUEUE_ADD_STATUS_MESSAGE';
+
+// simulator control
 export const ACTION_SIM_ADVANCE = 'SIM_ADVANCE';
 export const ACTION_SIM_SAVE_CLOCK = 'SIM_SAVE_CLOCK';
 export const ACTION_SIM_START = 'SIM_START';
 export const ACTION_SIM_STOP = 'SIM_STOP';
 
-// control writing to store
+// store control
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
 
-// save a physType for later comparison
+// watch: save a physType for later comparison
 export const ACTION_WATCH_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
 
 

@@ -9,9 +9,9 @@ import {
     addJournalEntry,
     doNothing,
     physTypeDoAct,
-    queue_addGeoChartData,
-    queue_addStatusMessage,
-    queue_addTimeChartData,
+    queueRender_addGeoChartData,
+    queueRender_addStatusMessage,
+    queueRender_addTimeChartData,
     savePhysType,
 } from './action_creators.js';
 
@@ -39,7 +39,7 @@ const behaviorStrings = {
 // update all physType objects
 // takes:
 //  storeType: the store to use
-// returns array of action-creating functions
+// returns array of actionType
 export const actionGroup_updateAllPhysTypes = (storeType) =>
 ([
     // do physType act for each physType in physType store
@@ -57,7 +57,7 @@ export const actionGroup_updateAllPhysTypes = (storeType) =>
 // create actions for the non-sim parts of the application
 // takes:
 //  storeType: the store to use
-// returns array of action-creating functions
+// returns array of actionType
 export const actionGroup_NonsimActions = (storeType) =>
 ([
     // for all physType objects in store...
@@ -74,8 +74,8 @@ export const actionGroup_NonsimActions = (storeType) =>
             (inGet('act') === actAsSimpleCreature)
                 // yes
                 ? [
-                    // queue add glucose data to time chart
-                    queue_addTimeChartData
+                    // queue render add glucose data to time chart
+                    queueRender_addTimeChartData
                         (getUIProp(storeType)('creature_time_chart'))
                         (2 * index)
                         (inGet('name') + ' glucose')
@@ -84,8 +84,8 @@ export const actionGroup_NonsimActions = (storeType) =>
                             value: inGetCond('glucose')
                         }),
 
-                    // next, queue add neuro data to time chart
-                    queue_addTimeChartData
+                    // next, queue render add neuro data to time chart
+                    queueRender_addTimeChartData
                         (getUIProp(storeType)('creature_time_chart'))
                         (2 * index + 1)
                         (inGet('name') + ' neuro')
@@ -95,14 +95,18 @@ export const actionGroup_NonsimActions = (storeType) =>
                         }),
 
                     // next, if creature is frozen, 
-                    //  queue give termination message and stop simulator
+                    //  give termination message and stop simulator
                     (inGetCond('behavior') === 'frozen')
                         ? [
+                            // add journal entry
                             addJournalEntry("Simulation ended"),
-                            queue_addStatusMessage
+
+                            // queue render add status message
+                            queueRender_addStatusMessage
                                 (getUIProp(storeType)('status_box'))
                                 ("*** Simulation ended"),
 
+                            // stop sim
                             stopSim(),
                         ]
                         : doNothing(),
@@ -111,8 +115,8 @@ export const actionGroup_NonsimActions = (storeType) =>
                 // not a Simple Creature: don't return the actions above
                 : doNothing(),
 
-            // next, queue add x-y data to geo chart for this_physType
-            queue_addGeoChartData
+            // next, queue render add x-y data to geo chart for this_physType
+            queueRender_addGeoChartData
                 (getUIProp(storeType)('creature_geo_chart'))
                 (index)
                 (inGet('color'))

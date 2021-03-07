@@ -10,6 +10,7 @@ import {
     concatSliceMap,
     fadeColors,
 } from '../utils.js';
+
 import { getChangesArray } from './store_getters.js';
 
 

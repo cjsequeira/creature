@@ -10,9 +10,9 @@ import {
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_MUTABLE_RENDER,
     ACTION_PHYSTYPE_DO_ACT,
-    ACTION_QUEUE_ADD_GEO_CHART_DATA,
-    ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
+    ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
+    ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
@@ -22,12 +22,11 @@ import {
     ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
+import { actionQueueReducer } from './reducer_action_queue.js';
 import { changesQueueReducer } from './reducer_changes_queue.js';
 import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
-
 import { combineReducers } from './reduxlike_utils.js'
-import { actionQueueReducer } from './reducer_action_queue.js';
 import { getActionQueue } from './store_getters.js';
 import { applyArgChain } from '../utils.js';
 
@@ -51,18 +50,6 @@ export const addJournalEntry = (msgStringType) =>
 export const clearActionQueue = (_) =>
 ({
     type: ACTION_CLEAR_ACTION_QUEUE,
-});
-
-
-// *** Queue actions in action group
-// takes:
-//  actionGroupFunc: actiongroup function with signature (storeType) => [actionType]
-//  don't care: storeType
-// returns actionType
-export const queueAction_doActionGroup = (actionGroupFunc) =>
-({
-    type: ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
-    actionGroupFunc,
 });
 
 
@@ -100,7 +87,21 @@ export const mutableRender = (_) =>
 });
 
 
-// *** Queue update UI
+// *** Queue actions into action queue; queue is automatically executed after all other
+//  actions in actionDispatch 
+// queue doing of action group
+// takes:
+//  actionGroupFunc: actiongroup function with signature (storeType) => [actionType]
+//  don't care: storeType
+// returns actionType
+export const queueAction_doActionGroup = (actionGroupFunc) =>
+({
+    type: ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
+    actionGroupFunc,
+});
+
+
+// *** Queue rendering
 // *** App store does not change until mutable_renderStateChanges is applied
 // queue add geo chart data
 // takes:
@@ -110,10 +111,10 @@ export const mutableRender = (_) =>
 //  xyFloatTuple: floating-point data coordinate, as {x, y}
 //  don't care: storeType
 // returns actionType
-export const queue_addGeoChartData = (chart) => (dataIndexIntType) =>
+export const queueRender_addGeoChartData = (chart) => (dataIndexIntType) =>
     (colorStringType) => (xyFloatTuple) =>
     ({
-        type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
+        type: ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
         chart,
         dataIndexIntType,
         colorStringType,
@@ -128,10 +129,10 @@ export const queue_addGeoChartData = (chart) => (dataIndexIntType) =>
 //  timeValFloatTuple: floating-point data coordinate, as {time, value}
 //  don't care: storeType
 // returns actionType
-export const queue_addTimeChartData = (chart) => (dataIndexIntType) =>
+export const queueRender_addTimeChartData = (chart) => (dataIndexIntType) =>
     (labelStringType) => (timeValFloatTuple) =>
     ({
-        type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
+        type: ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
         chart,
         dataIndexIntType,
         labelStringType,
@@ -144,9 +145,9 @@ export const queue_addTimeChartData = (chart) => (dataIndexIntType) =>
 //  msgStringType: message, as string
 //  don't care: storeType
 // returns actionType
-export const queue_addStatusMessage = (statusBox) => (msgStringType) =>
+export const queueRender_addStatusMessage = (statusBox) => (msgStringType) =>
 ({
-    type: ACTION_QUEUE_ADD_STATUS_MESSAGE,
+    type: ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
     statusBox,
     msgStringType
 });
@@ -212,7 +213,7 @@ export const unlockStore = (_) =>
 })
 
 
-// *** Watching physTypes: save and compare physTypes
+// *** Watching physTypes
 // save physType for watching
 // takes: 
 //  physType: physType to watch

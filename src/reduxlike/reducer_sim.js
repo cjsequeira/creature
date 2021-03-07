@@ -9,7 +9,11 @@ import {
     ACTION_SIM_START,
     ACTION_SIM_STOP,
 } from '../const_vals.js';
-import { simGetCurTime, simGetTimeStep } from './store_getters.js';
+
+import {
+    simGetCurTime,
+    simGetTimeStep
+} from './store_getters.js';
 
 
 // *** Sim reducer 

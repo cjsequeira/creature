@@ -29,7 +29,8 @@ import {
 } from './reduxlike/action_creators.js';
 
 import {
-    actionGroup_NonsimActions, actionGroup_updateAllPhysTypes
+    actionGroup_NonsimActions, 
+    actionGroup_updateAllPhysTypes
 } from './reduxlike/actiongroups.js';
 
 import {

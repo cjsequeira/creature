@@ -1,6 +1,7 @@
 'use strict'
 
 // ****** Functions to get information from store
+// REFACTOR: clean up names / order
 
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
 

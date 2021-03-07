@@ -6,14 +6,10 @@
 // *** Our imports
 import {
     ACTION_MUTABLE_RENDER,
-    ACTION_QUEUE_ADD_GEO_CHART_DATA,
-    ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
+    ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
+    ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
 } from '../const_vals.js';
-
-import { simGetCurTime } from './store_getters.js';
-
-import { roundTo } from '../utils.js';
 
 import {
     mutable_renderStoreChanges,
@@ -21,6 +17,10 @@ import {
     mutable_updateStatusBox,
     mutable_updateTimeChartData,
 } from './renderers.js';
+
+import { simGetCurTime } from './store_getters.js';
+
+import { roundTo } from '../utils.js';
 
 
 // *** Changes queue reducer
@@ -35,7 +35,7 @@ export const changesQueueReducer = (inStoreType) => (inActionType) =>
     ({
         [ACTION_MUTABLE_RENDER]: (storeType) => (_) => mutable_renderStoreChanges(storeType),
 
-        [ACTION_QUEUE_ADD_GEO_CHART_DATA]: (storeType) => (actionType) =>
+        [ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA]: (storeType) => (actionType) =>
         ([
             ...storeType.changes,
             (_) => mutable_updateGeoChartData(
@@ -46,7 +46,7 @@ export const changesQueueReducer = (inStoreType) => (inActionType) =>
             ),
         ]),
 
-        [ACTION_QUEUE_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
+        [ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
         ([
             ...storeType.changes,
             (storeType) => mutable_updateStatusBox(
@@ -55,7 +55,7 @@ export const changesQueueReducer = (inStoreType) => (inActionType) =>
             ),
         ]),
 
-        [ACTION_QUEUE_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
+        [ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
         ([
             ...storeType.changes,
             (_) => mutable_updateTimeChartData(
