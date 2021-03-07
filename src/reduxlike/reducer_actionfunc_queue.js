@@ -4,6 +4,7 @@
 
 // *** Our imports
 import {
+    ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     ACTION_CLEAR_ACTION_QUEUE,
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
 } from '../const_vals.js';
@@ -22,6 +23,12 @@ export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_ACTION_QUEUE_DO_ACTION_GROUP]: (storeType) => (actionType) =>
+        ([
+            ...storeType.actionFuncQueue,
+            actionType.actionGroupFunc(storeType),
+        ]),
+
         [ACTION_CLEAR_ACTION_QUEUE]: (_) => (_) => ([]),
 
         [ACTION_WATCH_QUEUE_COMPARE_SAVED]: (storeType) => (actionType) =>
@@ -53,4 +60,3 @@ export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
         //  to get a storeType "actionFuncQueue" property object
         (inStoreType)
         (inActionType);
-        

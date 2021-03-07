@@ -27,6 +27,7 @@ import {
     lockStore,
     mutableRender,
     physTypeDoAct,
+    queueAction_doActionGroup,
     queue_addStatusMessage,
     queue_comparePhysType,
     saveClockForSim,
@@ -74,17 +75,17 @@ export let myStore = storeInit(
 );
 
 // dispatch a series of actions to our store
-myStore = actionDispatch(myStore)([
+myStore = actionDispatch(myStore)(
+    // do the initial UI draws
+    mutableRender,
+
+    // queue dispatch non-sim-related actions
+    // these actions will be dispatched on the *next* call to actionDispatch
+    queueAction_doActionGroup(actionGroup_NonsimActions),
+
     // change the sim status to running
     startSim,
-
-    // dispatch non-sim-related actions such as queuing initial chart draws
-    // REFACTOR
-    actionGroup_NonsimActions(myStore),
-
-    // do the initial UI draws
-    mutableRender
-]);
+);
 
 // start repeatedly updating our application at sim frequency
 setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -130,15 +131,15 @@ function appUpdate(_) {
             (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
                 ? [
-                    // update the non-sim parts of our app store
-                    // REFACTOR
-                    actionGroup_NonsimActions(myStore),
-
                     // render the application
                     mutableRender,
 
                     // remember the current time
                     saveClockForSim(performance.now()),
+
+                    // queue update of the non-sim parts of our app store
+                    // these actions will be dispatched on the *next* call to actionDispatch
+                    queueAction_doActionGroup(actionGroup_NonsimActions),
                 ]
 
                 // no: do nothing

@@ -4,6 +4,7 @@
 
 // *** Our imports
 import {
+    ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     ACTION_CLEAR_ACTION_QUEUE,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
@@ -50,7 +51,19 @@ export const addJournalEntry = (msgStringType) => (_) =>
 export const clearActionFuncQueue = (_) =>
 ({
     type: ACTION_CLEAR_ACTION_QUEUE,
-})
+});
+
+
+// *** Queue actions in action group
+// takes:
+//  actionGroupFunc: actiongroup function with signature (storeType) => [actionType]
+//  don't care: storeType
+// returns actionType
+export const queueAction_doActionGroup = (actionGroupFunc) => (_) =>
+({
+    type: ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
+    actionGroupFunc,
+});
 
 
 // *** Do action for physType at given index

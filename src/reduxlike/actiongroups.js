@@ -30,7 +30,7 @@ import {
 // *** Create actions for the non-sim parts of the application
 // takes:
 //  storeType: the store to use
-// returns array of actionType objects
+// returns array of action-creating functions
 export const actionGroup_NonsimActions = (storeType) =>
 ([
     // for all physType objects in store...
