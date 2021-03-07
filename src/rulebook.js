@@ -2,8 +2,11 @@
 
 // ****** Simulation rulebook ******
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
+// REFACTOR IDEA: Rulebook should return an ACTION (or array of actions), not a PHYSTYPE!
 
 // *** Our imports
+import { orTests } from './utils.js';
+
 import {
     physTypeGetCond,
     physTypeUseConds,
@@ -53,8 +56,8 @@ const isBehaviorRequestSleeping = {
 
 
 // *** Rulebook leaf nodes
-const leafApproveIdling = {
-    name: 'Behavior request approved: idling',
+const leafApproveBehavior = {
+    name: 'Behavior request approved',
     func: (physType) => physTypeUseConds
         (physType)
         ({
@@ -62,47 +65,24 @@ const leafApproveIdling = {
         }),
 };
 
-const leafApproveWandering = {
-    name: 'Behavior request approved: wandering',
-    func: (physType) => physTypeUseConds
-        (physType)
-        ({
-            behavior: physTypeGetCond(physType)('behavior_request'),
-        }),
-};
-
-const leafApproveEating = {
-    name: 'Behavior request approved: eating',
+const leafApproveBehaviorStopMovement = {
+    name: 'Behavior request approved and movement stopped',
     func: (physType) => physTypeUseConds
         (physType)
         ({
             behavior: physTypeGetCond(physType)('behavior_request'),
 
-            // can't move if eating: no grab-and-go!
             speed: 0.0,
             accel: 0.0
         }),
 };
 
-const leafApproveSleeping = {
-    name: 'Behavior request approved: sleeping',
+const leafRejectBehavior = {
+    name: 'Behavior request rejected!',
     func: (physType) => physTypeUseConds
         (physType)
         ({
-            behavior: 'sleeping',
-
-            // can't move if sleeping!
-            speed: 0.0,
-            accel: 0.0
-        }),
-};
-
-const leafRejectEating = {
-    name: "Creature wants to eat but there's no food here!",
-    func: (physType) => physTypeUseConds
-        (physType)
-        ({
-            // reject behavior request
+            // reject behavior request by re-assigning input physType
             behavior: physTypeGetCond(physType)('behavior'),
         }),
 };
@@ -127,6 +107,16 @@ const leafUnknownBehavior = {
 };
 
 
+// *** Functional programming helper functions
+// link together rulebook test nodes with logical "or"
+// takes:
+//  ...testRules: array of rulebook test nodes
+// returns object with testFunc property combining test nodes with logical "or"
+const orTestRules = (...testRules) => ({
+    testFunc: orTests(testRules.map(rule => rule.testFunc))
+});
+
+
 // *** The rulebook
 const ruleBook = {
     testNode: isCreatureType,
@@ -136,25 +126,21 @@ const ruleBook = {
             // first, produce physType with laws of physics applied
             preFunc: (physType) => physTypeDoPhysics(physType),
 
-            testNode: isBehaviorRequestIdling,
-            yes: leafApproveIdling,
+            testNode: isBehaviorRequestEating,
+            yes: {
+                testNode: isBehaviorRequestFoodAvail,
+                yes: leafApproveBehaviorStopMovement,
+                no: leafRejectBehavior,
+            },
             no: {
-                testNode: isBehaviorRequestWandering,
-                yes: leafApproveWandering,
+                testNode: isBehaviorRequestSleeping,
+                yes: leafApproveBehaviorStopMovement,
                 no: {
-                    testNode: isBehaviorRequestEating,
-                    yes: {
-                        testNode: isBehaviorRequestFoodAvail,
-                        yes: leafApproveEating,
-                        no: leafRejectEating,
-                    },
-                    no: {
-                        testNode: isBehaviorRequestSleeping,
-                        yes: leafApproveSleeping,
-                        no: leafUnknownBehavior,
-                    },
+                    testNode: orTestRules(isBehaviorRequestIdling, isBehaviorRequestWandering),
+                    yes: leafApproveBehavior,
+                    no: leafUnknownBehavior,
                 },
-            }
+            },
         },
         no: leafCondsOOL,
     },

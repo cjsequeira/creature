@@ -6,7 +6,7 @@
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // takes:
 //  lenLimitIntType: slice input (PRESERVED SIGN), as int
-//  mapFunc: mapping function
+//  mapFunc: mapping function returning any
 //  concatElemAnyType: element to concat, as any
 //  arrAnyType: array to concat onto, as any
 // returns processed array, as array type
@@ -84,6 +84,24 @@ export const splice = (deleteCountIntType) => (startIntType) => (arrAnyType) => 
     ...itemsAnyType,
     ...arrAnyType.slice(startIntType + deleteCountIntType)
 ];
+
+// given an array of test functions that take one argument and return boolean, 
+//  construct a single function to "or" all function results together
+// takes:
+//  ...testFuncs: array of test functions returning boolean
+// returns function that takes one argument and returns boolean
+export const orTests = (...testFuncs) =>
+    (arg) => testFuncs.flat(Infinity).reduce(
+        (accum, curTest) => accum || curTest(arg), testFuncs.flat(Infinity)[0](arg))
+
+// given an array of test functions that take one argument and return boolean, 
+//  construct a single function to "and" all function results together
+// takes:
+//  ...testFuncs: array of test functions returning boolean
+// returns function that takes one argument and returns boolean
+export const andTests = (...testFuncs) =>
+    (arg) => testFuncs.flat(Infinity).reduce(
+        (accum, curTest) => accum && curTest(arg), testFuncs.flat(Infinity)[0](arg))
 
 
 // *** Numerical utilities

@@ -4,7 +4,7 @@
 
 // *** Our imports
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
-import { getNestedProp } from '../util.js';
+import { getNestedProp } from '../utils.js';
 
 
 // *** Function to articulate whether a given property is different between

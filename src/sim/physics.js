@@ -15,7 +15,7 @@ import {
     applyFuncChain,
     boundToRange,
     withinRange,
-} from '../util.js';
+} from '../utils.js';
 
 import {
     physTypeGetCond,

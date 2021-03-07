@@ -7,7 +7,7 @@
 import { myStore } from '../index.js';
 
 import { resolveRules } from '../rulebook.js';
-import { excludeRange } from '../util.js';
+import { excludeRange } from '../utils.js';
 import {
     physTypeGetCond,
     physTypeUseConds,
