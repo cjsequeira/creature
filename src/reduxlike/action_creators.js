@@ -240,7 +240,7 @@ const storeTypeTemplate = {
 // REFACTOR
 const special_doActionQueue = (_) => ({
     type: 'SPECIAL',
- });
+});
 
 
 // *** Action dispatcher functions
@@ -277,8 +277,8 @@ export const actionDispatch = (storeType) => (...actions) =>
         (storeType)
         (
             lockStore(),                // lock the store
+            actions,                    // dispatch given actions
             special_doActionQueue(),    // dispatch actions in store queue
             clearActionQueue(),         // clear action queue
-            actions,                    // dispatch given actions
             unlockStore(),              // unlock the store
         )

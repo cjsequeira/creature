@@ -56,12 +56,11 @@ myStore = actionDispatch(myStore)(
     // do the initial UI draws
     mutableRender(),
 
-    // queue dispatch non-sim-related actions
-    // these actions will be dispatched on the *next* call to actionDispatch
-    queueAction_doActionGroup(actionGroup_NonsimActions),
-
     // change the sim status to running
     startSim(),
+
+    // queue dispatch of non-sim-related actions
+    queueAction_doActionGroup(actionGroup_NonsimActions),
 );
 
 // start repeatedly updating our application at sim frequency
@@ -82,10 +81,6 @@ function appUpdate(_) {
     ) {
         // yes: dispatch a series of actions to the store to update it
         myStore = actionDispatch(myStore)(
-            // queue update of all physTypes
-            // these actions will be dispatched on the *next* call to actionDispatch
-            queueAction_doActionGroup(actionGroup_updateAllPhysTypes),
-
             // advance sim
             advanceSim(),
 
@@ -100,12 +95,14 @@ function appUpdate(_) {
                     saveClockForSim(performance.now()),
 
                     // queue update of the non-sim parts of our app store
-                    // these actions will be dispatched on the *next* call to actionDispatch
                     queueAction_doActionGroup(actionGroup_NonsimActions),
                 ]
 
                 // no: do nothing
                 : doNothing(),
+
+            // queue update of all physTypes
+            queueAction_doActionGroup(actionGroup_updateAllPhysTypes),
         );
     }
 };

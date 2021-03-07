@@ -20,7 +20,6 @@ import {
     getUIProp,
     physTypeGet,
     physTypeGetCond,
-    physTypePropChanged,
     simGetCurTime,
 } from './store_getters.js';
 
