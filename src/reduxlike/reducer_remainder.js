@@ -4,12 +4,12 @@
 
 // *** Our imports
 import {
+    ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
-    ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
 import {
@@ -32,6 +32,16 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (actionType) =>
+        ({
+            ...storeType.remainder,
+            savedPhysTypeStore: splice
+                (1)                                         // remove one element...
+                (actionType.indexIntType)                   // ... at the given index...
+                (getSavedPhysTypeStore(storeType))          // ... in this saved physType store...
+                (actionType.physType),                      // ... and replace with actionType.physType
+        }),
+        
         [ACTION_DO_NOTHING]: (storeType) => (_) => ({ ...storeType.remainder }),
 
         [ACTION_JOURNAL_ADD_ENTRY]: (storeType) => (actionType) =>
@@ -72,16 +82,6 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.remainder,
             locked: false,
-        }),
-
-        [ACTION_WATCH_SAVE_PHYSTYPE]: (storeType) => (actionType) =>
-        ({
-            ...storeType.remainder,
-            savedPhysTypeStore: splice
-                (1)                                         // remove one element...
-                (actionType.indexIntType)                   // ... at the given index...
-                (getSavedPhysTypeStore(storeType))          // ... in this saved physType store...
-                (actionType.physType),                      // ... and replace with actionType.physType
         }),
 
         // use inActionType.type as an entry key into the key-val list above

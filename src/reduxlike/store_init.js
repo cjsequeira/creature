@@ -14,6 +14,13 @@ import {
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
+import { clearActionQueue, lockStore, unlockStore, actionDispatchPrivate } from './action_creators.js';
+import { applyArgChain } from '../utils.js';
+
+
+
+
+
 
 // *** Initial store
 const initial_store = {
@@ -401,30 +408,95 @@ const creature_geo_chart_params_init = {
 };
 
 
-// *** Store initializer function
-export const storeInit = (creature_time_chart_context, creature_geo_chart_context, status_box_context) =>
-({
-    ...initial_store,
+// *** Store constructor
+function Store(initialStore, creature_time_chart_context, creature_geo_chart_context, status_box_context) {
+    this.storeObj = {
+        ...initialStore,
 
-    // Simulator
-    sim: {
-        ...initial_store.sim,
+        // Simulator
+        sim: {
+            ...initialStore.sim,
 
-        // initRandGen just gives back the input seed
-        initSeed: mutableRandGen_initRandGen(initial_store.sim.initSeed),
-    },
+            // initRandGen just gives back the input seed
+            initSeed: mutableRandGen_initRandGen(initialStore.sim.initSeed),
+        },
 
-    // UI
-    ui: {
-        ...initial_store.ui,
+        // UI
+        ui: {
+            ...initialStore.ui,
 
-        // time chart
-        creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
+            // time chart
+            creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
 
-        // geo chart
-        creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
+            // geo chart
+            creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
 
-        // status box
-        status_box: status_box_context
-    }
+            // status box
+            status_box: status_box_context
+        }
+    };
+}
+
+
+
+// REFACTOR
+export const special_doActionQueue = (_) => ({
+    type: 'SPECIAL',
 });
+
+
+
+// *** Global app store
+export var appStore = {
+    storeObj: {},
+
+    // public action dispatch function
+    // takes:
+    //  storeType: app store, as storeType
+    //  ...actions: action creators to apply, each returning actionType
+    // returns storeType
+    actionDispatch: function (...actions) {
+        // chain up actions to dispatch
+        this.storeObj = applyArgChain
+            (actionDispatchPrivate)
+            (this.storeObj)
+            (
+                lockStore(),                // lock the store
+                actions,                    // dispatch given actions
+                special_doActionQueue(),    // dispatch actions in store queue
+                clearActionQueue(),         // clear action queue
+                unlockStore(),              // unlock the store
+            )
+    },
+}
+
+
+
+// *** Store initializer function
+export function storeInit(creature_time_chart_context, creature_geo_chart_context, status_box_context) {
+    appStore.storeObj = {
+        ...initial_store,
+
+        // Simulator
+        sim: {
+            ...initial_store.sim,
+
+            // initRandGen just gives back the input seed
+            initSeed: mutableRandGen_initRandGen(initial_store.sim.initSeed),
+        },
+
+        // UI
+        ui: {
+            ...initial_store.ui,
+
+            // time chart
+            creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
+
+            // geo chart
+            creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
+
+            // status box
+            status_box: status_box_context
+        }
+    };
+}

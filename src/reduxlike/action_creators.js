@@ -4,8 +4,10 @@
 
 // *** Our imports
 import {
+    ACTION_ACTION_QUEUE_COMPARE_PHYSTYPE,
     ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     ACTION_CLEAR_ACTION_QUEUE,
+    ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_MUTABLE_RENDER,
@@ -19,7 +21,6 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
-    ACTION_WATCH_SAVE_PHYSTYPE,
 } from '../const_vals.js';
 
 import { actionQueueReducer } from './reducer_action_queue.js';
@@ -51,6 +52,28 @@ export const clearActionQueue = (_) =>
 ({
     type: ACTION_CLEAR_ACTION_QUEUE,
 });
+
+
+// *** Comparing physTypes
+// save physType for comparison
+// takes: 
+//  physType: physType to watch
+//  indexIntType: index of physType in physType store
+//  don't care: storeType
+// returns actionType
+export const savePhysType = (physType) => (indexIntType) =>
+({
+    type: ACTION_COMPARE_SAVE_PHYSTYPE,
+    physType,
+    indexIntType
+})
+
+// compare physType with store of saved physTypes at given index
+// takes: 
+//  indexIntType: index of physType in physType store to compare with
+//      physType at same index in store of saved physTypes
+//  don't care: storeType
+// returns actionType
 
 
 // *** Do action for physType at given index
@@ -98,6 +121,19 @@ export const queueAction_doActionGroup = (actionGroupFunc) =>
 ({
     type: ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     actionGroupFunc,
+});
+
+// compare physType with store of saved physTypes at given index
+// takes: 
+//  indexIntType: index of physType in physType store to compare with
+//      physType at same index in store of saved physTypes
+//  don't care: storeType
+// returns actionType
+export const queueAction_comparePhysType = (indexIntType) => (compareFunc) => (...propsStringType) =>
+({
+    type: ACTION_ACTION_QUEUE_COMPARE_PHYSTYPE,
+    compareFunc,
+    propsStringType,
 });
 
 
@@ -213,21 +249,6 @@ export const unlockStore = (_) =>
 })
 
 
-// *** Watching physTypes
-// save physType for watching
-// takes: 
-//  physType: physType to watch
-//  indexIntType: index of physType in physType store
-//  don't care: storeType
-// returns actionType
-export const savePhysType = (physType) => (indexIntType) =>
-({
-    type: ACTION_WATCH_SAVE_PHYSTYPE,
-    physType,
-    indexIntType
-})
-
-
 // *** storeType template with reducers for specific properties
 const storeTypeTemplate = {
     actionQueue: actionQueueReducer,
@@ -238,10 +259,6 @@ const storeTypeTemplate = {
 };
 
 
-// REFACTOR
-const special_doActionQueue = (_) => ({
-    type: 'SPECIAL',
-});
 
 
 // *** Action dispatcher functions
@@ -250,7 +267,7 @@ const special_doActionQueue = (_) => ({
 //  storeType: app store, as storeType
 //  ...actions: action creators to apply, each returning actionType
 // returns storeType
-const actionDispatchPrivate = (storeType) => (...actions) =>
+export const actionDispatchPrivate = (storeType) => (...actions) =>
     combineReducers
         (storeTypeTemplate)
         (storeType)
@@ -266,20 +283,3 @@ const actionDispatchPrivate = (storeType) => (...actions) =>
                 : actions
         );
 
-// public action dispatch function
-// takes:
-//  storeType: app store, as storeType
-//  ...actions: action creators to apply, each returning actionType
-// returns storeType
-export const actionDispatch = (storeType) => (...actions) =>
-    // chain up actions to dispatch
-    applyArgChain
-        (actionDispatchPrivate)
-        (storeType)
-        (
-            lockStore(),                // lock the store
-            actions,                    // dispatch given actions
-            special_doActionQueue(),    // dispatch actions in store queue
-            clearActionQueue(),         // clear action queue
-            unlockStore(),              // unlock the store
-        )

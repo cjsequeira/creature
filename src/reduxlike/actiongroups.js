@@ -9,6 +9,7 @@ import {
     addJournalEntry,
     doNothing,
     physTypeDoAct,
+    queueAction_comparePhysType,
     queueRender_addGeoChartData,
     queueRender_addStatusMessage,
     queueRender_addTimeChartData,
@@ -34,6 +35,9 @@ const behaviorStrings = {
     frozen: "is frozen! Brrrr....."
 };
 
+// REFACTOR: Both action group functions are trying to do something with physTypes!
+// Any way to bring these action groups out of action queue and come up with a mechanism for
+// dispatching actions based on what physTypes are doing?
 
 // *** Action group functions
 // update all physType objects

@@ -28,7 +28,7 @@ import {
 } from './reduxlike/action_creators.js';
 
 import {
-    actionGroup_NonsimActions, 
+    actionGroup_NonsimActions,
     actionGroup_updateAllPhysTypes
 } from './reduxlike/actiongroups.js';
 
@@ -38,21 +38,24 @@ import {
     storeIsLocked,
 } from './reduxlike/store_getters.js';
 
-import { storeInit } from './reduxlike/store_init.js';
+import {
+    appStore,
+    storeInit,
+} from './reduxlike/store_init.js';
 
 
 // ***********************************************************************************
 // *** Code that actually does stuff
 
-// create our store by referencing an initialized store object
-export let myStore = storeInit(
+// create our store in "appStore" using some pointers to web page elements
+storeInit(
     document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
     document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
     document.getElementById(CREATURE_STATUS_BOX)
 );
 
 // dispatch a series of actions to our store
-myStore = actionDispatch(myStore)(
+appStore.actionDispatch(
     // do the initial UI draws
     mutableRender(),
 
@@ -76,16 +79,16 @@ setInterval(appUpdate, UPDATE_FREQ_SIM);
 function appUpdate(_) {
     // is simulator running and store lock not set?
     if (
-        simGetRunning(myStore) &&
-        (!storeIsLocked(myStore))
+        simGetRunning(appStore.storeObj) &&
+        (!storeIsLocked(appStore.storeObj))
     ) {
         // yes: dispatch a series of actions to the store to update it
-        myStore = actionDispatch(myStore)(
+        appStore.actionDispatch(
             // advance sim
             advanceSim(),
 
             // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
-            (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM))
+            (performance.now() > (simGetSavedClock(appStore.storeObj) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
                 ? [
                     // render the application
