@@ -1,6 +1,9 @@
 'use strict'
 
 // ****** Code to dispatch actions collected into groups ******
+// REFACTOR: Maybe this code gets executed from reducer that handles action func queue?
+// Then all these actions would get queued - then queue must be processed at some point!
+
 
 // *** Imports
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';

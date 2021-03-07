@@ -28,6 +28,7 @@ import { remainderReducer } from './reducer_remainder.js';
 
 import { combineReducers } from './reduxlike_utils.js'
 import { actionFuncQueueReducer } from './reducer_actionfunc_queue.js';
+import { getActionFuncQueue } from './store_getters.js';
 
 
 // *** Add journal entry
@@ -247,5 +248,9 @@ const storeTypeTemplate = {
 };
 
 // action dispatch function
+// returns storeType
 export const actionDispatch = (storeType) => (...actionFuncs) =>
-    combineReducers(storeTypeTemplate)(storeType)(actionFuncs);
+    combineReducers
+        (storeTypeTemplate)
+        (storeType)
+        (getActionFuncQueue(storeType), clearActionFuncQueue, actionFuncs);

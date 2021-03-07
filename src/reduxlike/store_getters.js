@@ -104,3 +104,9 @@ export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStrin
 //  storeType: store, as storeType
 // returns storeType changes array
 export const getChangesArray = (storeType) => storeType.changes;
+
+// *** Get actionFunc queue
+// takes:
+//  storeType: store, as storeType
+// returns storeType actionFunc queue array
+export const getActionFuncQueue = (storeType) => storeType.actionFuncQueue;

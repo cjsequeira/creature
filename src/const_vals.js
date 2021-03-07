@@ -3,8 +3,9 @@
 // ****** All constant values in the application ******
 
 // *** Action names
-// clear action queue
+// operate on action queue
 export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
+export const ACTION_WATCH_QUEUE_COMPARE_SAVED = 'WATCH_QUEUE_COMPARE_SAVED';
 
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';
@@ -33,9 +34,8 @@ export const ACTION_SIM_STOP = 'SIM_STOP';
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
 
-// actions for watching physTypes and dealing with changes
+// save a physType for later comparison
 export const ACTION_WATCH_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
-export const ACTION_WATCH_QUEUE_COMPARE_SAVED = 'WATCH_QUEUE_COMPARE_SAVED';
 
 
 // *** HTML page references 

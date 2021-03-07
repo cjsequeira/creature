@@ -40,6 +40,7 @@ import {
 } from './reduxlike/actiongroups.js';
 
 import {
+    getUIProp,
     physTypeGet,
     physTypeGetCond,
     physTypePropChanged,
@@ -106,11 +107,6 @@ function appUpdate(_) {
             // set store lock
             lockStore,
 
-            // create actions from myStore action func queue
-            // REFACTOR
-            myStore.actionFuncQueue,
-            clearActionFuncQueue,
-
             // do physType act for each physType in physType store
             myStore.remainder.physTypeStore.map(
                 (this_physType, i) => [
@@ -137,7 +133,7 @@ function appUpdate(_) {
 
                                     // announce in status box
                                     queue_addStatusMessage
-                                        (myStore.ui.status_box)
+                                        (getUIProp(myStore)('status_box'))
                                         (
                                             physTypeGet(creatureType)('name') + ' ' +
                                             behaviorStrings[physTypeGetCond(creatureType)('behavior')]
