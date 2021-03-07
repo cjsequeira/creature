@@ -1,8 +1,7 @@
 'use strict'
 
 // ****** Main code ******
-// REFACTOR: Must implement store getter methods so that store properties can be
-//  accessed "in the middle" of generating new object for myStore
+// REFACTOR: Figure out how to compare objects and announce based on comparison
 
 // *** Imports
 // styling and libraries
