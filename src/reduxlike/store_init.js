@@ -15,6 +15,178 @@ import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
 
+// *** Initial store
+const initial_store = {
+    // initial action queue
+    actionFuncQueue: [],
+
+    // initial array of store changes to render
+    changes: [],
+
+    // simulator properties
+    sim: {
+        // is simulator running?
+        running: false,
+
+        // internal sim time info
+        curTime: 0.0,
+        timeStep: UPDATE_FREQ_SIM / 1000.0,
+        savedClock: 0.0,
+
+        // initial random number generator seed
+        initSeed: 0,
+
+        // initial random number generator seed
+        /*
+        initSeed: Date.now(),
+        */
+    },
+
+    remainder: {
+        // initial store locked / unlocked for writing
+        locked: false,
+
+        // initial physTypeStore
+        physTypeStore: [
+            // Simple Creature Vinny
+            {
+                name: 'Vinny',
+                color: '#0000ccff',
+                act: actAsSimpleCreature,
+                conds: {
+                    // internal biology
+                    glucose: 50.0,
+                    neuro: 50.0,
+
+                    // behavior
+                    behavior: 'idling',
+                    behavior_request: null,
+
+
+                    // location
+                    x: 15.0,
+                    y: 15.0,
+
+                    // heading, speed, acceleration
+                    heading: 180.0 * Math.PI / 180.0,
+                    speed: 2.0,
+                    accel: 0.0,
+
+
+                    // location
+                    /*
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+                    
+                    // heading, speed, acceleration
+                    heading: 2.0 * Math.PI * Math.random(),
+                    speed: Math.random(),
+                    accel: 0.0,
+                    */
+                },
+            },
+
+            // Simple Creature Eddie
+            {
+                name: 'Eddie',
+                color: '#f7036cff',
+                act: actAsSimpleCreature,
+                conds: {
+                    // internal biology
+                    glucose: 50.0,
+                    neuro: 50.0,
+
+                    // behavior
+                    behavior: 'idling',
+                    behavior_request: null,
+
+
+                    // location
+                    x: 5.0,
+                    y: 5.0,
+
+                    // heading, speed, acceleration
+                    heading: 0.0 * Math.PI / 180.0,
+                    speed: 2.0,
+                    accel: 0.0,
+
+
+                    // location
+                    /*
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+    
+                    // heading, speed, acceleration
+                    heading: 2.0 * Math.PI * Math.random(),
+                    speed: Math.random(),
+                    accel: 0.0,
+                    */
+                },
+            },
+
+            // initial food element 1
+            {
+                name: 'Food 1',
+                color: '#008800ff',
+                act: (physType) => physType,
+                conds: {
+
+                    x: 8.0,
+                    y: 8.0,
+
+
+                    // location
+                    /*
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+                    */
+                },
+            },
+
+            // initial food element 2
+            {
+                name: 'Food 2',
+                color: '#008800ff',
+                act: (physType) => physType,
+                conds: {
+
+                    x: 12.0,
+                    y: 12.0,
+
+
+                    // location
+                    /*
+                    x: 18.0 * Math.random() + 1.0,
+                    y: 18.0 * Math.random() + 1.0,
+                    */
+                },
+            },
+        ],
+
+        // initial journal
+        journal: [{
+            time: 0.0,
+            message: 'Simulator init'
+        }],
+
+        // initial "saved physType" store
+        savedPhysTypeStore: [{}],
+    },
+
+    // initial UI elements
+    ui: {
+        // creature chart time reference placeholder
+        creature_time_chart: null,
+
+        // creature chart geospatial reference placeholder
+        creature_geo_chart: null,
+
+        // status box reference placeholder
+        status_box: null,
+    }
+};
+
+
 // *** Initial parameters for creature charts 
 // time-based chart parameters
 const creature_time_chart_params_init = {
@@ -225,178 +397,6 @@ const creature_geo_chart_params_init = {
                 }
             }]
         }
-    }
-};
-
-
-// *** Initial store
-const initial_store = {
-    // initial action queue
-    actionFuncQueue: [],
-
-    // initial array of store changes to render
-    changes: [],
-
-    // simulator properties
-    sim: {
-        // is simulator running?
-        running: false,
-
-        // internal sim time info
-        curTime: 0.0,
-        timeStep: UPDATE_FREQ_SIM / 1000.0,
-        savedClock: 0.0,
-
-        // initial random number generator seed
-        initSeed: 0,
-
-        // initial random number generator seed
-        /*
-        initSeed: Date.now(),
-        */
-    },
-
-    remainder: {
-        // initial store locked / unlocked for writing
-        locked: false,
-
-        // initial physTypeStore
-        physTypeStore: [
-            // Simple Creature Vinny
-            {
-                name: 'Vinny',
-                color: '#0000ccff',
-                act: actAsSimpleCreature,
-                conds: {
-                    // internal biology
-                    glucose: 50.0,
-                    neuro: 50.0,
-
-                    // behavior
-                    behavior: 'idling',
-                    behavior_request: null,
-
-
-                    // location
-                    x: 15.0,
-                    y: 15.0,
-
-                    // heading, speed, acceleration
-                    heading: 180.0 * Math.PI / 180.0,
-                    speed: 2.0,
-                    accel: 0.0,
-
-
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-                    
-                    // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * Math.random(),
-                    speed: Math.random(),
-                    accel: 0.0,
-                    */
-                },
-            },
-
-            // Simple Creature Eddie
-            {
-                name: 'Eddie',
-                color: '#f7036cff',
-                act: actAsSimpleCreature,
-                conds: {
-                    // internal biology
-                    glucose: 50.0,
-                    neuro: 50.0,
-
-                    // behavior
-                    behavior: 'idling',
-                    behavior_request: null,
-
-
-                    // location
-                    x: 5.0,
-                    y: 5.0,
-
-                    // heading, speed, acceleration
-                    heading: 0.0 * Math.PI / 180.0,
-                    speed: 2.0,
-                    accel: 0.0,
-
-
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-    
-                    // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * Math.random(),
-                    speed: Math.random(),
-                    accel: 0.0,
-                    */
-                },
-            },
-
-            // initial food element 1
-            {
-                name: 'Food 1',
-                color: '#008800ff',
-                act: (physType) => physType,
-                conds: {
-
-                    x: 8.0,
-                    y: 8.0,
-
-
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-                    */
-                },
-            },
-
-            // initial food element 2
-            {
-                name: 'Food 2',
-                color: '#008800ff',
-                act: (physType) => physType,
-                conds: {
-
-                    x: 12.0,
-                    y: 12.0,
-
-
-                    // location
-                    /*
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-                    */
-                },
-            },
-        ],
-
-        // initial journal
-        journal: [{
-            time: 0.0,
-            message: 'Simulator init'
-        }],
-
-        // initial "saved physType" store
-        savedPhysTypeStore: [{}],
-    },
-
-    // initial UI elements
-    ui: {
-        // creature chart time reference placeholder
-        creature_time_chart: null,
-
-        // creature chart geospatial reference placeholder
-        creature_geo_chart: null,
-
-        // status box reference placeholder
-        status_box: null,
     }
 };
 

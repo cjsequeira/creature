@@ -10,6 +10,7 @@ import {
     concatSliceMap,
     fadeColors,
 } from '../utils.js';
+import { getChangesArray } from './store_getters.js';
 
 
 // *** Function to render store changes using an array of render functions
@@ -23,7 +24,7 @@ export const mutable_renderStoreChanges = (storeType) =>
     //  then return false, resulting in empty render function array
     //  returning false causes the render func to be filtered out of changes array
     // MUTABLE: may apply functions that mutate the application beyond the app store
-    ...storeType.changes.filter(renderFunc => renderFunc(storeType) && false),
+    ...getChangesArray(storeType).filter(renderFunc => renderFunc(storeType) && false),
 ]);
 
 

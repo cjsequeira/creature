@@ -7,6 +7,7 @@ import {
     ACTION_CLEAR_ACTION_QUEUE,
     ACTION_WATCH_QUEUE_COMPARE_SAVED,
 } from '../const_vals.js';
+import { getPhysTypeStore, getSavedPhysTypeStore } from './store_getters.js';
 
 import { watchProps } from './watch_props.js';
 
@@ -32,10 +33,10 @@ export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
                 // get a physType for handleFunc via these steps:
                 watchProps
                     // compare the saved physType[index]...        
-                    (storeType.remainder.savedPhysTypeStore[actionType.indexIntType])
+                    (getSavedPhysTypeStore(storeType)[actionType.indexIntType])
 
                     // ...to the current physType[index]...
-                    (storeType.remainder.physTypeStore[actionType.indexIntType])
+                    (getPhysTypeStore(storeType)[actionType.indexIntType])
 
                     // ... observing the given props
                     (actionType.propsStringType)
@@ -52,3 +53,4 @@ export const actionFuncQueueReducer = (inStoreType) => (inActionType) =>
         //  to get a storeType "actionFuncQueue" property object
         (inStoreType)
         (inActionType);
+        

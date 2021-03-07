@@ -16,6 +16,8 @@ import {
 } from './action_creators.js';
 
 import {
+    getPhysTypeStore,
+    getUIProp,
     physTypeGet,
     physTypeGetCond,
     simGetCurTime,
@@ -29,7 +31,7 @@ import {
 export const actionGroup_NonsimActions = (storeType) =>
 ([
     // for all physType objects in store...
-    storeType.remainder.physTypeStore.map((this_physType, index) => {
+    getPhysTypeStore(storeType).map((this_physType, index) => {
         // define shorthand func to get this_physType keyval
         const inGet = physTypeGet(this_physType);
 
@@ -44,7 +46,7 @@ export const actionGroup_NonsimActions = (storeType) =>
                 ? [
                     // queue add glucose data to time chart
                     queue_addTimeChartData
-                        (storeType.ui.creature_time_chart)
+                        (getUIProp(storeType)('creature_time_chart'))
                         (2 * index)
                         (inGet('name') + ' glucose')
                         ({
@@ -54,7 +56,7 @@ export const actionGroup_NonsimActions = (storeType) =>
 
                     // next, queue add neuro data to time chart
                     queue_addTimeChartData
-                        (storeType.ui.creature_time_chart)
+                        (getUIProp(storeType)('creature_time_chart'))
                         (2 * index + 1)
                         (inGet('name') + ' neuro')
                         ({
@@ -67,7 +69,9 @@ export const actionGroup_NonsimActions = (storeType) =>
                     (inGetCond('behavior') === 'frozen')
                         ? [
                             addJournalEntry("Simulation ended"),
-                            queue_addStatusMessage(storeType.ui.status_box)("*** Simulation ended"),
+                            queue_addStatusMessage
+                                (getUIProp(storeType)('status_box'))
+                                ("*** Simulation ended"),
                             stopSim
                         ]
                         : doNothing,
@@ -78,7 +82,7 @@ export const actionGroup_NonsimActions = (storeType) =>
 
             // next, queue add x-y data to geo chart for this_physType
             queue_addGeoChartData
-                (storeType.ui.creature_geo_chart)
+                (getUIProp(storeType)('creature_geo_chart'))
                 (index)
                 (inGet('color'))
                 ({
