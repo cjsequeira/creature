@@ -18,7 +18,6 @@ import {
 } from './const_vals.js';
 
 import {
-    actionDispatch,
     advanceSim,
     doNothing,
     mutableRender,
@@ -26,6 +25,8 @@ import {
     saveClockForSim,
     startSim,
 } from './reduxlike/action_creators.js';
+
+import { appStore } from './reduxlike/app_store.js';
 
 import {
     actionGroup_NonsimActions,
@@ -38,10 +39,7 @@ import {
     storeIsLocked,
 } from './reduxlike/store_getters.js';
 
-import {
-    appStore,
-    storeInit,
-} from './reduxlike/store_init.js';
+import { storeInit } from './reduxlike/store_init.js';
 
 
 // ***********************************************************************************
@@ -56,9 +54,6 @@ storeInit(
 
 // dispatch a series of actions to our store
 appStore.actionDispatch(
-    // do the initial UI draws
-    mutableRender(),
-
     // change the sim status to running
     startSim(),
 
@@ -91,9 +86,6 @@ function appUpdate(_) {
             (performance.now() > (simGetSavedClock(appStore.storeObj) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
                 ? [
-                    // render the application
-                    mutableRender(),
-
                     // remember the current time
                     saveClockForSim(performance.now()),
 

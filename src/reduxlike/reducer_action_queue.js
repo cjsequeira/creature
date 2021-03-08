@@ -8,8 +8,6 @@ import {
     ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     ACTION_CLEAR_ACTION_QUEUE,
 } from '../const_vals.js';
-import { queueRender_addStatusMessage } from './action_creators.js';
-import { getUIProp } from './store_getters.js';
 import { watchProps } from './watch_props.js';
 
 
@@ -34,7 +32,6 @@ export const actionQueueReducer = (inStoreType) => (inActionType) =>
         ([
             ...storeType.actionQueue,
 
-            //actionType.compareFunc
             actionType.compareFunc(
                 watchProps
                     (storeType.savedPhysTypeStore[actionType.indexIntType])

@@ -14,9 +14,6 @@ export const ACTION_COMPARE_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';
 
-// mutable rendering; may mutate parts of the application beyond the store
-export const ACTION_MUTABLE_RENDER = 'MUTABLE_RENDER';
-
 // journal: add entry
 export const ACTION_JOURNAL_ADD_ENTRY = 'JOURNAL_ADD_ENTRY';
 

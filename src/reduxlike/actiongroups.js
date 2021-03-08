@@ -9,7 +9,6 @@ import {
     addJournalEntry,
     doNothing,
     physTypeDoAct,
-    queueAction_comparePhysType,
     queueRender_addGeoChartData,
     queueRender_addStatusMessage,
     queueRender_addTimeChartData,
@@ -80,7 +79,6 @@ export const actionGroup_NonsimActions = (storeType) =>
                 ? [
                     // queue render add glucose data to time chart
                     queueRender_addTimeChartData
-                        (getUIProp(storeType)('creature_time_chart'))
                         (2 * index)
                         (inGet('name') + ' glucose')
                         ({
@@ -90,7 +88,6 @@ export const actionGroup_NonsimActions = (storeType) =>
 
                     // next, queue render add neuro data to time chart
                     queueRender_addTimeChartData
-                        (getUIProp(storeType)('creature_time_chart'))
                         (2 * index + 1)
                         (inGet('name') + ' neuro')
                         ({
@@ -106,9 +103,7 @@ export const actionGroup_NonsimActions = (storeType) =>
                             addJournalEntry("Simulation ended"),
 
                             // queue render add status message
-                            queueRender_addStatusMessage
-                                (getUIProp(storeType)('status_box'))
-                                ("*** Simulation ended"),
+                            queueRender_addStatusMessage("*** Simulation ended"),
 
                             // stop sim
                             stopSim(),
@@ -121,7 +116,6 @@ export const actionGroup_NonsimActions = (storeType) =>
 
             // next, queue render add x-y data to geo chart for this_physType
             queueRender_addGeoChartData
-                (getUIProp(storeType)('creature_geo_chart'))
                 (index)
                 (inGet('color'))
                 ({

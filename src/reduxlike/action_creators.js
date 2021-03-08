@@ -10,7 +10,6 @@ import {
     ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
-    ACTION_MUTABLE_RENDER,
     ACTION_PHYSTYPE_DO_ACT,
     ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
     ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
@@ -24,7 +23,6 @@ import {
 } from '../const_vals.js';
 
 import { actionQueueReducer } from './reducer_action_queue.js';
-import { changesQueueReducer } from './reducer_changes_queue.js';
 import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
 import { combineReducers } from './reduxlike_utils.js'
@@ -100,16 +98,6 @@ export const doNothing = (_) =>
 });
 
 
-// *** Mutable render that may mutate application beyond the app store (e.g. UI renders)
-// takes: 
-//  don't care: storeType
-// returns actionType
-export const mutableRender = (_) =>
-({
-    type: ACTION_MUTABLE_RENDER,
-});
-
-
 // *** Queue actions into action queue; queue is automatically executed after all other
 //  actions in actionDispatch 
 // queue doing of action group
@@ -141,17 +129,14 @@ export const queueAction_comparePhysType = (indexIntType) => (compareFunc) => (.
 // *** App store does not change until mutable_renderStateChanges is applied
 // queue add geo chart data
 // takes:
-//  chart: geo chart object reference
 //  dataIndexIntType: chart data index, as int
 //  colorStringType: color for the data, as string
 //  xyFloatTuple: floating-point data coordinate, as {x, y}
 //  don't care: storeType
 // returns actionType
-export const queueRender_addGeoChartData = (chart) => (dataIndexIntType) =>
-    (colorStringType) => (xyFloatTuple) =>
+export const queueRender_addGeoChartData = (dataIndexIntType) => (colorStringType) => (xyFloatTuple) =>
     ({
         type: ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
-        chart,
         dataIndexIntType,
         colorStringType,
         xyFloatTuple
@@ -159,17 +144,14 @@ export const queueRender_addGeoChartData = (chart) => (dataIndexIntType) =>
 
 // queue add time chart data
 // takes:
-//  chart: time chart object reference
 //  dataIndexIntType: chart data index, as int
 //  labelStringType: label for legend, as string
 //  timeValFloatTuple: floating-point data coordinate, as {time, value}
 //  don't care: storeType
 // returns actionType
-export const queueRender_addTimeChartData = (chart) => (dataIndexIntType) =>
-    (labelStringType) => (timeValFloatTuple) =>
+export const queueRender_addTimeChartData = (dataIndexIntType) => (labelStringType) => (timeValFloatTuple) =>
     ({
         type: ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
-        chart,
         dataIndexIntType,
         labelStringType,
         timeValFloatTuple
@@ -177,14 +159,12 @@ export const queueRender_addTimeChartData = (chart) => (dataIndexIntType) =>
 
 // queue add status message
 // takes:
-//  statusBox: HTML DOM status box reference
 //  msgStringType: message, as string
 //  don't care: storeType
 // returns actionType
-export const queueRender_addStatusMessage = (statusBox) => (msgStringType) =>
+export const queueRender_addStatusMessage = (msgStringType) =>
 ({
     type: ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
-    statusBox,
     msgStringType
 });
 
@@ -252,9 +232,9 @@ export const unlockStore = (_) =>
 // *** storeType template with reducers for specific properties
 const storeTypeTemplate = {
     actionQueue: actionQueueReducer,
-    changes: changesQueueReducer,
     sim: simReducer,
 
+    // REFACTOR
     remainder: remainderReducer,
 };
 
