@@ -51,7 +51,7 @@ export const getDefaultSimpleCreature = (_) =>
 // main behavior function
 // this function works by using the physType behavior to select a function to apply
 // if behavior is not a key in the object, 'behavior' bracket search gives null,
-//  causing return of identity function (x => x), which returns given physType unaltered
+//  causing return of identity function (_ => x => x), which returns given physType unaltered
 // takes: 
 //  storeType
 //  physType
@@ -87,10 +87,14 @@ const actIdling = (storeType) => (physType) =>
         ({
             'idling': () =>
                 4.0,
+
+                /*
             'wandering': (physType) =>
                 (physTypeGetCond(physType)('glucose') < 50.0) ? 7.0 : 0.1,
             'sleeping': (physType) =>
                 (physTypeGetCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
+*/
+
         });
 
 // wandering behavior function

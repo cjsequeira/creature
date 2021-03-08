@@ -27,11 +27,13 @@ import {
     uiAddTimeChartSimpleCreatureData,
     comparePhysTypes,
     logChangedBehaviors,
+    stopIfFrozen,
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
 
 import {
+    physTypeGetCond,
     physTypePropChanged,
 } from './reduxlike/store_getters.js';
 import { actAsSimpleCreature } from './creatures/simple_creature';
@@ -92,15 +94,21 @@ function appUpdate(_) {
                 // selection function: select all creatureTypes
                 ((testPhysType) => testPhysType.act === actAsSimpleCreature)
 
-                // comparison function: did creatureTypes 'conds.behavior' property change?
-                ((oldCreatureType) => (newCreatureType) =>
-                    physTypePropChanged(oldCreatureType)(newCreatureType)('conds.behavior')
+                // comparison function: did creatureType 'conds.behavior' property change?
+                (
+                    (oldCreatureType) => (newCreatureType) =>
+                        physTypePropChanged(oldCreatureType)(newCreatureType)('conds.behavior')
                 ),
 
-            // log creatureTypes with changed behaviors as computed due to comparePhysTypes action
+            // log creatureTypes with changed behaviors as computed due 
+            //  to comparePhysTypes action
             logChangedBehaviors(),
 
-            // advance sim
+            // if any creatureType now has a behavior of 'frozen', update the journal
+            //  and stop the sim
+            stopIfFrozen(),
+
+            // advance sim 
             advanceSim(),
         );
     }

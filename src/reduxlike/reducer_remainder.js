@@ -4,21 +4,23 @@
 
 // *** Our imports
 import {
+    ACTION_COMPARE_COMPARE_PHYSTYPE,
+    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
     ACTION_COMPARE_SAVE_PHYSTYPE,
+    ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
-    ACTION_UI_ADD_GEO_CHART_DATA,
-    ACTION_UI_ADD_TIME_CHART_DATA,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
+    ACTION_UI_ADD_GEO_CHART_DATA,
+    ACTION_UI_ADD_TIME_CHART_DATA,
     UI_NUM_TRAILS,
-    ACTION_COMPARE_COMPARE_PHYSTYPE,
-    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
 } from '../const_vals.js';
 
 import {
     getJournal,
+    getPhysTypeStore,
     physTypeGet,
     physTypeGetCond,
     simGetCurTime
@@ -104,12 +106,34 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ]
         }),
 
-
         [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
 
             savedPhysTypeStore: storeType.remainder.physTypeStore,
+        }),
+
+        [ACTION_COMPARE_STOP_IF_FROZEN]: (storeType) => (_) =>
+        ({
+            ...storeType.remainder,
+            journal: [
+                ...getJournal(storeType),
+
+                ...getPhysTypeStore(storeType)
+                    // filter physType store to find simple creatures
+                    .filter((ptToTest1) => physTypeGet(ptToTest1)('act') === actAsSimpleCreature)
+
+                    // filter to find simple creatures with behavior of 'frozen'
+                    .filter((ptToTest2) => physTypeGetCond(ptToTest2)('behavior') === 'frozen')
+
+                    // map filter results to journal entries
+                    .map(
+                        (ptToMap) => ({
+                            timeFloatType: simGetCurTime(storeType),
+                            msgStringType: physTypeGet(ptToMap)('name') + ' is frozen; stopping sim',
+                        })
+                    )
+            ]
         }),
 
         [ACTION_DO_NOTHING]: (storeType) => (_) => ({ ...storeType.remainder }),

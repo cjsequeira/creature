@@ -7,6 +7,7 @@ import {
     ACTION_COMPARE_COMPARE_PHYSTYPE,
     ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
     ACTION_COMPARE_SAVE_PHYSTYPE,
+    ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
@@ -36,16 +37,7 @@ export const addJournalEntry = (msgStringType) =>
 });
 
 
-// *** Comparing physTypes
-// save all physTypes for later comparison
-// takes: 
-//  don't care
-// returns actionType
-export const savePhysType = (_) =>
-({
-    type: ACTION_COMPARE_SAVE_PHYSTYPE,
-});
-
+// *** Comparing and testing physTypes
 // compare current physTypes with store of saved physTypes
 // takes: 
 //  selectFunc: test function for selecting physTypes from saved and current physType store
@@ -67,6 +59,24 @@ export const comparePhysTypes = (selectFunc) => (compareFunc) =>
 export const logChangedBehaviors = (_) => 
 ({
     type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+});
+
+// save all physTypes for later comparison
+// takes: 
+//  don't care
+// returns actionType
+export const savePhysType = (_) =>
+({
+    type: ACTION_COMPARE_SAVE_PHYSTYPE,
+});
+
+// stop if frozen
+// takes: 
+//  don't care
+// returns actionType
+export const stopIfFrozen = (_) =>
+({
+    type: ACTION_COMPARE_STOP_IF_FROZEN,
 });
 
 
