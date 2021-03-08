@@ -228,35 +228,9 @@ export const unlockStore = (_) =>
 
 
 // *** storeType template with reducers for specific properties
-const storeTypeTemplate = {
+export const storeTypeTemplate = {
     sim: simReducer,
 
     // REFACTOR
     remainder: remainderReducer,
 };
-
-
-
-
-// *** Action dispatcher functions
-// private action dispatch function
-// takes:
-//  storeType: app store, as storeType
-//  ...actions: action creators to apply, each returning actionType
-// returns storeType
-export const actionDispatchPrivate = (storeType) => (...actions) =>
-    combineReducers
-        (storeTypeTemplate)
-        (storeType)
-        (
-            // is the first action to do a special action?
-            // REFACTOR
-            (actions[0].type === 'SPECIAL')
-                // yes: use the storeType action queue and ignore 
-                //  the remainder of the given action list
-                ? getActionQueue(storeType)
-
-                // no: use the given action list
-                : actions
-        );
-

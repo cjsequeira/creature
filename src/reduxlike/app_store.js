@@ -3,15 +3,15 @@
 // ****** App store definition and methods ******
 
 // *** Our imports
-import { clearActionQueue, lockStore, unlockStore, actionDispatchPrivate } from './action_creators.js';
-import { applyArgChain } from '../utils.js';
+import {
+    clearActionQueue,
+    lockStore,
+    unlockStore,
+    storeTypeTemplate
+} from './action_creators.js';
 
+import { combineReducers } from './reduxlike_utils.js';
 
-
-// REFACTOR
-export const special_doActionQueue = (_) => ({
-    type: 'SPECIAL',
-});
 
 
 // *** Global app store
@@ -36,11 +36,13 @@ export var appStore = {
         [
             lockStore(),                // lock the store
             actions,                    // dispatch given actions
-            special_doActionQueue(),    // dispatch actions in store queue
             clearActionQueue(),         // clear action queue
             unlockStore(),              // unlock the store
         ].forEach(thisAction => {
-            this.storeObj = actionDispatchPrivate(this.storeObj)(thisAction)
+            this.storeObj = combineReducers
+                (storeTypeTemplate)
+                (appStore.storeObj)
+                (thisAction);
         });
 
         // call subscribed func
