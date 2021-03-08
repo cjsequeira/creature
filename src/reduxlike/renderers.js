@@ -1,5 +1,7 @@
 'use strict'
 
+import { roundTo } from "../utils";
+
 // ****** App store rendering functions ******
 
 // *** Function to be called when app store changes
@@ -31,11 +33,20 @@ function mutable_updateStatusBox(storeObj) {
     const statusScrollHeight = statusBox.scrollHeight;
     const statusInnerHeight = statusBox.clientHeight;
 
-    // MUTABLE: update content in status box based on app store
-    statusBox.innerHTML = storeObj.remainder.statusBoxContent;
+    // make an internal HTML buffer version of the journal
+    const journalBufferHTML = storeObj.remainder.journal.reduce(
+        (accumHTML, thisEntry) =>
+            accumHTML +
+            'Time ' + roundTo(2)(thisEntry.timeFloatType) +
+            ': ' + thisEntry.msgStringType + '<br />',
+        '');
+
+    // MUTABLE: update content in status box using HTML buffer
+    statusBox.innerHTML = journalBufferHTML;
 
     // MUTABLE: adjust scroll bar position to auto-scroll if scroll bar is near the end
     if (statusScrollTop > (statusScrollHeight - 1.1 * statusInnerHeight)) {
         statusBox.scrollTop = statusScrollHeight;
     }
 }
+

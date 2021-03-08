@@ -167,8 +167,8 @@ const initial_store = {
 
         // initial journal
         journal: [{
-            time: 0.0,
-            message: 'Simulator init'
+            timeFloatType: 0.0,
+            msgStringType: 'Simulator init'
         }],
 
         // initial "saved physType" store
