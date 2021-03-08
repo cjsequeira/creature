@@ -4,7 +4,6 @@
 
 // *** Our imports
 import {
-    ACTION_CLEAR_ACTION_QUEUE,
     ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
@@ -33,16 +32,6 @@ export const addJournalEntry = (msgStringType) =>
 ({
     type: ACTION_JOURNAL_ADD_ENTRY,
     msgStringType
-});
-
-
-// *** Clear action queue
-// takes: 
-//  don't care: storeType
-// returns actionType
-export const clearActionQueue = (_) =>
-({
-    type: ACTION_CLEAR_ACTION_QUEUE,
 });
 
 

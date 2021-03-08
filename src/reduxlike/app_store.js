@@ -4,7 +4,6 @@
 
 // *** Our imports
 import {
-    clearActionQueue,
     lockStore,
     unlockStore,
     storeTypeTemplate
@@ -36,7 +35,6 @@ export var appStore = {
         [
             lockStore(),                // lock the store
             actions,                    // dispatch given actions
-            clearActionQueue(),         // clear action queue
             unlockStore(),              // unlock the store
         ].flat(Infinity).forEach(thisAction => {
             this.storeObj = combineReducers(storeTypeTemplate)(appStore.storeObj)(thisAction);
