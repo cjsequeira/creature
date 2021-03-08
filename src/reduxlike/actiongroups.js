@@ -14,13 +14,17 @@ import {
     uiAddTimeChartData,
     savePhysType,
 } from './action_creators.js';
+import { appStore } from './app_store.js';
 
 import {
     getPhysTypeStore,
     physTypeGet,
     physTypeGetCond,
+    physTypePropChanged,
     simGetCurTime,
 } from './store_getters.js';
+
+import { watchProps } from './watch_props.js';
 
 
 // *** Creature behavior strings
@@ -37,18 +41,24 @@ const behaviorStrings = {
 // *** Action group functions
 // update all physType objects
 // takes:
-//  storeType: the store to use
+//  don't care
 // returns array of actionType
-export const actionGroup_updateAllPhysTypes = (storeType) =>
+export const actionGroup_updateAllPhysTypes = (_) =>
 ([
-    // do physType act for each physType in physType store
-    storeType.remainder.physTypeStore.map(
-        (this_physType, i) => [
+    // do physType act for each physType in physType store at 
+    //  the moment of entering this function
+    appStore.storeObj.remainder.physTypeStore.map(
+        (_, i) => [
             // save the current state of this physType
-            savePhysType(this_physType)(i),
+            savePhysType(i),
 
             // do the physType "act"
-            physTypeDoAct(this_physType)(i),
+            physTypeDoAct(i),
+
+            // did physType behavior just change? announce it!
+            // REFACTOR: Must be in form of action that causes reducer to look at 
+            //  immediate store and react accordingly! Perhaps this reducer
+            //  adds "just-changed" physTypes to a queue to be announced during rendering!
         ]
     ),
 ]);

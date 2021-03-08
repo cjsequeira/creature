@@ -38,16 +38,14 @@ export const addJournalEntry = (msgStringType) =>
 // *** Comparing physTypes
 // save physType for comparison
 // takes: 
-//  physType: physType to watch
 //  indexIntType: index of physType in physType store
-//  don't care: storeType
 // returns actionType
-export const savePhysType = (physType) => (indexIntType) =>
+export const savePhysType = (indexIntType) =>
 ({
     type: ACTION_COMPARE_SAVE_PHYSTYPE,
-    physType,
     indexIntType
-})
+});
+
 
 // compare physType with store of saved physTypes at given index
 // takes: 
@@ -59,14 +57,11 @@ export const savePhysType = (physType) => (indexIntType) =>
 
 // *** Do action for physType at given index
 // takes:
-//  physType
 //  indexIntType: index into physType store in app store
-//  don't care: storeType
 // returns actionType
-export const physTypeDoAct = (physType) => (indexIntType) =>
+export const physTypeDoAct = (indexIntType) =>
 ({
     type: ACTION_PHYSTYPE_DO_ACT,
-    physType,
     indexIntType
 });
 

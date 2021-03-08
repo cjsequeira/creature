@@ -22,6 +22,7 @@ import {
     doNothing,
     saveClockForSim,
     startSim,
+    uiAddStatusMessage,
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
@@ -92,7 +93,7 @@ function appUpdate(_) {
                 : doNothing(),
 
             // update all physTypes
-            actionGroup_updateAllPhysTypes(appStore.storeObj),
+            actionGroup_updateAllPhysTypes(),
 
             // advance sim
             advanceSim(),

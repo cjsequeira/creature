@@ -20,9 +20,23 @@ export var appStore = {
     // initial "public" store properties, as storeType
     storeObj: {},
 
+
     // *** Functions to be set by user
     // function to be called after action dispatch is completed
     subscribedFunc: function () { },
+
+
+    // *** Getters
+    // get specific condition of specific physType in store at given index
+    // return specific condition from physType
+    // takes:
+    //  indexIntType: index into physType store
+    //  argCond: string name for key of condition to look at
+    // returns condition value
+    getPhysTypeCondAtIndex: function(indexIntType, argCond) {
+        return this.storeObj.remainder.physTypeStore[indexIntType].conds[argCond];
+    },
+
 
     // *** Public action dispatch function
     // takes:
@@ -49,9 +63,10 @@ export var appStore = {
                 (this.actionQueue.shift());
         }
 
-        // call subscribed func
+        // call subscribed func (typically used for rendering UI)
         this.subscribedFunc();
     },
+
 
     // *** Setters
     // set function to call when app store changes
@@ -61,4 +76,4 @@ export var appStore = {
     setSubScribedFunc: function (inFunc) {
         this.subscribedFunc = inFunc;
     },
-}
+};

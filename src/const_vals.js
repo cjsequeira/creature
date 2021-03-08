@@ -4,7 +4,7 @@
 
 // *** Action names
 // compare: for saving and comparing physTypes
-export const ACTION_COMPARE_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
+export const ACTION_COMPARE_SAVE_PHYSTYPE = 'COMPARE_SAVE_PHYSTYPE';
 
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';
@@ -15,7 +15,7 @@ export const ACTION_JOURNAL_ADD_ENTRY = 'JOURNAL_ADD_ENTRY';
 // physType: do act
 export const ACTION_PHYSTYPE_DO_ACT = 'PHYSTYPE_DO_ACT';
 
-// render: queue rendering operations
+// UI: update data used for UI
 export const ACTION_UI_ADD_TIME_CHART_DATA = 'UI_ADD_TIME_CHART_DATA';
 export const ACTION_UI_ADD_GEO_CHART_DATA = 'UI_ADD_GEO_CHART_DATA';
 export const ACTION_UI_ADD_STATUS_MESSAGE = 'UI_ADD_STATUS_MESSAGE';

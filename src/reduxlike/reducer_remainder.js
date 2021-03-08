@@ -49,7 +49,9 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 (1)                                         // remove one element...
                 (actionType.indexIntType)                   // ... at the given index...
                 (getSavedPhysTypeStore(storeType))          // ... in this saved physType store...
-                (actionType.physType),                      // ... and replace with actionType.physType
+                (storeType.remainder.physTypeStore          // ... and replace with actionType.physType
+                [actionType.indexIntType]
+                ),
         }),
 
         [ACTION_DO_NOTHING]: (storeType) => (_) => ({ ...storeType.remainder }),
@@ -76,9 +78,9 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 (1)                                         // remove one element...
                 (actionType.indexIntType)                   // ... at the given index...
                 (getPhysTypeStore(storeType))               // ... in this physType store...
-                (actionType.physType.act                    // ... and replace with physType from "act"
-                    (storeType)
-                    (actionType.physType)
+                (                                           // ... and replace with physType from "act"
+                    getPhysTypeStore(storeType)[actionType.indexIntType]
+                        .act(storeType)(getPhysTypeStore(storeType)[actionType.indexIntType])
                 ),
         }),
 
