@@ -4,6 +4,7 @@
 // REFACTOR: clean up names / order
 
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
+import { watchProps } from './watch_props.js';
 
 
 // *** physType getter functions
@@ -34,15 +35,22 @@ export const physTypeGetCond = (physType) => (argCond) => physType.conds[argCond
 // returns key value
 export const physTypeGet = (physType) => (argStringType) => physType[argStringType];
 
-// did given prop in given physType change due to watchProps?
+// did given prop in given physType change?
 // takes:
 //  physType: physType to use
 //  propStringType: string name for prop to check - could be a nested prop, with '.'
 // returns bool
-export const physTypePropChanged = (physType) => (propStringType) =>
-    physType[WATCHPROP_CHANGESPROP][propStringType]
+export const physTypePropChanged = (beforePhysType) => (afterPhysType) => (propStringType) =>
+    (
+        watchProps                          // get obj with watchprops added
+            (beforePhysType)
+            (afterPhysType)
+            (propStringType)
+        [WATCHPROP_CHANGESPROP]             // select watchprops sub-object
+        [propStringType]                    // select specific watchprop
+    ) || false;                             // if watchprop is undefined, return 'false'
 
-
+    
 // *** Simulator getter functions
 // return current simulator time
 // takes: 

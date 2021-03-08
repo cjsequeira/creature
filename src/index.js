@@ -19,15 +19,12 @@ import {
 
 import {
     advanceSim,
-    doNothing,
     physTypeDoAct,
     saveClockForSim,
     savePhysType,
     startSim,
-    uiAddStatusMessage,
     uiAddGeoChartData,
     uiAddTimeChartSimpleCreatureData,
-    addJournalEntry,
     comparePhysTypes,
     logChangedBehaviors,
 } from './reduxlike/action_creators.js';
@@ -36,12 +33,7 @@ import { appStore } from './reduxlike/app_store.js';
 
 import {
     physTypePropChanged,
-    simGetCurTime,
-    simGetRunning,
-    simGetSavedClock,
-    storeIsLocked,
 } from './reduxlike/store_getters.js';
-import { watchProps } from './reduxlike/watch_props';
 import { actAsSimpleCreature } from './creatures/simple_creature';
 
 
@@ -64,23 +56,13 @@ appStore.dispatchActions(
     startSim(),
 
     // add initial glucose data to time chart
-    uiAddTimeChartSimpleCreatureData
-        (0)
-        ('glucose'),
+    uiAddTimeChartSimpleCreatureData(0)('glucose'),
 
     // add initial neuro data to time chart
-    uiAddTimeChartSimpleCreatureData
-        (1)
-        ('neuro'),
+    uiAddTimeChartSimpleCreatureData(1)('neuro'),
 
     // add initial x-y data to geo chart
-    uiAddGeoChartData
-        (0)
-        ('nah')
-        ({
-            x: 0,
-            y: 0,
-        }),
+    uiAddGeoChartData(),
 );
 
 // start repeatedly updating our application at sim frequency
@@ -112,27 +94,16 @@ function appUpdate(_) {
 
                 // comparison function: did creatureTypes 'conds.behavior' property change?
                 ((oldCreatureType) => (newCreatureType) =>
-                    physTypePropChanged(
-                        watchProps(oldCreatureType)(newCreatureType)('conds.behavior')
-                    )('conds.behavior')
+                    physTypePropChanged(oldCreatureType)(newCreatureType)('conds.behavior')
                 ),
 
-            // log creatureTypes with changed behaviors
+            // log creatureTypes with changed behaviors as computed due to comparePhysTypes action
             logChangedBehaviors(),
 
             // advance sim
             advanceSim(),
         );
     }
-
-
-    if (appStore.storeObj.remainder.passedComparePhysTypeStore.length > 0) {
-        console.log(appStore.getSimProp('curTime') + '*** ' + 
-        appStore.storeObj.remainder.passedComparePhysTypeStore.length.toString() + 
-        '---- ' + appStore.storeObj.remainder.passedComparePhysTypeStore[0].name
-        );
-    }
-
 
     // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
     if (performance.now() > (appStore.getSimProp('savedClock') + UPDATE_FREQ_NONSIM)) {
@@ -167,23 +138,13 @@ function appUpdate(_) {
                 */
 
             // queue render add glucose data to time chart for simple creatures
-            uiAddTimeChartSimpleCreatureData
-                (0)
-                ('glucose'),
+            uiAddTimeChartSimpleCreatureData(0)('glucose'),
 
             // next, queue render add neuro data to time chart for simple creatures
-            uiAddTimeChartSimpleCreatureData
-                (1)
-                ('neuro'),
+            uiAddTimeChartSimpleCreatureData(1)('neuro'),
 
             // next, queue render add x-y data to geo chart for all physTypes
-            uiAddGeoChartData
-                (0)
-                ('nah')
-                ({
-                    x: 0,
-                    y: 0,
-                }),
+            uiAddGeoChartData(),
         );
     }
 };

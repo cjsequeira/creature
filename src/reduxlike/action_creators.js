@@ -4,25 +4,24 @@
 
 // *** Our imports
 import {
+    ACTION_COMPARE_COMPARE_PHYSTYPE,
+    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
     ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
-    ACTION_UI_ADD_GEO_CHART_DATA,
-    ACTION_UI_ADD_STATUS_MESSAGE,
-    ACTION_UI_ADD_TIME_CHART_DATA,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
-    ACTION_COMPARE_COMPARE_PHYSTYPE,
-    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+    ACTION_UI_ADD_GEO_CHART_DATA,
+    ACTION_UI_ADD_TIME_CHART_DATA,
 } from '../const_vals.js';
 
-import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
+import { simReducer } from './reducer_sim.js';
 
 
 // *** Add journal entry
@@ -61,7 +60,10 @@ export const comparePhysTypes = (selectFunc) => (compareFunc) =>
     compareFunc,
 });
 
-
+// log behavior changes into the app store journal
+// takes:
+//  don't care
+// returns actionType
 export const logChangedBehaviors = (_) => 
 ({
     type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
@@ -91,17 +93,11 @@ export const doNothing = (_) =>
 // *** Update app store properties related to UI
 // add geo chart data
 // takes:
-//  dataIndexIntType: chart data index, as int
-//  colorStringType: color for the data, as string
-//  xyFloatTuple: floating-point data coordinate, as {x, y}
-//  don't care: storeType
+//  don't care
 // returns actionType
-export const uiAddGeoChartData = (dataIndexIntType) => (colorStringType) => (xyFloatTuple) =>
+export const uiAddGeoChartData = (_) =>
 ({
     type: ACTION_UI_ADD_GEO_CHART_DATA,
-    dataIndexIntType,
-    colorStringType,
-    xyFloatTuple
 });
 
 // add time chart data for simple creature

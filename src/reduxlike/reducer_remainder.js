@@ -9,7 +9,6 @@ import {
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
     ACTION_UI_ADD_GEO_CHART_DATA,
-    ACTION_UI_ADD_STATUS_MESSAGE,
     ACTION_UI_ADD_TIME_CHART_DATA,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
@@ -20,10 +19,6 @@ import {
 
 import {
     getJournal,
-    getPhysTypeAtIndex,
-    getPhysTypeCondAtIndex,
-    getPhysTypeStore,
-    getSavedPhysTypeStore,
     physTypeGet,
     physTypeGetCond,
     simGetCurTime
