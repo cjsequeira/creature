@@ -40,10 +40,9 @@ export const addJournalEntry = (msgStringType) =>
 // takes: 
 //  indexIntType: index of physType in physType store
 // returns actionType
-export const savePhysType = (indexIntType) =>
+export const savePhysType = () =>
 ({
     type: ACTION_COMPARE_SAVE_PHYSTYPE,
-    indexIntType
 });
 
 
@@ -59,10 +58,9 @@ export const savePhysType = (indexIntType) =>
 // takes:
 //  indexIntType: index into physType store in app store
 // returns actionType
-export const physTypeDoAct = (indexIntType) =>
+export const physTypeDoAct = () =>
 ({
     type: ACTION_PHYSTYPE_DO_ACT,
-    indexIntType
 });
 
 

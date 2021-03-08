@@ -49,20 +49,18 @@ export const actionGroup_updateAllPhysTypes = (_) =>
     //  the moment of entering this function
     // REFACTOR: The physTypeStore could change while we're in the middle of this code!
     // Think ATOMIC
-    appStore.storeObj.remainder.physTypeStore.map(
-        (_, i) => [
+
             // save the current state of this physType
-            savePhysType(i),
+            savePhysType(),
 
             // do the physType "act"
-            physTypeDoAct(i),
+            physTypeDoAct(),
 
             // did physType behavior just change? announce it!
             // REFACTOR: Must be in form of action that causes reducer to look at 
             //  immediate store and react accordingly! Perhaps this reducer
             //  adds "just-changed" physTypes to a queue to be announced during rendering!
-        ]
-    ),
+
 ]);
 
 // create actions for the non-sim parts of the application

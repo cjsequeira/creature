@@ -42,16 +42,11 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
-        [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (actionType) =>
+        [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
-            savedPhysTypeStore: splice
-                (1)                                         // remove one element...
-                (actionType.indexIntType)                   // ... at the given index...
-                (getSavedPhysTypeStore(storeType))          // ... in this saved physType store...
-                (storeType.remainder.physTypeStore          // ... and replace with actionType.physType
-                [actionType.indexIntType]
-                ),
+
+            savedPhysTypeStore: storeType.remainder.physTypeStore,
         }),
 
         [ACTION_DO_NOTHING]: (storeType) => (_) => ({ ...storeType.remainder }),
@@ -68,20 +63,15 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ],
         }),
 
-        [ACTION_PHYSTYPE_DO_ACT]: (storeType) => (actionType) =>
+        [ACTION_PHYSTYPE_DO_ACT]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
 
-            // set physType store to the given physTypeStore with the physType
-            //  at the given index replaced with the physType returned from "act"
-            physTypeStore: splice
-                (1)                                         // remove one element...
-                (actionType.indexIntType)                   // ... at the given index...
-                (getPhysTypeStore(storeType))               // ... in this physType store...
-                (                                           // ... and replace with physType from "act"
-                    getPhysTypeStore(storeType)[actionType.indexIntType]
-                        .act(storeType)(getPhysTypeStore(storeType)[actionType.indexIntType])
-                ),
+            // IMPORTANT: every physType acts on the given store
+            // in other words, the store doesn't change in the middle of "map" below!
+            physTypeStore: storeType.remainder.physTypeStore.map((thisPhysType) =>
+                thisPhysType.act(storeType)(thisPhysType)
+            ),
         }),
 
         [ACTION_STORE_LOCK]: (storeType) => (_) =>

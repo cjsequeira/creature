@@ -72,12 +72,18 @@ setInterval(appUpdate, UPDATE_FREQ_SIM);
 // *** Time-based callback function
 // takes: 
 //  don't care
-// returns nothing
+// returns undefined
 function appUpdate(_) {
     // is simulator running?
     if (simGetRunning(appStore.storeObj)) {
         // yes: push a series of actions to the action queue
         appStore.pushActionsToQueue(
+            // update all physTypes
+            actionGroup_updateAllPhysTypes(),
+
+            // advance sim
+            advanceSim(),
+
             // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
             (performance.now() > (simGetSavedClock(appStore.storeObj) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
@@ -86,17 +92,12 @@ function appUpdate(_) {
                     saveClockForSim(performance.now()),
 
                     // update the non-sim parts of our app store
+                    // REFACTOR
                     actionGroup_NonsimActions(appStore.storeObj),
                 ]
 
                 // no: do nothing
                 : doNothing(),
-
-            // update all physTypes
-            actionGroup_updateAllPhysTypes(),
-
-            // advance sim
-            advanceSim(),
         );
     }
 
