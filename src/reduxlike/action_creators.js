@@ -17,6 +17,8 @@ import {
     ACTION_SIM_STOP,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
+    ACTION_COMPARE_COMPARE_PHYSTYPE,
+    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
 } from '../const_vals.js';
 
 import { simReducer } from './reducer_sim.js';
@@ -45,13 +47,25 @@ export const savePhysType = (_) =>
     type: ACTION_COMPARE_SAVE_PHYSTYPE,
 });
 
-
-// compare physType with store of saved physTypes at given index
+// compare current physTypes with store of saved physTypes
 // takes: 
-//  indexIntType: index of physType in physType store to compare with
-//      physType at same index in store of saved physTypes
-//  don't care: storeType
+//  selectFunc: test function for selecting physTypes from saved and current physType store
+//      signature: (physType) => boolean
+//  compareFunc: function for comparing selected physTypes 
+//      signature: (old physType) => (new physType) => bool
 // returns actionType
+export const comparePhysTypes = (selectFunc) => (compareFunc) =>
+({
+    type: ACTION_COMPARE_COMPARE_PHYSTYPE,
+    selectFunc,
+    compareFunc,
+});
+
+
+export const logChangedBehaviors = (_) => 
+({
+    type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+});
 
 
 // *** Do all physType actions
@@ -104,6 +118,7 @@ export const uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringTy
     condStringType,
 });
 
+/*
 // add status message
 // takes:
 //  msgStringType: message, as string
@@ -114,7 +129,7 @@ export const uiAddStatusMessage = (msgStringType) =>
     type: ACTION_UI_ADD_STATUS_MESSAGE,
     msgStringType
 });
-
+*/
 
 // *** Sim control
 // advance sim time

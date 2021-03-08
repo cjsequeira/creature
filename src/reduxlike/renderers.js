@@ -38,7 +38,7 @@ function mutable_updateStatusBox(storeObj) {
     const journalBufferHTMLType = storeObj.remainder.journal.reduce(
         (accumHTML, thisEntry) =>
             accumHTML +
-            'Time ' + roundTo(2)(thisEntry.timeFloatType) +
+            'Time ' + roundTo(2)(thisEntry.timeFloatType).toString() +
             ': ' + thisEntry.msgStringType + '<br />',
         '');
 

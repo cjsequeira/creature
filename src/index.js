@@ -27,26 +27,25 @@ import {
     uiAddStatusMessage,
     uiAddGeoChartData,
     uiAddTimeChartSimpleCreatureData,
+    addJournalEntry,
+    comparePhysTypes,
+    logChangedBehaviors,
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
 
 import {
+    physTypePropChanged,
+    simGetCurTime,
     simGetRunning,
     simGetSavedClock,
     storeIsLocked,
 } from './reduxlike/store_getters.js';
+import { watchProps } from './reduxlike/watch_props';
+import { actAsSimpleCreature } from './creatures/simple_creature';
 
 
-// *** Creature behavior strings
-// REFACTOR
-const behaviorStrings = {
-    idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
-    sleeping: "is sleeping! Zzzz...",
-    wandering: "is wandering! Wiggity whack!",
-    frozen: "is frozen! Brrrr....."
-};
+
 
 
 // ***********************************************************************************
@@ -61,22 +60,20 @@ appStore.storeInit(
 
 // dispatch an initial series of actions
 appStore.dispatchActions(
-    // *** Change the sim status to running
+    // change the sim status to running
     startSim(),
 
-
-    // *** Add initial data to charts
-    // queue render add glucose data to time chart
+    // add initial glucose data to time chart
     uiAddTimeChartSimpleCreatureData
         (0)
         ('glucose'),
 
-    // next, queue render add neuro data to time chart
+    // add initial neuro data to time chart
     uiAddTimeChartSimpleCreatureData
         (1)
         ('neuro'),
 
-    // next, queue render add x-y data to geo chart for this_physType
+    // add initial x-y data to geo chart
     uiAddGeoChartData
         (0)
         ('nah')
@@ -98,7 +95,7 @@ setInterval(appUpdate, UPDATE_FREQ_SIM);
 // returns undefined
 function appUpdate(_) {
     // is simulator running?
-    if (simGetRunning(appStore.storeObj)) {
+    if (appStore.getSimProp('running')) {
         // yes: dispatch a series of actions
         appStore.dispatchActions(
             // save current states of all physTypes
@@ -107,63 +104,86 @@ function appUpdate(_) {
             // do all physType actions
             physTypeDoAct(),
 
+            // compare updated creatureTypes against saved creatureTypes to see
+            //  if any behaviors changed
+            comparePhysTypes
+                // selection function: select all creatureTypes
+                ((testPhysType) => testPhysType.act === actAsSimpleCreature)
+
+                // comparison function: did creatureTypes 'conds.behavior' property change?
+                ((oldCreatureType) => (newCreatureType) =>
+                    physTypePropChanged(
+                        watchProps(oldCreatureType)(newCreatureType)('conds.behavior')
+                    )('conds.behavior')
+                ),
+
+            // log creatureTypes with changed behaviors
+            logChangedBehaviors(),
+
             // advance sim
             advanceSim(),
+        );
+    }
 
-            // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
-            (performance.now() > (simGetSavedClock(appStore.storeObj) + UPDATE_FREQ_NONSIM))
-                // yes: dispatch a series of actions to the store to update the non-sim stuff
+
+    if (appStore.storeObj.remainder.passedComparePhysTypeStore.length > 0) {
+        console.log(appStore.getSimProp('curTime') + '*** ' + 
+        appStore.storeObj.remainder.passedComparePhysTypeStore.length.toString() + 
+        '---- ' + appStore.storeObj.remainder.passedComparePhysTypeStore[0].name
+        );
+    }
+
+
+    // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
+    if (performance.now() > (appStore.getSimProp('savedClock') + UPDATE_FREQ_NONSIM)) {
+        // yes: dispatch a series of actions to the store to update the non-sim stuff
+        appStore.dispatchActions(
+            // remember the current time
+            saveClockForSim(performance.now()),
+
+            /*
+            // is this_physType a Simple Creature?
+            (inGet('act') === actAsSimpleCreature)
+                // yes
                 ? [
-                    // remember the current time
-                    saveClockForSim(performance.now()),
-
-                    /*
-                    // is this_physType a Simple Creature?
-                    (inGet('act') === actAsSimpleCreature)
-                        // yes
+                    // next, if creature is frozen, 
+                    //  give termination message and stop simulator
+                    (inGetCond('behavior') === 'frozen')
                         ? [
-                            // next, if creature is frozen, 
-                            //  give termination message and stop simulator
-                            (inGetCond('behavior') === 'frozen')
-                                ? [
-                                    // add journal entry
-                                    addJournalEntry("Simulation ended"),
+                            // add journal entry
+                            addJournalEntry("Simulation ended"),
 
-                                    // queue render add status message
-                                    uiAddStatusMessage("*** Simulation ended"),
+                            // queue render add status message
+                            uiAddStatusMessage("*** Simulation ended"),
 
-                                    // stop sim
-                                    stopSim(),
-                                ]
-                                : doNothing(),
+                            // stop sim
+                            stopSim(),
                         ]
-
-                        // not a Simple Creature: don't return the actions above
                         : doNothing(),
-                        */
-
-                    // queue render add glucose data to time chart for simple creatures
-                    uiAddTimeChartSimpleCreatureData
-                        (0)
-                        ('glucose'),
-
-                    // next, queue render add neuro data to time chart for simple creatures
-                    uiAddTimeChartSimpleCreatureData
-                        (1)
-                        ('neuro'),
-
-                    // next, queue render add x-y data to geo chart for all physTypes
-                    uiAddGeoChartData
-                        (0)
-                        ('nah')
-                        ({
-                            x: 0,
-                            y: 0,
-                        }),
                 ]
 
-                // no: do nothing
+                // not a Simple Creature: don't return the actions above
                 : doNothing(),
+                */
+
+            // queue render add glucose data to time chart for simple creatures
+            uiAddTimeChartSimpleCreatureData
+                (0)
+                ('glucose'),
+
+            // next, queue render add neuro data to time chart for simple creatures
+            uiAddTimeChartSimpleCreatureData
+                (1)
+                ('neuro'),
+
+            // next, queue render add x-y data to geo chart for all physTypes
+            uiAddGeoChartData
+                (0)
+                ('nah')
+                ({
+                    x: 0,
+                    y: 0,
+                }),
         );
     }
 };

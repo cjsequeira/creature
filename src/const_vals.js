@@ -5,6 +5,8 @@
 // *** Action names
 // compare: for saving and comparing physTypes
 export const ACTION_COMPARE_SAVE_PHYSTYPE = 'COMPARE_SAVE_PHYSTYPE';
+export const ACTION_COMPARE_COMPARE_PHYSTYPE = 'COMPARE_COMPARE_PHYSTYPE';
+export const ACTION_COMPARE_LOG_CHANGED_BEHAVIORS = 'COMPARE_LOG_CHANGED_BEHAVIORS';
 
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';

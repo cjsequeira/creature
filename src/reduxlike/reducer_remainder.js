@@ -14,6 +14,8 @@ import {
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
     UI_NUM_TRAILS,
+    ACTION_COMPARE_COMPARE_PHYSTYPE,
+    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
 } from '../const_vals.js';
 
 import {
@@ -37,6 +39,18 @@ import {
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 
+// *** Creature behavior strings
+// REFACTOR
+const behaviorStrings = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
+};
+
+
+
 // *** Remainder reducer 
 // reducer for "remainder" property of storeType
 // takes:
@@ -47,6 +61,55 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_COMPARE_COMPARE_PHYSTYPE]: (storeType) => (actionType) =>
+        ({
+            ...storeType.remainder,
+
+            // use current physTypeStore as the master list for comparing against
+            //  saved physTypeStore, using the given comparison function
+            //  and COMPARING INDEX BY INDEX
+            passedComparePhysTypeStore: storeType.remainder.physTypeStore
+                // get array of current physTypes that pass the selection function
+                // selectFunc signature is (physType) => bool
+                .filter((ptToTest) => actionType.selectFunc(ptToTest))
+
+                // with array of selected current physTypes, get array of
+                //  current PhysTypes that pass the comparison function
+                //  against the array of selected saved physTypes,
+                //  as compared on an INDEX BY INDEX BASIS! 
+                // REFACTOR: Seems inelegant. savedPhysTypeStore is re-filtered every time?
+                .filter((curPtToCompare, outer_i) =>
+                    // compareFunc signature is (old physType) => (new physType) => bool 
+                    actionType.compareFunc
+                        // saved physType to compare against current
+                        (
+                            storeType.remainder.savedPhysTypeStore
+                                // get array of saved physTypes that pass the selection function
+                                // then select the saved physType at the outer filter index
+                                .filter((ptToTest) => actionType.selectFunc(ptToTest))[outer_i]
+                        )
+                        // current physType to compare against saved
+                        (curPtToCompare)
+                ),
+        }),
+
+        [ACTION_COMPARE_LOG_CHANGED_BEHAVIORS]: (storeType) => (_) =>
+        ({
+            ...storeType.remainder,
+            journal: [
+                ...getJournal(storeType),
+
+                ...storeType.remainder.passedComparePhysTypeStore.map(
+                    (physType) => ({
+                        timeFloatType: simGetCurTime(storeType),
+                        msgStringType: physTypeGet(physType)('name') +
+                            ' ' + behaviorStrings[physTypeGetCond(physType)('behavior')],
+                    })
+                ),
+            ]
+        }),
+
+
         [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
@@ -62,8 +125,8 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             journal: [
                 ...getJournal(storeType),
                 {
-                    time: simGetCurTime(storeType),
-                    message: actionType.msgStringType,
+                    timeFloatType: simGetCurTime(storeType),
+                    msgStringType: actionType.msgStringType,
                 }
             ],
         }),
@@ -91,6 +154,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             locked: false,
         }),
 
+        /*
         [ACTION_UI_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
@@ -98,6 +162,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 'Time ' + roundTo(2)(simGetCurTime(storeType)) +
                 ': ' + actionType.msgStringType + '<br />',
         }),
+        */
 
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
         ({

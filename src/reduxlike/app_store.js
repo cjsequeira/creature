@@ -23,12 +23,6 @@ import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
 
 // *** Initial "public" store data
 const initial_store = {
-    // initial action queue
-    actionQueue: [],
-
-    // initial array of store changes to render
-    changes: [],
-
     // simulator properties
     sim: {
         // is simulator running?
@@ -178,8 +172,8 @@ const initial_store = {
         // initial "saved physType" store
         savedPhysTypeStore: [{}],
 
-        // initial status box content
-        statusBoxContent: '',
+        // initial "physTypes that passed comparison" store
+        passedComparePhysTypeStore: [{}],
 
         // creature chart time reference placeholder
         creature_time_chart: null,
@@ -410,36 +404,32 @@ const creature_geo_chart_params_init = {
 // *** Global app store
 export var appStore = {
     // *** Internal properties
-    // initial action queue
-    actionQueue: [],
-
     // initial "public" store properties, as storeType
     storeObj: {},
 
-    // REFACTOR: LINK UP QUEUEING AND DISPATCHING AGAIN!
 
     // *** Methods: Action handling
-    // push actions to the action queue, then process the entire queue
+    // dispatch a list of actions, then call subscribedFunc
     // takes:
-    //  ...actions: actions to queue, as actionType
+    //  ...actions: list of actions to dispatch, as actionType
     // returns undefined
     dispatchActions: function (...actions) {
-        // push the actions into the action queue
-        this.actionQueue.push(...actions.flat(Infinity));
-
-        // process whatever is in the action queue in FIFO order
-        // the queue may contain MORE THAN THE GIVEN ACTIONS!!
-        // for EACH action dispatched, update the public store properties
-        while (this.actionQueue.length > 0) {
-            this.storeObj = combineReducers
-                (storeTypeTemplate)
-                (appStore.storeObj)
-                (this.actionQueue.shift());
-        }
+        // process each action atomically
+        actions.flat(Infinity).forEach((action) =>
+            this.storeObj = combineReducers(storeTypeTemplate)(this.storeObj)(action)
+        );
 
         // call subscribed func (typically used for rendering UI)
         this.subscribedFunc();
     },
+
+
+    // *** Methods: Getters - Simulator getter functions
+    // return simulator property
+    // takes: 
+    //  propString: property name to get, as string
+    // returns float
+    getSimProp: function (propString) { return this.storeObj.sim[propString] },
 
 
     // *** Methods: Methods to be set by user
