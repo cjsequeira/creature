@@ -8,9 +8,9 @@ import {
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
-    ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
-    ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_UI_ADD_GEO_CHART_DATA,
+    ACTION_UI_ADD_STATUS_MESSAGE,
+    ACTION_UI_ADD_TIME_CHART_DATA,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
     UI_NUM_TRAILS,
@@ -94,14 +94,14 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             locked: false,
         }),
 
-        [ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
+        [ACTION_UI_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
             statusBoxContent: 'Time ' + roundTo(2)(simGetCurTime(storeType)) +
                 ': ' + actionType.msgStringType + '<br />',
         }),
 
-        [ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA]: (storeType) => (actionType) =>
+        [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
             creature_geo_chart: mutable_updateGeoChartData(
@@ -112,7 +112,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ),
         }),
 
-        [ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
+        [ACTION_UI_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
             creature_time_chart: mutable_updateTimeChartData(

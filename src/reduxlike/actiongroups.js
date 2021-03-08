@@ -9,15 +9,14 @@ import {
     addJournalEntry,
     doNothing,
     physTypeDoAct,
-    queueRender_addGeoChartData,
-    queueRender_addStatusMessage,
-    queueRender_addTimeChartData,
+    uiAddGeoChartData,
+    uiAddStatusMessage,
+    uiAddTimeChartData,
     savePhysType,
 } from './action_creators.js';
 
 import {
     getPhysTypeStore,
-    getUIProp,
     physTypeGet,
     physTypeGetCond,
     simGetCurTime,
@@ -78,7 +77,7 @@ export const actionGroup_NonsimActions = (storeType) =>
                 // yes
                 ? [
                     // queue render add glucose data to time chart
-                    queueRender_addTimeChartData
+                    uiAddTimeChartData
                         (2 * index)
                         (inGet('name') + ' glucose')
                         ({
@@ -87,7 +86,7 @@ export const actionGroup_NonsimActions = (storeType) =>
                         }),
 
                     // next, queue render add neuro data to time chart
-                    queueRender_addTimeChartData
+                    uiAddTimeChartData
                         (2 * index + 1)
                         (inGet('name') + ' neuro')
                         ({
@@ -103,7 +102,7 @@ export const actionGroup_NonsimActions = (storeType) =>
                             addJournalEntry("Simulation ended"),
 
                             // queue render add status message
-                            queueRender_addStatusMessage("*** Simulation ended"),
+                            uiAddStatusMessage("*** Simulation ended"),
 
                             // stop sim
                             stopSim(),
@@ -115,7 +114,7 @@ export const actionGroup_NonsimActions = (storeType) =>
                 : doNothing(),
 
             // next, queue render add x-y data to geo chart for this_physType
-            queueRender_addGeoChartData
+            uiAddGeoChartData
                 (index)
                 (inGet('color'))
                 ({

@@ -11,9 +11,9 @@ import {
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
-    ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
-    ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_UI_ADD_GEO_CHART_DATA,
+    ACTION_UI_ADD_STATUS_MESSAGE,
+    ACTION_UI_ADD_TIME_CHART_DATA,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
@@ -125,46 +125,45 @@ export const queueAction_comparePhysType = (indexIntType) => (compareFunc) => (.
 });
 
 
-// *** Queue rendering
-// *** App store does not change until mutable_renderStateChanges is applied
-// queue add geo chart data
+// *** Update app store properties related to UI
+// add geo chart data
 // takes:
 //  dataIndexIntType: chart data index, as int
 //  colorStringType: color for the data, as string
 //  xyFloatTuple: floating-point data coordinate, as {x, y}
 //  don't care: storeType
 // returns actionType
-export const queueRender_addGeoChartData = (dataIndexIntType) => (colorStringType) => (xyFloatTuple) =>
+export const uiAddGeoChartData = (dataIndexIntType) => (colorStringType) => (xyFloatTuple) =>
     ({
-        type: ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
+        type: ACTION_UI_ADD_GEO_CHART_DATA,
         dataIndexIntType,
         colorStringType,
         xyFloatTuple
     });
 
-// queue add time chart data
+// add time chart data
 // takes:
 //  dataIndexIntType: chart data index, as int
 //  labelStringType: label for legend, as string
 //  timeValFloatTuple: floating-point data coordinate, as {time, value}
 //  don't care: storeType
 // returns actionType
-export const queueRender_addTimeChartData = (dataIndexIntType) => (labelStringType) => (timeValFloatTuple) =>
+export const uiAddTimeChartData = (dataIndexIntType) => (labelStringType) => (timeValFloatTuple) =>
     ({
-        type: ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
+        type: ACTION_UI_ADD_TIME_CHART_DATA,
         dataIndexIntType,
         labelStringType,
         timeValFloatTuple
     });
 
-// queue add status message
+// add status message
 // takes:
 //  msgStringType: message, as string
 //  don't care: storeType
 // returns actionType
-export const queueRender_addStatusMessage = (msgStringType) =>
+export const uiAddStatusMessage = (msgStringType) =>
 ({
-    type: ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
+    type: ACTION_UI_ADD_STATUS_MESSAGE,
     msgStringType
 });
 
