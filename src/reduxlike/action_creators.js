@@ -90,14 +90,14 @@ export const uiAddGeoChartData = (dataIndexIntType) => (colorStringType) => (xyF
     xyFloatTuple
 });
 
-// add time chart data
+// add time chart data for simple creature
 // takes:
 //  dataIndexIntType: chart data index, as int
 //  labelStringType: label for legend, as string
 //  timeValFloatTuple: floating-point data coordinate, as {time, value}
 //  don't care: storeType
 // returns actionType
-export const uiAddTimeChartData = (offsetIntType) => (condStringType) =>
+export const uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringType) =>
 ({
     type: ACTION_UI_ADD_TIME_CHART_DATA,
     offsetIntType,

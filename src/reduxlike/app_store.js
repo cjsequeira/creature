@@ -51,18 +51,6 @@ export var appStore = {
     },
 
 
-    // *** Getters
-    // get specific condition of specific physType in store at given index
-    // return specific condition from physType
-    // takes:
-    //  indexIntType: index into physType store
-    //  argCond: string name for key of condition to look at
-    // returns condition value
-    getPhysTypeCondAtIndex: function (indexIntType, argCond) {
-        return this.storeObj.remainder.physTypeStore[indexIntType].conds[argCond];
-    },
-
-
     // *** Methods: Methods to be set by user
     // function to be called after action dispatch is completed
     subscribedFunc: function () { },

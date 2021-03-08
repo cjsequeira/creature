@@ -26,7 +26,7 @@ import {
     startSim,
     uiAddStatusMessage,
     uiAddGeoChartData,
-    uiAddTimeChartData,
+    uiAddTimeChartSimpleCreatureData,
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
@@ -68,12 +68,12 @@ appStore.pushActionsToQueue(
     
     // *** Add initial data to charts
     // queue render add glucose data to time chart
-    uiAddTimeChartData
+    uiAddTimeChartSimpleCreatureData
         (0)
         ('glucose'),
 
     // next, queue render add neuro data to time chart
-    uiAddTimeChartData
+    uiAddTimeChartSimpleCreatureData
         (1)
         ('neuro'),
 
@@ -147,17 +147,17 @@ function appUpdate(_) {
                         : doNothing(),
                         */
 
-                    // queue render add glucose data to time chart
-                    uiAddTimeChartData
+                    // queue render add glucose data to time chart for simple creatures
+                    uiAddTimeChartSimpleCreatureData
                         (0)
                         ('glucose'),
 
-                    // next, queue render add neuro data to time chart
-                    uiAddTimeChartData
+                    // next, queue render add neuro data to time chart for simple creatures
+                    uiAddTimeChartSimpleCreatureData
                         (1)
                         ('neuro'),
 
-                    // next, queue render add x-y data to geo chart for this_physType
+                    // next, queue render add x-y data to geo chart for all physTypes
                     uiAddGeoChartData
                         (0)
                         ('nah')
