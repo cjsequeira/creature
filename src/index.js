@@ -61,11 +61,11 @@ storeInit(
 );
 
 // push a series of actions to the action queue in our app store
-appStore.pushActionsToQueue(
+appStore.dispatchActions(
     // change the sim status to running
     startSim(),
 
-    
+
     // *** Add initial data to charts
     // queue render add glucose data to time chart
     uiAddTimeChartSimpleCreatureData
@@ -84,12 +84,8 @@ appStore.pushActionsToQueue(
         ({
             x: 0,
             y: 0,
-        })
-        
+        }),
 );
-
-// process all actions in the queue, which could be MORE THAN WE JUST PUSHED!
-appStore.processActionQueue();
 
 // start repeatedly updating our application at sim frequency
 setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -104,8 +100,8 @@ setInterval(appUpdate, UPDATE_FREQ_SIM);
 function appUpdate(_) {
     // is simulator running?
     if (simGetRunning(appStore.storeObj)) {
-        // yes: push a series of actions to the action queue
-        appStore.pushActionsToQueue(
+        // yes: dispatch a series of actions
+        appStore.dispatchActions(
             // save current states of all physTypes
             savePhysType(),
 
@@ -171,7 +167,4 @@ function appUpdate(_) {
                 : doNothing(),
         );
     }
-
-    // process all actions in the queue, which could be MORE THAN WE JUST PUSHED!
-    appStore.processActionQueue();
 };

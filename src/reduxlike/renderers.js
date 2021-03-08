@@ -26,6 +26,7 @@ export function mutable_renderFunction(_) {
 //  storeObj: object containing public app store state
 // returns undefined
 function mutable_updateStatusBox(storeObj) {
+    // point to status box HTML DOM context
     let statusBox = storeObj.remainder.status_box;
 
     // get status box scroll bar information
@@ -34,7 +35,7 @@ function mutable_updateStatusBox(storeObj) {
     const statusInnerHeight = statusBox.clientHeight;
 
     // make an internal HTML buffer version of the journal
-    const journalBufferHTML = storeObj.remainder.journal.reduce(
+    const journalBufferHTMLType = storeObj.remainder.journal.reduce(
         (accumHTML, thisEntry) =>
             accumHTML +
             'Time ' + roundTo(2)(thisEntry.timeFloatType) +
@@ -42,11 +43,10 @@ function mutable_updateStatusBox(storeObj) {
         '');
 
     // MUTABLE: update content in status box using HTML buffer
-    statusBox.innerHTML = journalBufferHTML;
+    statusBox.innerHTML = journalBufferHTMLType;
 
     // MUTABLE: adjust scroll bar position to auto-scroll if scroll bar is near the end
     if (statusScrollTop > (statusScrollHeight - 1.1 * statusInnerHeight)) {
         statusBox.scrollTop = statusScrollHeight;
     }
-}
-
+};

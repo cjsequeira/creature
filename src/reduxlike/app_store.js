@@ -21,14 +21,19 @@ export var appStore = {
     // initial "public" store properties, as storeType
     storeObj: {},
 
+    // REFACTOR: LINK UP QUEUEING AND DISPATCHING AGAIN!
 
     // *** Methods: Action handling
-    // process all actions in the action queue
+    // push actions to the action queue, then process the entire queue
     // takes:
-    //  don't care
+    //  ...actions: actions to queue, as actionType
     // returns undefined
-    processActionQueue: function (_) {
+    dispatchActions: function (...actions) {
+        // push the actions into the action queue
+        this.actionQueue.push(...actions.flat(Infinity));
+
         // process whatever is in the action queue in FIFO order
+        // the queue may contain MORE THAN THE GIVEN ACTIONS!!
         // for EACH action dispatched, update the public store properties
         while (this.actionQueue.length > 0) {
             this.storeObj = combineReducers
@@ -39,15 +44,6 @@ export var appStore = {
 
         // call subscribed func (typically used for rendering UI)
         this.subscribedFunc();
-    },
-
-    // push actions to the queue
-    // takes:
-    //  ...actions: actions to queue, as actionType
-    // returns undefined
-    pushActionsToQueue: function (...actions) {
-        // push the actions into the action queue
-        this.actionQueue.push(...actions.flat(Infinity))
     },
 
 
