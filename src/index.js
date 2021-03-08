@@ -37,7 +37,6 @@ import {
     storeIsLocked,
 } from './reduxlike/store_getters.js';
 
-import { storeInit } from './reduxlike/store_init.js';
 
 // *** Creature behavior strings
 // REFACTOR
@@ -53,16 +52,16 @@ const behaviorStrings = {
 // ***********************************************************************************
 // *** Code that actually does stuff
 
-// create our store in "appStore" using some pointers to web page elements
-storeInit(
+// init our global app store object using some pointers to web page elements
+appStore.storeInit(
     document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
     document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
     document.getElementById(CREATURE_STATUS_BOX)
 );
 
-// push a series of actions to the action queue in our app store
+// dispatch an initial series of actions
 appStore.dispatchActions(
-    // change the sim status to running
+    // *** Change the sim status to running
     startSim(),
 
 
