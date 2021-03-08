@@ -87,14 +87,10 @@ const actIdling = (storeType) => (physType) =>
         ({
             'idling': () =>
                 4.0,
-
-                /*
             'wandering': (physType) =>
                 (physTypeGetCond(physType)('glucose') < 50.0) ? 7.0 : 0.1,
             'sleeping': (physType) =>
                 (physTypeGetCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
-*/
-
         });
 
 // wandering behavior function
