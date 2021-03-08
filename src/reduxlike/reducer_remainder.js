@@ -34,6 +34,7 @@ import {
     roundTo,
     splice,
 } from '../utils.js';
+import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 
 // *** Remainder reducer 
@@ -122,18 +123,20 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ...storeType.remainder,
 
             creature_time_chart:
-                // update time chart data associated with all physTypes in the store
-                storeType.remainder.physTypeStore.reduce((accumData, thisPhysType, i) =>
-                    mutable_updateTimeChartData(
-                        accumData,
-                        2 * i + actionType.offsetIntType,
-                        physTypeGet(thisPhysType)('name') + ' ' + actionType.condStringType,
-                        ({
-                            time: simGetCurTime(storeType),
-                            value: physTypeGetCond(thisPhysType)(actionType.condStringType),
-                        })
-                    ),
-                    storeType.remainder.creature_time_chart),
+                // update time chart data associated with all **simple creatures** in the store
+                storeType.remainder.physTypeStore
+                    .filter((filterPhysType) => physTypeGet(filterPhysType)('act') === actAsSimpleCreature)
+                    .reduce((accumData, chartPhysType, i) =>
+                        mutable_updateTimeChartData(
+                            accumData,
+                            2 * i + actionType.offsetIntType,
+                            physTypeGet(chartPhysType)('name') + ' ' + actionType.condStringType,
+                            ({
+                                time: simGetCurTime(storeType),
+                                value: physTypeGetCond(chartPhysType)(actionType.condStringType),
+                            })
+                        ),
+                        storeType.remainder.creature_time_chart)
         }),
 
         // use inActionType.type as an entry key into the key-val list above

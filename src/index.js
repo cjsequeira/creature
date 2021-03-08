@@ -32,17 +32,22 @@ import {
 import { appStore } from './reduxlike/app_store.js';
 
 import {
-    actionGroup_NonsimActions,
-    actionGroup_updateAllPhysTypes
-} from './reduxlike/actiongroups.js';
-
-import {
     simGetRunning,
     simGetSavedClock,
     storeIsLocked,
 } from './reduxlike/store_getters.js';
 
 import { storeInit } from './reduxlike/store_init.js';
+
+// *** Creature behavior strings
+// REFACTOR
+const behaviorStrings = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
+};
 
 
 // ***********************************************************************************
@@ -60,8 +65,27 @@ appStore.pushActionsToQueue(
     // change the sim status to running
     startSim(),
 
-    // dispatch non-sim-related actions
-    actionGroup_NonsimActions(appStore.storeObj),
+    
+    // *** Add initial data to charts
+    // queue render add glucose data to time chart
+    uiAddTimeChartData
+        (0)
+        ('glucose'),
+
+    // next, queue render add neuro data to time chart
+    uiAddTimeChartData
+        (1)
+        ('neuro'),
+
+    // next, queue render add x-y data to geo chart for this_physType
+    uiAddGeoChartData
+        (0)
+        ('nah')
+        ({
+            x: 0,
+            y: 0,
+        })
+        
 );
 
 // process all actions in the queue, which could be MORE THAN WE JUST PUSHED!
@@ -98,9 +122,30 @@ function appUpdate(_) {
                     // remember the current time
                     saveClockForSim(performance.now()),
 
-                    // update the non-sim parts of our app store
-                    // REFACTOR
-                    actionGroup_NonsimActions(appStore.storeObj),
+                    /*
+                    // is this_physType a Simple Creature?
+                    (inGet('act') === actAsSimpleCreature)
+                        // yes
+                        ? [
+                            // next, if creature is frozen, 
+                            //  give termination message and stop simulator
+                            (inGetCond('behavior') === 'frozen')
+                                ? [
+                                    // add journal entry
+                                    addJournalEntry("Simulation ended"),
+
+                                    // queue render add status message
+                                    uiAddStatusMessage("*** Simulation ended"),
+
+                                    // stop sim
+                                    stopSim(),
+                                ]
+                                : doNothing(),
+                        ]
+
+                        // not a Simple Creature: don't return the actions above
+                        : doNothing(),
+                        */
 
                     // queue render add glucose data to time chart
                     uiAddTimeChartData
