@@ -120,12 +120,20 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_UI_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
-            creature_time_chart: mutable_updateTimeChartData(
-                storeType.remainder.creature_time_chart,
-                actionType.dataIndexIntType,
-                actionType.labelStringType,
-                actionType.timeValFloatTuple
-            ),
+
+            creature_time_chart:
+                // update time chart data associated with all physTypes in the store
+                storeType.remainder.physTypeStore.reduce((accumData, thisPhysType, i) =>
+                    mutable_updateTimeChartData(
+                        accumData,
+                        2 * i + actionType.offsetIntType,
+                        physTypeGet(thisPhysType)('name') + ' ' + actionType.condStringType,
+                        ({
+                            time: simGetCurTime(storeType),
+                            value: physTypeGetCond(thisPhysType)(actionType.condStringType),
+                        })
+                    ),
+                    storeType.remainder.creature_time_chart),
         }),
 
         // use inActionType.type as an entry key into the key-val list above

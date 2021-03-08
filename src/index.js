@@ -26,6 +26,7 @@ import {
     startSim,
     uiAddStatusMessage,
     uiAddGeoChartData,
+    uiAddTimeChartData,
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
@@ -100,6 +101,16 @@ function appUpdate(_) {
                     // update the non-sim parts of our app store
                     // REFACTOR
                     actionGroup_NonsimActions(appStore.storeObj),
+
+                    // queue render add glucose data to time chart
+                    uiAddTimeChartData
+                        (0)
+                        ('glucose'),
+
+                    // next, queue render add neuro data to time chart
+                    uiAddTimeChartData
+                        (1)
+                        ('neuro'),
 
                     // next, queue render add x-y data to geo chart for this_physType
                     uiAddGeoChartData

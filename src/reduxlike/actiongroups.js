@@ -59,24 +59,6 @@ export const actionGroup_NonsimActions = (storeType) =>
             (inGet('act') === actAsSimpleCreature)
                 // yes
                 ? [
-                    // queue render add glucose data to time chart
-                    uiAddTimeChartData
-                        (2 * index)
-                        (inGet('name') + ' glucose')
-                        ({
-                            time: simGetCurTime(storeType),
-                            value: inGetCond('glucose')
-                        }),
-
-                    // next, queue render add neuro data to time chart
-                    uiAddTimeChartData
-                        (2 * index + 1)
-                        (inGet('name') + ' neuro')
-                        ({
-                            time: simGetCurTime(storeType),
-                            value: inGetCond('neuro')
-                        }),
-
                     // next, if creature is frozen, 
                     //  give termination message and stop simulator
                     (inGetCond('behavior') === 'frozen')

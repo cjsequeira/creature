@@ -97,12 +97,11 @@ export const uiAddGeoChartData = (dataIndexIntType) => (colorStringType) => (xyF
 //  timeValFloatTuple: floating-point data coordinate, as {time, value}
 //  don't care: storeType
 // returns actionType
-export const uiAddTimeChartData = (dataIndexIntType) => (labelStringType) => (timeValFloatTuple) =>
+export const uiAddTimeChartData = (offsetIntType) => (condStringType) =>
 ({
     type: ACTION_UI_ADD_TIME_CHART_DATA,
-    dataIndexIntType,
-    labelStringType,
-    timeValFloatTuple
+    offsetIntType,
+    condStringType,
 });
 
 // add status message
