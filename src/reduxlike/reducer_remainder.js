@@ -27,9 +27,9 @@ import {
     chartShiftData,
     concatSliceMap,
     fadeColors,
+    roundTo,
     splice,
 } from '../utils.js';
-
 
 
 // *** Remainder reducer 
@@ -97,7 +97,8 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_UI_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
-            statusBoxContent: 'Time ' + roundTo(2)(simGetCurTime(storeType)) +
+            statusBoxContent: storeType.remainder.statusBoxContent +
+                'Time ' + roundTo(2)(simGetCurTime(storeType)) +
                 ': ' + actionType.msgStringType + '<br />',
         }),
 

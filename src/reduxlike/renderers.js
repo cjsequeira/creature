@@ -2,16 +2,6 @@
 
 // ****** App store rendering functions ******
 
-// *** Our imports
-import { UI_NUM_TRAILS } from '../const_vals.js';
-
-import {
-    chartShiftData,
-    concatSliceMap,
-    fadeColors,
-} from '../utils.js';
-
-
 // *** Function to be called when app store changes
 // MUTABLE: may apply functions that mutate the application beyond the app store
 // ignores return values from renderFunc applications

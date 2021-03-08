@@ -3,11 +3,6 @@
 // ****** All constant values in the application ******
 
 // *** Action names
-// action queue operations
-export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
-export const ACTION_ACTION_QUEUE_DO_ACTION_GROUP = 'ACTION_QUEUE_DO_ACTION_GROUP';
-export const ACTION_ACTION_QUEUE_COMPARE_PHYSTYPE = 'ACTION_QUEUE_COMPARE_PHYSTYPE';
-
 // compare: for saving and comparing physTypes
 export const ACTION_COMPARE_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
 

@@ -20,8 +20,6 @@ import {
 import {
     advanceSim,
     doNothing,
-    mutableRender,
-    queueAction_doActionGroup,
     saveClockForSim,
     startSim,
 } from './reduxlike/action_creators.js';
@@ -57,8 +55,8 @@ appStore.actionDispatch(
     // change the sim status to running
     startSim(),
 
-    // queue dispatch of non-sim-related actions
-    queueAction_doActionGroup(actionGroup_NonsimActions),
+    // dispatch non-sim-related actions
+    actionGroup_NonsimActions(appStore.storeObj),
 );
 
 // start repeatedly updating our application at sim frequency
@@ -79,9 +77,6 @@ function appUpdate(_) {
     ) {
         // yes: dispatch a series of actions to the store to update it
         appStore.actionDispatch(
-            // advance sim
-            advanceSim(),
-
             // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
             (performance.now() > (simGetSavedClock(appStore.storeObj) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
@@ -89,15 +84,18 @@ function appUpdate(_) {
                     // remember the current time
                     saveClockForSim(performance.now()),
 
-                    // queue update of the non-sim parts of our app store
-                    queueAction_doActionGroup(actionGroup_NonsimActions),
+                    // update the non-sim parts of our app store
+                    actionGroup_NonsimActions(appStore.storeObj),
                 ]
 
                 // no: do nothing
                 : doNothing(),
 
-            // queue update of all physTypes
-            queueAction_doActionGroup(actionGroup_updateAllPhysTypes),
+            // update all physTypes
+            actionGroup_updateAllPhysTypes(appStore.storeObj),
+
+            // advance sim
+            advanceSim(),
         );
     }
 };

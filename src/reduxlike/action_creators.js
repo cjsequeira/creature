@@ -22,7 +22,6 @@ import {
     ACTION_STORE_UNLOCK,
 } from '../const_vals.js';
 
-import { actionQueueReducer } from './reducer_action_queue.js';
 import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
 import { combineReducers } from './reduxlike_utils.js'
@@ -230,7 +229,6 @@ export const unlockStore = (_) =>
 
 // *** storeType template with reducers for specific properties
 const storeTypeTemplate = {
-    actionQueue: actionQueueReducer,
     sim: simReducer,
 
     // REFACTOR

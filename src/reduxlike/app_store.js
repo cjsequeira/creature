@@ -14,14 +14,17 @@ export const special_doActionQueue = (_) => ({
 });
 
 
-
 // *** Global app store
 export var appStore = {
+    // initial action queue
+    actionQueue: [],
+
+    // initial "public" store properties, as storeType
     storeObj: {},
 
     // *** Functions to be set by user
     // function to be called after action dispatch is completed
-    subscribedFunc: function () {},
+    subscribedFunc: function () { },
 
     // *** Public action dispatch function
     // takes:
@@ -29,17 +32,16 @@ export var appStore = {
     //  ...actions: action creators to apply, each returning actionType
     // returns storeType
     actionDispatch: function (...actions) {
-        // chain up actions to dispatch
-        this.storeObj = applyArgChain
-            (actionDispatchPrivate)
-            (this.storeObj)
-            (
-                lockStore(),                // lock the store
-                actions,                    // dispatch given actions
-                special_doActionQueue(),    // dispatch actions in store queue
-                clearActionQueue(),         // clear action queue
-                unlockStore(),              // unlock the store
-            )
+        // dispatch an array of actions, updating the public store properties each time
+        [
+            lockStore(),                // lock the store
+            actions,                    // dispatch given actions
+            special_doActionQueue(),    // dispatch actions in store queue
+            clearActionQueue(),         // clear action queue
+            unlockStore(),              // unlock the store
+        ].forEach(thisAction => {
+            this.storeObj = actionDispatchPrivate(this.storeObj)(thisAction)
+        });
 
         // call subscribed func
         this.subscribedFunc();
