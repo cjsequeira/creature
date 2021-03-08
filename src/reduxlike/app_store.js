@@ -38,11 +38,8 @@ export var appStore = {
             actions,                    // dispatch given actions
             clearActionQueue(),         // clear action queue
             unlockStore(),              // unlock the store
-        ].forEach(thisAction => {
-            this.storeObj = combineReducers
-                (storeTypeTemplate)
-                (appStore.storeObj)
-                (thisAction);
+        ].flat(Infinity).forEach(thisAction => {
+            this.storeObj = combineReducers(storeTypeTemplate)(appStore.storeObj)(thisAction);
         });
 
         // call subscribed func

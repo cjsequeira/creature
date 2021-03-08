@@ -4,8 +4,6 @@
 
 // *** Our imports
 import {
-    ACTION_ACTION_QUEUE_COMPARE_PHYSTYPE,
-    ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
     ACTION_CLEAR_ACTION_QUEUE,
     ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_DO_NOTHING,
@@ -24,9 +22,6 @@ import {
 
 import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
-import { combineReducers } from './reduxlike_utils.js'
-import { getActionQueue } from './store_getters.js';
-import { applyArgChain } from '../utils.js';
 
 
 // *** Add journal entry
@@ -94,33 +89,6 @@ export const physTypeDoAct = (physType) => (indexIntType) =>
 export const doNothing = (_) =>
 ({
     type: ACTION_DO_NOTHING,
-});
-
-
-// *** Queue actions into action queue; queue is automatically executed after all other
-//  actions in actionDispatch 
-// queue doing of action group
-// takes:
-//  actionGroupFunc: actiongroup function with signature (storeType) => [actionType]
-//  don't care: storeType
-// returns actionType
-export const queueAction_doActionGroup = (actionGroupFunc) =>
-({
-    type: ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
-    actionGroupFunc,
-});
-
-// compare physType with store of saved physTypes at given index
-// takes: 
-//  indexIntType: index of physType in physType store to compare with
-//      physType at same index in store of saved physTypes
-//  don't care: storeType
-// returns actionType
-export const queueAction_comparePhysType = (indexIntType) => (compareFunc) => (...propsStringType) =>
-({
-    type: ACTION_ACTION_QUEUE_COMPARE_PHYSTYPE,
-    compareFunc,
-    propsStringType,
 });
 
 
