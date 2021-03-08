@@ -14,6 +14,7 @@ import { combineReducers } from './reduxlike_utils.js';
 
 // *** Global app store
 export var appStore = {
+    // *** Internal properties
     // initial action queue
     actionQueue: [],
 
@@ -21,41 +22,14 @@ export var appStore = {
     storeObj: {},
 
 
-    // *** Functions to be set by user
-    // function to be called after action dispatch is completed
-    subscribedFunc: function () { },
-
-
-    // *** Getters
-    // get specific condition of specific physType in store at given index
-    // return specific condition from physType
+    // *** Methods: Action handling
+    // process all actions in the action queue
     // takes:
-    //  indexIntType: index into physType store
-    //  argCond: string name for key of condition to look at
-    // returns condition value
-    getPhysTypeCondAtIndex: function(indexIntType, argCond) {
-        return this.storeObj.remainder.physTypeStore[indexIntType].conds[argCond];
-    },
-
-
-    // *** Public action dispatch function
-    // takes:
-    //  storeType: app store, as storeType
-    //  ...actions: action creators to apply, each returning actionType
-    // returns storeType
-    actionDispatch: function (...actions) {
-        // push a series of actions into the action queue
-        this.actionQueue.push(
-            ...[
-                lockStore(),                // lock the store
-                actions,                    // include given actions
-                unlockStore(),              // unlock the store
-            ].flat(Infinity)                // flatten the entire series
-        );
-
-        // now dispatch whatever is in the action queue in FIFO order, which could 
-        //  be MORE THAN THE ACTIONS WE JUST PUSHED!
-        // for each action dispatched, update the public store properties
+    //  don't care
+    // returns undefined
+    processActionQueue: function (_) {
+        // process whatever is in the action queue in FIFO order
+        // for EACH action dispatched, update the public store properties
         while (this.actionQueue.length > 0) {
             this.storeObj = combineReducers
                 (storeTypeTemplate)
@@ -67,8 +41,34 @@ export var appStore = {
         this.subscribedFunc();
     },
 
+    // push actions to the queue
+    // takes:
+    //  ...actions: actions to queue, as actionType
+    // returns undefined
+    pushActionsToQueue: function (...actions) {
+        // push the actions into the action queue
+        this.actionQueue.push(...actions.flat(Infinity))
+    },
 
-    // *** Setters
+
+    // *** Getters
+    // get specific condition of specific physType in store at given index
+    // return specific condition from physType
+    // takes:
+    //  indexIntType: index into physType store
+    //  argCond: string name for key of condition to look at
+    // returns condition value
+    getPhysTypeCondAtIndex: function (indexIntType, argCond) {
+        return this.storeObj.remainder.physTypeStore[indexIntType].conds[argCond];
+    },
+
+
+    // *** Methods: Methods to be set by user
+    // function to be called after action dispatch is completed
+    subscribedFunc: function () { },
+
+
+    // *** Methods: Setters
     // set function to call when app store changes
     // takes:
     //  inFunc: () => ()

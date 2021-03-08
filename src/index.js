@@ -51,14 +51,17 @@ storeInit(
     document.getElementById(CREATURE_STATUS_BOX)
 );
 
-// dispatch a series of actions to our store
-appStore.actionDispatch(
+// push a series of actions to the action queue in our app store
+appStore.pushActionsToQueue(
     // change the sim status to running
     startSim(),
 
     // dispatch non-sim-related actions
     actionGroup_NonsimActions(appStore.storeObj),
 );
+
+// process all actions in the queue, which could be MORE THAN WE JUST PUSHED!
+appStore.processActionQueue();
 
 // start repeatedly updating our application at sim frequency
 setInterval(appUpdate, UPDATE_FREQ_SIM);
@@ -71,13 +74,10 @@ setInterval(appUpdate, UPDATE_FREQ_SIM);
 //  don't care
 // returns nothing
 function appUpdate(_) {
-    // is simulator running and store lock not set?
-    if (
-        simGetRunning(appStore.storeObj) &&
-        (!storeIsLocked(appStore.storeObj))
-    ) {
-        // yes: dispatch a series of actions to the store to update it
-        appStore.actionDispatch(
+    // is simulator running?
+    if (simGetRunning(appStore.storeObj)) {
+        // yes: push a series of actions to the action queue
+        appStore.pushActionsToQueue(
             // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
             (performance.now() > (simGetSavedClock(appStore.storeObj) + UPDATE_FREQ_NONSIM))
                 // yes: dispatch a series of actions to the store to update the non-sim stuff
@@ -99,4 +99,7 @@ function appUpdate(_) {
             advanceSim(),
         );
     }
+
+    // process all actions in the queue, which could be MORE THAN WE JUST PUSHED!
+    appStore.processActionQueue();
 };

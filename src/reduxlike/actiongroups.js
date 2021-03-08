@@ -47,6 +47,8 @@ export const actionGroup_updateAllPhysTypes = (_) =>
 ([
     // do physType act for each physType in physType store at 
     //  the moment of entering this function
+    // REFACTOR: The physTypeStore could change while we're in the middle of this code!
+    // Think ATOMIC
     appStore.storeObj.remainder.physTypeStore.map(
         (_, i) => [
             // save the current state of this physType
