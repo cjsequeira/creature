@@ -20,9 +20,12 @@ import {
 import {
     advanceSim,
     doNothing,
+    physTypeDoAct,
     saveClockForSim,
+    savePhysType,
     startSim,
     uiAddStatusMessage,
+    uiAddGeoChartData,
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
@@ -78,8 +81,11 @@ function appUpdate(_) {
     if (simGetRunning(appStore.storeObj)) {
         // yes: push a series of actions to the action queue
         appStore.pushActionsToQueue(
-            // update all physTypes
-            actionGroup_updateAllPhysTypes(),
+            // save current states of all physTypes
+            savePhysType(),
+
+            // do all physType actions
+            physTypeDoAct(),
 
             // advance sim
             advanceSim(),
@@ -94,6 +100,15 @@ function appUpdate(_) {
                     // update the non-sim parts of our app store
                     // REFACTOR
                     actionGroup_NonsimActions(appStore.storeObj),
+
+                    // next, queue render add x-y data to geo chart for this_physType
+                    uiAddGeoChartData
+                        (0)
+                        ('nah')
+                        ({
+                            x: 0,
+                            y: 0,
+                        }),
                 ]
 
                 // no: do nothing

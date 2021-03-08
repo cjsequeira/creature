@@ -81,6 +81,23 @@ export const storeIsLocked = (storeType) => storeType.remainder.locked;
 // returns array of physType objects
 export const getPhysTypeStore = (storeType) => storeType.remainder.physTypeStore;
 
+// get specific physType in store at given index
+// takes:
+//  storeType: store, as storeType
+//  indexIntType: index into physType store
+// returns physType
+export const getPhysTypeAtIndex = (storeType) => (indexIntType) =>
+    storeType.remainder.physTypeStore[indexIntType];
+
+// get specific condition of specific physType in store at given index
+// takes:
+//  storeType: store, as storeType
+//  indexIntType: index into physType store
+//  condStringType: specific condition to get, as string
+// returns any
+export const getPhysTypeCondAtIndex = (storeType) => (indexIntType) => (condStringType) =>
+    storeType.remainder.physTypeStore[indexIntType][condStringType];
+
 // *** Get saved physType store
 // takes: 
 //  storeType: store, as storeType

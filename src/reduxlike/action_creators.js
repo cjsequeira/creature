@@ -36,11 +36,11 @@ export const addJournalEntry = (msgStringType) =>
 
 
 // *** Comparing physTypes
-// save physType for comparison
+// save all physTypes for later comparison
 // takes: 
-//  indexIntType: index of physType in physType store
+//  don't care
 // returns actionType
-export const savePhysType = () =>
+export const savePhysType = (_) =>
 ({
     type: ACTION_COMPARE_SAVE_PHYSTYPE,
 });
@@ -54,11 +54,11 @@ export const savePhysType = () =>
 // returns actionType
 
 
-// *** Do action for physType at given index
+// *** Do all physType actions
 // takes:
-//  indexIntType: index into physType store in app store
+//  don't care
 // returns actionType
-export const physTypeDoAct = () =>
+export const physTypeDoAct = (_) =>
 ({
     type: ACTION_PHYSTYPE_DO_ACT,
 });
@@ -83,12 +83,12 @@ export const doNothing = (_) =>
 //  don't care: storeType
 // returns actionType
 export const uiAddGeoChartData = (dataIndexIntType) => (colorStringType) => (xyFloatTuple) =>
-    ({
-        type: ACTION_UI_ADD_GEO_CHART_DATA,
-        dataIndexIntType,
-        colorStringType,
-        xyFloatTuple
-    });
+({
+    type: ACTION_UI_ADD_GEO_CHART_DATA,
+    dataIndexIntType,
+    colorStringType,
+    xyFloatTuple
+});
 
 // add time chart data
 // takes:
@@ -98,12 +98,12 @@ export const uiAddGeoChartData = (dataIndexIntType) => (colorStringType) => (xyF
 //  don't care: storeType
 // returns actionType
 export const uiAddTimeChartData = (dataIndexIntType) => (labelStringType) => (timeValFloatTuple) =>
-    ({
-        type: ACTION_UI_ADD_TIME_CHART_DATA,
-        dataIndexIntType,
-        labelStringType,
-        timeValFloatTuple
-    });
+({
+    type: ACTION_UI_ADD_TIME_CHART_DATA,
+    dataIndexIntType,
+    labelStringType,
+    timeValFloatTuple
+});
 
 // add status message
 // takes:

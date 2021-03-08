@@ -18,8 +18,12 @@ import {
 
 import {
     getJournal,
+    getPhysTypeAtIndex,
+    getPhysTypeCondAtIndex,
     getPhysTypeStore,
     getSavedPhysTypeStore,
+    physTypeGet,
+    physTypeGetCond,
     simGetCurTime
 } from './store_getters.js';
 
@@ -94,15 +98,23 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 ': ' + actionType.msgStringType + '<br />',
         }),
 
-        [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (actionType) =>
+        [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
-            creature_geo_chart: mutable_updateGeoChartData(
-                storeType.remainder.creature_geo_chart,
-                actionType.dataIndexIntType,
-                actionType.colorStringType,
-                actionType.xyFloatTuple
-            ),
+
+            creature_geo_chart:
+                // update geo chart data associated with all physTypes in the store
+                storeType.remainder.physTypeStore.reduce((accumData, thisPhysType, i) =>
+                    mutable_updateGeoChartData(
+                        accumData,
+                        i,
+                        physTypeGet(thisPhysType)('color'),
+                        ({
+                            x: physTypeGetCond(thisPhysType)('x'),
+                            y: physTypeGetCond(thisPhysType)('y'),
+                        })
+                    ),
+                    storeType.remainder.creature_geo_chart),
         }),
 
         [ACTION_UI_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
