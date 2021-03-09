@@ -4,31 +4,25 @@
 
 // *** Our imports
 import {
-    ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
-    ACTION_CLEAR_ACTION_QUEUE,
+    ACTION_COMPARE_COMPARE_PHYSTYPE,
+    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+    ACTION_COMPARE_SAVE_PHYSTYPE,
+    ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
-    ACTION_MUTABLE_RENDER,
     ACTION_PHYSTYPE_DO_ACT,
-    ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
-    ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
-    ACTION_WATCH_SAVE_PHYSTYPE,
+    ACTION_UI_ADD_GEO_CHART_DATA,
+    ACTION_UI_ADD_TIME_CHART_DATA,
 } from '../const_vals.js';
 
-import { actionQueueReducer } from './reducer_action_queue.js';
-import { changesQueueReducer } from './reducer_changes_queue.js';
-import { simReducer } from './reducer_sim.js';
 import { remainderReducer } from './reducer_remainder.js';
-import { combineReducers } from './reduxlike_utils.js'
-import { getActionQueue } from './store_getters.js';
-import { applyArgChain } from '../utils.js';
+import { simReducer } from './reducer_sim.js';
 
 
 // *** Add journal entry
@@ -43,27 +37,56 @@ export const addJournalEntry = (msgStringType) =>
 });
 
 
-// *** Clear action queue
+// *** Comparing and testing physTypes
+// compare current physTypes with store of saved physTypes
 // takes: 
-//  don't care: storeType
+//  selectFunc: test function for selecting physTypes from saved and current physType store
+//      signature: (physType) => boolean
+//  compareFunc: function for comparing selected physTypes 
+//      signature: (old physType) => (new physType) => bool
 // returns actionType
-export const clearActionQueue = (_) =>
+export const comparePhysTypes = (selectFunc) => (compareFunc) =>
 ({
-    type: ACTION_CLEAR_ACTION_QUEUE,
+    type: ACTION_COMPARE_COMPARE_PHYSTYPE,
+    selectFunc,
+    compareFunc,
+});
+
+// log behavior changes into the app store journal
+// takes:
+//  don't care
+// returns actionType
+export const logChangedBehaviors = (_) => 
+({
+    type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+});
+
+// save all physTypes for later comparison
+// takes: 
+//  don't care
+// returns actionType
+export const savePhysType = (_) =>
+({
+    type: ACTION_COMPARE_SAVE_PHYSTYPE,
+});
+
+// stop if frozen
+// takes: 
+//  don't care
+// returns actionType
+export const stopIfFrozen = (_) =>
+({
+    type: ACTION_COMPARE_STOP_IF_FROZEN,
 });
 
 
-// *** Do action for physType at given index
+// *** Do all physType actions
 // takes:
-//  physType
-//  indexIntType: index into physType store in app store
-//  don't care: storeType
+//  don't care
 // returns actionType
-export const physTypeDoAct = (physType) => (indexIntType) =>
+export const physTypeDoAct = (_) =>
 ({
     type: ACTION_PHYSTYPE_DO_ACT,
-    physType,
-    indexIntType
 });
 
 
@@ -77,81 +100,42 @@ export const doNothing = (_) =>
 });
 
 
-// *** Mutable render that may mutate application beyond the app store (e.g. UI renders)
-// takes: 
-//  don't care: storeType
+// *** Update app store properties related to UI
+// add geo chart data
+// takes:
+//  don't care
 // returns actionType
-export const mutableRender = (_) =>
+export const uiAddGeoChartData = (_) =>
 ({
-    type: ACTION_MUTABLE_RENDER,
+    type: ACTION_UI_ADD_GEO_CHART_DATA,
 });
 
-
-// *** Queue actions into action queue; queue is automatically executed after all other
-//  actions in actionDispatch 
-// queue doing of action group
+// add time chart data for simple creature
 // takes:
-//  actionGroupFunc: actiongroup function with signature (storeType) => [actionType]
-//  don't care: storeType
-// returns actionType
-export const queueAction_doActionGroup = (actionGroupFunc) =>
-({
-    type: ACTION_ACTION_QUEUE_DO_ACTION_GROUP,
-    actionGroupFunc,
-});
-
-
-// *** Queue rendering
-// *** App store does not change until mutable_renderStateChanges is applied
-// queue add geo chart data
-// takes:
-//  chart: geo chart object reference
-//  dataIndexIntType: chart data index, as int
-//  colorStringType: color for the data, as string
-//  xyFloatTuple: floating-point data coordinate, as {x, y}
-//  don't care: storeType
-// returns actionType
-export const queueRender_addGeoChartData = (chart) => (dataIndexIntType) =>
-    (colorStringType) => (xyFloatTuple) =>
-    ({
-        type: ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA,
-        chart,
-        dataIndexIntType,
-        colorStringType,
-        xyFloatTuple
-    });
-
-// queue add time chart data
-// takes:
-//  chart: time chart object reference
 //  dataIndexIntType: chart data index, as int
 //  labelStringType: label for legend, as string
 //  timeValFloatTuple: floating-point data coordinate, as {time, value}
 //  don't care: storeType
 // returns actionType
-export const queueRender_addTimeChartData = (chart) => (dataIndexIntType) =>
-    (labelStringType) => (timeValFloatTuple) =>
-    ({
-        type: ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA,
-        chart,
-        dataIndexIntType,
-        labelStringType,
-        timeValFloatTuple
-    });
+export const uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringType) =>
+({
+    type: ACTION_UI_ADD_TIME_CHART_DATA,
+    offsetIntType,
+    condStringType,
+});
 
-// queue add status message
+/*
+// add status message
 // takes:
-//  statusBox: HTML DOM status box reference
 //  msgStringType: message, as string
 //  don't care: storeType
 // returns actionType
-export const queueRender_addStatusMessage = (statusBox) => (msgStringType) =>
+export const uiAddStatusMessage = (msgStringType) =>
 ({
-    type: ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE,
-    statusBox,
+    type: ACTION_UI_ADD_STATUS_MESSAGE,
     msgStringType
 });
-
+*/
 
 // *** Sim control
 // advance sim time
@@ -213,73 +197,10 @@ export const unlockStore = (_) =>
 })
 
 
-// *** Watching physTypes
-// save physType for watching
-// takes: 
-//  physType: physType to watch
-//  indexIntType: index of physType in physType store
-//  don't care: storeType
-// returns actionType
-export const savePhysType = (physType) => (indexIntType) =>
-({
-    type: ACTION_WATCH_SAVE_PHYSTYPE,
-    physType,
-    indexIntType
-})
-
-
 // *** storeType template with reducers for specific properties
-const storeTypeTemplate = {
-    actionQueue: actionQueueReducer,
-    changes: changesQueueReducer,
+export const storeTypeTemplate = {
     sim: simReducer,
 
+    // REFACTOR
     remainder: remainderReducer,
 };
-
-
-// REFACTOR
-const special_doActionQueue = (_) => ({
-    type: 'SPECIAL',
-});
-
-
-// *** Action dispatcher functions
-// private action dispatch function
-// takes:
-//  storeType: app store, as storeType
-//  ...actions: action creators to apply, each returning actionType
-// returns storeType
-const actionDispatchPrivate = (storeType) => (...actions) =>
-    combineReducers
-        (storeTypeTemplate)
-        (storeType)
-        (
-            // is the first action to do a special action?
-            // REFACTOR
-            (actions[0].type === 'SPECIAL')
-                // yes: use the storeType action queue and ignore 
-                //  the remainder of the given action list
-                ? getActionQueue(storeType)
-
-                // no: use the given action list
-                : actions
-        );
-
-// public action dispatch function
-// takes:
-//  storeType: app store, as storeType
-//  ...actions: action creators to apply, each returning actionType
-// returns storeType
-export const actionDispatch = (storeType) => (...actions) =>
-    // chain up actions to dispatch
-    applyArgChain
-        (actionDispatchPrivate)
-        (storeType)
-        (
-            lockStore(),                // lock the store
-            actions,                    // dispatch given actions
-            special_doActionQueue(),    // dispatch actions in store queue
-            clearActionQueue(),         // clear action queue
-            unlockStore(),              // unlock the store
-        )

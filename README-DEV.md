@@ -1,4 +1,9 @@
-# Creature version 0.0.9 - README for developers
+# Creature version 0.0.10 - README for developers
+
+I got new rules let's count 'em:
+
+1. NO STATE IN ACTIONS
+2. NO ACTIONS IN REDUCERS
 
 ## Complex data types:
 ### **physType**: The basic type for physical objects that act in the world

@@ -1,7 +1,6 @@
 'use strict'
 
 // ****** Main code ******
-// REFACTOR: Figure out how to compare objects and announce based on comparison
 
 // *** Imports
 // styling and libraries
@@ -17,50 +16,52 @@ import {
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
 
+import { actAsSimpleCreature } from './creatures/simple_creature';
+
 import {
-    actionDispatch,
     advanceSim,
-    doNothing,
-    mutableRender,
-    queueAction_doActionGroup,
+    comparePhysTypes,
+    logChangedBehaviors,
+    physTypeDoAct,
     saveClockForSim,
+    savePhysType,
     startSim,
+    stopIfFrozen,
+    uiAddGeoChartData,
+    uiAddTimeChartSimpleCreatureData,
 } from './reduxlike/action_creators.js';
 
-import {
-    actionGroup_NonsimActions, 
-    actionGroup_updateAllPhysTypes
-} from './reduxlike/actiongroups.js';
+import { appStore } from './reduxlike/app_store.js';
 
 import {
-    simGetRunning,
-    simGetSavedClock,
-    storeIsLocked,
+    physTypeGet,
+    physTypePropChanged,
 } from './reduxlike/store_getters.js';
-
-import { storeInit } from './reduxlike/store_init.js';
 
 
 // ***********************************************************************************
 // *** Code that actually does stuff
 
-// create our store by referencing an initialized store object
-export let myStore = storeInit(
+// init our global app store object using some pointers to web page elements
+appStore.method_storeInit(
     document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
     document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
     document.getElementById(CREATURE_STATUS_BOX)
 );
 
-// dispatch a series of actions to our store
-myStore = actionDispatch(myStore)(
-    // do the initial UI draws
-    mutableRender(),
-
+// dispatch an initial series of actions
+appStore.method_dispatchActions(
     // change the sim status to running
     startSim(),
 
-    // queue dispatch of non-sim-related actions
-    queueAction_doActionGroup(actionGroup_NonsimActions),
+    // add all initial simple creature glucose data to time chart at index 0
+    uiAddTimeChartSimpleCreatureData(0)('glucose'),
+
+    // add all initial simple creature neuro data to time chart at index 1
+    uiAddTimeChartSimpleCreatureData(1)('neuro'),
+
+    // add initial x-y data to geo chart
+    uiAddGeoChartData(),
 );
 
 // start repeatedly updating our application at sim frequency
@@ -72,37 +73,56 @@ setInterval(appUpdate, UPDATE_FREQ_SIM);
 // *** Time-based callback function
 // takes: 
 //  don't care
-// returns nothing
+// returns undefined
 function appUpdate(_) {
-    // is simulator running and store lock not set?
-    if (
-        simGetRunning(myStore) &&
-        (!storeIsLocked(myStore))
-    ) {
-        // yes: dispatch a series of actions to the store to update it
-        myStore = actionDispatch(myStore)(
-            // advance sim
+    // is simulator running?
+    if (appStore.method_getSimRunning()) {
+        // yes: dispatch a series of actions
+        appStore.method_dispatchActions(
+            // save current states of all physTypes
+            savePhysType(),
+
+            // do all physType actions
+            physTypeDoAct(),
+
+            // compare updated creatureTypes against saved creatureTypes to see
+            //  if any behaviors changed
+            comparePhysTypes
+                // selection function: select all creatureTypes
+                ((ptToTest) => physTypeGet(ptToTest)('act') === actAsSimpleCreature)
+
+                // comparison function: did creatureType 'conds.behavior' property change?
+                ((oldCt) => (newCt) =>
+                    physTypePropChanged(oldCt)(newCt)('conds.behavior')),
+
+            // journal: log creatureTypes with changed behaviors as computed due 
+            //  to comparePhysTypes action above
+            logChangedBehaviors(),
+
+            // if any creatureType now has a behavior of 'frozen', update the journal
+            //  and stop the sim
+            stopIfFrozen(),
+
+            // advance sim if running
             advanceSim(),
-
-            // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
-            (performance.now() > (simGetSavedClock(myStore) + UPDATE_FREQ_NONSIM))
-                // yes: dispatch a series of actions to the store to update the non-sim stuff
-                ? [
-                    // render the application
-                    mutableRender(),
-
-                    // remember the current time
-                    saveClockForSim(performance.now()),
-
-                    // queue update of the non-sim parts of our app store
-                    queueAction_doActionGroup(actionGroup_NonsimActions),
-                ]
-
-                // no: do nothing
-                : doNothing(),
-
-            // queue update of all physTypes
-            queueAction_doActionGroup(actionGroup_updateAllPhysTypes),
         );
+
+        // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
+        if (performance.now() > (appStore.method_getSavedClock() + UPDATE_FREQ_NONSIM)) {
+            // yes: dispatch a series of actions to the store to update the non-sim stuff
+            appStore.method_dispatchActions(
+                // remember the current time
+                saveClockForSim(performance.now()),
+
+                // add all simple creature glucose data to time chart at index 0
+                uiAddTimeChartSimpleCreatureData(0)('glucose'),
+
+                // add all simple creature neuro data to time chart at index 1
+                uiAddTimeChartSimpleCreatureData(1)('neuro'),
+
+                // add all x-y data to geo chart
+                uiAddGeoChartData(),
+            );
+        }
     }
 };

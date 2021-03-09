@@ -1,9 +1,13 @@
 'use strict'
 
-// ****** App store setup ******
+// ****** App store definition and methods ******
 
 // *** Our imports
 import Chart from 'chart.js';
+
+import {
+    storeTypeTemplate,
+} from './action_creators.js';
 
 import {
     UPDATE_FREQ_SIM,
@@ -12,17 +16,14 @@ import {
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
+import { combineReducers } from './reduxlike_utils.js';
+import { mutable_renderFunction } from './renderers.js';
 import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
+import { getUIProp, simGetRunning, simGetSavedClock } from './store_getters.js';
 
 
-// *** Initial store
+// *** Initial "public" store data
 const initial_store = {
-    // initial action queue
-    actionQueue: [],
-
-    // initial array of store changes to render
-    changes: [],
-
     // simulator properties
     sim: {
         // is simulator running?
@@ -165,16 +166,16 @@ const initial_store = {
 
         // initial journal
         journal: [{
-            time: 0.0,
-            message: 'Simulator init'
+            timeFloatType: 0.0,
+            msgStringType: 'Simulator init'
         }],
 
         // initial "saved physType" store
         savedPhysTypeStore: [{}],
-    },
 
-    // initial UI elements
-    ui: {
+        // initial "physTypes that passed comparison" store
+        passedComparePhysTypeStore: [{}],
+
         // creature chart time reference placeholder
         creature_time_chart: null,
 
@@ -183,7 +184,7 @@ const initial_store = {
 
         // status box reference placeholder
         status_box: null,
-    }
+    },
 };
 
 
@@ -401,30 +402,80 @@ const creature_geo_chart_params_init = {
 };
 
 
-// *** Store initializer function
-export const storeInit = (creature_time_chart_context, creature_geo_chart_context, status_box_context) =>
-({
-    ...initial_store,
+// *** Global app store
+export var appStore = {
+    // *** Internal properties
+    // initial "public" store properties, as storeType
+    storeObj: {},
 
-    // Simulator
-    sim: {
-        ...initial_store.sim,
 
-        // initRandGen just gives back the input seed
-        initSeed: mutableRandGen_initRandGen(initial_store.sim.initSeed),
+    // *** Methods: Action handling
+    // dispatch a list of actions, then call subscribedFunc
+    // takes:
+    //  ...actions: list of actions to dispatch, as actionType
+    // returns undefined
+    method_dispatchActions: function (...actions) {
+        // process each action atomically
+        actions.flat(Infinity).forEach((action) =>
+            this.storeObj = combineReducers(storeTypeTemplate)(this.storeObj)(action)
+        );
+
+        // call subscribed func (typically used for rendering UI)
+        this.method_subscribedFunc();
     },
 
-    // UI
-    ui: {
-        ...initial_store.ui,
 
-        // time chart
-        creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
+    // *** Methods: Getters - Simulator getter functions
+    method_getSimRunning: function (_) { return simGetRunning(this.storeObj) },
+    method_getSavedClock: function (_) { return simGetSavedClock(this.storeObj) },
+    method_getUIProp: function (propStringType) { return getUIProp(this.storeObj)(propStringType) },
 
-        // geo chart
-        creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
+    // *** Methods: Methods to be set by user
+    // function to be called after action dispatch is completed
+    method_subscribedFunc: function (_) { },
 
-        // status box
-        status_box: status_box_context
-    }
-});
+
+    // *** Methods: Setters
+    // set function to call when app store changes
+    // takes:
+    //  inFunc: () => ()
+    // returns undefined
+    method_setSubScribedFunc: function (inFunc) {
+        this.method_subscribedFunc = inFunc;
+    },
+
+
+    // *** Methods: Store initializer function
+    method_storeInit: function (creature_time_chart_context, creature_geo_chart_context, status_box_context) {
+        this.storeObj = {
+            ...initial_store,
+
+            // Simulator
+            sim: {
+                ...initial_store.sim,
+
+                // initRandGen just gives back the input seed
+                initSeed: mutableRandGen_initRandGen(initial_store.sim.initSeed),
+            },
+
+            // UI
+            remainder: {
+                ...initial_store.remainder,
+
+                // time chart
+                creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
+
+                // geo chart
+                creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
+
+                // status box
+                status_box: status_box_context,
+            }
+        };
+
+        // set function to be called when the app store changes
+        this.method_setSubScribedFunc(mutable_renderFunction);
+    },
+};
+
+

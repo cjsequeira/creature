@@ -4,14 +4,20 @@
 
 // *** Our imports
 import {
+    ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
 } from '../const_vals.js';
+import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 import {
+    getPhysTypeStore,
+    physTypeGet,
+    physTypeGetCond,
     simGetCurTime,
+    simGetRunning,
     simGetTimeStep
 } from './store_getters.js';
 
@@ -26,10 +32,40 @@ export const simReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_COMPARE_STOP_IF_FROZEN]: (storeType) => (_) =>
+        ({
+            ...storeType.sim,
+            running:
+                // do we have more than zero frozen simple creatures?
+                (
+                    getPhysTypeStore(storeType)
+                        // filter physType store to find simple creatures
+                        .filter((ptToTest1) => physTypeGet(ptToTest1)('act') === actAsSimpleCreature)
+
+                        // filter to find those with behavior of 'frozen'
+                        .filter((ptToTest2) => physTypeGetCond(ptToTest2)('behavior') === 'frozen')
+
+                        // do we have more than zero frozen simple creatures?
+                        .length > 0
+                )
+                    // yes: set "running" to false
+                    ? false
+
+                    // no: leave "running" unchanged
+                    : simGetRunning(storeType),
+        }),
+
         [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
         ({
             ...storeType.sim,
-            curTime: simGetCurTime(storeType) + simGetTimeStep(storeType),
+            curTime:
+                // is sim running?
+                (simGetRunning(storeType))
+                    // yes: advance the time using the timestep
+                    ? simGetCurTime(storeType) + simGetTimeStep(storeType)
+
+                    // no: keep the time the same as it currently is
+                    : simGetCurTime(storeType),
         }),
 
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>

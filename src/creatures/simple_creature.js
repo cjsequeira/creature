@@ -51,7 +51,7 @@ export const getDefaultSimpleCreature = (_) =>
 // main behavior function
 // this function works by using the physType behavior to select a function to apply
 // if behavior is not a key in the object, 'behavior' bracket search gives null,
-//  causing return of identity function (x => x), which returns given physType unaltered
+//  causing return of identity function (_ => x => x), which returns given physType unaltered
 // takes: 
 //  storeType
 //  physType

@@ -3,15 +3,14 @@
 // ****** All constant values in the application ******
 
 // *** Action names
-// action queue operations
-export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
-export const ACTION_ACTION_QUEUE_DO_ACTION_GROUP = 'ACTION_QUEUE_DO_ACTION_GROUP';
+// compare: for saving and comparing physTypes
+export const ACTION_COMPARE_COMPARE_PHYSTYPE = 'COMPARE_COMPARE_PHYSTYPE';
+export const ACTION_COMPARE_LOG_CHANGED_BEHAVIORS = 'COMPARE_LOG_CHANGED_BEHAVIORS';
+export const ACTION_COMPARE_SAVE_PHYSTYPE = 'COMPARE_SAVE_PHYSTYPE';
+export const ACTION_COMPARE_STOP_IF_FROZEN = 'COMPARE_STOP_IF_FROZEN';
 
 // do nothing
 export const ACTION_DO_NOTHING = 'DO_NOTHING';
-
-// mutable rendering; may mutate parts of the application beyond the store
-export const ACTION_MUTABLE_RENDER = 'MUTABLE_RENDER';
 
 // journal: add entry
 export const ACTION_JOURNAL_ADD_ENTRY = 'JOURNAL_ADD_ENTRY';
@@ -19,10 +18,10 @@ export const ACTION_JOURNAL_ADD_ENTRY = 'JOURNAL_ADD_ENTRY';
 // physType: do act
 export const ACTION_PHYSTYPE_DO_ACT = 'PHYSTYPE_DO_ACT';
 
-// render: queue rendering operations
-export const ACTION_RENDER_QUEUE_ADD_TIME_CHART_DATA = 'RENDER_QUEUE_ADD_TIME_CHART_DATA';
-export const ACTION_RENDER_QUEUE_ADD_GEO_CHART_DATA = 'RENDER_QUEUE_ADD_GEO_CHART_DATA';
-export const ACTION_RENDER_QUEUE_ADD_STATUS_MESSAGE = 'RENDER_QUEUE_ADD_STATUS_MESSAGE';
+// UI: update data used for UI
+export const ACTION_UI_ADD_TIME_CHART_DATA = 'UI_ADD_TIME_CHART_DATA';
+export const ACTION_UI_ADD_GEO_CHART_DATA = 'UI_ADD_GEO_CHART_DATA';
+export const ACTION_UI_ADD_STATUS_MESSAGE = 'UI_ADD_STATUS_MESSAGE';
 
 // simulator control
 export const ACTION_SIM_ADVANCE = 'SIM_ADVANCE';
@@ -33,9 +32,6 @@ export const ACTION_SIM_STOP = 'SIM_STOP';
 // store control
 export const ACTION_STORE_LOCK = 'STORE_LOCK';
 export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
-
-// watch: save a physType for later comparison
-export const ACTION_WATCH_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
 
 
 // *** HTML page references 
