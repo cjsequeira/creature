@@ -65,6 +65,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             // use current physTypeStore as the master list for comparing against
             //  saved physTypeStore, using the given comparison function
             //  and COMPARING INDEX BY INDEX
+            // REFACTOR: Find a more-sophisticated way of comparison - maybe a unique ID?
             passedComparePhysTypeStore: storeType.remainder.physTypeStore
                 // get array of current physTypes that pass the selection function
                 // selectFunc signature is (physType) => bool
