@@ -1,6 +1,7 @@
 'use strict'
 
-import { roundTo } from "../utils";
+import { roundTo } from '../utils.js';
+import { getJournal, getUIProp } from './store_getters.js';
 
 // ****** App store rendering functions ******
 
@@ -12,8 +13,8 @@ import { roundTo } from "../utils";
 // returns undefined
 export function mutable_renderFunction(_) {
     // render time chart and geo chart
-    this.storeObj.remainder.creature_time_chart.update();
-    this.storeObj.remainder.creature_geo_chart.update();
+    this.method_getUIProp('creature_time_chart').update();
+    this.method_getUIProp('creature_geo_chart').update();
 
     // update status box
     mutable_updateStatusBox(this.storeObj);
@@ -27,7 +28,7 @@ export function mutable_renderFunction(_) {
 // returns undefined
 function mutable_updateStatusBox(storeObj) {
     // point to status box HTML DOM context
-    let statusBox = storeObj.remainder.status_box;
+    let statusBox = getUIProp(storeObj)('status_box');
 
     // get status box scroll bar information
     const statusScrollTop = statusBox.scrollTop;
@@ -35,7 +36,7 @@ function mutable_updateStatusBox(storeObj) {
     const statusInnerHeight = statusBox.clientHeight;
 
     // make an internal HTML buffer version of the journal
-    const journalBufferHTMLType = storeObj.remainder.journal.reduce(
+    const journalBufferHTMLType = getJournal(storeObj).reduce(
         (accumHTML, thisEntry) =>
             accumHTML +
             'Time ' + roundTo(2)(thisEntry.timeFloatType).toString() +

@@ -32,25 +32,25 @@ import {
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
+
 import {
     physTypeGet,
     physTypePropChanged,
 } from './reduxlike/store_getters.js';
 
 
-
 // ***********************************************************************************
 // *** Code that actually does stuff
 
 // init our global app store object using some pointers to web page elements
-appStore.storeInit(
+appStore.method_storeInit(
     document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
     document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
     document.getElementById(CREATURE_STATUS_BOX)
 );
 
 // dispatch an initial series of actions
-appStore.dispatchActions(
+appStore.method_dispatchActions(
     // change the sim status to running
     startSim(),
 
@@ -76,9 +76,9 @@ setInterval(appUpdate, UPDATE_FREQ_SIM);
 // returns undefined
 function appUpdate(_) {
     // is simulator running?
-    if (appStore.getSimProp('running')) {
+    if (appStore.method_getSimRunning()) {
         // yes: dispatch a series of actions
-        appStore.dispatchActions(
+        appStore.method_dispatchActions(
             // save current states of all physTypes
             savePhysType(),
 
@@ -103,26 +103,26 @@ function appUpdate(_) {
             //  and stop the sim
             stopIfFrozen(),
 
-            // advance sim 
+            // advance sim if running
             advanceSim(),
         );
-    }
 
-    // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
-    if (performance.now() > (appStore.getSimProp('savedClock') + UPDATE_FREQ_NONSIM)) {
-        // yes: dispatch a series of actions to the store to update the non-sim stuff
-        appStore.dispatchActions(
-            // remember the current time
-            saveClockForSim(performance.now()),
+        // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
+        if (performance.now() > (appStore.method_getSavedClock() + UPDATE_FREQ_NONSIM)) {
+            // yes: dispatch a series of actions to the store to update the non-sim stuff
+            appStore.method_dispatchActions(
+                // remember the current time
+                saveClockForSim(performance.now()),
 
-            // add all simple creature glucose data to time chart at index 0
-            uiAddTimeChartSimpleCreatureData(0)('glucose'),
+                // add all simple creature glucose data to time chart at index 0
+                uiAddTimeChartSimpleCreatureData(0)('glucose'),
 
-            // add all simple creature neuro data to time chart at index 1
-            uiAddTimeChartSimpleCreatureData(1)('neuro'),
+                // add all simple creature neuro data to time chart at index 1
+                uiAddTimeChartSimpleCreatureData(1)('neuro'),
 
-            // add all x-y data to geo chart
-            uiAddGeoChartData(),
-        );
+                // add all x-y data to geo chart
+                uiAddGeoChartData(),
+            );
+        }
     }
 };

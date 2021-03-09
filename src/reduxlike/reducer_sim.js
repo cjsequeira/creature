@@ -35,7 +35,6 @@ export const simReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_STOP_IF_FROZEN]: (storeType) => (_) =>
         ({
             ...storeType.sim,
-
             running:
                 // do we have more than zero frozen simple creatures?
                 (
@@ -59,7 +58,14 @@ export const simReducer = (inStoreType) => (inActionType) =>
         [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
         ({
             ...storeType.sim,
-            curTime: simGetCurTime(storeType) + simGetTimeStep(storeType),
+            curTime:
+                // is sim running?
+                (simGetRunning(storeType))
+                    // yes: advance the time using the timestep
+                    ? simGetCurTime(storeType) + simGetTimeStep(storeType)
+
+                    // no: keep the time the same as it currently is
+                    : simGetCurTime(storeType),
         }),
 
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>

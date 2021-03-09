@@ -43,7 +43,7 @@ export const physTypeDoPhysics = (storeType) => (physType) =>
 //  physType
 // returns physType
 const physTypeDoMovements = (storeType) => (physType) => {
-    // define shorthand func to get cond from given physType
+    // get cond from given physType
     const inGetCond = physTypeGetCond(physType);
 
     return physTypeUseConds

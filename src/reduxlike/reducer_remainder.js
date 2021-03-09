@@ -173,16 +173,6 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             locked: false,
         }),
 
-        /*
-        [ACTION_UI_ADD_STATUS_MESSAGE]: (storeType) => (actionType) =>
-        ({
-            ...storeType.remainder,
-            statusBoxContent: storeType.remainder.statusBoxContent +
-                'Time ' + roundTo(2)(simGetCurTime(storeType)) +
-                ': ' + actionType.msgStringType + '<br />',
-        }),
-        */
-
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
         ({
             ...storeType.remainder,

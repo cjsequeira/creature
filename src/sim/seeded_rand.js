@@ -2,6 +2,8 @@
 
 // ****** Pseudo-random number generator ******
 // THIS IS THE ONLY PART OF THE APPLICATION THAT CONTAINS ITS OWN SEPARATE MUTABLE STATE!
+// REFACTOR: Mutable random number generator system must be part of the app store,
+// or will not be able to save/undo app store and repeat the same behavior!
 
 // *** Our imports
 import {

@@ -123,16 +123,4 @@ export const getJournal = (storeType) => storeType.remainder.journal;
 //  storeType: store, as storeType
 //  propStringType: string name for prop of store UI object to look at
 // returns value, as any
-export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStringType];
-
-// *** Get changes array
-// takes:
-//  storeType: store, as storeType
-// returns storeType changes array
-export const getChangesArray = (storeType) => storeType.changes;
-
-// *** Get action queue
-// takes:
-//  storeType: store, as storeType
-// returns storeType action queue array
-export const getActionQueue = (storeType) => storeType.actionQueue;
+export const getUIProp = (storeType) => (argStringType) => storeType.remainder[argStringType];

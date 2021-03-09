@@ -19,6 +19,7 @@ import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { combineReducers } from './reduxlike_utils.js';
 import { mutable_renderFunction } from './renderers.js';
 import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
+import { getUIProp, simGetRunning, simGetSavedClock } from './store_getters.js';
 
 
 // *** Initial "public" store data
@@ -413,28 +414,25 @@ export var appStore = {
     // takes:
     //  ...actions: list of actions to dispatch, as actionType
     // returns undefined
-    dispatchActions: function (...actions) {
+    method_dispatchActions: function (...actions) {
         // process each action atomically
         actions.flat(Infinity).forEach((action) =>
             this.storeObj = combineReducers(storeTypeTemplate)(this.storeObj)(action)
         );
 
         // call subscribed func (typically used for rendering UI)
-        this.subscribedFunc();
+        this.method_subscribedFunc();
     },
 
 
     // *** Methods: Getters - Simulator getter functions
-    // return simulator property
-    // takes: 
-    //  propString: property name to get, as string
-    // returns float
-    getSimProp: function (propString) { return this.storeObj.sim[propString] },
-
+    method_getSimRunning: function (_) { return simGetRunning(this.storeObj) },
+    method_getSavedClock: function (_) { return simGetSavedClock(this.storeObj) },
+    method_getUIProp: function (propStringType) { return getUIProp(this.storeObj)(propStringType) },
 
     // *** Methods: Methods to be set by user
     // function to be called after action dispatch is completed
-    subscribedFunc: function () { },
+    method_subscribedFunc: function (_) { },
 
 
     // *** Methods: Setters
@@ -442,13 +440,13 @@ export var appStore = {
     // takes:
     //  inFunc: () => ()
     // returns undefined
-    setSubScribedFunc: function (inFunc) {
-        this.subscribedFunc = inFunc;
+    method_setSubScribedFunc: function (inFunc) {
+        this.method_subscribedFunc = inFunc;
     },
 
 
     // *** Methods: Store initializer function
-    storeInit: function (creature_time_chart_context, creature_geo_chart_context, status_box_context) {
+    method_storeInit: function (creature_time_chart_context, creature_geo_chart_context, status_box_context) {
         this.storeObj = {
             ...initial_store,
 
@@ -476,6 +474,8 @@ export var appStore = {
         };
 
         // set function to be called when the app store changes
-        this.setSubScribedFunc(mutable_renderFunction);
+        this.method_setSubScribedFunc(mutable_renderFunction);
     },
 };
+
+
