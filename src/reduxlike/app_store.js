@@ -53,6 +53,7 @@ const initial_store = {
             {
                 name: 'Vinny',
                 color: '#0000ccff',
+                id: 0,
                 act: actAsSimpleCreature,
                 conds: {
                     // internal biology
@@ -91,6 +92,7 @@ const initial_store = {
             {
                 name: 'Eddie',
                 color: '#f7036cff',
+                id: 1,
                 act: actAsSimpleCreature,
                 conds: {
                     // internal biology
@@ -129,6 +131,7 @@ const initial_store = {
             {
                 name: 'Food 1',
                 color: '#008800ff',
+                id: 2,
                 act: (_) => (physType) => physType,
                 conds: {
 
@@ -148,6 +151,7 @@ const initial_store = {
             {
                 name: 'Food 2',
                 color: '#008800ff',
+                id: 3,
                 act: (_) => (physType) => physType,
                 conds: {
 
