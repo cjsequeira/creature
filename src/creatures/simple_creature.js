@@ -3,7 +3,7 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-import { resolveRules } from '../rulebook.js';
+import { resolveRules } from '../rulebook/rulebook.js';
 import { excludeRange } from '../utils.js';
 
 import {
