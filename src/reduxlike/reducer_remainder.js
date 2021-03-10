@@ -64,8 +64,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
             // use current physTypeStore as the master list for comparing against
             //  saved physTypeStore, using the given comparison function
-            //  and COMPARING INDEX BY INDEX
-            // REFACTOR: Find a more-sophisticated way of comparison - maybe a unique ID?
+            //  and comparing ID by ID
             passedComparePhysTypeStore: storeType.remainder.physTypeStore
                 // get array of current physTypes that pass the selection function
                 // selectFunc signature is (physType) => bool
@@ -73,21 +72,20 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
                 // with array of selected current physTypes, get array of
                 //  current PhysTypes that pass the comparison function
-                //  against the array of selected saved physTypes,
-                //  as compared on an INDEX BY INDEX BASIS! 
-                // REFACTOR: Seems inelegant. savedPhysTypeStore is re-filtered every time?
-                .filter((curPtToCompare, outer_i) =>
+                //  against the saved physTypes,
+                //  as compared on an ID by ID basis!
+                .filter((ptToCompare) =>
                     // compareFunc signature is (old physType) => (new physType) => bool 
                     actionType.compareFunc
                         // saved physType to compare against current
                         (
                             storeType.remainder.savedPhysTypeStore
-                                // get array of saved physTypes that pass the selection function
-                                // then select the saved physType at the outer filter index
-                                .filter((ptToTest) => actionType.selectFunc(ptToTest))[outer_i]
+                                // find the saved physType with the same ID as the physType
+                                // currently under comparison
+                                .find((ptToFind) => ptToFind.id === ptToCompare.id)
                         )
                         // current physType to compare against saved
-                        (curPtToCompare)
+                        (ptToCompare)
                 ),
         }),
 
