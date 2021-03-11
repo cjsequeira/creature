@@ -75,6 +75,8 @@
 
 
 // *** Our imports
+import { EVENT_UPDATE_PHYSTYPE } from '../const_vals.js';
+
 import { orTests } from '../utils.js';
 
 import {
@@ -87,6 +89,11 @@ import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
 
 // *** Rulebook test nodes
+const is_eventUpdatePhysType = {
+    name: 'Is event of type EVENT_UPDATE_PHYSTYPE?',
+    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_PHYSTYPE,
+};
+
 const isCreatureType = {
     name: 'Is creatureType?',
     testFunc: (_) => (eventType) => eventType.physType.hasOwnProperty('conds'),
@@ -176,6 +183,11 @@ const leafUnknownBehavior = {
     func: (_) => (eventType) => eventType.physType
 };
 
+const leafUnknownEvent = {
+    name: 'Unknown event!',
+    func: (_) => (eventType) => eventType.physType
+};
+
 
 // *** Functional programming helper functions
 // link together rulebook test nodes with logical "or"
@@ -191,36 +203,40 @@ const orTestRules = (...testRules) => ({
 
 // *** The rulebook
 const ruleBook = {
-    testNode: isCreatureType,
+    testNode: is_eventUpdatePhysType,
     yes: {
-        testNode: isGlucoseNeuroInRange,
+        testNode: isCreatureType,
         yes: {
-            // first, produce physType with laws of physics applied
-            preFunc: (storeType) => (eventType) =>
-            ({
-                ...eventType,
-                physType: physTypeDoPhysics(storeType)(eventType.physType),
-            }),
-
-            testNode: isBehaviorRequestEating,
+            testNode: isGlucoseNeuroInRange,
             yes: {
-                testNode: isBehaviorRequestFoodAvail,
-                yes: leafApproveBehaviorStopMovement,
-                no: leafRejectBehavior,
-            },
-            no: {
-                testNode: isBehaviorRequestSleeping,
-                yes: leafApproveBehaviorStopMovement,
+                // first, produce physType with laws of physics applied
+                preFunc: (storeType) => (eventType) =>
+                ({
+                    ...eventType,
+                    physType: physTypeDoPhysics(storeType)(eventType.physType),
+                }),
+
+                testNode: isBehaviorRequestEating,
+                yes: {
+                    testNode: isBehaviorRequestFoodAvail,
+                    yes: leafApproveBehaviorStopMovement,
+                    no: leafRejectBehavior,
+                },
                 no: {
-                    testNode: orTestRules(isBehaviorRequestIdling, isBehaviorRequestWandering),
-                    yes: leafApproveBehavior,
-                    no: leafUnknownBehavior,
+                    testNode: isBehaviorRequestSleeping,
+                    yes: leafApproveBehaviorStopMovement,
+                    no: {
+                        testNode: orTestRules(isBehaviorRequestIdling, isBehaviorRequestWandering),
+                        yes: leafApproveBehavior,
+                        no: leafUnknownBehavior,
+                    },
                 },
             },
+            no: leafCondsOOL,
         },
-        no: leafCondsOOL,
+        no: leafNotCreatureType,
     },
-    no: leafNotCreatureType,
+    no: leafUnknownEvent,
 };
 
 
