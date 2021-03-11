@@ -114,11 +114,11 @@ export const action_uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condS
 
 
 // *** Sim control
-// advance sim time
+// advance sim time if running
 // takes: 
 //  don't care: storeType
 // returns actionType
-export const action_advanceSim = (_) =>
+export const action_advanceSimIfRunning = (_) =>
 ({
     type: ACTION_SIM_ADVANCE,
 });

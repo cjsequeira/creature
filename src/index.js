@@ -19,7 +19,7 @@ import {
 import { actAsSimpleCreature } from './creatures/simple_creature';
 
 import {
-    action_advanceSim,
+    action_advanceSimIfRunning,
     action_comparePhysTypes,
     action_logChangedBehaviors,
     action_saveClockForSim,
@@ -32,11 +32,12 @@ import {
 
 import { appStore } from './reduxlike/app_store.js';
 
+import { event_updateAllPhysTypes } from './rulebook/event_creators';
+
 import {
     getPhysTypeRootKey,
     didPhysTypePropChange,
 } from './reduxlike/store_getters.js';
-import { event_updateAllPhysTypes } from './rulebook/event_creators';
 
 
 // ***********************************************************************************
@@ -107,7 +108,7 @@ function appUpdate(_) {
             action_stopIfFrozen(),
 
             // advance sim if running
-            action_advanceSim(),
+            action_advanceSimIfRunning(),
         );
 
         // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
