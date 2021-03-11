@@ -20,7 +20,8 @@ import {
 
 
 // *** Default Simple Creature assembler
-// takes: don't care
+// takes: 
+//  don't care
 // returns physType
 export const getDefaultSimpleCreature = (_) =>
 ({
@@ -73,7 +74,7 @@ export const actAsSimpleCreature = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actIdling = (storeType) => (physType) =>
-    doBehavior
+    event_SimpleCreatureUpdateRequest
         (storeType)
         // pass in physType object with specific glucose, neuro, accel
         (physTypeUseConds
@@ -103,7 +104,7 @@ const actWandering = (storeType) => (physType) =>
     // return evaluation of anonymous function that takes an acceleration  
     //  and heading nudge value
     (
-        (accel) => (hdg_nudge) => doBehavior
+        (accel) => (hdg_nudge) => event_SimpleCreatureUpdateRequest
             (storeType)
             // pass in physType object with specific glucose, neuro, heading, accel
             // glucose and neuro impacts are more severe with higher accceleration magnitude
@@ -143,7 +144,7 @@ const actWandering = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actEating = (storeType) => (physType) =>
-    doBehavior
+    event_SimpleCreatureUpdateRequest
         (storeType)
         // pass in physType object with specific glucose and neuro
         (physTypeUseConds
@@ -167,7 +168,7 @@ const actEating = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actSleeping = (storeType) => (physType) =>
-    doBehavior
+    event_SimpleCreatureUpdateRequest
         (storeType)
         // pass in physType object with specific glucose and neuro
         (physTypeUseConds
@@ -187,14 +188,14 @@ const actSleeping = (storeType) => (physType) =>
 
 
 // *** Code common to all simple creatures
-// function to review Simple Creature desires and return an event to be 
-//  processed by the rulebook
+// function to review Simple Creature desires and return an event to 
+//  be processed by the rulebook
 // takes: 
 //  don't care: storeType
 //  physType
 //  desireFuncType: object of behavior keys with desire functions as property-vals
 // returns eventType
-const doBehavior = (_) => (physType) => (desireFuncType) =>
+const event_SimpleCreatureUpdateRequest = (_) => (physType) => (desireFuncType) =>
     // return an event to update the physType per the behavior request below
     //  which comes from weighted random draw using given desire functions
     // this event needs to be processed by the rulebook, which will return an action

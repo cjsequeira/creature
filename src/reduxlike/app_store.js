@@ -18,7 +18,7 @@ import {
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { combineReducers } from './reduxlike_utils.js';
 import { mutable_renderFunction } from './renderers.js';
-import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
+import { mutableRandGen_initRandGen, mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 import { getPhysTypeStore, getUIProp, simGetRunning, simGetSavedClock } from './store_getters.js';
 import { resolveRules } from '../rulebook/rulebook.js';
 import { event_updatePhysType } from '../rulebook/event_creators.js';
@@ -37,7 +37,7 @@ const initial_store = {
         savedClock: 0.0,
 
         // initial random number generator seed
-        initSeed: Date.now(),
+        initSeed: mutableRandGen_initRandGen(0),
     },
 
     remainder: {
@@ -62,12 +62,12 @@ const initial_store = {
                     behavior_request: null,
 
                     // location
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
+                    x: mutableRandGen_seededRand(1.0, 18.0),
+                    y: mutableRandGen_seededRand(1.0, 18.0),
                     
                     // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * Math.random(),
-                    speed: Math.random(),
+                    heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
+                    speed: mutableRandGen_seededRand(0.0, 1.0),
                     accel: 0.0,
                 },
             },
@@ -88,12 +88,12 @@ const initial_store = {
                     behavior_request: null,
 
                     // location
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
-    
+                    x: mutableRandGen_seededRand(1.0, 18.0),
+                    y: mutableRandGen_seededRand(1.0, 18.0),
+                    
                     // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * Math.random(),
-                    speed: Math.random(),
+                    heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
+                    speed: mutableRandGen_seededRand(0.0, 1.0),
                     accel: 0.0,
                 },
             },
@@ -106,8 +106,8 @@ const initial_store = {
                 act: (_) => (physType) => event_updatePhysType(physType),
                 conds: {
                     // location
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
+                    x: mutableRandGen_seededRand(1.0, 18.0),
+                    y: mutableRandGen_seededRand(1.0, 18.0),
                 },
             },
 
@@ -119,8 +119,8 @@ const initial_store = {
                 act: (_) => (physType) => event_updatePhysType(physType),
                 conds: {
                     // location
-                    x: 18.0 * Math.random() + 1.0,
-                    y: 18.0 * Math.random() + 1.0,
+                    x: mutableRandGen_seededRand(1.0, 18.0),
+                    y: mutableRandGen_seededRand(1.0, 18.0),
                 },
             },
         ],
