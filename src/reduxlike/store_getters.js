@@ -112,6 +112,14 @@ export const getPhysTypeCondAtIndex = (storeType) => (indexIntType) => (condStri
 // returns array of physType objects
 export const getSavedPhysTypeStore = (storeType) => storeType.remainder.savedPhysTypeStore;
 
+
+// *** Get "passed comparison" physType store
+// takes: 
+//  storeType: store, as storeType
+// returns array of physType objects
+export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.passedComparePhysTypeStore;
+
+
 // *** Get journal
 // takes: 
 //  storeType: store, as storeType

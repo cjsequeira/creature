@@ -30,10 +30,6 @@ export const ACTION_SIM_SAVE_CLOCK = 'ACTION_SIM_SAVE_CLOCK';
 export const ACTION_SIM_START = 'ACTION_SIM_START';
 export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
-// store control
-export const ACTION_STORE_LOCK = 'ACTION_STORE_LOCK';
-export const ACTION_STORE_UNLOCK = 'ACTION_STORE_UNLOCK';
-
 
 // *** Event names
 export const EVENT_UPDATE_ALL_PHYSTYPES = 'EVENT_UPDATE_ALL_PHYSTYPES';

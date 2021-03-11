@@ -16,11 +16,22 @@ import {
     WORLD_SIZE_Y,
 } from '../const_vals.js';
 
-import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { combineReducers } from './reduxlike_utils.js';
 import { mutable_renderFunction } from './renderers.js';
-import { mutableRandGen_initRandGen, mutableRandGen_seededRand } from '../sim/seeded_rand.js';
-import { getPhysTypeStore, getUIProp, simGetRunning, simGetSavedClock } from './store_getters.js';
+import {
+    getPhysTypeStore,
+    getUIProp,
+    simGetRunning,
+    simGetSavedClock
+} from './store_getters.js';
+
+import { actAsSimpleCreature } from '../creatures/simple_creature.js';
+
+import {
+    mutableRandGen_initRandGen,
+    mutableRandGen_seededRand
+} from '../sim/seeded_rand.js';
+
 import { resolveRules } from '../rulebook/rulebook.js';
 
 
@@ -64,7 +75,7 @@ const initial_store = {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),
                     y: mutableRandGen_seededRand(1.0, 18.0),
-                    
+
                     // heading, speed, acceleration
                     heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
                     speed: mutableRandGen_seededRand(0.0, 1.0),
@@ -90,7 +101,7 @@ const initial_store = {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),
                     y: mutableRandGen_seededRand(1.0, 18.0),
-                    
+
                     // heading, speed, acceleration
                     heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
                     speed: mutableRandGen_seededRand(0.0, 1.0),
@@ -372,6 +383,8 @@ export var appStore = {
 
     // *** Methods: Dispatching
     // dispatch a list of actions, then call subscribedFunc
+    // IMPORTANT: the app store "public" store properties are updated for each
+    //  action in the list of actions given in this function!!!
     // takes:
     //  ...actions: list of actions to dispatch, as actionType
     // returns undefined
