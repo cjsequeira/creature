@@ -2,82 +2,33 @@
 
 // ****** Simulation rulebook ******
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
-// REFACTOR IDEA: Rulebook should return an ACTION (or array of actions), not a PHYSTYPE!
-// OR --------- Should Rulebook still return a physType, with expanded properties/messages,
-//  e.g. a messages sub-object saying things like "delete?"
-// But physTypes shouldn't care about messaging the system. Instead, the system should
-// have rules for dealing with certain circumstances.
-// Where should the rules be located, what should be their input, and what should they return?
-
-// NO STATE IN ACTIONS -- No reading state in action creators!
-// NO ACTIONS IN REDUCERS -- No dispatching actions in reducers based on state!
-
-// REDUCER is: state -> action -> state
-// ACTION is a tiny piece of info dispatched by an EVENT -- NO LOGIC IN ACTIONS
-//  ACTION is: event -> action
-
-// Can we have a rulebook that's an ACTION GENERATOR?
-//  If so: rulebook cannot be in an action
-//  If so: rulebook cannot be in a reducer
-
-//  Rulebook must be "its own thing"...?
-//  Imagine EVERYTHING being filtered through the rulebook, which then dispatches actions
-//      In other words, rulebook stands BETWEEN EVENTS and ACTIONS as a PRE-PROCESSOR
-//          EVENTS --> PRE-PROCESSING --> ACTIONS
-//          EVENTS --> RULEBOOK REVIEW --> ACTIONS
-//          So events no longer trigger actions directly: EVENTS pass through RULEBOOK,
-//          which provides logic to create ACTIONS BASED ON STATE
-
-//          EVENTS --> Rulebook review (event)(state) --> ACTIONS
-
-//      Event example: creature doBehavior: creature wants to change behavior
-//      Event example: creature wants to change behavior
-//      Event example: creature and food meet
-//      Event example: creature wants to duplicate
-//      Event example: creature conds out of limits
-
-//  Must decide WHAT IS AN EVENT and HOW ARE EVENTS BUILT
-//      Example: JavaScript event listeners for DOM events like button clicks
-//          How event is built: by browser (?) and then captured through browser mechanics
-//      Internal simulator equivalent: since we know exactly what is going on in the sim,
-//          we don't need an event listener - just decide WHAT IS AN EVENT
 //
-//  The flow:
-//      Event dispatch sends event -> rulebook review (event)(state) -> actions
+//  RULEBOOK MAPS A SINGLE EVENT TO ACTION(S) USING THE GIVEN APP STATE!
+//  (eventType) -> rulebook(storeType) -> actionType or [actionType]
 //
 //      Events can be user events captured with event listeners (e.g. button clicks)
 //      Events can be simulator events that go straight to rulebook review
-//          E.g.: "handle this doBehavior event with rulebook(event, state)"
-//
-//  RULEBOOK IS MIDDLEWARE BETWEEN EVENTS AND ACTIONS
-//  Rulebook: map (state, event) -> actions
-//  
-//  Rulebook is:
-//  takes:
-//      storeType: current state
-//      eventType: event to process
-//  returns: array of actionType
-//
-//  So the rulebook below no longer processes a physType and returns a physType
-//      It processes an EVENT (which could be related to a physType)
-//      and returns an array of ACTIONS
-//
-//  Need: a set of APPLICATION-SPECIFIC events!
-//      Events to be triggered by simulator
-//      Events to be triggered by DOM event listeners
-//      Event background/inspiration? https://www.w3schools.com/jsref/dom_obj_event.asp
-//          E.g. event type, target (i.e. trigger object/situation), timeStamp
+//          E.g.: "Use the rulebook to map this Update PhysType event to an action"
 //  
 //  Not all code has to generate events instead of actions. The things that generate
-//      application-specific events are the things that we want the rulebook to handle
-//      In other words, we could still have button clicks dispatch events directly
+//      application-specific events are the things that we want the rulebook to handle.
+//      In other words, we could still have button clicks dispatch events directly rather
+//      than going through the rulebook.
 // 
 
-
 // *** Our imports
-import { EVENT_UPDATE_ALL_PHYSTYPES, EVENT_UPDATE_PHYSTYPE } from '../const_vals.js';
+import {
+    EVENT_UPDATE_ALL_PHYSTYPES,
+    EVENT_UPDATE_PHYSTYPE
+} from '../const_vals.js';
 
 import { orTests } from '../utils.js';
+
+import {
+    action_UpdatePhysType,
+    doNothing,
+    physTypeDoAct
+} from '../reduxlike/action_creators.js';
 
 import {
     getPhysTypeStore,
@@ -87,7 +38,6 @@ import {
 
 import { physTypeDoPhysics } from '../sim/physics.js';
 import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
-import { action_UpdatePhysType, doNothing, physTypeDoAct } from '../reduxlike/action_creators.js';
 
 
 // *** Rulebook test nodes
@@ -240,7 +190,7 @@ const leafRecursive_UpdateAllPhysTypes = {
 // takes:
 //  ...testRules: array of rulebook test nodes
 // returns object with testFunc property as: function combining test nodes with logical "or"
-// the function signature is (storeType) => (eventType) => bool
+// the testFunc signature is (storeType) => (eventType) => bool
 const orTestRules = (...testRules) => ({
     name: 'orTestRules',
     testFunc: (storeType) => orTests(testRules.map(rule => rule.testFunc(storeType)))
@@ -248,6 +198,7 @@ const orTestRules = (...testRules) => ({
 
 
 // *** The rulebook
+// REFACTOR: implement some version of "switch" / "select case"
 const ruleBook = {
     testNode: is_eventUpdatePhysType,
     yes:
@@ -256,7 +207,8 @@ const ruleBook = {
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
-                // first, produce physType with laws of physics applied
+                // produce physType with laws of physics applied
+                // the function application below INCLUDES wall collision testing!
                 preFunc: (storeType) => (eventType) =>
                 ({
                     ...eventType,
@@ -294,11 +246,11 @@ const ruleBook = {
 // *** Rulebook functions
 // general rulebook resolver
 //  find a rule in the rulebook for an event, then apply the rule to get an action
-// THE RULEBOOK IS: (eventType) -> rulebook(storeType) -> actionType
+// THE RULEBOOK IS: (eventType) -> rulebook(storeType) -> actionType or [actionType]
 // takes: 
 //  storeType
 //  eventType
-// returns actionType
+// returns actionType or [actionType]
 export const resolveRules = (storeType) => (eventType) => findRule(storeType)(eventType)(ruleBook);
 
 // recursive rulebook node finder
@@ -306,7 +258,7 @@ export const resolveRules = (storeType) => (eventType) => findRule(storeType)(ev
 // takes:
 //  eventType
 //  node: the rule node to use
-// returns actionType as determined by rulebook application
+// returns actionType or [actionType], as determined by rulebook application
 const findRule = (storeType) => (eventType) => (node) => {
     // define: is pre-function undefined? 
     //  if yes, apply (x => x) to eventType

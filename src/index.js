@@ -83,7 +83,8 @@ function appUpdate(_) {
             // save current states of all physTypes
             savePhysType(),
 
-
+            // send an event into the system: update all physTypes
+            // the method below returns action(s)
             appStore.method_mapEventsToActions(
                 event_updateAllPhysTypes(appStore.method_getPhysTypeStore())
             ),
