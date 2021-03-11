@@ -14,7 +14,7 @@ import {
 
 // *** Our random number generator state, defined with 0 seed
 let randGen = {
-    seed: 0
+    seed: 0,
 }
 
 
@@ -24,7 +24,7 @@ let randGen = {
 // takes: 
 //  initSeedIntType: numerical seed, as int
 // returns the given seed
-export function mutableRandGen_initRandGen(initSeedIntType = 0) {
+export function mutableRandGen_initRandGen(initSeedIntType) {
     // MUTABLE: Store given seed in random number generator
     randGen.seed = initSeedIntType;
 
@@ -38,7 +38,7 @@ export function mutableRandGen_initRandGen(initSeedIntType = 0) {
 //  minFloatType: minimum bound of random number range, as float
 //  maxFloatType: maximum bound of random number range, as float
 // returns number, as float
-export function mutableRandGen_seededRand(minFloatType = 0.0, maxFloatType = 1.0) {
+export function mutableRandGen_seededRand(minFloatType, maxFloatType) {
     // calculate random value using current seed
     const value = minFloatType +
         ((randGen.seed * 9301 + 49297) % 233280) /

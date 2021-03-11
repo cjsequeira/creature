@@ -4,7 +4,7 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 //
 //  RULEBOOK MAPS A SINGLE EVENT TO ACTION(S) USING THE GIVEN APP STATE!
-//  (eventType) -> rulebook(storeType) -> actionType or [actionType]
+//  (eventType) => rulebook(storeType) => actionType or [actionType]
 //
 //      Events can be user events captured with event listeners (e.g. button clicks)
 //      Events can be simulator events that go straight to rulebook review
@@ -31,9 +31,9 @@ import {
 } from '../reduxlike/action_creators.js';
 
 import {
-    getPhysTypeStore,
-    getPhysTypeRootKey,
     getPhysTypeCond,
+    getPhysTypeRootKey,
+    getPhysTypeStore,
     usePhysTypeConds,
 } from '../reduxlike/store_getters.js';
 
@@ -42,26 +42,9 @@ import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
 
 // *** Rulebook test nodes
-const is_eventUpdatePhysType = {
-    name: 'Is event of type EVENT_UPDATE_PHYSTYPE?',
-    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_PHYSTYPE,
-};
-
-const is_eventUpdateAllPhysTypes = {
-    name: 'Is event of type EVENT_UPDATE_ALL_PHYSTYPES?',
-    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_ALL_PHYSTYPES,
-};
-
-const isCreatureType = {
-    name: 'Is creatureType?',
-    testFunc: (_) => (eventType) => eventType.physType.hasOwnProperty('conds'),
-};
-
-const isGlucoseNeuroInRange = {
-    name: 'Glucose and neuro in range?',
-    testFunc: (_) => (eventType) =>
-        (getPhysTypeCond(eventType.physType)('glucose') > 0.0) &&
-        (getPhysTypeCond(eventType.physType)('neuro') < 100.0),
+const isBehaviorRequestEating = {
+    name: 'Requesting behavior: eating?',
+    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'eating',
 };
 
 const isBehaviorRequestIdling = {
@@ -69,24 +52,41 @@ const isBehaviorRequestIdling = {
     testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'idling',
 };
 
+const isBehaviorRequestSleeping = {
+    name: 'Requested behavior: sleeping?',
+    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'sleeping',
+};
+
 const isBehaviorRequestWandering = {
     name: 'Requesting behavior: wandering?',
     testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'wandering',
 };
 
-const isBehaviorRequestEating = {
-    name: 'Requesting behavior: eating?',
-    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'eating',
+const isCreatureType = {
+    name: 'Is creatureType?',
+    testFunc: (_) => (eventType) => eventType.physType.hasOwnProperty('conds'),
 };
 
-const isBehaviorRequestFoodAvail = {
+const isEventUpdateAllPhysTypes = {
+    name: 'Is event of type EVENT_UPDATE_ALL_PHYSTYPES?',
+    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_ALL_PHYSTYPES,
+};
+
+const isEventUpdatePhysType = {
+    name: 'Is event of type EVENT_UPDATE_PHYSTYPE?',
+    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_PHYSTYPE,
+};
+
+const isFoodAvailable = {
     name: 'Is food available?',
     testFunc: (_) => (_) => mutableRandGen_seededRand(0.0, 1.0) > 0.03,
 };
 
-const isBehaviorRequestSleeping = {
-    name: 'Requested behavior: sleeping?',
-    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'sleeping',
+const isGlucoseNeuroInRange = {
+    name: 'Glucose and neuro in range?',
+    testFunc: (_) => (eventType) =>
+        (getPhysTypeCond(eventType.physType)('glucose') > 0.0) &&
+        (getPhysTypeCond(eventType.physType)('neuro') < 100.0),
 };
 
 
@@ -118,6 +118,23 @@ const leafApproveBehaviorStopMovement = {
         ),
 };
 
+const leafCondsOOL = {
+    name: 'Creature conditions out of limits!',
+    func: (_) => (eventType) =>
+        action_UpdatePhysType(
+            usePhysTypeConds
+                (eventType.physType)
+                ({
+                    behavior: 'frozen',
+                })
+        ),
+};
+
+const leafNotCreatureType = {
+    name: 'Not a creatureType! Preserve given physType',
+    func: (_) => (_) => action_UpdatePhysType(eventType.physType),
+};
+
 const leafRejectBehaviorNoFood = {
     name: 'No food here. Behavior request rejected!',
     func: (_) => (eventType) => ([
@@ -140,23 +157,6 @@ const leafRejectBehaviorNoFood = {
     ]),
 };
 
-const leafCondsOOL = {
-    name: 'Creature conditions out of limits!',
-    func: (_) => (eventType) =>
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    behavior: 'frozen',
-                })
-        ),
-};
-
-const leafNotCreatureType = {
-    name: 'Not a creatureType! Preserve given physType',
-    func: (_) => (_) => action_UpdatePhysType(eventType.physType),
-};
-
 const leafUnknownBehavior = {
     name: 'Unknown behavior! Preserve given physType',
     func: (_) => (_) => action_UpdatePhysType(eventType.physType),
@@ -167,13 +167,16 @@ const leafUnknownEvent = {
     func: (_) => (_) => action_doNothing(),
 };
 
-const leafRecursive_UpdateAllPhysTypes = {
+const recursive_leafUpdateAllPhysTypes = {
     name: 'Update all physTypes in one atomic operation, consulting rulebook for each physType',
     func: (storeType) => (_) =>
         // action to update all physTypes "atomically," meaning we use the same 
-        //  given storeType for each physType update process
-        // function signature is (physTypeStore) -> actionType
+        //  given storeType for each physType update process, which means that the order
+        //  of update doesn't matter - one physType cannot react to another physType just updated.
+        // function signature is (physTypeStore) => actionType
         getPhysTypeStore(storeType).map((thisPhysType) =>
+            // consult the rulebook using the eventType generated by physType "act"
+            // the rulebook returns an actionType
             resolveRules
                 (storeType)
                 (thisPhysType.act(storeType)(thisPhysType))
@@ -189,21 +192,25 @@ const leafRecursive_UpdateAllPhysTypes = {
 // the testFunc signature is (storeType) => (eventType) => bool
 const orTestRules = (...testRules) => ({
     name: 'orTestRules',
-    testFunc: (storeType) => orTests(testRules.map(rule => rule.testFunc(storeType)))
+    testFunc: (storeType) => orTests(
+        testRules.map(
+            rule => rule.testFunc(storeType)
+        )
+    )
 });
 
 
 // *** The rulebook
 // REFACTOR: implement some version of "switch" / "select case"
 const ruleBook = {
-    testNode: is_eventUpdatePhysType,
+    testNode: isEventUpdatePhysType,
     yes:
     {
         testNode: isCreatureType,
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
-                // produce physType with laws of physics applied
+                // produce event containing physType with laws of physics applied
                 // the function application below INCLUDES wall collision testing!
                 preFunc: (storeType) => (eventType) =>
                 ({
@@ -213,7 +220,7 @@ const ruleBook = {
 
                 testNode: isBehaviorRequestEating,
                 yes: {
-                    testNode: isBehaviorRequestFoodAvail,
+                    testNode: isFoodAvailable,
                     yes: leafApproveBehaviorStopMovement,
                     no: leafRejectBehaviorNoFood,
                 },
@@ -232,8 +239,8 @@ const ruleBook = {
         no: leafNotCreatureType,
     },
     no: {
-        testNode: is_eventUpdateAllPhysTypes,
-        yes: leafRecursive_UpdateAllPhysTypes,
+        testNode: isEventUpdateAllPhysTypes,
+        yes: recursive_leafUpdateAllPhysTypes,
         no: leafUnknownEvent,
     },
 };

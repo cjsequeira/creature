@@ -3,7 +3,10 @@
 // ****** Code to create application events ******
 
 // *** Our imports
-import { EVENT_UPDATE_ALL_PHYSTYPES, EVENT_UPDATE_PHYSTYPE } from '../const_vals.js';
+import {
+    EVENT_UPDATE_ALL_PHYSTYPES,
+    EVENT_UPDATE_PHYSTYPE
+} from '../const_vals.js';
 
 
 // *** PhysType events
@@ -26,4 +29,3 @@ export const event_updatePhysType = (physType) =>
     type: EVENT_UPDATE_PHYSTYPE,
     physType,
 });
-

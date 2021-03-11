@@ -433,14 +433,6 @@ export var appStore = {
         this.storeObj = {
             ...initial_store,
 
-            // Simulator
-            sim: {
-                ...initial_store.sim,
-
-                // initRandGen just gives back the input seed
-                initSeed: mutableRandGen_initRandGen(initial_store.sim.initSeed),
-            },
-
             // UI
             remainder: {
                 ...initial_store.remainder,
