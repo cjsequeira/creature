@@ -163,24 +163,10 @@ const leafRecursive_UpdateAllPhysTypes = {
         // action to update all physTypes "atomically," meaning we use the same 
         //  given storeType for each physType update process
         // function signature is (physTypeStore) -> actionType
-        physTypeDoAct(
-            // map each physType in the physTypeStore of the given storeType by...
-            getPhysTypeStore(storeType).map(
-                (thisPhysType) =>
-                    // ...applying physType "act" to get an event, then passing that event
-                    //  through the rulebook (along with the given storeType) to get 
-                    //  an "update physType" action, then stripping the physType from that action
-                    // REFACTOR?: UGLY, YET FUNCTIONAL
-                    resolveRules
-                        (storeType)
-                        (thisPhysType.act(storeType)(thisPhysType))
-
-                        // strip the physType from the action given by resolveRules
-                        //  and use that physType as the "map" function output
-                        // WE ASSUME the action given by resolveRules has 
-                        //  a property named "physType"!
-                        .physType
-            )
+        getPhysTypeStore(storeType).map((thisPhysType) =>
+            resolveRules
+                (storeType)
+                (thisPhysType.act(storeType)(thisPhysType))
         ),
 };
 
