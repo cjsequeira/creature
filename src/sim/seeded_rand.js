@@ -2,12 +2,14 @@
 
 // ****** Pseudo-random number generator ******
 // THIS IS THE ONLY PART OF THE APPLICATION THAT CONTAINS ITS OWN SEPARATE MUTABLE STATE!
+// REFACTOR: Mutable random number generator system must be part of the app store,
+// or will not be able to save/undo app store and repeat the same behavior!
 
 // *** Our imports
 import {
     selectWeight,
-    sum
-} from '../util.js';
+    sum,
+} from '../utils.js';
 
 
 // *** Our random number generator state, defined with 0 seed
@@ -19,25 +21,28 @@ let randGen = {
 // *** Random number utils
 // init random number generator
 // MUTABLE: Mutates randGen
-// takes: numerical seed
+// takes: 
+//  initSeedIntType: numerical seed, as int
 // returns the given seed
-export function mutableRandGen_initRandGen(initSeed = 0) {
+export function mutableRandGen_initRandGen(initSeedIntType = 0) {
     // MUTABLE: Store given seed in random number generator
-    randGen.seed = initSeed;
+    randGen.seed = initSeedIntType;
 
-    return initSeed;
+    return initSeedIntType;
 };
 
 // get seeded random number
 // MUTABLE: Mutates randGen
 // reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
 // takes:
-//  min: minimum bound of random number range
-//  max: maximum bound of random number range
-// returns number
-export function mutableRandGen_seededRand(min = 0.0, max = 1.0) {
+//  minFloatType: minimum bound of random number range, as float
+//  maxFloatType: maximum bound of random number range, as float
+// returns number, as float
+export function mutableRandGen_seededRand(minFloatType = 0.0, maxFloatType = 1.0) {
     // calculate random value using current seed
-    const value = min + ((randGen.seed * 9301 + 49297) % 233280) / 233280 * (max - min);
+    const value = minFloatType +
+        ((randGen.seed * 9301 + 49297) % 233280) /
+        233280 * (maxFloatType - minFloatType);
 
     // MUTABLE: generate new seed and save in random generator mutable state
     randGen.seed = (randGen.seed * 9301 + 49297) % 233280;
@@ -50,9 +55,9 @@ export function mutableRandGen_seededRand(min = 0.0, max = 1.0) {
 //  to use for weight selection based on the weights list
 // MUTABLE: Mutates randGen
 // takes:
-//  weightsList: numerical array of weights
-// returns number: numerical index into weights list
-export const mutableRandGen_seededWeightedRand = (weightsList) =>
+//  weightsFloatType: array of weights, as float
+// returns number: numerical index into weights list, as int
+export const mutableRandGen_seededWeightedRand = (weightsFloatType) =>
     selectWeight
-        (weightsList)
-        (mutableRandGen_seededRand(0, sum(weightsList)));
+        (weightsFloatType)
+        (mutableRandGen_seededRand(0, sum(weightsFloatType)));

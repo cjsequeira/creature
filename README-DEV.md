@@ -1,4 +1,9 @@
-# Creature version 0.0.9 - README for developers
+# Creature version 0.0.11 - README for developers
+
+I got new rules let's count 'em:
+
+1. NO STATE IN ACTIONS
+2. NO ACTIONS IN REDUCERS
 
 ## Complex data types:
 ### **physType**: The basic type for physical objects that act in the world
@@ -43,8 +48,8 @@ Description:
 
 ### **storeType**: The application store data type - TO BE ADDED
 
-### **actionType**: The action type for action dispatching - TO BE ADDED
-
 ### **journalType**: The type for the app journal - TO BE ADDED
 
-### **actionType**: The type for the Redux-like action dispatchers - TO BE ADDED
+### **actionType**: The type for Redux-like actions - TO BE ADDED
+
+### **eventType**: The type for application-specific events - TO BE ADDED

@@ -3,39 +3,41 @@
 // ****** All constant values in the application ******
 
 // *** Action names
-// clear action queue
-export const ACTION_CLEAR_ACTION_QUEUE = 'CLEAR_ACTION_QUEUE';
+// compare: for saving and comparing physTypes
+export const ACTION_COMPARE_COMPARE_PHYSTYPE = 'ACTION_COMPARE_COMPARE_PHYSTYPE';
+export const ACTION_COMPARE_LOG_CHANGED_BEHAVIORS = 'ACTION_COMPARE_LOG_CHANGED_BEHAVIORS';
+export const ACTION_COMPARE_SAVE_PHYSTYPE = 'ACTION_COMPARE_SAVE_PHYSTYPE';
+export const ACTION_COMPARE_STOP_IF_FROZEN = 'ACTION_COMPARE_STOP_IF_FROZEN';
 
 // do nothing
-export const ACTION_DO_NOTHING = 'DO_NOTHING';
+export const ACTION_DO_NOTHING = 'ACTION_DO_NOTHING';
 
-// perform rendering that may mutate parts of the application beyond the store
-export const ACTION_MUTABLE_RENDER = 'MUTABLE_RENDER';
+// journal: add entry
+export const ACTION_JOURNAL_ADD_ENTRY = 'ACTION_JOURNAL_ADD_ENTRY';
+ 
+// physType store actions
+export const ACTION_PHYSTYPE_DO_ACT = 'ACTION_PHYSTYPE_DO_ACT';
+export const ACTION_PHYSTYPE_UPDATE_PHYSTYPE = 'ACTION_PHYSTYPE_UPDATE_PHYSTYPE';
 
-// queue update UI
-export const ACTION_QUEUE_ADD_TIME_CHART_DATA = 'QUEUE_ADD_TIME_CHART_DATA';
-export const ACTION_QUEUE_ADD_GEO_CHART_DATA = 'QUEUE_ADD_GEO_CHART_DATA';
-export const ACTION_QUEUE_ADD_STATUS_MESSAGE = 'QUEUE_ADD_STATUS_MESSAGE';
+// UI: update data used for UI
+export const ACTION_UI_ADD_TIME_CHART_DATA = 'ACTION_UI_ADD_TIME_CHART_DATA';
+export const ACTION_UI_ADD_GEO_CHART_DATA = 'ACTION_UI_ADD_GEO_CHART_DATA';
+export const ACTION_UI_ADD_STATUS_MESSAGE = 'ACTION_UI_ADD_STATUS_MESSAGE';
 
-// add journal entry
-export const ACTION_JOURNAL_ADD_ENTRY = 'JOURNAL_ADD_ENTRY';
+// simulator control
+export const ACTION_SIM_ADVANCE = 'ACTION_SIM_ADVANCE';
+export const ACTION_SIM_SAVE_CLOCK = 'ACTION_SIM_SAVE_CLOCK';
+export const ACTION_SIM_START = 'ACTION_SIM_START';
+export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
-// do creature action
-export const ACTION_PHYSTYPE_DO_ACT = 'PHYSTYPE_DO_ACT';
+// store control
+export const ACTION_STORE_LOCK = 'ACTION_STORE_LOCK';
+export const ACTION_STORE_UNLOCK = 'ACTION_STORE_UNLOCK';
 
-// control simulator
-export const ACTION_SIM_ADVANCE = 'SIM_ADVANCE';
-export const ACTION_SIM_SAVE_CLOCK = 'SIM_SAVE_CLOCK';
-export const ACTION_SIM_START = 'SIM_START';
-export const ACTION_SIM_STOP = 'SIM_STOP';
 
-// control writing to store
-export const ACTION_STORE_LOCK = 'STORE_LOCK';
-export const ACTION_STORE_UNLOCK = 'STORE_UNLOCK';
-
-// actions for watching physTypes and dealing with changes
-export const ACTION_WATCH_SAVE_PHYSTYPE = 'WATCH_SAVE_PHYSTYPE';
-export const ACTION_WATCH_QUEUE_COMPARE_SAVED = 'WATCH_QUEUE_COMPARE_SAVED';
+// *** Event names
+export const EVENT_UPDATE_ALL_PHYSTYPES = 'EVENT_UPDATE_ALL_PHYSTYPES';
+export const EVENT_UPDATE_PHYSTYPE = 'EVENT_UPDATE_PHYSTYPE';
 
 
 // *** HTML page references 

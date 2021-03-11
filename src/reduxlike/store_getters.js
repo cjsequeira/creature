@@ -1,9 +1,10 @@
 'use strict'
 
 // ****** Functions to get information from store
+// REFACTOR: clean up names / order throughout app!!!
 
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
-import { getNestedProp } from '../util.js';
+import { watchProps } from './watch_props.js';
 
 
 // *** physType getter functions
@@ -30,41 +31,96 @@ export const physTypeGetCond = (physType) => (argCond) => physType.conds[argCond
 // return key value from physType
 // takes:
 //  physType: physType to use
-//  arg: string name for key of physType to look at
+//  argStringType: string name for key of physType to look at
 // returns key value
-export const physTypeGet = (physType) => (arg) => physType[arg];
+export const physTypeGet = (physType) => (argStringType) => physType[argStringType];
 
-// did given prop in given physType change due to watchProps?
+// did given prop in given physType change?
 // takes:
 //  physType: physType to use
-//  prop: string name for prop to check - could be a nested prop, with '.'
+//  propStringType: string name for prop to check - could be a nested prop, with '.'
 // returns bool
-export const physTypePropChanged = (physType) => (prop) => physType[WATCHPROP_CHANGESPROP][prop]
+export const physTypePropChanged = (beforePhysType) => (afterPhysType) => (propStringType) =>
+    (
+        watchProps                          // get obj with watchprops added
+            (beforePhysType)
+            (afterPhysType)
+            (propStringType)
+        [WATCHPROP_CHANGESPROP]             // select watchprops sub-object
+        [propStringType]                    // select specific watchprop
+    ) || false;                             // if watchprop is undefined, return 'false'
 
-
+    
 // *** Simulator getter functions
 // return current simulator time
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns number
-export const simGetCurTime = (store) => store.sim.curTime;
+export const simGetCurTime = (storeType) => storeType.sim.curTime;
 
 // return last stored system clock time
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns number
-export const simGetSavedClock = (store) => store.sim.savedClock;
+export const simGetSavedClock = (storeType) => storeType.sim.savedClock;
 
 // return simulator running status
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns bool
-export const simGetRunning = (store) => store.sim.running;
+export const simGetRunning = (storeType) => storeType.sim.running;
 
 // return simulator timestep
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns number
-export const simGetTimeStep = (store) => store.sim.timeStep;
+export const simGetTimeStep = (storeType) => storeType.sim.timeStep;
 
 
 // *** Get store lock status
-// takes: store, as storeType
+// takes: 
+//  storeType: store, as storeType
 // returns bool
-export const storeIsLocked = (store) => store.locked;
+export const storeIsLocked = (storeType) => storeType.remainder.locked;
+
+// *** Get physType store
+// takes: 
+//  storeType: store, as storeType
+// returns array of physType objects
+export const getPhysTypeStore = (storeType) => storeType.remainder.physTypeStore;
+
+// get specific physType in store at given index
+// takes:
+//  storeType: store, as storeType
+//  indexIntType: index into physType store
+// returns physType
+export const getPhysTypeAtIndex = (storeType) => (indexIntType) =>
+    storeType.remainder.physTypeStore[indexIntType];
+
+// get specific condition of specific physType in store at given index
+// takes:
+//  storeType: store, as storeType
+//  indexIntType: index into physType store
+//  condStringType: specific condition to get, as string
+// returns any
+export const getPhysTypeCondAtIndex = (storeType) => (indexIntType) => (condStringType) =>
+    storeType.remainder.physTypeStore[indexIntType][condStringType];
+
+// *** Get saved physType store
+// takes: 
+//  storeType: store, as storeType
+// returns array of physType objects
+export const getSavedPhysTypeStore = (storeType) => storeType.remainder.savedPhysTypeStore;
+
+// *** Get journal
+// takes: 
+//  storeType: store, as storeType
+// returns journalType
+export const getJournal = (storeType) => storeType.remainder.journal;
+
+// *** Get UI property val
+// takes:
+//  storeType: store, as storeType
+//  propStringType: string name for prop of store UI object to look at
+// returns value, as any
+export const getUIProp = (storeType) => (argStringType) => storeType.remainder[argStringType];

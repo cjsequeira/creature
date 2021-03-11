@@ -3,64 +3,69 @@
 // ****** Code implementing laws of physics ******
 
 // *** Our imports
-// REFACTOR? Not happy about referencing app store directly - even if read-only
-import { myStore } from '../index.js';
-
 import {
     WORLD_SIZE_X,
-    WORLD_SIZE_Y
+    WORLD_SIZE_Y,
 } from '../const_vals.js';
 
 import {
     applyFuncChain,
+    boundToRange,
     withinRange,
-    boundToRange
-} from '../util.js';
+} from '../utils.js';
 
 import {
     physTypeGetCond,
     physTypeUseConds,
-    simGetTimeStep
+    simGetTimeStep,
 } from '../reduxlike/store_getters.js';
 
 
 // *** Public consolidator for physType physics functions
-// takes: physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-export const physTypeDoPhysics = (physType) =>
+export const physTypeDoPhysics = (storeType) => (physType) =>
     // function chain: 
     //  get physType with new location -> get physType with wall collisions checked
     applyFuncChain(physType)
         (
-            physTypeDoMovements,
-            physTypeCheckWallCollisions
+            physTypeDoMovements(storeType),
+            physTypeCheckWallCollisions(storeType)
         );
 
 
 // *** Internal physics functions
 // return physType with location updated based on speed and heading
-// takes: physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-const physTypeDoMovements = (physType) => {
-    // define shorthand func to get cond from given physType
+const physTypeDoMovements = (storeType) => (physType) => {
+    // get cond from given physType
     const inGetCond = physTypeGetCond(physType);
 
     return physTypeUseConds
         (physType)
         ({
             // compute x and y based on given speed and heading
-            x: inGetCond('x') + simGetTimeStep(myStore) * inGetCond('speed') * Math.sin(inGetCond('heading')),
-            y: inGetCond('y') + simGetTimeStep(myStore) * inGetCond('speed') * Math.cos(inGetCond('heading')),
+            x: inGetCond('x') +
+                simGetTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
+            y: inGetCond('y') +
+                simGetTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
 
             // compute speed based on given accel
-            speed: inGetCond('speed') + simGetTimeStep(myStore) * inGetCond('accel'),
+            speed: inGetCond('speed') + simGetTimeStep(storeType) * inGetCond('accel'),
         });
 };
 
 // return physType with parameters updated if wall collisions
-// takes: physType
+// takes: 
+//  storeType
+//  physType
 // returns physType
-const physTypeCheckWallCollisions = (physType) => {
+const physTypeCheckWallCollisions = (_) => (physType) => {
     // define shorthand func to get cond from given physType
     const inGetCond = physTypeGetCond(physType);
 

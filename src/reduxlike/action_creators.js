@@ -4,154 +4,153 @@
 
 // *** Our imports
 import {
-    ACTION_JOURNAL_ADD_ENTRY,
-    ACTION_SIM_ADVANCE,
-    ACTION_PHYSTYPE_DO_ACT,
+    ACTION_COMPARE_COMPARE_PHYSTYPE,
+    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+    ACTION_COMPARE_SAVE_PHYSTYPE,
+    ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
-    ACTION_STORE_LOCK,
-    ACTION_QUEUE_ADD_GEO_CHART_DATA,
-    ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    ACTION_QUEUE_ADD_TIME_CHART_DATA,
+    ACTION_JOURNAL_ADD_ENTRY,
+    ACTION_PHYSTYPE_DO_ACT,
+    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
+    ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
-    ACTION_MUTABLE_RENDER,
-    ACTION_WATCH_SAVE_PHYSTYPE,
-    ACTION_WATCH_QUEUE_COMPARE_SAVED,
-    ACTION_CLEAR_ACTION_QUEUE,
+    ACTION_UI_ADD_GEO_CHART_DATA,
+    ACTION_UI_ADD_TIME_CHART_DATA,
 } from '../const_vals.js';
-import { rootReducer } from './reducers_renderers.js';
+
+import { remainderReducer } from './reducer_remainder.js';
+import { simReducer } from './reducer_sim.js';
 
 
 // *** Add journal entry
 // takes:
-//  journal: store journal, as journalType
-//  message: message, as string
+//  msgStringType: message, as string
+//  don't care: storeType
 // returns actionType
-export const addJournalEntry = (journal) => (message) => 
+export const addJournalEntry = (msgStringType) =>
 ({
     type: ACTION_JOURNAL_ADD_ENTRY,
-    journal,
-    message
+    msgStringType
 });
 
 
-// *** Clear action queue
-// takes: don't care
+// *** Comparing and testing physTypes
+// compare current physTypes with store of saved physTypes
+// takes: 
+//  selectFunc: test function for selecting physTypes from saved and current physType store
+//      signature: (physType) => boolean
+//  compareFunc: function for comparing selected physTypes 
+//      signature: (old physType) => (new physType) => bool
 // returns actionType
-export const clearActionQueue = (_) =>
+export const comparePhysTypes = (selectFunc) => (compareFunc) =>
 ({
-    type: ACTION_CLEAR_ACTION_QUEUE,
-})
+    type: ACTION_COMPARE_COMPARE_PHYSTYPE,
+    selectFunc,
+    compareFunc,
+});
 
-
-// *** Do action for physType at given index
+// log behavior changes into the app store journal
 // takes:
-//  physType
-//  index: index into physType store in app store
+//  don't care
 // returns actionType
-export const doPhysTypeAct = (physType) => (index) => 
+export const logChangedBehaviors = (_) => 
 ({
-    type: ACTION_PHYSTYPE_DO_ACT,
-    physType,
-    index
+    type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+});
+
+// save all physTypes for later comparison
+// takes: 
+//  don't care
+// returns actionType
+export const savePhysType = (_) =>
+({
+    type: ACTION_COMPARE_SAVE_PHYSTYPE,
+});
+
+// stop if frozen
+// takes: 
+//  don't care
+// returns actionType
+export const stopIfFrozen = (_) =>
+({
+    type: ACTION_COMPARE_STOP_IF_FROZEN,
 });
 
 
 // *** Do nothing
-// takes: nothing
+// takes: 
+//  don't care: storeType
 // returns actionType
-export const doNothing = () => 
+export const doNothing = (_) =>
 ({
     type: ACTION_DO_NOTHING,
 });
 
 
-// *** Mutable render that may mutate application beyond the app store (e.g. UI renders)
-export const mutableRender = () =>
+// *** Update app store properties related to UI
+// add geo chart data
+// takes:
+//  don't care
+// returns actionType
+export const uiAddGeoChartData = (_) =>
 ({
-    type: ACTION_MUTABLE_RENDER,
+    type: ACTION_UI_ADD_GEO_CHART_DATA,
 });
 
-
-// *** Queue update UI
-// *** App store does not change until mutable_renderStateChanges is applied
-// queue add geo chart data
+// add time chart data for simple creature
 // takes:
-//  chart: time chart
-//  dataIndex: chart data index
-//  color: color for the data
-//  xyPair: data coordinate, as {x, y}
+//  dataIndexIntType: chart data index, as int
+//  labelStringType: label for legend, as string
+//  timeValFloatTuple: floating-point data coordinate, as {time, value}
+//  don't care: storeType
 // returns actionType
-export const queue_addGeoChartData = (chart) => (dataIndex) => (color) => (xyPair) => 
+export const uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringType) =>
 ({
-    type: ACTION_QUEUE_ADD_GEO_CHART_DATA,
-    chart,
-    dataIndex,
-    color,
-    xyPair
-});
-
-// queue add time chart data
-// takes:
-//  chart: time chart
-//  dataIndex: chart data index
-//  label: label for legend
-//  timeValPair: data coordinate, as {time, value}
-// returns actionType
-export const queue_addTimeChartData = (chart) => (dataIndex) => (label) => (timeValPair) => 
-({
-    type: ACTION_QUEUE_ADD_TIME_CHART_DATA,
-    chart,
-    dataIndex,
-    label,
-    timeValPair
-});
-
-// queue add status message
-// takes:
-//  statusBox: HTML DOM status box reference
-//  message: message, as string
-// returns actionType
-export const queue_addStatusMessage = (statusBox) => (message) => 
-({
-    type: ACTION_QUEUE_ADD_STATUS_MESSAGE,
-    statusBox,
-    message
+    type: ACTION_UI_ADD_TIME_CHART_DATA,
+    offsetIntType,
+    condStringType,
 });
 
 
 // *** Sim control
 // advance sim time
-// takes: nothing
+// takes: 
+//  don't care: storeType
 // returns actionType
-export const advanceSim = () => 
+export const advanceSim = (_) =>
 ({
     type: ACTION_SIM_ADVANCE,
 });
 
 // save system clock
-// takes: nothing
+// takes: 
+//  clockFloatType: clock value, as float
+//  don't care: storeType
 // returns actionType
-export const saveClockForSim = (clock) => 
+export const saveClockForSim = (clockFloatType) =>
 ({
     type: ACTION_SIM_SAVE_CLOCK,
-    clock
+    clockFloatType
 });
 
 // start sim
-// takes: nothing
+// takes: 
+//  don't care: storeType
 // returns actionType
-export const startSim = () => 
+export const startSim = (_) =>
 ({
     type: ACTION_SIM_START,
 });
 
 // stop sim
-// takes: nothing
+// takes: 
+//  don't care: storeType
 // returns actionType
-export const stopSim = () => 
+export const stopSim = (_) =>
 ({
     type: ACTION_SIM_STOP,
 });
@@ -159,55 +158,40 @@ export const stopSim = () =>
 
 // *** Store: Lock and unlock for write access
 // lock store
-// takes: nothing
+// takes: 
+//  don't care: storeType
 // returns actionType
-export const lockStore = () => 
+export const lockStore = (_) =>
 ({
     type: ACTION_STORE_LOCK,
 });
 
 // unlock store
-// takes: nothing
+// takes: 
+//  don't care: storeType
 // returns actionType
-export const unlockStore = () => 
+export const unlockStore = (_) =>
 ({
     type: ACTION_STORE_UNLOCK,
 })
 
 
-// *** Watching physTypes: save and compare physTypes
-// save physType for watching
-// takes: physType
-// returns actionType
-export const savePhysType = (obj) => (index) =>
-({
-    type: ACTION_WATCH_SAVE_PHYSTYPE,
-    obj,
-    index
-})
-
-// compare given props of physType at given physType store index against 
-//  given props of saved physType at same index in "saved physType" store, then 
-//  queue application of handleFunc to a version of the physType (at the given
-//  index) that has a [WATCHPROPS_CHANGES] object added as a key-val
-// takes: 
-//  handleFunc: function that returns an actionType
-//  ...props: list of props to compare
-//  index: index into physType store and "saved physType" store
-// returns actionType
-export const queue_comparePhysType = (handleFunc) => (...props) => (index) =>
-({
-    type: ACTION_WATCH_QUEUE_COMPARE_SAVED,
-    handleFunc,
-    props,
-    index
-})
-
-// handle object changes by 
-
-// *** Action dispatcher function
+// *** physType store actions
+// update physType with the given physType using the same ID
 // takes:
-//  store: app store, as storeType
-//  action: action to dispatch, as actionType
-// returns storeType
-export const actionDispatch = (store) => (action) => rootReducer(store)(action);
+//  physType
+// returns actionType
+export const action_UpdatePhysType = (physType) =>
+({
+    type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    physType,
+})
+
+
+// *** storeType template with reducers for specific properties
+export const storeTypeTemplate = {
+    sim: simReducer,
+
+    // REFACTOR
+    remainder: remainderReducer,
+};
