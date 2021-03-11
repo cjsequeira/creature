@@ -15,9 +15,9 @@ import {
 } from '../utils.js';
 
 import {
-    physTypeGetCond,
-    physTypeUseConds,
-    simGetTimeStep,
+    getPhysTypeCond,
+    usePhysTypeConds,
+    getSimTimeStep,
 } from '../reduxlike/store_getters.js';
 
 
@@ -44,19 +44,19 @@ export const physTypeDoPhysics = (storeType) => (physType) =>
 // returns physType
 const physTypeDoMovements = (storeType) => (physType) => {
     // get cond from given physType
-    const inGetCond = physTypeGetCond(physType);
+    const inGetCond = getPhysTypeCond(physType);
 
-    return physTypeUseConds
+    return usePhysTypeConds
         (physType)
         ({
             // compute x and y based on given speed and heading
             x: inGetCond('x') +
-                simGetTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
+                getSimTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
             y: inGetCond('y') +
-                simGetTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
+                getSimTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
 
             // compute speed based on given accel
-            speed: inGetCond('speed') + simGetTimeStep(storeType) * inGetCond('accel'),
+            speed: inGetCond('speed') + getSimTimeStep(storeType) * inGetCond('accel'),
         });
 };
 
@@ -67,7 +67,7 @@ const physTypeDoMovements = (storeType) => (physType) => {
 // returns physType
 const physTypeCheckWallCollisions = (_) => (physType) => {
     // define shorthand func to get cond from given physType
-    const inGetCond = physTypeGetCond(physType);
+    const inGetCond = getPhysTypeCond(physType);
 
     // are x and y within world boundary?
     return (
@@ -78,7 +78,7 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
         ? physType
 
         // no: return physType with updated parameters due to wall collision
-        : physTypeUseConds
+        : usePhysTypeConds
             (physType)
             ({
                 // bound x to the boundary limit minus a small margin

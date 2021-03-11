@@ -6,9 +6,9 @@
 import { excludeRange } from '../utils.js';
 
 import {
-    physTypeGetCond,
-    physTypeUseConds,
-    simGetTimeStep
+    getPhysTypeCond,
+    usePhysTypeConds,
+    getSimTimeStep
 } from '../reduxlike/store_getters.js';
 
 import { event_updatePhysType } from '../rulebook/event_creators.js';
@@ -20,7 +20,8 @@ import {
 
 
 // *** Default Simple Creature assembler
-// takes: don't care
+// takes: 
+//  don't care
 // returns physType
 export const getDefaultSimpleCreature = (_) =>
 ({
@@ -64,7 +65,7 @@ export const actAsSimpleCreature = (storeType) => (physType) =>
             'eating': actEating,
             'sleeping': actSleeping,
             'wandering': actWandering,
-        }[physTypeGetCond(physType)('behavior')] || (_ => x => x)
+        }[getPhysTypeCond(physType)('behavior')] || (_ => x => x)
     )(storeType)(physType);
 
 // idling behavior function
@@ -73,14 +74,14 @@ export const actAsSimpleCreature = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actIdling = (storeType) => (physType) =>
-    doBehavior
+    event_SimpleCreatureUpdateRequest
         (storeType)
         // pass in physType object with specific glucose, neuro, accel
-        (physTypeUseConds
+        (usePhysTypeConds
             (physType)
             ({
-                glucose: physTypeGetCond(physType)('glucose') - 3.0 * simGetTimeStep(storeType),
-                neuro: physTypeGetCond(physType)('neuro') + 2.0 * simGetTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') - 3.0 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 2.0 * getSimTimeStep(storeType),
                 accel: 0.0
             })
         )
@@ -89,9 +90,9 @@ const actIdling = (storeType) => (physType) =>
             'idling': () =>
                 4.0,
             'wandering': (physType) =>
-                (physTypeGetCond(physType)('glucose') < 50.0) ? 7.0 : 0.1,
+                (getPhysTypeCond(physType)('glucose') < 50.0) ? 7.0 : 0.1,
             'sleeping': (physType) =>
-                (physTypeGetCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
+                (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
         });
 
 // wandering behavior function
@@ -103,19 +104,19 @@ const actWandering = (storeType) => (physType) =>
     // return evaluation of anonymous function that takes an acceleration  
     //  and heading nudge value
     (
-        (accel) => (hdg_nudge) => doBehavior
+        (accel) => (hdg_nudge) => event_SimpleCreatureUpdateRequest
             (storeType)
             // pass in physType object with specific glucose, neuro, heading, accel
             // glucose and neuro impacts are more severe with higher accceleration magnitude
-            (physTypeUseConds
+            (usePhysTypeConds
                 (physType)
                 ({
-                    glucose: physTypeGetCond(physType)('glucose') -
-                        (0.3 * Math.abs(accel)) * simGetTimeStep(storeType),
-                    neuro: physTypeGetCond(physType)('neuro') +
-                        (0.2 * Math.abs(accel)) * simGetTimeStep(storeType),
+                    glucose: getPhysTypeCond(physType)('glucose') -
+                        (0.3 * Math.abs(accel)) * getSimTimeStep(storeType),
+                    neuro: getPhysTypeCond(physType)('neuro') +
+                        (0.2 * Math.abs(accel)) * getSimTimeStep(storeType),
 
-                    heading: physTypeGetCond(physType)('heading') + hdg_nudge,
+                    heading: getPhysTypeCond(physType)('heading') + hdg_nudge,
                     accel: accel,
                 })
             )
@@ -126,9 +127,9 @@ const actWandering = (storeType) => (physType) =>
                 'idling': () =>
                     0.1,
                 'eating': (physType) =>
-                    (physTypeGetCond(physType)('glucose') < 20.0) ? 7.0 : 0.1,
+                    (getPhysTypeCond(physType)('glucose') < 20.0) ? 7.0 : 0.1,
                 'sleeping': (physType) =>
-                    (physTypeGetCond(physType)('neuro') > 85.0) ? 7.0 : 0.1,
+                    (getPhysTypeCond(physType)('neuro') > 85.0) ? 7.0 : 0.1,
             })
     )
         // anonymous function arguments:
@@ -143,14 +144,14 @@ const actWandering = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actEating = (storeType) => (physType) =>
-    doBehavior
+    event_SimpleCreatureUpdateRequest
         (storeType)
         // pass in physType object with specific glucose and neuro
-        (physTypeUseConds
+        (usePhysTypeConds
             (physType)
             ({
-                glucose: physTypeGetCond(physType)('glucose') + 6.0 * simGetTimeStep(storeType),
-                neuro: physTypeGetCond(physType)('neuro') + 4.0 * simGetTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') + 6.0 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 4.0 * getSimTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
@@ -158,7 +159,7 @@ const actEating = (storeType) => (physType) =>
             'eating': () =>
                 5.0,
             'idling': (physType) =>
-                (physTypeGetCond(physType)('glucose') > 40.0) ? 5.0 : 0.1
+                (getPhysTypeCond(physType)('glucose') > 40.0) ? 5.0 : 0.1
         });
 
 // sleeping behavior function
@@ -167,14 +168,14 @@ const actEating = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actSleeping = (storeType) => (physType) =>
-    doBehavior
+    event_SimpleCreatureUpdateRequest
         (storeType)
         // pass in physType object with specific glucose and neuro
-        (physTypeUseConds
+        (usePhysTypeConds
             (physType)
             ({
-                glucose: physTypeGetCond(physType)('glucose') - 1.4 * simGetTimeStep(storeType),
-                neuro: physTypeGetCond(physType)('neuro') - 6.2 * simGetTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') - 1.4 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') - 6.2 * getSimTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
@@ -182,19 +183,19 @@ const actSleeping = (storeType) => (physType) =>
             'sleeping': () =>
                 5.0,
             'idling': (physType) =>
-                (physTypeGetCond(physType)('neuro') < 60.0) ? 5.0 : 0.1
+                (getPhysTypeCond(physType)('neuro') < 60.0) ? 5.0 : 0.1
         });
 
 
 // *** Code common to all simple creatures
-// function to review Simple Creature desires and return an event to be 
-//  processed by the rulebook
+// function to review Simple Creature desires and return an event to 
+//  be processed by the rulebook
 // takes: 
 //  don't care: storeType
 //  physType
 //  desireFuncType: object of behavior keys with desire functions as property-vals
 // returns eventType
-const doBehavior = (_) => (physType) => (desireFuncType) =>
+const event_SimpleCreatureUpdateRequest = (_) => (physType) => (desireFuncType) =>
     // return an event to update the physType per the behavior request below
     //  which comes from weighted random draw using given desire functions
     // this event needs to be processed by the rulebook, which will return an action
@@ -203,7 +204,7 @@ const doBehavior = (_) => (physType) => (desireFuncType) =>
     //  or may reject the requested behavior and assign a different behavior,
     //  or may return an action totally unrelated to the physType object below!
     event_updatePhysType(
-        physTypeUseConds
+        usePhysTypeConds
             // make an object based on the given physType, with a "behavior_request" prop-obj
             (physType)
             ({

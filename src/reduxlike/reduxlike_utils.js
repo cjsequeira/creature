@@ -13,6 +13,7 @@
 //          property2: reducerFunc2
 //          ...
 //      }
+//  storeType: input store, as storeType
 //  action: action to reduce, as actionType
 // returns storetype
 export const combineReducers = (templateStoreType) => (storeType) => (action) =>

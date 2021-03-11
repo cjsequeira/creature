@@ -10,10 +10,7 @@ import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
-    ACTION_PHYSTYPE_DO_ACT,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
-    ACTION_STORE_LOCK,
-    ACTION_STORE_UNLOCK,
     ACTION_UI_ADD_GEO_CHART_DATA,
     ACTION_UI_ADD_TIME_CHART_DATA,
     UI_NUM_TRAILS,
@@ -22,18 +19,21 @@ import {
 import {
     getJournal,
     getPhysTypeStore,
-    physTypeGet,
-    physTypeGetCond,
-    simGetCurTime
+    getPassedComparePhysTypeStore,
+    getSavedPhysTypeStore,
+    getPhysTypeRootKey,
+    getPhysTypeCond,
+    getSimCurTime,
+    getUIProp
 } from './store_getters.js';
 
 import {
     chartShiftData,
     concatSliceMap,
     fadeColors,
-    roundTo,
     splice,
 } from '../utils.js';
+
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 
@@ -46,7 +46,6 @@ const behaviorStrings = {
     wandering: "is wandering! Wiggity whack!",
     frozen: "is frozen! Brrrr....."
 };
-
 
 
 // *** Remainder reducer 
@@ -66,7 +65,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             // use current physTypeStore as the master list for comparing against
             //  saved physTypeStore, using the given comparison function
             //  and comparing ID by ID
-            passedComparePhysTypeStore: storeType.remainder.physTypeStore
+            passedComparePhysTypeStore: getPhysTypeStore(storeType)
                 // get array of current physTypes that pass the selection function
                 // selectFunc signature is (physType) => bool
                 .filter((ptToTest) => actionType.selectFunc(ptToTest))
@@ -80,7 +79,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                     actionType.compareFunc
                         // saved physType to compare against current
                         (
-                            storeType.remainder.savedPhysTypeStore
+                            getSavedPhysTypeStore(storeType)
                                 // find the saved physType with the same ID as the physType
                                 // currently under comparison
                                 .find((ptToFind) => ptToFind.id === ptToCompare.id)
@@ -96,11 +95,11 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             journal: [
                 ...getJournal(storeType),
 
-                ...storeType.remainder.passedComparePhysTypeStore.map(
+                ...getPassedComparePhysTypeStore(storeType).map(
                     (physType) => ({
-                        timeFloatType: simGetCurTime(storeType),
-                        msgStringType: physTypeGet(physType)('name') +
-                            ' ' + behaviorStrings[physTypeGetCond(physType)('behavior')],
+                        timeFloatType: getSimCurTime(storeType),
+                        msgStringType: getPhysTypeRootKey(physType)('name') +
+                            ' ' + behaviorStrings[getPhysTypeCond(physType)('behavior')],
                     })
                 ),
             ]
@@ -109,8 +108,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
-
-            savedPhysTypeStore: storeType.remainder.physTypeStore,
+            savedPhysTypeStore: getPhysTypeStore(storeType),
         }),
 
         [ACTION_COMPARE_STOP_IF_FROZEN]: (storeType) => (_) =>
@@ -121,16 +119,16 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
                 ...getPhysTypeStore(storeType)
                     // filter physType store to find simple creatures
-                    .filter((ptToTest1) => physTypeGet(ptToTest1)('act') === actAsSimpleCreature)
+                    .filter((ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature)
 
                     // filter to find simple creatures with behavior of 'frozen'
-                    .filter((ptToTest2) => physTypeGetCond(ptToTest2)('behavior') === 'frozen')
+                    .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')
 
                     // map filter results to journal entries
                     .map(
                         (ptToMap) => ({
-                            timeFloatType: simGetCurTime(storeType),
-                            msgStringType: physTypeGet(ptToMap)('name') + ' is frozen; stopping sim',
+                            timeFloatType: getSimCurTime(storeType),
+                            msgStringType: getPhysTypeRootKey(ptToMap)('name') + ' is frozen; stopping sim',
                         })
                     )
             ]
@@ -144,7 +142,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             journal: [
                 ...getJournal(storeType),
                 {
-                    timeFloatType: simGetCurTime(storeType),
+                    timeFloatType: getSimCurTime(storeType),
                     msgStringType: actionType.msgStringType,
                 }
             ],
@@ -173,35 +171,23 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 (actionType.physType),
         }),
 
-        [ACTION_STORE_LOCK]: (storeType) => (_) =>
-        ({
-            ...storeType.remainder,
-            locked: true,
-        }),
-
-        [ACTION_STORE_UNLOCK]: (storeType) => (_) =>
-        ({
-            ...storeType.remainder,
-            locked: false,
-        }),
-
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
 
             creature_geo_chart:
                 // update geo chart data associated with all physTypes in the store
-                storeType.remainder.physTypeStore.reduce((accumData, thisPhysType, i) =>
+                getPhysTypeStore(storeType).reduce((accumData, thisPhysType, i) =>
                     mutable_updateGeoChartData(
                         accumData,
                         i,
-                        physTypeGet(thisPhysType)('color'),
+                        getPhysTypeRootKey(thisPhysType)('color'),
                         ({
-                            x: physTypeGetCond(thisPhysType)('x'),
-                            y: physTypeGetCond(thisPhysType)('y'),
+                            x: getPhysTypeCond(thisPhysType)('x'),
+                            y: getPhysTypeCond(thisPhysType)('y'),
                         })
                     ),
-                    storeType.remainder.creature_geo_chart),
+                    getUIProp(storeType)('creature_geo_chart')),
         }),
 
         [ACTION_UI_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
@@ -210,19 +196,19 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
             creature_time_chart:
                 // update time chart data associated with all **simple creatures** in the store
-                storeType.remainder.physTypeStore
-                    .filter((filterPhysType) => physTypeGet(filterPhysType)('act') === actAsSimpleCreature)
+                getPhysTypeStore(storeType)
+                    .filter((filterPhysType) => getPhysTypeRootKey(filterPhysType)('act') === actAsSimpleCreature)
                     .reduce((accumData, chartPhysType, i) =>
                         mutable_updateTimeChartData(
                             accumData,
                             2 * i + actionType.offsetIntType,
-                            physTypeGet(chartPhysType)('name') + ' ' + actionType.condStringType,
+                            getPhysTypeRootKey(chartPhysType)('name') + ' ' + actionType.condStringType,
                             ({
-                                time: simGetCurTime(storeType),
-                                value: physTypeGetCond(chartPhysType)(actionType.condStringType),
+                                time: getSimCurTime(storeType),
+                                value: getPhysTypeCond(chartPhysType)(actionType.condStringType),
                             })
                         ),
-                        storeType.remainder.creature_time_chart)
+                        getUIProp(storeType)('creature_time_chart'))
         }),
 
         // use inActionType.type as an entry key into the key-val list above

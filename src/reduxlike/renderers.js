@@ -20,15 +20,13 @@ export function mutable_renderFunction(_) {
     mutable_updateStatusBox(this.storeObj);
 };
 
-
-// *** App store UI rendering functions
 // update simulator status box with given HTML message
 // takes:
-//  storeObj: object containing public app store state
+//  storeType: store, as storeType
 // returns undefined
-function mutable_updateStatusBox(storeObj) {
+function mutable_updateStatusBox(storeType) {
     // point to status box HTML DOM context
-    let statusBox = getUIProp(storeObj)('status_box');
+    let statusBox = getUIProp(storeType)('status_box');
 
     // get status box scroll bar information
     const statusScrollTop = statusBox.scrollTop;
@@ -36,7 +34,7 @@ function mutable_updateStatusBox(storeObj) {
     const statusInnerHeight = statusBox.clientHeight;
 
     // make an internal HTML buffer version of the journal
-    const journalBufferHTMLType = getJournal(storeObj).reduce(
+    const journalBufferHTMLType = getJournal(storeType).reduce(
         (accumHTML, thisEntry) =>
             accumHTML +
             'Time ' + roundTo(2)(thisEntry.timeFloatType).toString() +

@@ -16,7 +16,6 @@ export const ACTION_DO_NOTHING = 'ACTION_DO_NOTHING';
 export const ACTION_JOURNAL_ADD_ENTRY = 'ACTION_JOURNAL_ADD_ENTRY';
  
 // physType store actions
-export const ACTION_PHYSTYPE_DO_ACT = 'ACTION_PHYSTYPE_DO_ACT';
 export const ACTION_PHYSTYPE_UPDATE_PHYSTYPE = 'ACTION_PHYSTYPE_UPDATE_PHYSTYPE';
 
 // UI: update data used for UI
@@ -29,10 +28,6 @@ export const ACTION_SIM_ADVANCE = 'ACTION_SIM_ADVANCE';
 export const ACTION_SIM_SAVE_CLOCK = 'ACTION_SIM_SAVE_CLOCK';
 export const ACTION_SIM_START = 'ACTION_SIM_START';
 export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
-
-// store control
-export const ACTION_STORE_LOCK = 'ACTION_STORE_LOCK';
-export const ACTION_STORE_UNLOCK = 'ACTION_STORE_UNLOCK';
 
 
 // *** Event names
