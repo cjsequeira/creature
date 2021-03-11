@@ -12,7 +12,6 @@ import {
 } from '../reduxlike/store_getters.js';
 
 import { event_updatePhysType } from '../rulebook/event_creators.js';
-import { resolveRules } from '../rulebook/rulebook.js';
 
 import {
     mutableRandGen_seededRand,
@@ -188,37 +187,33 @@ const actSleeping = (storeType) => (physType) =>
 
 
 // *** Code common to all simple creatures
-// function to review Simple Creature desires and return appropriate behavior
+// function to review Simple Creature desires and return an event to be 
+//  processed by the rulebook
 // takes: 
-//  storeType
+//  don't care: storeType
 //  physType
 //  desireFuncType: object of behavior keys with desire functions as property-vals
-// returns physType
-const doBehavior = (storeType) => (physType) => (desireFuncType) =>
-    // return physType object that is the creature, as a creatureType 
-    //  with behavior indicated via rulebook review of requested behavior,
+// returns eventType
+const doBehavior = (_) => (physType) => (desireFuncType) =>
+    // return an event to update the physType per the behavior request below
     //  which comes from weighted random draw using given desire functions
-    // the rulebook may assign the requested behavior, or may reject the
-    //  requested behavior and assign a different behavior
-    resolveRules
-        (storeType)
-        (
-            // dispatch an event to the rulebook to update the physType per the behavior request below
-            event_updatePhysType(
-                physTypeUseConds
-                    // make an object based on the given physType, with a "behavior_request" prop-obj
-                    (physType)
-                    ({
-                        behavior_request:
-                            // select behavior request from list of desire funcs using 
-                            // a weighted random number selector
-                            Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
-                                // numerical list of desires, used as weights for random draw
-                                // the code below maps each desire function to a numerical weight
-                                //  by evaluating it using the given physType
-                                Object.values(desireFuncType).map(f => f(physType))
-                            )]
-                    })
-
-            )
-        );
+    // this event needs to be processed by the rulebook, which will return an action
+    //  based on the rulebook and current app state
+    // the rulebook may assign the requested behavior, 
+    //  or may reject the requested behavior and assign a different behavior,
+    //  or may return an action totally unrelated to the physType object below!
+    event_updatePhysType(
+        physTypeUseConds
+            // make an object based on the given physType, with a "behavior_request" prop-obj
+            (physType)
+            ({
+                behavior_request:
+                    // select behavior request from list of desire funcs using 
+                    // a weighted random number selector
+                    Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
+                        // the code below maps each desire function to a numerical weight
+                        //  by evaluating it using the given physType
+                        Object.values(desireFuncType).map(f => f(physType))
+                    )]
+            })
+    );

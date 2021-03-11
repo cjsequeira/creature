@@ -11,6 +11,7 @@ import {
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
+    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
     ACTION_UI_ADD_GEO_CHART_DATA,
@@ -149,15 +150,33 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ],
         }),
 
-        [ACTION_PHYSTYPE_DO_ACT]: (storeType) => (_) =>
+        [ACTION_PHYSTYPE_DO_ACT]: (storeType) => (actionType) =>
+        ({
+            ...storeType.remainder,
+            physTypeStore: actionType.physTypeStore,
+        }),
+
+        [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
 
-            // IMPORTANT: every physType acts on the given store
-            // in other words, the store doesn't change in the middle of "map" below!
-            physTypeStore: storeType.remainder.physTypeStore.map((thisPhysType) =>
-                thisPhysType.act(storeType)(thisPhysType)
-            ),
+            // REFACTOR: revise code to handle situation where ID of given physType
+            //  is not in the physType store! Suggest "splicing" into front of array
+            physTypeStore: splice
+                // delete one item...
+                (1)
+
+                // ... at the array index (as found by matching physType IDs)...
+                (
+                    getPhysTypeStore(storeType).findIndex(
+                        (ptToFind) => ptToFind.id === actionType.physType.id)
+                )
+
+                // ... in the physTypeStore array...
+                (getPhysTypeStore(storeType))
+
+                // ... and replace with the given physType
+                (actionType.physType),
         }),
 
         [ACTION_STORE_LOCK]: (storeType) => (_) =>

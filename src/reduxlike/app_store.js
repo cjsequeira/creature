@@ -19,7 +19,9 @@ import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 import { combineReducers } from './reduxlike_utils.js';
 import { mutable_renderFunction } from './renderers.js';
 import { mutableRandGen_initRandGen } from '../sim/seeded_rand.js';
-import { getUIProp, simGetRunning, simGetSavedClock } from './store_getters.js';
+import { getPhysTypeStore, getUIProp, simGetRunning, simGetSavedClock } from './store_getters.js';
+import { resolveRules } from '../rulebook/rulebook.js';
+import { event_updatePhysType } from '../rulebook/event_creators.js';
 
 
 // *** Initial "public" store data
@@ -132,7 +134,7 @@ const initial_store = {
                 name: 'Food 1',
                 color: '#008800ff',
                 id: 2,
-                act: (_) => (physType) => physType,
+                act: (_) => (physType) => event_updatePhysType(physType),
                 conds: {
 
                     x: 8.0,
@@ -152,7 +154,7 @@ const initial_store = {
                 name: 'Food 2',
                 color: '#008800ff',
                 id: 3,
-                act: (_) => (physType) => physType,
+                act: (_) => (physType) => event_updatePhysType(physType),
                 conds: {
 
                     x: 12.0,
@@ -413,7 +415,7 @@ export var appStore = {
     storeObj: {},
 
 
-    // *** Methods: Action handling
+    // *** Methods: Dispatching
     // dispatch a list of actions, then call subscribedFunc
     // takes:
     //  ...actions: list of actions to dispatch, as actionType
@@ -428,8 +430,17 @@ export var appStore = {
         this.method_subscribedFunc();
     },
 
+    // map a list of events to a list of associated actions
+    // IMPORTANT: the app store "public" store properties stay static throughout this function!!!
+    // takes:
+    //  ...events: list of events to map, as eventType
+    // returns array of actionType
+    method_mapEventsToActions: function (...events) {
+        return events.flat(Infinity).map((thisEvent) => resolveRules(this.storeObj)(thisEvent));
+    },
 
     // *** Methods: Getters - Simulator getter functions
+    method_getPhysTypeStore: function (_) { return getPhysTypeStore(this.storeObj) },
     method_getSimRunning: function (_) { return simGetRunning(this.storeObj) },
     method_getSavedClock: function (_) { return simGetSavedClock(this.storeObj) },
     method_getUIProp: function (propStringType) { return getUIProp(this.storeObj)(propStringType) },
@@ -481,5 +492,3 @@ export var appStore = {
         this.method_setSubScribedFunc(mutable_renderFunction);
     },
 };
-
-

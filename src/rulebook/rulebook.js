@@ -75,23 +75,30 @@
 
 
 // *** Our imports
-import { EVENT_UPDATE_PHYSTYPE } from '../const_vals.js';
+import { EVENT_UPDATE_ALL_PHYSTYPES, EVENT_UPDATE_PHYSTYPE } from '../const_vals.js';
 
 import { orTests } from '../utils.js';
 
 import {
+    getPhysTypeStore,
     physTypeGetCond,
     physTypeUseConds,
 } from '../reduxlike/store_getters.js';
 
 import { physTypeDoPhysics } from '../sim/physics.js';
 import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
+import { action_UpdatePhysType, doNothing, physTypeDoAct } from '../reduxlike/action_creators.js';
 
 
 // *** Rulebook test nodes
 const is_eventUpdatePhysType = {
     name: 'Is event of type EVENT_UPDATE_PHYSTYPE?',
     testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_PHYSTYPE,
+};
+
+const is_eventUpdateAllPhysTypes = {
+    name: 'Is event of type EVENT_UPDATE_ALL_PHYSTYPES?',
+    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_ALL_PHYSTYPES,
 };
 
 const isCreatureType = {
@@ -135,57 +142,96 @@ const isBehaviorRequestSleeping = {
 // *** Rulebook leaf nodes
 const leafApproveBehavior = {
     name: 'Behavior request approved',
-    func: (_) => (eventType) => physTypeUseConds
-        (eventType.physType)
-        ({
-            behavior: physTypeGetCond(eventType.physType)('behavior_request'),
-        }),
+    func: (_) => (eventType) =>
+        action_UpdatePhysType(
+            physTypeUseConds
+                (eventType.physType)
+                ({
+                    behavior: physTypeGetCond(eventType.physType)('behavior_request'),
+                })
+        ),
 };
 
 const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
-    func: (_) => (eventType) => physTypeUseConds
-        (eventType.physType)
-        ({
-            behavior: physTypeGetCond(eventType.physType)('behavior_request'),
+    func: (_) => (eventType) =>
+        action_UpdatePhysType(
+            physTypeUseConds
+                (eventType.physType)
+                ({
+                    behavior: physTypeGetCond(eventType.physType)('behavior_request'),
 
-            speed: 0.0,
-            accel: 0.0
-        }),
+                    speed: 0.0,
+                    accel: 0.0
+                })
+        ),
 };
 
 const leafRejectBehavior = {
     name: 'Behavior request rejected!',
-    func: (_) => (eventType) => physTypeUseConds
-        (eventType.physType)
-        ({
-            // reject behavior request by re-assigning input physType behavior
-            behavior: physTypeGetCond(eventType.physType)('behavior'),
-        }),
+    func: (_) => (eventType) =>
+        action_UpdatePhysType(
+            physTypeUseConds
+                (eventType.physType)
+                ({
+                    // reject behavior request by re-assigning input physType behavior
+                    behavior: physTypeGetCond(eventType.physType)('behavior'),
+                })
+        ),
 };
 
 const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
-    func: (_) => (eventType) => physTypeUseConds
-        (eventType.physType)
-        ({
-            behavior: 'frozen',
-        }),
+    func: (_) => (eventType) =>
+        action_UpdatePhysType(
+            physTypeUseConds
+                (eventType.physType)
+                ({
+                    behavior: 'frozen',
+                })
+        ),
 };
 
 const leafNotCreatureType = {
-    name: 'Not a creatureType!',
-    func: (_) => (eventType) => eventType.physType,
+    name: 'Not a creatureType! Preserve given physType',
+    func: (_) => (_) => action_UpdatePhysType(eventType.physType),
 };
 
 const leafUnknownBehavior = {
-    name: 'Unknown behavior!',
-    func: (_) => (eventType) => eventType.physType
+    name: 'Unknown behavior! Preserve given physType',
+    func: (_) => (_) => action_UpdatePhysType(eventType.physType),
 };
 
 const leafUnknownEvent = {
     name: 'Unknown event!',
-    func: (_) => (eventType) => eventType.physType
+    func: (_) => (_) => doNothing(),
+};
+
+const leafRecursive_UpdateAllPhysTypes = {
+    name: 'Update all physTypes in one atomic operation, consulting rulebook for each physType',
+    func: (storeType) => (_) =>
+        // action to update all physTypes "atomically," meaning we use the same 
+        //  given storeType for each physType update process
+        // function signature is (physTypeStore) -> actionType
+        physTypeDoAct(
+            // map each physType in the physTypeStore of the given storeType by...
+            getPhysTypeStore(storeType).map(
+                (thisPhysType) =>
+                    // ...applying physType "act" to get an event, then passing that event
+                    //  through the rulebook (along with the given storeType) to get 
+                    //  an "update physType" action, then stripping the physType from that action
+                    // REFACTOR?: UGLY, YET FUNCTIONAL
+                    resolveRules
+                        (storeType)
+                        (thisPhysType.act(storeType)(thisPhysType))
+
+                        // strip the physType from the action given by resolveRules
+                        //  and use that physType as the "map" function output
+                        // WE ASSUME the action given by resolveRules has 
+                        //  a property named "physType"!
+                        .physType
+            )
+        ),
 };
 
 
@@ -204,7 +250,8 @@ const orTestRules = (...testRules) => ({
 // *** The rulebook
 const ruleBook = {
     testNode: is_eventUpdatePhysType,
-    yes: {
+    yes:
+    {
         testNode: isCreatureType,
         yes: {
             testNode: isGlucoseNeuroInRange,
@@ -236,18 +283,22 @@ const ruleBook = {
         },
         no: leafNotCreatureType,
     },
-    no: leafUnknownEvent,
+    no: {
+        testNode: is_eventUpdateAllPhysTypes,
+        yes: leafRecursive_UpdateAllPhysTypes,
+        no: leafUnknownEvent,
+    },
 };
 
 
 // *** Rulebook functions
 // general rulebook resolver
-//  find a rule in the rulebook for this physType, 
-//  then apply the rule to get a physType
+//  find a rule in the rulebook for an event, then apply the rule to get an action
+// THE RULEBOOK IS: (eventType) -> rulebook(storeType) -> actionType
 // takes: 
 //  storeType
 //  eventType
-// returns physType with applied rule
+// returns actionType
 export const resolveRules = (storeType) => (eventType) => findRule(storeType)(eventType)(ruleBook);
 
 // recursive rulebook node finder
@@ -255,7 +306,7 @@ export const resolveRules = (storeType) => (eventType) => findRule(storeType)(ev
 // takes:
 //  eventType
 //  node: the rule node to use
-// returns physType with selected rule applied
+// returns actionType as determined by rulebook application
 const findRule = (storeType) => (eventType) => (node) => {
     // define: is pre-function undefined? 
     //  if yes, apply (x => x) to eventType

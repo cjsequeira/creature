@@ -37,6 +37,7 @@ import {
     physTypeGet,
     physTypePropChanged,
 } from './reduxlike/store_getters.js';
+import { event_updateAllPhysTypes } from './rulebook/event_creators';
 
 
 // ***********************************************************************************
@@ -82,8 +83,10 @@ function appUpdate(_) {
             // save current states of all physTypes
             savePhysType(),
 
-            // do all physType actions
-            physTypeDoAct(),
+
+            appStore.method_mapEventsToActions(
+                event_updateAllPhysTypes(appStore.method_getPhysTypeStore())
+            ),
 
             // compare updated creatureTypes against saved creatureTypes to see
             //  if any behaviors changed

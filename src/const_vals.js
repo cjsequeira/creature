@@ -14,9 +14,10 @@ export const ACTION_DO_NOTHING = 'ACTION_DO_NOTHING';
 
 // journal: add entry
 export const ACTION_JOURNAL_ADD_ENTRY = 'ACTION_JOURNAL_ADD_ENTRY';
-
-// physType: do act
+ 
+// physType store actions
 export const ACTION_PHYSTYPE_DO_ACT = 'ACTION_PHYSTYPE_DO_ACT';
+export const ACTION_PHYSTYPE_UPDATE_PHYSTYPE = 'ACTION_PHYSTYPE_UPDATE_PHYSTYPE';
 
 // UI: update data used for UI
 export const ACTION_UI_ADD_TIME_CHART_DATA = 'ACTION_UI_ADD_TIME_CHART_DATA';
@@ -35,6 +36,7 @@ export const ACTION_STORE_UNLOCK = 'ACTION_STORE_UNLOCK';
 
 
 // *** Event names
+export const EVENT_UPDATE_ALL_PHYSTYPES = 'EVENT_UPDATE_ALL_PHYSTYPES';
 export const EVENT_UPDATE_PHYSTYPE = 'EVENT_UPDATE_PHYSTYPE';
 
 
