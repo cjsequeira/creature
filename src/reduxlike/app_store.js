@@ -6,7 +6,7 @@
 import Chart from 'chart.js';
 
 import {
-    doNothing,
+    action_doNothing,
     storeTypeTemplate,
 } from './action_creators.js';
 
@@ -22,7 +22,6 @@ import { mutable_renderFunction } from './renderers.js';
 import { mutableRandGen_initRandGen, mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 import { getPhysTypeStore, getUIProp, simGetRunning, simGetSavedClock } from './store_getters.js';
 import { resolveRules } from '../rulebook/rulebook.js';
-import { event_updatePhysType } from '../rulebook/event_creators.js';
 
 
 // *** Initial "public" store data
@@ -104,7 +103,7 @@ const initial_store = {
                 name: 'Food 1',
                 color: '#008800ff',
                 id: 2,
-                act: (_) => (_) => doNothing(),
+                act: (_) => (_) => action_doNothing(),
                 conds: {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),
@@ -117,7 +116,7 @@ const initial_store = {
                 name: 'Food 2',
                 color: '#008800ff',
                 id: 3,
-                act: (_) => (_) => doNothing(),
+                act: (_) => (_) => action_doNothing(),
                 conds: {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),

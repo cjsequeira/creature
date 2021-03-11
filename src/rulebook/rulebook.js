@@ -26,8 +26,8 @@ import { orTests } from '../utils.js';
 
 import {
     action_UpdatePhysType,
-    addJournalEntry,
-    doNothing,
+    action_addJournalEntry,
+    action_doNothing,
 } from '../reduxlike/action_creators.js';
 
 import {
@@ -132,7 +132,7 @@ const leafRejectBehaviorNoFood = {
         ),
 
         // announce the bad news in journal
-        addJournalEntry(
+        action_addJournalEntry(
             '*** ' +
             physTypeGet(eventType.physType)('name') +
             ' wants to eat but there\'s no food here!!'
@@ -164,7 +164,7 @@ const leafUnknownBehavior = {
 
 const leafUnknownEvent = {
     name: 'Unknown event!',
-    func: (_) => (_) => doNothing(),
+    func: (_) => (_) => action_doNothing(),
 };
 
 const leafRecursive_UpdateAllPhysTypes = {

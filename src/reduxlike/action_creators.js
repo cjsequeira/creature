@@ -10,7 +10,6 @@ import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
-    ACTION_PHYSTYPE_DO_ACT,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
@@ -31,7 +30,7 @@ import { simReducer } from './reducer_sim.js';
 //  msgStringType: message, as string
 //  don't care: storeType
 // returns actionType
-export const addJournalEntry = (msgStringType) =>
+export const action_addJournalEntry = (msgStringType) =>
 ({
     type: ACTION_JOURNAL_ADD_ENTRY,
     msgStringType
@@ -46,7 +45,7 @@ export const addJournalEntry = (msgStringType) =>
 //  compareFunc: function for comparing selected physTypes 
 //      signature: (old physType) => (new physType) => bool
 // returns actionType
-export const comparePhysTypes = (selectFunc) => (compareFunc) =>
+export const action_comparePhysTypes = (selectFunc) => (compareFunc) =>
 ({
     type: ACTION_COMPARE_COMPARE_PHYSTYPE,
     selectFunc,
@@ -57,7 +56,7 @@ export const comparePhysTypes = (selectFunc) => (compareFunc) =>
 // takes:
 //  don't care
 // returns actionType
-export const logChangedBehaviors = (_) => 
+export const action_logChangedBehaviors = (_) => 
 ({
     type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
 });
@@ -66,7 +65,7 @@ export const logChangedBehaviors = (_) =>
 // takes: 
 //  don't care
 // returns actionType
-export const savePhysType = (_) =>
+export const action_saveAllPhysTypes = (_) =>
 ({
     type: ACTION_COMPARE_SAVE_PHYSTYPE,
 });
@@ -75,7 +74,7 @@ export const savePhysType = (_) =>
 // takes: 
 //  don't care
 // returns actionType
-export const stopIfFrozen = (_) =>
+export const action_stopIfFrozen = (_) =>
 ({
     type: ACTION_COMPARE_STOP_IF_FROZEN,
 });
@@ -85,7 +84,7 @@ export const stopIfFrozen = (_) =>
 // takes: 
 //  don't care: storeType
 // returns actionType
-export const doNothing = (_) =>
+export const action_doNothing = (_) =>
 ({
     type: ACTION_DO_NOTHING,
 });
@@ -96,7 +95,7 @@ export const doNothing = (_) =>
 // takes:
 //  don't care
 // returns actionType
-export const uiAddGeoChartData = (_) =>
+export const action_uiAddGeoChartData = (_) =>
 ({
     type: ACTION_UI_ADD_GEO_CHART_DATA,
 });
@@ -108,7 +107,7 @@ export const uiAddGeoChartData = (_) =>
 //  timeValFloatTuple: floating-point data coordinate, as {time, value}
 //  don't care: storeType
 // returns actionType
-export const uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringType) =>
+export const action_uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringType) =>
 ({
     type: ACTION_UI_ADD_TIME_CHART_DATA,
     offsetIntType,
@@ -121,7 +120,7 @@ export const uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringTy
 // takes: 
 //  don't care: storeType
 // returns actionType
-export const advanceSim = (_) =>
+export const action_advanceSim = (_) =>
 ({
     type: ACTION_SIM_ADVANCE,
 });
@@ -131,7 +130,7 @@ export const advanceSim = (_) =>
 //  clockFloatType: clock value, as float
 //  don't care: storeType
 // returns actionType
-export const saveClockForSim = (clockFloatType) =>
+export const action_saveClockForSim = (clockFloatType) =>
 ({
     type: ACTION_SIM_SAVE_CLOCK,
     clockFloatType
@@ -141,7 +140,7 @@ export const saveClockForSim = (clockFloatType) =>
 // takes: 
 //  don't care: storeType
 // returns actionType
-export const startSim = (_) =>
+export const action_startSim = (_) =>
 ({
     type: ACTION_SIM_START,
 });
@@ -150,30 +149,10 @@ export const startSim = (_) =>
 // takes: 
 //  don't care: storeType
 // returns actionType
-export const stopSim = (_) =>
+export const action_stopSim = (_) =>
 ({
     type: ACTION_SIM_STOP,
 });
-
-
-// *** Store: Lock and unlock for write access
-// lock store
-// takes: 
-//  don't care: storeType
-// returns actionType
-export const lockStore = (_) =>
-({
-    type: ACTION_STORE_LOCK,
-});
-
-// unlock store
-// takes: 
-//  don't care: storeType
-// returns actionType
-export const unlockStore = (_) =>
-({
-    type: ACTION_STORE_UNLOCK,
-})
 
 
 // *** physType store actions

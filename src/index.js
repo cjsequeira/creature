@@ -19,16 +19,15 @@ import {
 import { actAsSimpleCreature } from './creatures/simple_creature';
 
 import {
-    advanceSim,
-    comparePhysTypes,
-    logChangedBehaviors,
-    physTypeDoAct,
-    saveClockForSim,
-    savePhysType,
-    startSim,
-    stopIfFrozen,
-    uiAddGeoChartData,
-    uiAddTimeChartSimpleCreatureData,
+    action_advanceSim,
+    action_comparePhysTypes,
+    action_logChangedBehaviors,
+    action_saveClockForSim,
+    action_saveAllPhysTypes,
+    action_startSim,
+    action_stopIfFrozen,
+    action_uiAddGeoChartData,
+    action_uiAddTimeChartSimpleCreatureData,
 } from './reduxlike/action_creators.js';
 
 import { appStore } from './reduxlike/app_store.js';
@@ -53,16 +52,16 @@ appStore.method_storeInit(
 // dispatch an initial series of actions
 appStore.method_dispatchActions(
     // change the sim status to running
-    startSim(),
+    action_startSim(),
 
     // add all initial simple creature glucose data to time chart at index 0
-    uiAddTimeChartSimpleCreatureData(0)('glucose'),
+    action_uiAddTimeChartSimpleCreatureData(0)('glucose'),
 
     // add all initial simple creature neuro data to time chart at index 1
-    uiAddTimeChartSimpleCreatureData(1)('neuro'),
+    action_uiAddTimeChartSimpleCreatureData(1)('neuro'),
 
     // add initial x-y data to geo chart
-    uiAddGeoChartData(),
+    action_uiAddGeoChartData(),
 );
 
 // start repeatedly updating our application at sim frequency
@@ -81,7 +80,7 @@ function appUpdate(_) {
         // yes: dispatch a series of actions
         appStore.method_dispatchActions(
             // save current states of all physTypes
-            savePhysType(),
+            action_saveAllPhysTypes(),
 
             // send an event into the system: update all physTypes
             // the method below returns action(s)
@@ -91,7 +90,7 @@ function appUpdate(_) {
 
             // compare updated creatureTypes against saved creatureTypes to see
             //  if any behaviors changed
-            comparePhysTypes
+            action_comparePhysTypes
                 // selection function: select all creatureTypes
                 ((ptToTest) => physTypeGet(ptToTest)('act') === actAsSimpleCreature)
 
@@ -100,15 +99,15 @@ function appUpdate(_) {
                     physTypePropChanged(oldCt)(newCt)('conds.behavior')),
 
             // journal: log creatureTypes with changed behaviors as computed due 
-            //  to comparePhysTypes action above
-            logChangedBehaviors(),
+            //  to action_comparePhysTypes action above
+            action_logChangedBehaviors(),
 
             // if any creatureType now has a behavior of 'frozen', update the journal
             //  and stop the sim
-            stopIfFrozen(),
+            action_stopIfFrozen(),
 
             // advance sim if running
-            advanceSim(),
+            action_advanceSim(),
         );
 
         // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
@@ -116,16 +115,16 @@ function appUpdate(_) {
             // yes: dispatch a series of actions to the store to update the non-sim stuff
             appStore.method_dispatchActions(
                 // remember the current time
-                saveClockForSim(performance.now()),
+                action_saveClockForSim(performance.now()),
 
                 // add all simple creature glucose data to time chart at index 0
-                uiAddTimeChartSimpleCreatureData(0)('glucose'),
+                action_uiAddTimeChartSimpleCreatureData(0)('glucose'),
 
                 // add all simple creature neuro data to time chart at index 1
-                uiAddTimeChartSimpleCreatureData(1)('neuro'),
+                action_uiAddTimeChartSimpleCreatureData(1)('neuro'),
 
                 // add all x-y data to geo chart
-                uiAddGeoChartData(),
+                action_uiAddGeoChartData(),
             );
         }
     }
