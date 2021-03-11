@@ -26,11 +26,13 @@ import { orTests } from '../utils.js';
 
 import {
     action_UpdatePhysType,
+    addJournalEntry,
     doNothing,
 } from '../reduxlike/action_creators.js';
 
 import {
     getPhysTypeStore,
+    physTypeGet,
     physTypeGetCond,
     physTypeUseConds,
 } from '../reduxlike/store_getters.js';
@@ -116,9 +118,10 @@ const leafApproveBehaviorStopMovement = {
         ),
 };
 
-const leafRejectBehavior = {
-    name: 'Behavior request rejected!',
-    func: (_) => (eventType) =>
+const leafRejectBehaviorNoFood = {
+    name: 'No food here. Behavior request rejected!',
+    func: (_) => (eventType) => ([
+        // reject the behavior request
         action_UpdatePhysType(
             physTypeUseConds
                 (eventType.physType)
@@ -127,6 +130,14 @@ const leafRejectBehavior = {
                     behavior: physTypeGetCond(eventType.physType)('behavior'),
                 })
         ),
+
+        // announce the bad news in journal
+        addJournalEntry(
+            '*** ' +
+            physTypeGet(eventType.physType)('name') +
+            ' wants to eat but there\'s no food here!!'
+        ),
+    ]),
 };
 
 const leafCondsOOL = {
@@ -204,7 +215,7 @@ const ruleBook = {
                 yes: {
                     testNode: isBehaviorRequestFoodAvail,
                     yes: leafApproveBehaviorStopMovement,
-                    no: leafRejectBehavior,
+                    no: leafRejectBehaviorNoFood,
                 },
                 no: {
                     testNode: isBehaviorRequestSleeping,
