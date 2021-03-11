@@ -32,9 +32,9 @@ import {
 
 import {
     getPhysTypeStore,
-    physTypeGet,
-    physTypeGetCond,
-    physTypeUseConds,
+    getPhysTypeRootKey,
+    getPhysTypeCond,
+    usePhysTypeConds,
 } from '../reduxlike/store_getters.js';
 
 import { physTypeDoPhysics } from '../sim/physics.js';
@@ -60,23 +60,23 @@ const isCreatureType = {
 const isGlucoseNeuroInRange = {
     name: 'Glucose and neuro in range?',
     testFunc: (_) => (eventType) =>
-        (physTypeGetCond(eventType.physType)('glucose') > 0.0) &&
-        (physTypeGetCond(eventType.physType)('neuro') < 100.0),
+        (getPhysTypeCond(eventType.physType)('glucose') > 0.0) &&
+        (getPhysTypeCond(eventType.physType)('neuro') < 100.0),
 };
 
 const isBehaviorRequestIdling = {
     name: 'Requesting behavior: idling?',
-    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'idling',
+    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'idling',
 };
 
 const isBehaviorRequestWandering = {
     name: 'Requesting behavior: wandering?',
-    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'wandering',
+    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'wandering',
 };
 
 const isBehaviorRequestEating = {
     name: 'Requesting behavior: eating?',
-    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'eating',
+    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'eating',
 };
 
 const isBehaviorRequestFoodAvail = {
@@ -86,7 +86,7 @@ const isBehaviorRequestFoodAvail = {
 
 const isBehaviorRequestSleeping = {
     name: 'Requested behavior: sleeping?',
-    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'sleeping',
+    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'sleeping',
 };
 
 
@@ -95,10 +95,10 @@ const leafApproveBehavior = {
     name: 'Behavior request approved',
     func: (_) => (eventType) =>
         action_UpdatePhysType(
-            physTypeUseConds
+            usePhysTypeConds
                 (eventType.physType)
                 ({
-                    behavior: physTypeGetCond(eventType.physType)('behavior_request'),
+                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
                 })
         ),
 };
@@ -107,10 +107,10 @@ const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
     func: (_) => (eventType) =>
         action_UpdatePhysType(
-            physTypeUseConds
+            usePhysTypeConds
                 (eventType.physType)
                 ({
-                    behavior: physTypeGetCond(eventType.physType)('behavior_request'),
+                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
                     speed: 0.0,
                     accel: 0.0
@@ -123,18 +123,18 @@ const leafRejectBehaviorNoFood = {
     func: (_) => (eventType) => ([
         // reject the behavior request
         action_UpdatePhysType(
-            physTypeUseConds
+            usePhysTypeConds
                 (eventType.physType)
                 ({
                     // reject behavior request by re-assigning input physType behavior
-                    behavior: physTypeGetCond(eventType.physType)('behavior'),
+                    behavior: getPhysTypeCond(eventType.physType)('behavior'),
                 })
         ),
 
         // announce the bad news in journal
         action_addJournalEntry(
             '*** ' +
-            physTypeGet(eventType.physType)('name') +
+            getPhysTypeRootKey(eventType.physType)('name') +
             ' wants to eat but there\'s no food here!!'
         ),
     ]),
@@ -144,7 +144,7 @@ const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
     func: (_) => (eventType) =>
         action_UpdatePhysType(
-            physTypeUseConds
+            usePhysTypeConds
                 (eventType.physType)
                 ({
                     behavior: 'frozen',

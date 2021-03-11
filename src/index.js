@@ -33,8 +33,8 @@ import {
 import { appStore } from './reduxlike/app_store.js';
 
 import {
-    physTypeGet,
-    physTypePropChanged,
+    getPhysTypeRootKey,
+    didPhysTypePropChange,
 } from './reduxlike/store_getters.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
 
@@ -92,11 +92,11 @@ function appUpdate(_) {
             //  if any behaviors changed
             action_comparePhysTypes
                 // selection function: select all creatureTypes
-                ((ptToTest) => physTypeGet(ptToTest)('act') === actAsSimpleCreature)
+                ((ptToTest) => getPhysTypeRootKey(ptToTest)('act') === actAsSimpleCreature)
 
                 // comparison function: did creatureType 'conds.behavior' property change?
                 ((oldCt) => (newCt) =>
-                    physTypePropChanged(oldCt)(newCt)('conds.behavior')),
+                    didPhysTypePropChange(oldCt)(newCt)('conds.behavior')),
 
             // journal: log creatureTypes with changed behaviors as computed due 
             //  to action_comparePhysTypes action above

@@ -21,8 +21,8 @@ import { mutable_renderFunction } from './renderers.js';
 import {
     getPhysTypeStore,
     getUIProp,
-    simGetRunning,
-    simGetSavedClock
+    getSimRunning,
+    getSimSavedClock
 } from './store_getters.js';
 
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
@@ -409,8 +409,8 @@ export var appStore = {
 
     // *** Methods: Getters - Simulator getter functions
     method_getPhysTypeStore: function (_) { return getPhysTypeStore(this.storeObj) },
-    method_getSimRunning: function (_) { return simGetRunning(this.storeObj) },
-    method_getSavedClock: function (_) { return simGetSavedClock(this.storeObj) },
+    method_getSimRunning: function (_) { return getSimRunning(this.storeObj) },
+    method_getSavedClock: function (_) { return getSimSavedClock(this.storeObj) },
     method_getUIProp: function (propStringType) { return getUIProp(this.storeObj)(propStringType) },
 
     // *** Methods: Methods to be set by user

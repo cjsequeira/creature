@@ -21,9 +21,9 @@ import {
     getPhysTypeStore,
     getPassedComparePhysTypeStore,
     getSavedPhysTypeStore,
-    physTypeGet,
-    physTypeGetCond,
-    simGetCurTime,
+    getPhysTypeRootKey,
+    getPhysTypeCond,
+    getSimCurTime,
     getUIProp
 } from './store_getters.js';
 
@@ -97,9 +97,9 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
                 ...getPassedComparePhysTypeStore(storeType).map(
                     (physType) => ({
-                        timeFloatType: simGetCurTime(storeType),
-                        msgStringType: physTypeGet(physType)('name') +
-                            ' ' + behaviorStrings[physTypeGetCond(physType)('behavior')],
+                        timeFloatType: getSimCurTime(storeType),
+                        msgStringType: getPhysTypeRootKey(physType)('name') +
+                            ' ' + behaviorStrings[getPhysTypeCond(physType)('behavior')],
                     })
                 ),
             ]
@@ -119,16 +119,16 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
                 ...getPhysTypeStore(storeType)
                     // filter physType store to find simple creatures
-                    .filter((ptToTest1) => physTypeGet(ptToTest1)('act') === actAsSimpleCreature)
+                    .filter((ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature)
 
                     // filter to find simple creatures with behavior of 'frozen'
-                    .filter((ptToTest2) => physTypeGetCond(ptToTest2)('behavior') === 'frozen')
+                    .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')
 
                     // map filter results to journal entries
                     .map(
                         (ptToMap) => ({
-                            timeFloatType: simGetCurTime(storeType),
-                            msgStringType: physTypeGet(ptToMap)('name') + ' is frozen; stopping sim',
+                            timeFloatType: getSimCurTime(storeType),
+                            msgStringType: getPhysTypeRootKey(ptToMap)('name') + ' is frozen; stopping sim',
                         })
                     )
             ]
@@ -142,7 +142,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             journal: [
                 ...getJournal(storeType),
                 {
-                    timeFloatType: simGetCurTime(storeType),
+                    timeFloatType: getSimCurTime(storeType),
                     msgStringType: actionType.msgStringType,
                 }
             ],
@@ -181,10 +181,10 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                     mutable_updateGeoChartData(
                         accumData,
                         i,
-                        physTypeGet(thisPhysType)('color'),
+                        getPhysTypeRootKey(thisPhysType)('color'),
                         ({
-                            x: physTypeGetCond(thisPhysType)('x'),
-                            y: physTypeGetCond(thisPhysType)('y'),
+                            x: getPhysTypeCond(thisPhysType)('x'),
+                            y: getPhysTypeCond(thisPhysType)('y'),
                         })
                     ),
                     getUIProp(storeType)('creature_geo_chart')),
@@ -197,15 +197,15 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             creature_time_chart:
                 // update time chart data associated with all **simple creatures** in the store
                 getPhysTypeStore(storeType)
-                    .filter((filterPhysType) => physTypeGet(filterPhysType)('act') === actAsSimpleCreature)
+                    .filter((filterPhysType) => getPhysTypeRootKey(filterPhysType)('act') === actAsSimpleCreature)
                     .reduce((accumData, chartPhysType, i) =>
                         mutable_updateTimeChartData(
                             accumData,
                             2 * i + actionType.offsetIntType,
-                            physTypeGet(chartPhysType)('name') + ' ' + actionType.condStringType,
+                            getPhysTypeRootKey(chartPhysType)('name') + ' ' + actionType.condStringType,
                             ({
-                                time: simGetCurTime(storeType),
-                                value: physTypeGetCond(chartPhysType)(actionType.condStringType),
+                                time: getSimCurTime(storeType),
+                                value: getPhysTypeCond(chartPhysType)(actionType.condStringType),
                             })
                         ),
                         getUIProp(storeType)('creature_time_chart'))
