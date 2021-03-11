@@ -6,6 +6,7 @@
 import Chart from 'chart.js';
 
 import {
+    doNothing,
     storeTypeTemplate,
 } from './action_creators.js';
 
@@ -103,7 +104,7 @@ const initial_store = {
                 name: 'Food 1',
                 color: '#008800ff',
                 id: 2,
-                act: (_) => (physType) => event_updatePhysType(physType),
+                act: (_) => (_) => doNothing(),
                 conds: {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),
@@ -116,7 +117,7 @@ const initial_store = {
                 name: 'Food 2',
                 color: '#008800ff',
                 id: 3,
-                act: (_) => (physType) => event_updatePhysType(physType),
+                act: (_) => (_) => doNothing(),
                 conds: {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),
