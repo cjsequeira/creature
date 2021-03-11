@@ -11,6 +11,7 @@ import {
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
+    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
@@ -80,16 +81,6 @@ export const stopIfFrozen = (_) =>
 });
 
 
-// *** Do all physType actions
-// takes:
-//  don't care
-// returns actionType
-export const physTypeDoAct = (_) =>
-({
-    type: ACTION_PHYSTYPE_DO_ACT,
-});
-
-
 // *** Do nothing
 // takes: 
 //  don't care: storeType
@@ -124,18 +115,6 @@ export const uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringTy
     condStringType,
 });
 
-/*
-// add status message
-// takes:
-//  msgStringType: message, as string
-//  don't care: storeType
-// returns actionType
-export const uiAddStatusMessage = (msgStringType) =>
-({
-    type: ACTION_UI_ADD_STATUS_MESSAGE,
-    msgStringType
-});
-*/
 
 // *** Sim control
 // advance sim time
@@ -194,6 +173,18 @@ export const lockStore = (_) =>
 export const unlockStore = (_) =>
 ({
     type: ACTION_STORE_UNLOCK,
+})
+
+
+// *** physType store actions
+// update physType with the given physType using the same ID
+// takes:
+//  physType
+// returns actionType
+export const action_UpdatePhysType = (physType) =>
+({
+    type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    physType,
 })
 
 

@@ -11,6 +11,7 @@ import {
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_DO_ACT,
+    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_STORE_LOCK,
     ACTION_STORE_UNLOCK,
     ACTION_UI_ADD_GEO_CHART_DATA,
@@ -64,8 +65,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
             // use current physTypeStore as the master list for comparing against
             //  saved physTypeStore, using the given comparison function
-            //  and COMPARING INDEX BY INDEX
-            // REFACTOR: Find a more-sophisticated way of comparison - maybe a unique ID?
+            //  and comparing ID by ID
             passedComparePhysTypeStore: storeType.remainder.physTypeStore
                 // get array of current physTypes that pass the selection function
                 // selectFunc signature is (physType) => bool
@@ -73,21 +73,20 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
                 // with array of selected current physTypes, get array of
                 //  current PhysTypes that pass the comparison function
-                //  against the array of selected saved physTypes,
-                //  as compared on an INDEX BY INDEX BASIS! 
-                // REFACTOR: Seems inelegant. savedPhysTypeStore is re-filtered every time?
-                .filter((curPtToCompare, outer_i) =>
+                //  against the saved physTypes,
+                //  as compared on an ID by ID basis!
+                .filter((ptToCompare) =>
                     // compareFunc signature is (old physType) => (new physType) => bool 
                     actionType.compareFunc
                         // saved physType to compare against current
                         (
                             storeType.remainder.savedPhysTypeStore
-                                // get array of saved physTypes that pass the selection function
-                                // then select the saved physType at the outer filter index
-                                .filter((ptToTest) => actionType.selectFunc(ptToTest))[outer_i]
+                                // find the saved physType with the same ID as the physType
+                                // currently under comparison
+                                .find((ptToFind) => ptToFind.id === ptToCompare.id)
                         )
                         // current physType to compare against saved
-                        (curPtToCompare)
+                        (ptToCompare)
                 ),
         }),
 
@@ -151,15 +150,27 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ],
         }),
 
-        [ACTION_PHYSTYPE_DO_ACT]: (storeType) => (_) =>
+        [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
 
-            // IMPORTANT: every physType acts on the given store
-            // in other words, the store doesn't change in the middle of "map" below!
-            physTypeStore: storeType.remainder.physTypeStore.map((thisPhysType) =>
-                thisPhysType.act(storeType)(thisPhysType)
-            ),
+            // REFACTOR: revise code to handle situation where ID of given physType
+            //  is not in the physType store! Suggest "splicing" into front of array
+            physTypeStore: splice
+                // delete one item...
+                (1)
+
+                // ... at the array index (as found by matching physType IDs)...
+                (
+                    getPhysTypeStore(storeType).findIndex(
+                        (ptToFind) => ptToFind.id === actionType.physType.id)
+                )
+
+                // ... in the physTypeStore array...
+                (getPhysTypeStore(storeType))
+
+                // ... and replace with the given physType
+                (actionType.physType),
         }),
 
         [ACTION_STORE_LOCK]: (storeType) => (_) =>

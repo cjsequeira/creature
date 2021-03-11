@@ -1,4 +1,4 @@
-# Creature version 0.0.10 - README for developers
+# Creature version 0.0.11 - README for developers
 
 I got new rules let's count 'em:
 
@@ -51,3 +51,5 @@ Description:
 ### **journalType**: The type for the app journal - TO BE ADDED
 
 ### **actionType**: The type for Redux-like actions - TO BE ADDED
+
+### **eventType**: The type for application-specific events - TO BE ADDED
