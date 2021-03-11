@@ -4,6 +4,8 @@ Eats, sleeps, and wanders - like a proper pet should!
 
 Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-draft-creature.netlify.app/) to see it do its thang.
 
+"Cute creature" icon by [LethargicEye on DeviantArt.](https://www.deviantart.com/lethargiceye/art/Cute-Creature-75055699)
+
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2984688a-76b0-4643-83ee-39ee6b0fcf79/deploy-status)](https://app.netlify.com/sites/arrogantfool-draft-creature/deploys)
 
 ## Changelog:
