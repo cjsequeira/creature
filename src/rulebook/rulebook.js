@@ -27,7 +27,6 @@ import { orTests } from '../utils.js';
 import {
     action_UpdatePhysType,
     doNothing,
-    physTypeDoAct
 } from '../reduxlike/action_creators.js';
 
 import {

@@ -150,12 +150,6 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ],
         }),
 
-        [ACTION_PHYSTYPE_DO_ACT]: (storeType) => (actionType) =>
-        ({
-            ...storeType.remainder,
-            physTypeStore: actionType.physTypeStore,
-        }),
-
         [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,

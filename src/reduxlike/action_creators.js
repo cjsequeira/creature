@@ -177,16 +177,6 @@ export const unlockStore = (_) =>
 
 
 // *** physType store actions
-// replaces the entire physTypeStore with the given physTypeStore
-// takes:
-//  physTypeStore: physType array
-// returns actionType
-export const physTypeDoAct = (physTypeStore) =>
-({
-    type: ACTION_PHYSTYPE_DO_ACT,
-    physTypeStore,
-});
-
 // update physType with the given physType using the same ID
 // takes:
 //  physType
