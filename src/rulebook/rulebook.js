@@ -89,29 +89,29 @@ import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 // *** Rulebook test nodes
 const isCreatureType = {
     name: 'Is creatureType?',
-    testFunc: (_) => (physType) => physType.hasOwnProperty('conds'),
+    testFunc: (_) => (eventType) => eventType.physType.hasOwnProperty('conds'),
 };
 
 const isGlucoseNeuroInRange = {
     name: 'Glucose and neuro in range?',
-    testFunc: (_) => (physType) =>
-        (physTypeGetCond(physType)('glucose') > 0.0) &&
-        (physTypeGetCond(physType)('neuro') < 100.0),
+    testFunc: (_) => (eventType) =>
+        (physTypeGetCond(eventType.physType)('glucose') > 0.0) &&
+        (physTypeGetCond(eventType.physType)('neuro') < 100.0),
 };
 
 const isBehaviorRequestIdling = {
     name: 'Requesting behavior: idling?',
-    testFunc: (_) => (physType) => physTypeGetCond(physType)('behavior_request') === 'idling',
+    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'idling',
 };
 
 const isBehaviorRequestWandering = {
     name: 'Requesting behavior: wandering?',
-    testFunc: (_) => (physType) => physTypeGetCond(physType)('behavior_request') === 'wandering',
+    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'wandering',
 };
 
 const isBehaviorRequestEating = {
     name: 'Requesting behavior: eating?',
-    testFunc: (_) => (physType) => physTypeGetCond(physType)('behavior_request') === 'eating',
+    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'eating',
 };
 
 const isBehaviorRequestFoodAvail = {
@@ -121,26 +121,26 @@ const isBehaviorRequestFoodAvail = {
 
 const isBehaviorRequestSleeping = {
     name: 'Requested behavior: sleeping?',
-    testFunc: (_) => (physType) => physTypeGetCond(physType)('behavior_request') === 'sleeping',
+    testFunc: (_) => (eventType) => physTypeGetCond(eventType.physType)('behavior_request') === 'sleeping',
 };
 
 
 // *** Rulebook leaf nodes
 const leafApproveBehavior = {
     name: 'Behavior request approved',
-    func: (_) => (physType) => physTypeUseConds
-        (physType)
+    func: (_) => (eventType) => physTypeUseConds
+        (eventType.physType)
         ({
-            behavior: physTypeGetCond(physType)('behavior_request'),
+            behavior: physTypeGetCond(eventType.physType)('behavior_request'),
         }),
 };
 
 const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
-    func: (_) => (physType) => physTypeUseConds
-        (physType)
+    func: (_) => (eventType) => physTypeUseConds
+        (eventType.physType)
         ({
-            behavior: physTypeGetCond(physType)('behavior_request'),
+            behavior: physTypeGetCond(eventType.physType)('behavior_request'),
 
             speed: 0.0,
             accel: 0.0
@@ -149,18 +149,18 @@ const leafApproveBehaviorStopMovement = {
 
 const leafRejectBehavior = {
     name: 'Behavior request rejected!',
-    func: (_) => (physType) => physTypeUseConds
-        (physType)
+    func: (_) => (eventType) => physTypeUseConds
+        (eventType.physType)
         ({
-            // reject behavior request by re-assigning input physType
-            behavior: physTypeGetCond(physType)('behavior'),
+            // reject behavior request by re-assigning input physType behavior
+            behavior: physTypeGetCond(eventType.physType)('behavior'),
         }),
 };
 
 const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
-    func: (_) => (physType) => physTypeUseConds
-        (physType)
+    func: (_) => (eventType) => physTypeUseConds
+        (eventType.physType)
         ({
             behavior: 'frozen',
         }),
@@ -168,12 +168,12 @@ const leafCondsOOL = {
 
 const leafNotCreatureType = {
     name: 'Not a creatureType!',
-    func: (_) => (physType) => physType,
+    func: (_) => (eventType) => eventType.physType,
 };
 
 const leafUnknownBehavior = {
     name: 'Unknown behavior!',
-    func: (_) => (physType) => physType
+    func: (_) => (eventType) => eventType.physType
 };
 
 
@@ -182,7 +182,7 @@ const leafUnknownBehavior = {
 // takes:
 //  ...testRules: array of rulebook test nodes
 // returns object with testFunc property as: function combining test nodes with logical "or"
-// the function signature is (storeType) => (physType) => returning bool
+// the function signature is (storeType) => (eventType) => bool
 const orTestRules = (...testRules) => ({
     name: 'orTestRules',
     testFunc: (storeType) => orTests(testRules.map(rule => rule.testFunc(storeType)))
@@ -196,7 +196,11 @@ const ruleBook = {
         testNode: isGlucoseNeuroInRange,
         yes: {
             // first, produce physType with laws of physics applied
-            preFunc: (storeType) => (physType) => physTypeDoPhysics(storeType)(physType),
+            preFunc: (storeType) => (eventType) =>
+            ({
+                ...eventType,
+                physType: physTypeDoPhysics(storeType)(eventType.physType),
+            }),
 
             testNode: isBehaviorRequestEating,
             yes: {
@@ -226,34 +230,34 @@ const ruleBook = {
 //  then apply the rule to get a physType
 // takes: 
 //  storeType
-//  physType
+//  eventType
 // returns physType with applied rule
-export const resolveRules = (storeType) => (physType) => findRule(storeType)(physType)(ruleBook);
+export const resolveRules = (storeType) => (eventType) => findRule(storeType)(eventType)(ruleBook);
 
 // recursive rulebook node finder
 // assumes a rule exists in the rulebook for every possible physType
 // takes:
-//  physType
+//  eventType
 //  node: the rule node to use
 // returns physType with selected rule applied
-const findRule = (storeType) => (physType) => (node) => {
+const findRule = (storeType) => (eventType) => (node) => {
     // define: is pre-function undefined? 
-    //  if yes, apply (x => x) to physType
-    //  if no, apply pre-function to physType
-    const physType_to_use = (node.preFunc || (_ => x => x))(storeType)(physType)
+    //  if yes, apply (x => x) to eventType
+    //  if no, apply pre-function to eventType
+    const eventType_to_use = (node.preFunc || (_ => x => x))(storeType)(eventType)
 
     // is test node undefined?
     return (node.testNode === undefined)
         // yes: we assume the given node is a leaf node with a rule to apply
         // so, return the physType with the rule applied
-        ? node.func(storeType)(physType_to_use)
+        ? node.func(storeType)(eventType_to_use)
 
         // no: we assume the given node is a test node with a test function
-        // so, apply the given node's test func to the physType
-        : (node.testNode.testFunc(storeType)(physType_to_use))
+        // so, apply the given node's test func to the eventType
+        : (node.testNode.testFunc(storeType)(eventType_to_use))
             // test func returned true? follow node.yes
-            ? findRule(storeType)(physType_to_use)(node.yes)
+            ? findRule(storeType)(eventType_to_use)(node.yes)
 
             // test func returned false? follow node.no
-            : findRule(storeType)(physType_to_use)(node.no)
+            : findRule(storeType)(eventType_to_use)(node.no)
 };

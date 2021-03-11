@@ -3,7 +3,6 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-import { resolveRules } from '../rulebook/rulebook.js';
 import { excludeRange } from '../utils.js';
 
 import {
@@ -11,6 +10,9 @@ import {
     physTypeUseConds,
     simGetTimeStep
 } from '../reduxlike/store_getters.js';
+
+import { event_updatePhysType } from '../rulebook/event_creators.js';
+import { resolveRules } from '../rulebook/rulebook.js';
 
 import {
     mutableRandGen_seededRand,
@@ -201,17 +203,22 @@ const doBehavior = (storeType) => (physType) => (desireFuncType) =>
     resolveRules
         (storeType)
         (
-            physTypeUseConds
-                (physType)
-                ({
-                    behavior_request:
-                        // select behavior request from list of desire funcs using 
-                        // a weighted random number selector
-                        Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
-                            // numerical list of desires, used as weights for random draw
-                            // the code below maps each desire function to a numerical weight
-                            //  by evaluating it using the given physType
-                            Object.values(desireFuncType).map(f => f(physType))
-                        )]
-                })
+            // dispatch an event to the rulebook to update the physType per the behavior request below
+            event_updatePhysType(
+                physTypeUseConds
+                    // make an object based on the given physType, with a "behavior_request" prop-obj
+                    (physType)
+                    ({
+                        behavior_request:
+                            // select behavior request from list of desire funcs using 
+                            // a weighted random number selector
+                            Object.keys(desireFuncType)[mutableRandGen_seededWeightedRand(
+                                // numerical list of desires, used as weights for random draw
+                                // the code below maps each desire function to a numerical weight
+                                //  by evaluating it using the given physType
+                                Object.values(desireFuncType).map(f => f(physType))
+                            )]
+                    })
+
+            )
         );

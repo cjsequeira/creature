@@ -51,3 +51,5 @@ Description:
 ### **journalType**: The type for the app journal - TO BE ADDED
 
 ### **actionType**: The type for Redux-like actions - TO BE ADDED
+
+### **eventType**: The type for application-specific events - TO BE ADDED
