@@ -1,4 +1,4 @@
-# Creature version 0.0.10
+# Creature version 0.0.11
 
 Eats, sleeps, and wanders - like a proper pet should!
 
@@ -7,6 +7,7 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2984688a-76b0-4643-83ee-39ee6b0fcf79/deploy-status)](https://app.netlify.com/sites/arrogantfool-draft-creature/deploys)
 
 ## Changelog:
+* **0.0.11**: Major refactor of rulebook for increased flexibility
 * **0.0.10**: Major refactors of action dispatch, physType-watching, and store architecture
 * **0.0.9**: Substantial upgrade to implement physType property-watching and action-queuing functionality
 * **0.0.8**: Substantial upgrade to execution to enable multiple creatures
