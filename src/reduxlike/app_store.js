@@ -37,8 +37,8 @@ const initial_store = {
         savedClock: 0.0,
 
         // initial random number generator seed
-        //initSeed: mutableRandGen_initRandGen(Date.now()),
-        initSeed: mutableRandGen_initRandGen(0),
+        initSeed: mutableRandGen_initRandGen(Date.now()),
+        //initSeed: mutableRandGen_initRandGen(0),
     },
 
     remainder: {
