@@ -39,6 +39,7 @@ import {
 
 import { physTypeDoPhysics } from '../sim/physics.js';
 import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
+import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 
 // *** Rulebook test nodes
@@ -62,9 +63,27 @@ const isBehaviorRequestWandering = {
     testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'wandering',
 };
 
-const isCreatureType = {
+const isSimpleCreature = {
     name: 'Is creatureType?',
-    testFunc: (_) => (eventType) => eventType.physType.hasOwnProperty('conds'),
+    testFunc: (_) => (eventType) => getPhysTypeRootKey(eventType.physType)('act') === actAsSimpleCreature,
+};
+
+const isCreatureTouchingFood = {
+    name: 'Is a creature touching this food?',
+    testFunc: (storeType) => (eventType) =>
+        // get physType store
+        getPhysTypeStore(storeType)
+            // keep all simple creatures...
+            .filter((ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature)
+
+            // ...closer than a given distance from the food
+            .filter((ptToTest2) => Math.sqrt(
+                Math.pow(getPhysTypeCond(ptToTest2)('x') - getPhysTypeCond(eventType.physType)('x'), 2.0) +
+                Math.pow(getPhysTypeCond(ptToTest2)('y') - getPhysTypeCond(eventType.physType)('y'), 2.0)
+            ) < 0.8)
+
+            // any creatureTypes remaining that are closer than a given distance?
+            .length > 0,
 };
 
 const isEventUpdateAllPhysTypes = {
@@ -130,9 +149,15 @@ const leafCondsOOL = {
         ),
 };
 
+const leafFoodTouched = {
+    name: 'Food touched by creature!',
+    func: (_) => (eventType) =>
+        action_addJournalEntry(getPhysTypeRootKey(eventType.physType)('name') + ' TOUCHED BY CREATURE!!'),
+}
+
 const leafNotCreatureType = {
     name: 'Not a creatureType! Preserve given physType',
-    func: (_) => (_) => action_UpdatePhysType(eventType.physType),
+    func: (_) => (eventType) => action_UpdatePhysType(eventType.physType),
 };
 
 const leafRejectBehaviorNoFood = {
@@ -206,7 +231,7 @@ const ruleBook = {
     testNode: isEventUpdatePhysType,
     yes:
     {
-        testNode: isCreatureType,
+        testNode: isSimpleCreature,
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
@@ -236,7 +261,14 @@ const ruleBook = {
             },
             no: leafCondsOOL,
         },
-        no: leafNotCreatureType,
+
+        // if not a creature, it's food!
+        // REFACTOR to flexify
+        no: {
+            testNode: isCreatureTouchingFood,
+            yes: leafFoodTouched,
+            no: leafNotCreatureType,
+        }
     },
     no: {
         testNode: isEventUpdateAllPhysTypes,
@@ -267,6 +299,19 @@ const findRule = (storeType) => (eventType) => (node) => {
     //  if yes, apply (x => x) to eventType
     //  if no, apply pre-function to eventType
     const eventType_to_use = (node.preFunc || (_ => x => x))(storeType)(eventType)
+
+
+    /*
+    
+        if (node.testNode === undefined) {
+            console.log(node.name);
+        } else {
+            console.log(node.testNode.name);
+        }
+    
+    */
+
+
 
     // is test node undefined?
     return (node.testNode === undefined)

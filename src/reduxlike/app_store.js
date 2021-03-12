@@ -19,6 +19,7 @@ import {
     mutableRandGen_initRandGen,
     mutableRandGen_seededRand
 } from '../sim/seeded_rand.js';
+import { event_updatePhysType } from '../rulebook/event_creators.js';
 
 
 // *** Initial app store
@@ -104,7 +105,7 @@ const initial_store = {
                 name: 'Food 1',
                 color: '#008800ff',
                 id: 2,
-                act: (_) => (_) => action_doNothing(),
+                act: (_) => (physType) => event_updatePhysType(physType),
                 conds: {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),
@@ -117,7 +118,7 @@ const initial_store = {
                 name: 'Food 2',
                 color: '#008800ff',
                 id: 3,
-                act: (_) => (_) => action_doNothing(),
+                act: (_) => (physType) =>  event_updatePhysType(physType),
                 conds: {
                     // location
                     x: mutableRandGen_seededRand(1.0, 18.0),
