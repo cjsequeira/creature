@@ -23,23 +23,29 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
     ({
         [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
         ([
-            // REFACTOR: revise code to handle situation where ID of given physType
-            //  is not in the physType store! Suggest "splicing" into front of array
-            ...splice
-                // delete one item...
-                (1)
+            // is the given physType located in the physTypeStore?  
+            ...(getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
+                > -1)
 
-                // ... at the array index (as found by matching physType IDs)...
-                (
-                    getPhysTypeStore(storeType).findIndex(
-                        (ptToFind) => ptToFind.id === actionType.physType.id)
-                )
+                // yes: update it
+                ? splice
+                    // delete one item...
+                    (1)
 
-                // ... in the physTypeStore array...
-                (getPhysTypeStore(storeType))
+                    // ... at the array index (as found by matching physType IDs)...
+                    (
+                        getPhysTypeStore(storeType).findIndex(
+                            (ptToFind) => ptToFind.id === actionType.physType.id)
+                    )
 
-                // ... and replace with the given physType
-                (actionType.physType),
+                    // ... in the physTypeStore array...
+                    (getPhysTypeStore(storeType))
+
+                    // ... and replace with the given physType
+                    (actionType.physType)
+
+                // no: return the store unaltered
+                : getPhysTypeStore(storeType)
         ]),
 
         // use inActionType.type as an entry key into the key-val list above
@@ -47,7 +53,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         //  and actionType and returns a storeType "physTypeStore" prop obj
         // if no key-val matches the entry key, return a func that echoes 
         //  the given storeType "physTypeStore" property array
-    }[inActionType.type] || ((storeType) => (_) => ([ ...storeType.physTypeStore ])))
+    }[inActionType.type] || ((storeType) => (_) => ([...storeType.physTypeStore])))
         // evaluate the function with the storeType "physTypeStore" property array 
         //  and actionType to get a storeType "physTypeStore" property array
         (inStoreType)
