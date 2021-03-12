@@ -23,6 +23,7 @@ import {
 } from '../const_vals.js';
 
 import { orTests } from '../utils.js';
+import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
     action_UpdatePhysType,
@@ -39,7 +40,6 @@ import {
 
 import { physTypeDoPhysics } from '../sim/physics.js';
 import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
-import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
 
 // *** Rulebook test nodes

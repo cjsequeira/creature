@@ -13,7 +13,7 @@ import {
     WORLD_SIZE_Y,
 } from '../const_vals.js';
 
-import { actAsSimpleCreature } from '../creatures/simple_creature.js';
+import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
     mutableRandGen_initRandGen,
