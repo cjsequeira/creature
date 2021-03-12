@@ -5,8 +5,6 @@
 // *** Our imports
 import Chart from 'chart.js';
 
-import { action_doNothing } from './action_creators.js';
-
 import {
     UPDATE_FREQ_SIM,
     WORLD_SIZE_X,
@@ -25,6 +23,7 @@ import { event_updatePhysType } from '../rulebook/event_creators.js';
 // *** Initial app store
 const initial_store = {
     // method to be called after action dispatch is completed
+    // expected signature: (storeType) => undefined
     method_subscribed: function (storeType) { },
 
     // simulator properties
@@ -64,8 +63,8 @@ const initial_store = {
                     behavior_request: null,
 
                     // location
-                    x: mutableRandGen_seededRand(1.0, 18.0),
-                    y: mutableRandGen_seededRand(1.0, 18.0),
+                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
 
                     // heading, speed, acceleration
                     heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
@@ -90,8 +89,8 @@ const initial_store = {
                     behavior_request: null,
 
                     // location
-                    x: mutableRandGen_seededRand(1.0, 18.0),
-                    y: mutableRandGen_seededRand(1.0, 18.0),
+                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
 
                     // heading, speed, acceleration
                     heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
@@ -108,8 +107,8 @@ const initial_store = {
                 act: (_) => (physType) => event_updatePhysType(physType),
                 conds: {
                     // location
-                    x: mutableRandGen_seededRand(1.0, 18.0),
-                    y: mutableRandGen_seededRand(1.0, 18.0),
+                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
                 },
             },
 
@@ -118,11 +117,11 @@ const initial_store = {
                 name: 'Food 2',
                 color: '#008800ff',
                 id: 3,
-                act: (_) => (physType) =>  event_updatePhysType(physType),
+                act: (_) => (physType) => event_updatePhysType(physType),
                 conds: {
                     // location
-                    x: mutableRandGen_seededRand(1.0, 18.0),
-                    y: mutableRandGen_seededRand(1.0, 18.0),
+                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
                 },
             },
         ],

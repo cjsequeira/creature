@@ -18,15 +18,22 @@ import {
     mutableRandGen_seededWeightedRand
 } from '../sim/seeded_rand.js';
 
+import {
+    WORLD_SIZE_X,
+    WORLD_SIZE_Y,
+} from '../const_vals.js';
+
 
 // *** Default Simple Creature assembler
+// WARNING: ID MUST BE SET AFTERWARD!
 // takes: 
 //  don't care
-// returns physType
+// returns creatureType
 export const getDefaultSimpleCreature = (_) =>
 ({
     name: 'New Simple Creature',
     color: '#00bb00ff',
+    id: null,
     act: actAsSimpleCreature,
     conds: {
         // internal biology
@@ -38,12 +45,12 @@ export const getDefaultSimpleCreature = (_) =>
         behavior_request: null,
 
         // location
-        x: 10.0,
-        y: 10.0,
+        x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+        y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
 
         // heading, speed, acceleration
-        heading: 0.0 * Math.PI / 180.0,
-        speed: 2.0,
+        heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
+        speed: mutableRandGen_seededRand(0.0, 1.0),
         accel: 0.0,
     },
 });
@@ -51,7 +58,7 @@ export const getDefaultSimpleCreature = (_) =>
 
 // *** Behavior functions unique to Simple Creature
 // main behavior function
-// this function works by using the physType behavior to select a function to apply
+// this function works by using the creatureType behavior to select a function to apply
 // if behavior is not a key in the object, 'behavior' bracket search gives null,
 //  causing return of identity function (_ => x => x), which returns given physType unaltered
 // takes: 
