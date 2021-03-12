@@ -10,6 +10,7 @@ import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
+    ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
@@ -157,6 +158,16 @@ export const action_stopSim = (_) =>
 
 
 // *** physType store actions
+// add physType to store
+// takes:
+//  physType
+// returns actionType
+export const action_AddPhysType = (physType) =>
+({
+    type: ACTION_PHYSTYPE_ADD_PHYSTYPE,
+    physType,
+});
+
 // update physType with the given physType using the same ID
 // takes:
 //  physType
@@ -165,7 +176,7 @@ export const action_UpdatePhysType = (physType) =>
 ({
     type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     physType,
-})
+});
  
 
 // *** storeType template with reducers for specific properties

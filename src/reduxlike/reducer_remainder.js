@@ -3,6 +3,8 @@
 // *** Reducer for remainder properties of storeType
 
 // *** Our imports
+import { geoChartInitTemplate, timeChartInitTemplate } from './app_store.js';
+
 import {
     ACTION_COMPARE_COMPARE_PHYSTYPE,
     ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
@@ -10,6 +12,7 @@ import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
+    ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_UI_ADD_GEO_CHART_DATA,
     ACTION_UI_ADD_TIME_CHART_DATA,
     UI_NUM_TRAILS,
@@ -146,6 +149,50 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             ],
         }),
 
+
+        // adding a new physType? Allocate space for the data in the charts
+        [ACTION_PHYSTYPE_ADD_PHYSTYPE]: (storeType) => (actionType) =>
+        ({
+            ...storeType.remainder,
+
+            // push two new datasets (glucose and neuro) into the time chart data, 
+            //  then get the chart object reference
+            creature_time_chart:
+                ((chart) => {
+                    chart.config.data.datasets.push
+                        (
+                            {
+                                ...timeChartInitTemplate,
+                                label: getPhysTypeRootKey(actionType.physType)('name'),
+                            },
+                            {
+                                ...timeChartInitTemplate,
+                                label: getPhysTypeRootKey(actionType.physType)('name'),
+                            }
+                        );
+
+                    return chart;
+                })
+                    // apply the anonymous function above to the creature time chart
+                    (getUIProp(storeType)('creature_time_chart')),
+
+            // push a new dataset into the geo chart data, then get the chart object reference
+            creature_geo_chart:
+                ((chart) => {
+                    chart.config.data.datasets.push
+                        ({
+                            ...geoChartInitTemplate,
+                            label: getPhysTypeRootKey(actionType.physType)('name'),
+                            pointRadius: 6,
+                        });
+
+                    return chart;
+                })
+                    // apply the anonymous function above to the creature geo chart
+                    (getUIProp(storeType)('creature_geo_chart'))
+        }),
+
+
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
@@ -172,7 +219,9 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
             creature_time_chart:
                 // update time chart data associated with all **simple creatures** in the store
                 getPhysTypeStore(storeType)
-                    .filter((filterPhysType) => getPhysTypeRootKey(filterPhysType)('act') === actAsSimpleCreature)
+                    .filter(
+                        (filterPhysType) => getPhysTypeRootKey(filterPhysType)('act') === actAsSimpleCreature
+                    )
                     .reduce((accumData, chartPhysType, i) =>
                         mutable_updateTimeChartData(
                             accumData,
@@ -208,6 +257,11 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 //  timeValFloatTuple: floating-point data point, as {time, value}
 // returns nothing
 export function mutable_updateTimeChartData(chart, dataIndexIntType, labelStringType, timeValFloatTuple) {
+    // if given data index is beyond the existing number of data blocks, ignore the update request
+    if (dataIndexIntType > (chart.data.datasets.length - 1)) {
+        return chart;
+    }
+
     // MUTABLE: add data to chart
     chart.data.datasets[dataIndexIntType] = {
         ...chart.data.datasets[dataIndexIntType],
@@ -250,6 +304,11 @@ export function mutable_updateTimeChartData(chart, dataIndexIntType, labelString
 //  xyFloatTuple: floating-point datapoint to add, as {x, y}
 // returns nothing
 function mutable_updateGeoChartData(chart, dataIndexIntType, colorStringType, xyFloatTuple) {
+    // if given data index is beyond the existing number of data blocks, ignore the update request
+    if (dataIndexIntType > (chart.data.datasets.length - 1)) {
+        return chart;
+    }
+
     // all of our slice limits are -UI_NUM_TRAILS, so define a shorthand 
     //  function with that limit built in 
     const concatSliceTrailsMap = concatSliceMap(-UI_NUM_TRAILS);

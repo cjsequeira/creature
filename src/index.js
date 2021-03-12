@@ -16,9 +16,10 @@ import {
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
 
-import { actAsSimpleCreature } from './phystypes/simple_creature.js';
+import { actAsSimpleCreature, getDefaultSimpleCreature } from './phystypes/simple_creature.js';
 
 import {
+    action_AddPhysType,
     action_advanceSimIfRunning,
     action_comparePhysTypes,
     action_logChangedBehaviors,

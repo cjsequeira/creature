@@ -360,6 +360,40 @@ const creature_geo_chart_params_init = {
     }
 };
 
+// Time chart init template
+export const timeChartInitTemplate =             
+{
+    label: 'Template',
+    xAxisId: 'my-x-axis',
+    yAxisId: 'my-y-axis',
+    showLine: true,
+    fill: false,
+    tension: 0.2,
+    data: [],
+    backgroundColor: '#cc0000ff',
+    borderColor: '#cc0000ff',
+    pointBackgroundColor: '#cc0000ff',
+    pointBorderColor: '#cc0000ff',
+    pointRadius: 1,
+};
+
+// Geo chart init template
+export const geoChartInitTemplate = 
+{
+    label: 'Template',
+    xAxisId: 'my-x-axis',
+    yAxisId: 'my-y-axis',
+    showLine: false,
+    fill: false,
+    tension: 0.2,
+    pointRadius: 3,
+    data: [],
+    backgroundColor: [],
+    borderColor: [],
+    pointBackgroundColor: [],
+    pointBorderColor: []
+};
+
 
 // *** Store initializer function
 export const storeInit = (creature_time_chart_context) => (creature_geo_chart_context) =>

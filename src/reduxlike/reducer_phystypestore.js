@@ -4,11 +4,21 @@
 
 // *** Our imports
 import {
+    ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
 } from '../const_vals.js';
 
-import { getPhysTypeStore } from './store_getters.js';
-import { splice } from '../utils.js';
+import {
+    genPhysTypeAvailID,
+    getPhysTypeStore,
+} from './store_getters.js';
+
+import {
+    roundTo,
+    splice,
+} from '../utils.js';
+
+import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
 
 // *** Remainder reducer 
@@ -21,12 +31,24 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_PHYSTYPE_ADD_PHYSTYPE]: (storeType) => (actionType) =>
+        ([
+            ...getPhysTypeStore(storeType),
+
+            {
+                ...actionType.physType,
+
+                // get an available ID for the given physType
+                id: genPhysTypeAvailID(storeType)(0),
+            },
+        ]),
+
+
         [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
         ([
             // is the given physType located in the physTypeStore?  
             ...(getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
                 > -1)
-
                 // yes: update it
                 ? splice
                     // delete one item...
@@ -44,7 +66,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                     // ... and replace with the given physType
                     (actionType.physType)
 
-                // no: return the store unaltered
+                // no: return the physTypeStore unaltered
                 : getPhysTypeStore(storeType)
         ]),
 

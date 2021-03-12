@@ -1,10 +1,27 @@
 'use strict'
 
-// ****** Functions to get information from store
-// REFACTOR: clean up names / order throughout app!!!
+// ****** Functions to get information from store and generate store info
 
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
 import { watchProps } from './watch_props.js';
+
+
+// *** physType info gen functions
+// generate available ID based on IDs already in use
+// takes: 
+//  storeType
+//  proposedIDIntType: initial ID to check for availability, as int
+// returns int
+export const genPhysTypeAvailID = (storeType) => (proposedIDIntType) =>
+    // is there a physType that already has the given ID?
+    (getPhysTypeStore(storeType)
+        .filter((ptToTest) => getPhysTypeRootKey(ptToTest)('id') === proposedIDIntType)
+        .length > 0)
+        // yes: increment the ID by one and check that
+        ? genPhysTypeAvailID(storeType)(proposedIDIntType + 1)
+
+        // no: send the given ID back to be used
+        : proposedIDIntType
 
 
 // *** physType getter functions

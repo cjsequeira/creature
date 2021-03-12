@@ -32,7 +32,7 @@ import {
 export const getDefaultSimpleCreature = (_) =>
 ({
     name: 'New Simple Creature',
-    color: '#00bb00ff',
+    color: '#bb0000ff',
     id: null,
     act: actAsSimpleCreature,
     conds: {
