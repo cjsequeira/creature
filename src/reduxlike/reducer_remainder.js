@@ -34,7 +34,7 @@ import {
     splice,
 } from '../utils.js';
 
-import { actAsSimpleCreature } from '../creatures/simple_creature.js';
+import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 
 // *** Creature behavior strings

@@ -10,7 +10,8 @@ import {
     ACTION_SIM_START,
     ACTION_SIM_STOP,
 } from '../const_vals.js';
-import { actAsSimpleCreature } from '../creatures/simple_creature.js';
+
+import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
     getPhysTypeStore,
