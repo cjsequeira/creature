@@ -20,7 +20,9 @@ import {
 } from '../const_vals.js';
 
 import { remainderReducer } from './reducer_remainder.js';
+import { combineReducers } from './reduxlike_utils.js';
 import { simReducer } from './reducer_sim.js';
+import { resolveRules } from '../rulebook/rulebook.js';
 
 
 // *** Add journal entry
@@ -54,7 +56,7 @@ export const action_comparePhysTypes = (selectFunc) => (compareFunc) =>
 // takes:
 //  don't care
 // returns actionType
-export const action_logChangedBehaviors = (_) => 
+export const action_logChangedBehaviors = (_) =>
 ({
     type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
 });
@@ -172,3 +174,32 @@ export const storeTypeTemplate = {
     // REFACTOR
     remainder: remainderReducer,
 };
+
+
+// *** Dispatch a list of actions, then call subscribedFunc, then return updated storeType
+// takes:
+//  storeType
+//  ...actions: list of actions to dispatch, as actionType
+// returns undefined
+export const dispatchActions = (inStoreType) => (...actions) => {
+    let outStoreType = null;
+
+    // process each action atomically
+    actions.flat(Infinity).forEach((action) =>
+        outStoreType = combineReducers(storeTypeTemplate)(outStoreType || inStoreType)(action)
+    );
+
+    // call subscribed func (typically used for rendering UI)
+    outStoreType.method_subscribed(outStoreType);
+
+    // return the updated storeType
+    return outStoreType;
+};
+
+// *** Map a list of events to a list of associated actions
+// takes:
+//  storeType
+//  ...events: list of events to map, as eventType
+// returns array of actionType
+export const mapEventsToActions = (storeType) => (...events) =>
+    events.flat(Infinity).map((thisEvent) => resolveRules(storeType)(thisEvent));

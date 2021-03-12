@@ -9,15 +9,15 @@ import { getJournal, getUIProp } from './store_getters.js';
 // MUTABLE: may apply functions that mutate the application beyond the app store
 // ignores return values from renderFunc applications
 // takes: 
-//  don't care
+//  storeType
 // returns undefined
-export function mutable_renderFunction(_) {
+export function mutable_renderFunction(storeType) {
     // render time chart and geo chart
-    this.method_getUIProp('creature_time_chart').update();
-    this.method_getUIProp('creature_geo_chart').update();
+    getUIProp(storeType)('creature_time_chart').update();
+    getUIProp(storeType)('creature_geo_chart').update();
 
     // update status box
-    mutable_updateStatusBox(this.storeObj);
+    mutable_updateStatusBox(storeType);
 };
 
 // update simulator status box with given HTML message

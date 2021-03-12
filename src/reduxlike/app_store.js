@@ -5,25 +5,13 @@
 // *** Our imports
 import Chart from 'chart.js';
 
-import {
-    action_doNothing,
-    storeTypeTemplate,
-} from './action_creators.js';
+import { action_doNothing } from './action_creators.js';
 
 import {
     UPDATE_FREQ_SIM,
     WORLD_SIZE_X,
     WORLD_SIZE_Y,
 } from '../const_vals.js';
-
-import { combineReducers } from './reduxlike_utils.js';
-import { mutable_renderFunction } from './renderers.js';
-import {
-    getPhysTypeStore,
-    getUIProp,
-    getSimRunning,
-    getSimSavedClock
-} from './store_getters.js';
 
 import { actAsSimpleCreature } from '../creatures/simple_creature.js';
 
@@ -32,11 +20,12 @@ import {
     mutableRandGen_seededRand
 } from '../sim/seeded_rand.js';
 
-import { resolveRules } from '../rulebook/rulebook.js';
 
-
-// *** Initial "public" store data
+// *** Initial app store
 const initial_store = {
+    // method to be called after action dispatch is completed
+    method_subscribed: function (storeType) { },
+
     // simulator properties
     sim: {
         // is simulator running?
@@ -48,7 +37,8 @@ const initial_store = {
         savedClock: 0.0,
 
         // initial random number generator seed
-        initSeed: mutableRandGen_initRandGen(Date.now()),
+        //initSeed: mutableRandGen_initRandGen(Date.now()),
+        initSeed: mutableRandGen_initRandGen(0),
     },
 
     remainder: {
@@ -374,81 +364,26 @@ const creature_geo_chart_params_init = {
 };
 
 
-// *** Global app store
-export var appStore = {
-    // *** Internal properties
-    // initial "public" store properties, as storeType
-    storeObj: {},
+// *** Store initializer function
+export const storeInit = (creature_time_chart_context) => (creature_geo_chart_context) =>
+    (status_box_context) => (renderFunc) =>
+    ({
+        ...initial_store,
 
+        // UI
+        remainder: {
+            ...initial_store.remainder,
 
-    // *** Methods: Dispatching
-    // dispatch a list of actions, then call subscribedFunc
-    // IMPORTANT: the app store "public" store properties are updated for each
-    //  action in the list of actions given in this function!!!
-    // takes:
-    //  ...actions: list of actions to dispatch, as actionType
-    // returns undefined
-    method_dispatchActions: function (...actions) {
-        // process each action atomically
-        actions.flat(Infinity).forEach((action) =>
-            this.storeObj = combineReducers(storeTypeTemplate)(this.storeObj)(action)
-        );
+            // time chart
+            creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
 
-        // call subscribed func (typically used for rendering UI)
-        this.method_subscribedFunc();
-    },
+            // geo chart
+            creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
 
-    // map a list of events to a list of associated actions
-    // IMPORTANT: the app store "public" store properties stay static throughout this function!!!
-    // takes:
-    //  ...events: list of events to map, as eventType
-    // returns array of actionType
-    method_mapEventsToActions: function (...events) {
-        return events.flat(Infinity).map((thisEvent) => resolveRules(this.storeObj)(thisEvent));
-    },
-
-    // *** Methods: Getters - Simulator getter functions
-    method_getPhysTypeStore: function (_) { return getPhysTypeStore(this.storeObj) },
-    method_getSimRunning: function (_) { return getSimRunning(this.storeObj) },
-    method_getSavedClock: function (_) { return getSimSavedClock(this.storeObj) },
-    method_getUIProp: function (propStringType) { return getUIProp(this.storeObj)(propStringType) },
-
-    // *** Methods: Methods to be set by user
-    // function to be called after action dispatch is completed
-    method_subscribedFunc: function (_) { },
-
-
-    // *** Methods: Setters
-    // set function to call when app store changes
-    // takes:
-    //  inFunc: () => ()
-    // returns undefined
-    method_setSubScribedFunc: function (inFunc) {
-        this.method_subscribedFunc = inFunc;
-    },
-
-
-    // *** Methods: Store initializer function
-    method_storeInit: function (creature_time_chart_context, creature_geo_chart_context, status_box_context) {
-        this.storeObj = {
-            ...initial_store,
-
-            // UI
-            remainder: {
-                ...initial_store.remainder,
-
-                // time chart
-                creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
-
-                // geo chart
-                creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
-
-                // status box
-                status_box: status_box_context,
-            }
-        };
+            // status box
+            status_box: status_box_context,
+        },
 
         // set function to be called when the app store changes
-        this.method_setSubScribedFunc(mutable_renderFunction);
-    },
-};
+        method_subscribed: renderFunc,
+    });
