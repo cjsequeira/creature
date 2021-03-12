@@ -47,7 +47,7 @@ export const getPhysTypeRootKey = (physType) => (argStringType) => physType[argS
 // takes: 
 //  storeType: store, as storeType
 // returns array of physType objects
-export const getPhysTypeStore = (storeType) => storeType.remainder.physTypeStore;
+export const getPhysTypeStore = (storeType) => storeType.physTypeStore;
 
 // get saved physType store
 // takes: 

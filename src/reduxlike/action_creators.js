@@ -19,6 +19,7 @@ import {
     ACTION_UI_ADD_TIME_CHART_DATA,
 } from '../const_vals.js';
 
+import { physTypeStoreReducer } from './reducer_phystypestore.js';
 import { remainderReducer } from './reducer_remainder.js';
 import { combineReducers } from './reduxlike_utils.js';
 import { simReducer } from './reducer_sim.js';
@@ -165,10 +166,11 @@ export const action_UpdatePhysType = (physType) =>
     type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     physType,
 })
-
+ 
 
 // *** storeType template with reducers for specific properties
 export const storeTypeTemplate = {
+    physTypeStore: physTypeStoreReducer,
     sim: simReducer,
 
     // REFACTOR

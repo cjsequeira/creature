@@ -10,7 +10,6 @@ import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
-    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_UI_ADD_GEO_CHART_DATA,
     ACTION_UI_ADD_TIME_CHART_DATA,
     UI_NUM_TRAILS,
@@ -31,7 +30,6 @@ import {
     chartShiftData,
     concatSliceMap,
     fadeColors,
-    splice,
 } from '../utils.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
@@ -146,29 +144,6 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                     msgStringType: actionType.msgStringType,
                 }
             ],
-        }),
-
-        [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
-        ({
-            ...storeType.remainder,
-
-            // REFACTOR: revise code to handle situation where ID of given physType
-            //  is not in the physType store! Suggest "splicing" into front of array
-            physTypeStore: splice
-                // delete one item...
-                (1)
-
-                // ... at the array index (as found by matching physType IDs)...
-                (
-                    getPhysTypeStore(storeType).findIndex(
-                        (ptToFind) => ptToFind.id === actionType.physType.id)
-                )
-
-                // ... in the physTypeStore array...
-                (getPhysTypeStore(storeType))
-
-                // ... and replace with the given physType
-                (actionType.physType),
         }),
 
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
