@@ -160,13 +160,20 @@ const leafApproveBehaviorStopMovement = {
 const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
     func: (_) => (eventType) =>
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    behavior: 'frozen',
-                })
-        ),
+        [
+            action_addJournalEntry(
+                getPhysTypeRootKey(eventType.physType)('name') +
+                ' conditions out of limits!!'
+            ),
+
+            action_UpdatePhysType(
+                usePhysTypeConds
+                    (eventType.physType)
+                    ({
+                        behavior: 'frozen',
+                    })
+            ),
+        ]
 };
 
 const leafCreatureEatFood = {
