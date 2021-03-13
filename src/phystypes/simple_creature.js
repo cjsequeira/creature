@@ -3,7 +3,7 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-import { excludeRange } from '../utils.js';
+import { excludeRange, roundTo } from '../utils.js';
 
 import {
     getPhysTypeCond,
@@ -25,7 +25,7 @@ import {
 
 
 // *** Default Simple Creature assembler
-// WARNING: ID MUST BE SET AFTERWARD!
+// REFACTOR: MUST FIGURE A CLEAN WAY TO CHECK IDs FOR CONFLICTS!
 // takes: 
 //  don't care
 // returns Simple Creature
@@ -33,7 +33,7 @@ export const getDefaultSimpleCreature = (_) =>
 ({
     name: 'New Simple Creature',
     color: '#bb0000ff',
-    id: null,
+    id: roundTo(0)(mutableRandGen_seededRand(0, 1e6)),
     act: actAsSimpleCreature,
     conds: {
         // internal biology

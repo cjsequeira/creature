@@ -11,9 +11,11 @@ import {
     WORLD_SIZE_Y,
 } from '../const_vals.js';
 
+import { roundTo } from '../utils.js';
+
 
 // *** Default foodType assembler
-// WARNING: ID MUST BE SET AFTERWARD!
+// REFACTOR: MUST FIGURE A CLEAN WAY TO CHECK IDs FOR CONFLICTS!
 // takes: 
 //  don't care
 // returns foodType
@@ -21,7 +23,7 @@ export const getDefaultFoodType = (_) =>
 ({
     name: 'New Food',
     color: '#00bb00ff',
-    id: null,
+    id: roundTo(0)(mutableRandGen_seededRand(0, 1e6)),
     act: actAsFood,
     conds: {
         // location

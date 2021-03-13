@@ -17,8 +17,6 @@ import {
     mutableRandGen_initRandGen,
     mutableRandGen_seededRand
 } from '../sim/seeded_rand.js';
-import { event_updatePhysType } from '../rulebook/event_creators.js';
-import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** Initial app store
@@ -235,6 +233,7 @@ const creature_geo_chart_params_init = {
         datasets: [
             {
                 label: 'Vinny',
+                id: 0,
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
                 showLine: false,
@@ -249,6 +248,7 @@ const creature_geo_chart_params_init = {
             },
             {
                 label: 'Eddie',
+                id: 1,
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
                 showLine: false,

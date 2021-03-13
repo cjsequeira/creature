@@ -14,7 +14,10 @@ import {
     CREATURE_TIME_CHART,
     UPDATE_FREQ_NONSIM,
     UPDATE_FREQ_SIM,
+    WORLD_NUM_FOOD,
 } from './const_vals.js';
+
+import { getDefaultFoodType } from './phystypes/food_type';
 
 import {
     action_AddPhysType,
@@ -43,8 +46,7 @@ import {
     getPhysTypeCond,
 } from './reduxlike/store_getters.js';
 
-import { actAsFood, getDefaultFoodType } from './phystypes/food_type';
-import { applyFuncArray, repeatFunc } from './utils';
+import { repeatFunc } from './utils';
 
 
 // ***********************************************************************************
@@ -61,7 +63,7 @@ var appStore = storeInit
 appStore = dispatchActions(appStore)
     (
         // add a bunch of food
-        repeatFunc(getDefaultFoodType)()(14)
+        repeatFunc(getDefaultFoodType)()(WORLD_NUM_FOOD)
             .map((thisFood) => action_AddPhysType(thisFood)),
 
         // change the sim status to running

@@ -17,6 +17,7 @@ export const ACTION_JOURNAL_ADD_ENTRY = 'ACTION_JOURNAL_ADD_ENTRY';
  
 // physType store actions
 export const ACTION_PHYSTYPE_ADD_PHYSTYPE = 'ACTION_PHYSTYPE_ADD_PHYSTYPE';
+export const ACTION_PHYSTYPE_DELETE_PHYSTYPE = 'ACTION_PHYSTYPE_DELETE_PHYSTYPE';
 export const ACTION_PHYSTYPE_UPDATE_PHYSTYPE = 'ACTION_PHYSTYPE_UPDATE_PHYSTYPE';
 
 // UI: update data used for UI
@@ -58,6 +59,12 @@ export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
 
 
 // *** World constants
+// initial number of food items
+export const WORLD_NUM_FOOD = 40;
+
 // x and y sizes
 export const WORLD_SIZE_X = 20.0;
 export const WORLD_SIZE_Y = 20.0;
+
+// distance between physTypes that constitutes a touch
+export const WORLD_TOUCH_DISTANCE = 0.75;

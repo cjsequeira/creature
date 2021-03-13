@@ -154,7 +154,9 @@ export const excludeRange = (boundFloatType) => (numFloatType) =>
 //  num: number to round, as number
 // returns number
 export const roundTo = (digits) => (num) =>
-    Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits);
+    (digits > 0)
+        ? Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits)
+        : Math.round(num);
 
 // return an index into a list of weights, given a numerical selector
 // takes: 

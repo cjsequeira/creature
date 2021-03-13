@@ -66,6 +66,17 @@ export const getPhysTypeRootKey = (physType) => (argStringType) => physType[argS
 // returns array of physType objects
 export const getPhysTypeStore = (storeType) => storeType.physTypeStore;
 
+// get index into physTypeStore for the given physType
+// assumes only one physType in the physTypeStore has the ID of the given physType
+// takes:
+//  storeType
+//  physType
+// returns int, which would be -1 if physType not found in store
+export const getPhysTypeIndex = (storeType) => (physType) =>
+    getPhysTypeStore(storeType).findIndex(
+        (ptToTest) => getPhysTypeRootKey(ptToTest)('id') === getPhysTypeRootKey(physType)('id')
+    );
+
 // get saved physType store
 // takes: 
 //  storeType: store, as storeType

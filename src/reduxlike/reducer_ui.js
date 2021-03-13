@@ -10,6 +10,7 @@ import {
 
 import {
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
+    ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     ACTION_UI_ADD_GEO_CHART_DATA,
     ACTION_UI_ADD_TIME_CHART_DATA,
     UI_NUM_TRAILS,
@@ -53,15 +54,17 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             creature_time_chart:
                 ((chart) => {
                     if (getPhysTypeRootKey(actionType.physType)('act') === actAsSimpleCreature) {
-                        chart.config.data.datasets.push
+                        chart.data.datasets.push
                             (
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeRootKey(actionType.physType)('name'),
+                                    id: getPhysTypeRootKey(actionType.physType)('id'),
                                 },
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeRootKey(actionType.physType)('name'),
+                                    id: getPhysTypeRootKey(actionType.physType)('id'),
                                 }
                             );
                     }
@@ -74,10 +77,12 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             // push new dataset into the geo chart data, then get the chart object reference
             creature_geo_chart:
                 ((chart) => {
-                    chart.config.data.datasets.push
+                    chart.data.datasets.push
                         ({
                             ...geoChartInitTemplate,
+
                             label: getPhysTypeRootKey(actionType.physType)('name'),
+                            id: getPhysTypeRootKey(actionType.physType)('id'),
 
                             // foodType is small dot; otherwise make big dot
                             pointRadius:
@@ -92,6 +97,32 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                     (getUIProp(storeType)('creature_geo_chart')),
         }),
 
+        [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType) => (actionType) =>
+        ({
+            ...storeType.ui,
+
+            creature_time_chart:
+                ((chart) => {
+                    chart.data.datasets = chart.data.datasets.filter(
+                        (dsToTest) => dsToTest.id !== actionType.idIntType
+                    );
+
+                    return chart;
+                })
+                    // apply anonymous function to update the chart passed in below
+                    (getUIProp(storeType)('creature_time_chart')),
+
+            creature_geo_chart:
+                ((chart) => {
+                    chart.data.datasets = chart.data.datasets.filter(
+                        (dsToTest) => dsToTest.id !== actionType.idIntType
+                    );
+
+                    return chart;
+                })
+                    // apply anonymous function to update the chart passed in below
+                    (getUIProp(storeType)('creature_geo_chart')),
+        }),
 
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
         ({

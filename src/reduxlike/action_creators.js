@@ -11,6 +11,7 @@ import {
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
+    ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
@@ -119,7 +120,7 @@ export const action_uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condS
 
 
 // *** physType store actions
-// add physTypes to store
+// add physType to store
 // takes:
 //  physType
 // returns actionType
@@ -127,6 +128,16 @@ export const action_AddPhysType = (physType) =>
 ({
     type: ACTION_PHYSTYPE_ADD_PHYSTYPE,
     physType,
+});
+
+// delete physType from store
+// takes:
+//  idIntType: the physType ID to delete
+// returns actionType
+export const action_DeletePhysType = (idIntType) =>
+({
+    type: ACTION_PHYSTYPE_DELETE_PHYSTYPE,
+    idIntType,
 });
 
 // update physType with the given physType using the same ID
