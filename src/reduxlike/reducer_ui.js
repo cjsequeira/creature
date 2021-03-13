@@ -17,6 +17,7 @@ import {
 } from '../const_vals.js';
 
 import {
+    genPhysTypeAvailID,
     getPhysTypeStore,
     getPhysTypeRootKey,
     getPhysTypeCond,
@@ -53,18 +54,20 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             //  then get the chart object reference
             creature_time_chart:
                 ((chart) => {
+                    const id = genPhysTypeAvailID(storeType)(0);
+
                     if (getPhysTypeRootKey(actionType.physType)('act') === actAsSimpleCreature) {
                         chart.data.datasets.push
                             (
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeRootKey(actionType.physType)('name'),
-                                    id: getPhysTypeRootKey(actionType.physType)('id'),
+                                    id: id,
                                 },
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeRootKey(actionType.physType)('name'),
-                                    id: getPhysTypeRootKey(actionType.physType)('id'),
+                                    id: id,
                                 }
                             );
                     }
@@ -77,12 +80,14 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             // push new dataset into the geo chart data, then get the chart object reference
             creature_geo_chart:
                 ((chart) => {
+                    const id = genPhysTypeAvailID(storeType)(0);
+
                     chart.data.datasets.push
                         ({
                             ...geoChartInitTemplate,
 
                             label: getPhysTypeRootKey(actionType.physType)('name'),
-                            id: getPhysTypeRootKey(actionType.physType)('id'),
+                            id: id,
 
                             // foodType is small dot; otherwise make big dot
                             pointRadius:

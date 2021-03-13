@@ -5,6 +5,9 @@
 // *** Reducer combining functions
 // main reducer combining function
 // allows the use of multiple reducers, each reducing to a different store property
+// IMPORTANT: Code is such that every reducer GETS THE SAME INPUT STORETYPE!
+//  That way, one reducer does not react to the storeType created by another reducer,
+//  so therefore this function gives the same results independent of the order of reducers!!
 // takes:
 //  templateStoreType, as:
 //      {
@@ -33,8 +36,8 @@ export const combineReducers = (templateStoreType) => (storeType) => (action) =>
                     curEntry[0],
 
                     // object associated with property, built by applying the reducer func
-                    //  located in curEntry[1] to the accumulated storeType and current action
-                    curEntry[1](accumStoreType)(action)
+                    //  located in curEntry[1] to the given storeType and current action
+                    curEntry[1](storeType)(action)
                 ]
             ]
         )
