@@ -61,7 +61,8 @@ var appStore = storeInit
 appStore = dispatchActions(appStore)
     (
         // add a bunch of food
-        repeatFunc(getDefaultFoodType)()(4).map((thisFood) => action_AddPhysType(thisFood)),
+        repeatFunc(getDefaultFoodType)()(14)
+            .map((thisFood) => action_AddPhysType(thisFood)),
 
         // change the sim status to running
         action_startSim(),

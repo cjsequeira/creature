@@ -156,7 +156,7 @@ const actEating = (storeType) => (physType) =>
         (usePhysTypeConds
             (physType)
             ({
-                glucose: getPhysTypeCond(physType)('glucose') + 18.0 * getSimTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') + 28.0 * getSimTimeStep(storeType),
                 neuro: getPhysTypeCond(physType)('neuro') + 12.0 * getSimTimeStep(storeType),
             })
         )

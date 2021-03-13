@@ -40,6 +40,7 @@ import {
 
 import { physTypeDoPhysics } from '../sim/physics.js';
 import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
+import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** Rulebook test nodes
@@ -73,20 +74,18 @@ const isCreatureTouchingFood = {
     testFunc: (storeType) => (eventType) =>
         // get physType store
         getPhysTypeStore(storeType)
-            // keep all physTypes that are not the given physType
+            // keep only food
             .filter(
-                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('id') !==
-                    getPhysTypeRootKey(eventType.physType)('id')
+                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsFood
             )
 
-            // keep all physTypes closer than a given distance from this creatureType
-            // REFACTOR: right now this code looks at food AND creatures!
+            // keep only food closer than a given distance from this creatureType
             .filter((ptToTest2) => Math.sqrt(
                 Math.pow(getPhysTypeCond(ptToTest2)('x') - getPhysTypeCond(eventType.physType)('x'), 2.0) +
                 Math.pow(getPhysTypeCond(ptToTest2)('y') - getPhysTypeCond(eventType.physType)('y'), 2.0)
-            ) < 0.8)
+            ) < 0.6)
 
-            // REFACTOR COMMENT: any physTypes remaining that are closer than a given distance?
+            // any food remaining closer than a given distance?
             .length > 0,
 };
 
@@ -157,8 +156,13 @@ const leafCreatureTouchedFood = {
     name: 'Creature touched food! ',
     func: (_) => (eventType) =>
         [
-            // announce glorious news in journal
-            action_addJournalEntry(getPhysTypeRootKey(eventType.physType)('name') + ' FOUND FOOD!'),
+            // announce glorious news in journal IF not already eating
+            (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
+                ? action_addJournalEntry(
+                    getPhysTypeRootKey(eventType.physType)('name') +
+                    ' ATE SOME FOOD!!'
+                )
+                : action_doNothing(),
 
             // switch creatureType behavior to 'eating'
             action_UpdatePhysType(
@@ -169,12 +173,6 @@ const leafCreatureTouchedFood = {
                     })
             ),
         ],
-};
-
-const leafFoodTouched = {
-    name: 'Food touched by creature!',
-    func: (_) => (eventType) =>
-        action_addJournalEntry(getPhysTypeRootKey(eventType.physType)('name') + ' TOUCHED BY CREATURE!!'),
 };
 
 const leafNotCreatureType = {
