@@ -24,8 +24,7 @@ export const geThan = (xFloatType) => (yFloatType) => (yFloatType >= xFloatType)
 //  and first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
 // the array of arguments will be completely flattened
-// assumes function is of form:
-//  f = target => argument, returns target type
+// assumes function is of signature (argAnyType) => targetAnyType
 // takes:
 //  func: function to apply
 //  targetAnyType: target that function applies to, as any
@@ -34,12 +33,17 @@ export const geThan = (xFloatType) => (yFloatType) => (yFloatType >= xFloatType)
 export const applyArgChain = (func) => (targetAnyType) => (...argsAnyType) =>
     argsAnyType.flat(Infinity).reduce((accum, cur) => func(accum || targetAnyType)(cur), null);
 
+// given an array of functions and one argument, apply each function to the argument
+// assumes function is of signature (argAnyType) => any
+// returns array of function application results
+export const applyFuncArray = (...funcs) => (argAnyType) =>
+    funcs.flat(Infinity).map((f) => f(argAnyType));
+
 // given a target and an array of functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
 // the array of functions will be completely flattened
-// assumes function is of form:
-//  f = target, returns target type
+// assumes function is of signature (argAnyType) => targetAnyType
 // takes:
 //  targetAnyType: target that functions apply to, as any
 //  funcs: array of functions to apply
@@ -58,16 +62,27 @@ export const getNestedProp = (objAnyType) => (propStringType) =>
         (accum_obj, this_prop) => accum_obj[this_prop],
         objAnyType);
 
-// given an input of a single element or an array, return an array with the
-//  input repeated n times
+// given an input, return an array with the input repeated n times
 // takes:
 //  inputAnyType: input, as any
 //  nIntType: number of times to repeat, as int
-// returns type of input
-export const repeat = (inputAnyType) => (nIntType) =>
+// returns array of input type
+export const repeat = (...inputAnyType) => (nIntType) =>
     (nIntType > 0)
-        ? [...[inputAnyType], repeat(inputAnyType)(nIntType - 1)].flat()
+        ? [...[inputAnyType], repeat(inputAnyType)(nIntType - 1)].flat(Infinity)
         : inputAnyType;
+
+// given a function, along with an argument, return an array with 
+//  the function applied to the argument n times
+// takes:
+//  func: function of signature (argAnyType) => any
+//  argAnyType: argument, as any
+//  nIntType: number of times to repeat, as int
+// returns array of function output type
+export const repeatFunc = (func) => (argAnyType) => (nIntType) =>
+    (nIntType > 0)
+        ? [...[func(argAnyType)], repeatFunc(func)(argAnyType)(nIntType - 1)].flat(Infinity)
+        : func(argAnyType);
 
 // given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
@@ -139,7 +154,9 @@ export const excludeRange = (boundFloatType) => (numFloatType) =>
 //  num: number to round, as number
 // returns number
 export const roundTo = (digits) => (num) =>
-    Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits);
+    (digits > 0)
+        ? Math.round(num * Math.pow(10.0, digits)) / Math.pow(10.0, digits)
+        : Math.round(num);
 
 // return an index into a list of weights, given a numerical selector
 // takes: 

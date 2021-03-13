@@ -14,12 +14,10 @@ import {
     CREATURE_TIME_CHART,
     UPDATE_FREQ_NONSIM,
     UPDATE_FREQ_SIM,
+    WORLD_NUM_FOOD,
 } from './const_vals.js';
 
-import { 
-    actAsSimpleCreature, 
-    getDefaultSimpleCreature, 
-} from './phystypes/simple_creature.js';
+import { getDefaultFoodType } from './phystypes/food_type';
 
 import {
     action_AddPhysType,
@@ -41,13 +39,14 @@ import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 
 import {
-    getPhysTypeRootKey,
     didPhysTypePropChange,
     getSimRunning,
     getSimSavedClock,
     getPhysTypeStore,
     getPhysTypeCond,
 } from './reduxlike/store_getters.js';
+
+import { repeatFunc } from './utils';
 
 
 // ***********************************************************************************
@@ -63,11 +62,9 @@ var appStore = storeInit
 // dispatch an initial series of actions
 appStore = dispatchActions(appStore)
     (
-
-        action_AddPhysType(getDefaultSimpleCreature()),
-        action_AddPhysType(getDefaultSimpleCreature()),
-
-
+        // add a bunch of food
+        repeatFunc(getDefaultFoodType)()(WORLD_NUM_FOOD)
+            .map((thisFood) => action_AddPhysType(thisFood)),
 
         // change the sim status to running
         action_startSim(),
@@ -110,7 +107,7 @@ function appUpdate(_) {
                 //  if any behaviors changed
                 action_comparePhysTypes
                     // selection function: select all creatureTypes
-                    ((ptToTest) => typeof(getPhysTypeCond(ptToTest)('behavior')) !== 'undefined')
+                    ((ptToTest) => typeof (getPhysTypeCond(ptToTest)('behavior')) !== 'undefined')
 
                     // comparison function: did creatureType 'conds.behavior' property change?
                     ((oldCt) => (newCt) =>

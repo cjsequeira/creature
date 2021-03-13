@@ -1,4 +1,4 @@
-# Creature version 0.0.12 - README for developers
+# Creature version 0.1.0 - README for developers
 
 I got new rules let's count 'em:
 
@@ -68,6 +68,8 @@ Description:
             ...
         }
     }
+
+### **foodType**: A type for food - TO BE ADDED
 
 ### **desireFuncType**: A type for creature desire functions - TO BE ADDED
 

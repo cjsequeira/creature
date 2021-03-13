@@ -5,20 +5,18 @@
 // *** Our imports
 import {
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
+    ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
 } from '../const_vals.js';
 
 import {
     genPhysTypeAvailID,
+    getPhysTypeCond,
+    getPhysTypeRootKey,
     getPhysTypeStore,
 } from './store_getters.js';
 
-import {
-    roundTo,
-    splice,
-} from '../utils.js';
-
-import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
+import { splice } from '../utils.js';
 
 
 // *** Remainder reducer 
@@ -34,15 +32,14 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         [ACTION_PHYSTYPE_ADD_PHYSTYPE]: (storeType) => (actionType) =>
         ([
             ...getPhysTypeStore(storeType),
-
-            {
-                ...actionType.physType,
-
-                // get an available ID for the given physType
-                id: genPhysTypeAvailID(storeType)(0),
-            },
+            actionType.physType,
         ]),
 
+        [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType) => (actionType) =>
+            // keep only physTypes with IDs *not* matching the given ID
+            getPhysTypeStore(storeType).filter(
+                (ptToTest) => getPhysTypeRootKey(ptToTest)('id') !== actionType.idIntType
+            ),
 
         [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
         ([

@@ -19,7 +19,8 @@
 // *** Our imports
 import {
     EVENT_UPDATE_ALL_PHYSTYPES,
-    EVENT_UPDATE_PHYSTYPE
+    EVENT_UPDATE_PHYSTYPE,
+    WORLD_TOUCH_DISTANCE
 } from '../const_vals.js';
 
 import { orTests } from '../utils.js';
@@ -29,6 +30,7 @@ import {
     action_UpdatePhysType,
     action_addJournalEntry,
     action_doNothing,
+    action_DeletePhysType,
 } from '../reduxlike/action_creators.js';
 
 import {
@@ -40,14 +42,10 @@ import {
 
 import { physTypeDoPhysics } from '../sim/physics.js';
 import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
+import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** Rulebook test nodes
-const isBehaviorRequestEating = {
-    name: 'Requesting behavior: eating?',
-    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'eating',
-};
-
 const isBehaviorRequestIdling = {
     name: 'Requesting behavior: idling?',
     testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'idling',
@@ -63,26 +61,53 @@ const isBehaviorRequestWandering = {
     testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'wandering',
 };
 
+const isFoodType = {
+    name: 'Is foodType?',
+    testFunc: (_) => (eventType) => getPhysTypeRootKey(eventType.physType)('act') === actAsFood,
+};
+
+const isFoodTouchedByCreature = {
+    name: 'Is this food being touched by creature?',
+    testFunc: (storeType) => (eventType) =>
+        // get physType store
+        getPhysTypeStore(storeType)
+            // keep only simple creatures
+            .filter(
+                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature
+            )
+
+            // keep only creatures closer than a given distance from this foodType
+            .filter((ptToTest2) => Math.sqrt(
+                Math.pow(getPhysTypeCond(ptToTest2)('x') - getPhysTypeCond(eventType.physType)('x'), 2.0) +
+                Math.pow(getPhysTypeCond(ptToTest2)('y') - getPhysTypeCond(eventType.physType)('y'), 2.0)
+            ) < WORLD_TOUCH_DISTANCE)
+
+            // any creatures remaining closer than a given distance?
+            .length > 0,
+};
+
 const isSimpleCreature = {
     name: 'Is creatureType?',
     testFunc: (_) => (eventType) => getPhysTypeRootKey(eventType.physType)('act') === actAsSimpleCreature,
 };
 
 const isCreatureTouchingFood = {
-    name: 'Is a creature touching this food?',
+    name: 'Is this creature touching food?',
     testFunc: (storeType) => (eventType) =>
         // get physType store
         getPhysTypeStore(storeType)
-            // keep all simple creatures...
-            .filter((ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature)
+            // keep only food
+            .filter(
+                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsFood
+            )
 
-            // ...closer than a given distance from the food
+            // keep only food closer than a given distance from this creatureType
             .filter((ptToTest2) => Math.sqrt(
                 Math.pow(getPhysTypeCond(ptToTest2)('x') - getPhysTypeCond(eventType.physType)('x'), 2.0) +
                 Math.pow(getPhysTypeCond(ptToTest2)('y') - getPhysTypeCond(eventType.physType)('y'), 2.0)
-            ) < 0.8)
+            ) < WORLD_TOUCH_DISTANCE)
 
-            // any creatureTypes remaining that are closer than a given distance?
+            // any food remaining closer than a given distance?
             .length > 0,
 };
 
@@ -94,11 +119,6 @@ const isEventUpdateAllPhysTypes = {
 const isEventUpdatePhysType = {
     name: 'Is event of type EVENT_UPDATE_PHYSTYPE?',
     testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_PHYSTYPE,
-};
-
-const isFoodAvailable = {
-    name: 'Is food available?',
-    testFunc: (_) => (_) => mutableRandGen_seededRand(0.0, 1.0) > 0.03,
 };
 
 const isGlucoseNeuroInRange = {
@@ -140,57 +160,56 @@ const leafApproveBehaviorStopMovement = {
 const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
     func: (_) => (eventType) =>
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    behavior: 'frozen',
-                })
-        ),
+        [
+            action_addJournalEntry(
+                getPhysTypeRootKey(eventType.physType)('name') +
+                ' conditions out of limits!!'
+            ),
+
+            action_UpdatePhysType(
+                usePhysTypeConds
+                    (eventType.physType)
+                    ({
+                        behavior: 'frozen',
+                    })
+            ),
+        ]
 };
 
-const leafCreatureTouchedFood = {
-    name: 'Creature touched food!',
+const leafCreatureEatFood = {
+    name: 'Creature touched food! ',
     func: (_) => (eventType) =>
-        action_addJournalEntry(getPhysTypeRootKey(eventType.physType)('name') + ' TOUCHED FOOD!'),
+        [
+            // announce glorious news in journal IF not already eating
+            (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
+                ? action_addJournalEntry(
+                    getPhysTypeRootKey(eventType.physType)('name') +
+                    ' ATE SOME FOOD!!'
+                )
+                : action_doNothing(),
+
+            // switch creatureType behavior to 'eating'
+            action_UpdatePhysType(
+                usePhysTypeConds
+                    (eventType.physType)
+                    ({
+                        behavior: 'eating',
+                    })
+            ),
+        ],
 };
 
-const leafFoodTouched = {
-    name: 'Food touched by creature!',
-    func: (_) => (eventType) =>
-        action_addJournalEntry(getPhysTypeRootKey(eventType.physType)('name') + ' TOUCHED BY CREATURE!!'),
-};
-
-const leafNotCreatureType = {
-    name: 'Not a creatureType! Preserve given physType',
+const leafPreservePhysType = {
+    name: 'Preserve given physType',
     func: (_) => (eventType) => action_UpdatePhysType(eventType.physType),
 };
 
-const leafRejectBehaviorNoFood = {
-    name: 'No food here. Behavior request rejected!',
-    func: (_) => (eventType) => ([
-        // reject the behavior request
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    // reject behavior request by re-assigning input physType behavior
-                    behavior: getPhysTypeCond(eventType.physType)('behavior'),
-                })
+const leafRemoveFood = {
+    name: 'Remove food',
+    func: (_) => (eventType) =>
+        action_DeletePhysType(
+            getPhysTypeRootKey(eventType.physType)('id')
         ),
-
-        // announce the bad news in journal
-        action_addJournalEntry(
-            '*** ' +
-            getPhysTypeRootKey(eventType.physType)('name') +
-            ' wants to eat but there\'s no food here!!'
-        ),
-    ]),
-};
-
-const leafUnknownBehavior = {
-    name: 'Unknown behavior! Preserve given physType',
-    func: (_) => (_) => action_UpdatePhysType(eventType.physType),
 };
 
 const leafUnknownEvent = {
@@ -249,32 +268,29 @@ const ruleBook = {
                     physType: physTypeDoPhysics(storeType)(eventType.physType),
                 }),
 
-                testNode: isBehaviorRequestEating,
-                yes: {
-                    testNode: isFoodAvailable,
-                    yes: leafApproveBehaviorStopMovement,
-                    no: leafRejectBehaviorNoFood,
-                },
+                testNode: isCreatureTouchingFood,
+                yes: leafCreatureEatFood,
                 no: {
                     testNode: isBehaviorRequestSleeping,
                     yes: leafApproveBehaviorStopMovement,
                     no: {
                         testNode: orTestRules(isBehaviorRequestIdling, isBehaviorRequestWandering),
                         yes: leafApproveBehavior,
-                        no: leafUnknownBehavior,
+                        no: leafPreservePhysType,
                     },
                 },
             },
             no: leafCondsOOL,
         },
-
-        // if not a creature, it's food!
-        // REFACTOR to flexify
         no: {
-            testNode: isCreatureTouchingFood,
-            yes: leafFoodTouched,
-            no: leafNotCreatureType,
-        }
+            testNode: isFoodType,
+            yes: {
+                testNode: isFoodTouchedByCreature,
+                yes: leafRemoveFood,
+                no: leafPreservePhysType,
+            },
+            no: leafPreservePhysType
+        },
     },
     no: {
         testNode: isEventUpdateAllPhysTypes,

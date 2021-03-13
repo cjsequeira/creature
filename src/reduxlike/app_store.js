@@ -17,7 +17,6 @@ import {
     mutableRandGen_initRandGen,
     mutableRandGen_seededRand
 } from '../sim/seeded_rand.js';
-import { event_updatePhysType } from '../rulebook/event_creators.js';
 
 
 // *** Initial app store
@@ -92,32 +91,6 @@ const initial_store = {
                 heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
                 speed: mutableRandGen_seededRand(0.0, 1.0),
                 accel: 0.0,
-            },
-        },
-
-        // initial food element 1
-        {
-            name: 'Food 1',
-            color: '#008800ff',
-            id: 2,
-            act: (_) => (physType) => event_updatePhysType(physType),
-            conds: {
-                // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-            },
-        },
-
-        // initial food element 2
-        {
-            name: 'Food 2',
-            color: '#008800ff',
-            id: 3,
-            act: (_) => (physType) => event_updatePhysType(physType),
-            conds: {
-                // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
             },
         },
     ],
@@ -260,6 +233,7 @@ const creature_geo_chart_params_init = {
         datasets: [
             {
                 label: 'Vinny',
+                id: 0,
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
                 showLine: false,
@@ -274,40 +248,13 @@ const creature_geo_chart_params_init = {
             },
             {
                 label: 'Eddie',
+                id: 1,
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
                 showLine: false,
                 fill: false,
                 tension: 0.2,
                 pointRadius: 6,
-                data: [],
-                backgroundColor: [],
-                borderColor: [],
-                pointBackgroundColor: [],
-                pointBorderColor: []
-            },
-            {
-                label: 'Food 1',
-                xAxisId: 'my-x-axis',
-                yAxisId: 'my-y-axis',
-                showLine: false,
-                fill: false,
-                tension: 0.2,
-                pointRadius: 3,
-                data: [],
-                backgroundColor: [],
-                borderColor: [],
-                pointBackgroundColor: [],
-                pointBorderColor: []
-            },
-            {
-                label: 'Food 2',
-                xAxisId: 'my-x-axis',
-                yAxisId: 'my-y-axis',
-                showLine: false,
-                fill: false,
-                tension: 0.2,
-                pointRadius: 3,
                 data: [],
                 backgroundColor: [],
                 borderColor: [],
@@ -363,7 +310,7 @@ const creature_geo_chart_params_init = {
 };
 
 // Time chart init template
-export const timeChartInitTemplate =             
+export const timeChartInitTemplate =
 {
     label: 'Template',
     xAxisId: 'my-x-axis',
@@ -380,7 +327,7 @@ export const timeChartInitTemplate =
 };
 
 // Geo chart init template
-export const geoChartInitTemplate = 
+export const geoChartInitTemplate =
 {
     label: 'Template',
     xAxisId: 'my-x-axis',
