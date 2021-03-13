@@ -10,34 +10,61 @@ I got new rules let's count 'em:
 
 Example: creatures, rocks, whatever
 
-All physType objects have one thing in common: a property called **act** with a function value implementing the physType's action. This function takes a **physType** as an argument and **always** returns a **physType**.
+All physType objects have two things in common: 
+
+* a property called **act** with a function value implementing the physType's action. This function takes a **physType** as an argument and **always** returns a **physType**.
+* a property called **conds**, which contains at least an **x** and a **y** coordinate representing the physType's location.
 
 Description:
 
     physType: {
         ...
-        act: functionImplementingMyAction returns physType
+        act: physType => physType,
+        conds: {
+            x: float,
+            y: float,
+            ...
+        }
     }
-
-Where functionImplementingMyAction = f(**physType**) and **always** returns a **physType**.
 
 ### **creatureType**, a specialty of **physType**: A type common to all creatures
 
-All creatureType objects have two things in common: 
+All **creatureType** objects have the same properties found in **physType**, such as **act** and coordinates, plus a **behavior** string property in **conds**.
 
-* a property called **act**: see **physType**. In this sense, **creatureType** is a specialty of **physType**.
-* a property called **conds**, which contains a string property **behavior** and a list of numerical conditions (if applicable)
-    * Example behavior: 'eating'
-    * Example numerical condition: glucose_level
+* Example behavior: 'eating'
+* Example numerical condition: glucose_level
 
 Description: 
 
     creatureType: {
         ...
-        act: functionImplementingMyAction giving physContainerType
+        act: physType => physType,
         conds: {
-            behavior: string
-            num_cond_if_applicable: number
+            x: float,
+            y: float,
+            behavior: string,
+            ...
+        }
+    }
+
+### *Simple Creature*, a **creatureType** with glucose and neuro conditions
+
+The *Simple Creature* is a **creatureType** with an **act** function of **actAsSimpleCreature** and two additional conditions:
+
+* glucose, as float: The internal glucose level, between 0.0 and 100.0
+* neuro, as float: The internal level of neurotransmitters, between 0.0 and 100.0
+
+Description: 
+
+    creatureType: {
+        ...
+        act: actAsSimpleCreature,
+        conds: {
+            x: float,
+            y: float,
+            behavior: string,
+            glucose: float,
+            neuro: float,
             ...
         }
     }

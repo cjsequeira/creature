@@ -16,9 +16,13 @@ import {
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
 
-import { actAsSimpleCreature } from './phystypes/simple_creature.js';
+import { 
+    actAsSimpleCreature, 
+    getDefaultSimpleCreature, 
+} from './phystypes/simple_creature.js';
 
 import {
+    action_AddPhysType,
     action_advanceSimIfRunning,
     action_comparePhysTypes,
     action_logChangedBehaviors,
@@ -42,6 +46,7 @@ import {
     getSimRunning,
     getSimSavedClock,
     getPhysTypeStore,
+    getPhysTypeCond,
 } from './reduxlike/store_getters.js';
 
 
@@ -58,6 +63,12 @@ var appStore = storeInit
 // dispatch an initial series of actions
 appStore = dispatchActions(appStore)
     (
+
+        action_AddPhysType(getDefaultSimpleCreature()),
+        action_AddPhysType(getDefaultSimpleCreature()),
+
+
+
         // change the sim status to running
         action_startSim(),
 
@@ -99,7 +110,7 @@ function appUpdate(_) {
                 //  if any behaviors changed
                 action_comparePhysTypes
                     // selection function: select all creatureTypes
-                    ((ptToTest) => getPhysTypeRootKey(ptToTest)('act') === actAsSimpleCreature)
+                    ((ptToTest) => typeof(getPhysTypeCond(ptToTest)('behavior')) !== 'undefined')
 
                     // comparison function: did creatureType 'conds.behavior' property change?
                     ((oldCt) => (newCt) =>

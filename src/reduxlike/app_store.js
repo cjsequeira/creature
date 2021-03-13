@@ -41,91 +41,88 @@ const initial_store = {
         //initSeed: mutableRandGen_initRandGen(0),
     },
 
+    // initial physTypeStore
+    physTypeStore: [
+        // Simple Creature Vinny
+        {
+            name: 'Vinny',
+            color: '#0000ccff',
+            id: 0,
+            act: actAsSimpleCreature,
+            conds: {
+                // internal biology
+                glucose: 50.0,
+                neuro: 50.0,
+
+                // behavior
+                behavior: 'idling',
+                behavior_request: null,
+
+                // location
+                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+
+                // heading, speed, acceleration
+                heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
+                speed: mutableRandGen_seededRand(0.0, 1.0),
+                accel: 0.0,
+            },
+        },
+
+        // Simple Creature Eddie
+        {
+            name: 'Eddie',
+            color: '#f7036cff',
+            id: 1,
+            act: actAsSimpleCreature,
+            conds: {
+                // internal biology
+                glucose: 50.0,
+                neuro: 50.0,
+
+                // behavior
+                behavior: 'idling',
+                behavior_request: null,
+
+                // location
+                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+
+                // heading, speed, acceleration
+                heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
+                speed: mutableRandGen_seededRand(0.0, 1.0),
+                accel: 0.0,
+            },
+        },
+
+        // initial food element 1
+        {
+            name: 'Food 1',
+            color: '#008800ff',
+            id: 2,
+            act: (_) => (physType) => event_updatePhysType(physType),
+            conds: {
+                // location
+                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+            },
+        },
+
+        // initial food element 2
+        {
+            name: 'Food 2',
+            color: '#008800ff',
+            id: 3,
+            act: (_) => (physType) => event_updatePhysType(physType),
+            conds: {
+                // location
+                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+            },
+        },
+    ],
+
     remainder: {
-        // initial store locked / unlocked for writing
-        locked: false,
-
-        // initial physTypeStore
-        physTypeStore: [
-            // Simple Creature Vinny
-            {
-                name: 'Vinny',
-                color: '#0000ccff',
-                id: 0,
-                act: actAsSimpleCreature,
-                conds: {
-                    // internal biology
-                    glucose: 50.0,
-                    neuro: 50.0,
-
-                    // behavior
-                    behavior: 'idling',
-                    behavior_request: null,
-
-                    // location
-                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-
-                    // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
-                    speed: mutableRandGen_seededRand(0.0, 1.0),
-                    accel: 0.0,
-                },
-            },
-
-            // Simple Creature Eddie
-            {
-                name: 'Eddie',
-                color: '#f7036cff',
-                id: 1,
-                act: actAsSimpleCreature,
-                conds: {
-                    // internal biology
-                    glucose: 50.0,
-                    neuro: 50.0,
-
-                    // behavior
-                    behavior: 'idling',
-                    behavior_request: null,
-
-                    // location
-                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-
-                    // heading, speed, acceleration
-                    heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
-                    speed: mutableRandGen_seededRand(0.0, 1.0),
-                    accel: 0.0,
-                },
-            },
-
-            // initial food element 1
-            {
-                name: 'Food 1',
-                color: '#008800ff',
-                id: 2,
-                act: (_) => (physType) => event_updatePhysType(physType),
-                conds: {
-                    // location
-                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-                },
-            },
-
-            // initial food element 2
-            {
-                name: 'Food 2',
-                color: '#008800ff',
-                id: 3,
-                act: (_) => (physType) => event_updatePhysType(physType),
-                conds: {
-                    // location
-                    x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                    y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-                },
-            },
-        ],
-
         // initial journal
         journal: [{
             timeFloatType: 0.0,
@@ -137,7 +134,9 @@ const initial_store = {
 
         // initial "physTypes that passed comparison" store
         passedComparePhysTypeStore: [{}],
+    },
 
+    ui: {
         // creature chart time reference placeholder
         creature_time_chart: null,
 
@@ -363,6 +362,40 @@ const creature_geo_chart_params_init = {
     }
 };
 
+// Time chart init template
+export const timeChartInitTemplate =             
+{
+    label: 'Template',
+    xAxisId: 'my-x-axis',
+    yAxisId: 'my-y-axis',
+    showLine: true,
+    fill: false,
+    tension: 0.2,
+    data: [],
+    backgroundColor: '#cc0000ff',
+    borderColor: '#cc0000ff',
+    pointBackgroundColor: '#cc0000ff',
+    pointBorderColor: '#cc0000ff',
+    pointRadius: 1,
+};
+
+// Geo chart init template
+export const geoChartInitTemplate = 
+{
+    label: 'Template',
+    xAxisId: 'my-x-axis',
+    yAxisId: 'my-y-axis',
+    showLine: false,
+    fill: false,
+    tension: 0.2,
+    pointRadius: 3,
+    data: [],
+    backgroundColor: [],
+    borderColor: [],
+    pointBackgroundColor: [],
+    pointBorderColor: []
+};
+
 
 // *** Store initializer function
 export const storeInit = (creature_time_chart_context) => (creature_geo_chart_context) =>
@@ -371,8 +404,8 @@ export const storeInit = (creature_time_chart_context) => (creature_geo_chart_co
         ...initial_store,
 
         // UI
-        remainder: {
-            ...initial_store.remainder,
+        ui: {
+            ...initial_store.ui,
 
             // time chart
             creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
