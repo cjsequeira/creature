@@ -63,11 +63,10 @@ var appStore = storeInit
 // dispatch an initial series of actions
 appStore = dispatchActions(appStore)
     (
-
+        /*
         action_AddPhysType(getDefaultSimpleCreature()),
         action_AddPhysType(getDefaultSimpleCreature()),
-
-
+        */
 
         // change the sim status to running
         action_startSim(),

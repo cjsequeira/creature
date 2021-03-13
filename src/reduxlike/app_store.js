@@ -18,6 +18,7 @@ import {
     mutableRandGen_seededRand
 } from '../sim/seeded_rand.js';
 import { event_updatePhysType } from '../rulebook/event_creators.js';
+import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** Initial app store
@@ -37,8 +38,8 @@ const initial_store = {
         savedClock: 0.0,
 
         // initial random number generator seed
-        initSeed: mutableRandGen_initRandGen(Date.now()),
-        //initSeed: mutableRandGen_initRandGen(0),
+        //initSeed: mutableRandGen_initRandGen(Date.now()),
+        initSeed: mutableRandGen_initRandGen(0),
     },
 
     // initial physTypeStore
@@ -100,7 +101,7 @@ const initial_store = {
             name: 'Food 1',
             color: '#008800ff',
             id: 2,
-            act: (_) => (physType) => event_updatePhysType(physType),
+            act: actAsFood,
             conds: {
                 // location
                 x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
@@ -113,7 +114,7 @@ const initial_store = {
             name: 'Food 2',
             color: '#008800ff',
             id: 3,
-            act: (_) => (physType) => event_updatePhysType(physType),
+            act: actAsFood,
             conds: {
                 // location
                 x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
@@ -363,7 +364,7 @@ const creature_geo_chart_params_init = {
 };
 
 // Time chart init template
-export const timeChartInitTemplate =             
+export const timeChartInitTemplate =
 {
     label: 'Template',
     xAxisId: 'my-x-axis',
@@ -380,7 +381,7 @@ export const timeChartInitTemplate =
 };
 
 // Geo chart init template
-export const geoChartInitTemplate = 
+export const geoChartInitTemplate =
 {
     label: 'Template',
     xAxisId: 'my-x-axis',

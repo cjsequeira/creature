@@ -28,7 +28,7 @@ import {
 // WARNING: ID MUST BE SET AFTERWARD!
 // takes: 
 //  don't care
-// returns creatureType
+// returns Simple Creature
 export const getDefaultSimpleCreature = (_) =>
 ({
     name: 'New Simple Creature',
@@ -64,7 +64,7 @@ export const getDefaultSimpleCreature = (_) =>
 // takes: 
 //  storeType
 //  physType
-// returns physType
+// returns eventType
 export const actAsSimpleCreature = (storeType) => (physType) =>
     (
         {
@@ -133,8 +133,6 @@ const actWandering = (storeType) => (physType) =>
                     7.0,
                 'idling': () =>
                     0.1,
-                'eating': (physType) =>
-                    (getPhysTypeCond(physType)('glucose') < 20.0) ? 7.0 : 0.1,
                 'sleeping': (physType) =>
                     (getPhysTypeCond(physType)('neuro') > 85.0) ? 7.0 : 0.1,
             })
@@ -146,6 +144,7 @@ const actWandering = (storeType) => (physType) =>
         (mutableRandGen_seededRand(-0.1, 0.1));                         // heading nudge
 
 // eating behavior function
+// THE ONLY WAY TO GET HERE IS BY RULEBOOK BEHAVIOR ASSIGNMENT!
 // takes: 
 //  storeType
 //  physType
@@ -157,16 +156,18 @@ const actEating = (storeType) => (physType) =>
         (usePhysTypeConds
             (physType)
             ({
-                glucose: getPhysTypeCond(physType)('glucose') + 6.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 4.0 * getSimTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') + 18.0 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 12.0 * getSimTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
         ({
-            'eating': () =>
-                5.0,
-            'idling': (physType) =>
-                (getPhysTypeCond(physType)('glucose') > 40.0) ? 5.0 : 0.1
+            'idling': () =>
+                4.0,
+            'wandering': (physType) =>
+                (getPhysTypeCond(physType)('glucose') < 50.0) ? 7.0 : 0.1,
+            'sleeping': (physType) =>
+                (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
         });
 
 // sleeping behavior function
