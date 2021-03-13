@@ -10,9 +10,7 @@ import {
 } from '../const_vals.js';
 
 import {
-    genPhysTypeAvailID,
-    getPhysTypeCond,
-    getPhysTypeRootKey,
+    getPhysTypeID,
     getPhysTypeStore,
 } from './store_getters.js';
 
@@ -38,7 +36,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType) => (actionType) =>
             // keep only physTypes with IDs *not* matching the given ID
             getPhysTypeStore(storeType).filter(
-                (ptToTest) => getPhysTypeRootKey(ptToTest)('id') !== actionType.idIntType
+                (ptToTest) => getPhysTypeID(ptToTest) !== actionType.idIntType
             ),
 
         [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>

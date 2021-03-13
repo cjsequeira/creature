@@ -15,7 +15,7 @@ import { watchProps } from './watch_props.js';
 export const genPhysTypeAvailID = (storeType) => (proposedIDIntType) =>
     // is there a physType that already has the given ID?
     (getPhysTypeStore(storeType)
-        .filter((ptToTest) => getPhysTypeRootKey(ptToTest)('id') === proposedIDIntType)
+        .filter((ptToTest) => getPhysTypeID(ptToTest) === proposedIDIntType)
         .length > 0)
         // yes: increment the ID by one and check that
         ? genPhysTypeAvailID(storeType)(proposedIDIntType + 1)
@@ -46,12 +46,36 @@ export const didPhysTypePropChange = (beforePhysType) => (afterPhysType) => (pro
 // returns array of physType objects
 export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.passedComparePhysTypeStore;
 
+// get physType act
+// takes:
+//  physType: physType to use
+// returns act (expected to be a function)
+export const getPhysTypeAct = (physType) => physType.act;
+
 // get specific condition from physType
 // takes:
 //  physType: physType to use
 //  argCond: string name for key of condition to look at
 // returns condition value
 export const getPhysTypeCond = (physType) => (argCond) => physType.conds[argCond];
+
+// get physType color
+// takes:
+//  physType: physType to use
+// returns color value, as string
+export const getPhysTypeColor = (physType) => physType.color;
+
+// get physType ID
+// takes:
+//  physType: physType to use
+// returns ID value, as integer
+export const getPhysTypeID = (physType) => physType.id;
+
+// get physType name
+// takes:
+//  physType: physType to use
+// returns name, as string
+export const getPhysTypeName = (physType) => physType.name;
 
 // get key value from physType
 // takes:
@@ -74,7 +98,7 @@ export const getPhysTypeStore = (storeType) => storeType.physTypeStore;
 // returns int, which would be -1 if physType not found in store
 export const getPhysTypeIndex = (storeType) => (physType) =>
     getPhysTypeStore(storeType).findIndex(
-        (ptToTest) => getPhysTypeRootKey(ptToTest)('id') === getPhysTypeRootKey(physType)('id')
+        (ptToTest) => getPhysTypeID(ptToTest) === getPhysTypeID(physType)
     );
 
 // get saved physType store
