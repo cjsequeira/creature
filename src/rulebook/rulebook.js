@@ -46,6 +46,17 @@ import { physTypeDoPhysics } from '../sim/physics.js';
 import { actAsFood } from '../phystypes/food_type.js';
 
 
+// *** Creature behavior strings
+// REFACTOR
+const behaviorStrings = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
+};
+
+
 // *** Rulebook test nodes
 const isBehaviorRequestIdling = {
     name: 'Requesting behavior: idling?',
@@ -134,28 +145,47 @@ const isGlucoseNeuroInRange = {
 const leafApproveBehavior = {
     name: 'Behavior request approved',
     func: (_) => (eventType) =>
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
-                })
-        ),
+        [
+            // update physType behavior
+            action_UpdatePhysType(
+                usePhysTypeConds
+                    (eventType.physType)
+                    ({
+                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                    })
+            ),
+
+            // announce behavior IF behavior has just changed
+            (getPhysTypeCond(eventType.physType)('behavior') !==
+                getPhysTypeCond(eventType.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                : action_doNothing(),
+        ]
 };
 
 const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
     func: (_) => (eventType) =>
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+        [
+            action_UpdatePhysType(
+                usePhysTypeConds
+                    (eventType.physType)
+                    ({
+                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
-                    speed: 0.0,
-                    accel: 0.0
-                })
-        ),
+                        speed: 0.0,
+                        accel: 0.0
+                    })
+            ),
+
+            // announce behavior IF behavior has just changed
+            (getPhysTypeCond(eventType.physType)('behavior') !==
+                getPhysTypeCond(eventType.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                : action_doNothing(),
+        ]
 };
 
 const leafCondsOOL = {
@@ -185,7 +215,7 @@ const leafCreatureEatFood = {
             (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
                 ? action_addJournalEntry(
                     getPhysTypeName(eventType.physType) +
-                    ' ATE SOME FOOD!!'
+                    ' FOUND FOOD!!'
                 )
                 : action_doNothing(),
 

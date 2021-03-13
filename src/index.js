@@ -103,6 +103,7 @@ function appUpdate(_) {
                 mapEventsToActions(appStore)
                     (event_updateAllPhysTypes(getPhysTypeStore(appStore))),
 
+                    /*
                 // compare updated creatureTypes against saved creatureTypes to see
                 //  if any behaviors changed
                 action_comparePhysTypes
@@ -116,6 +117,7 @@ function appUpdate(_) {
                 // journal: log creatureTypes with changed behaviors as computed due 
                 //  to action_comparePhysTypes action above
                 action_logChangedBehaviors(),
+                */
 
                 // if any creatureType now has a behavior of 'frozen', update the journal
                 //  and stop the sim
