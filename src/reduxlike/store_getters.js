@@ -46,6 +46,12 @@ export const didPhysTypePropChange = (beforePhysType) => (afterPhysType) => (pro
 // returns array of physType objects
 export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.passedComparePhysTypeStore;
 
+// get physType act
+// takes:
+//  physType: physType to use
+// returns act (expected to be a function)
+export const getPhysTypeAct = (physType) => physType.act;
+
 // get specific condition from physType
 // takes:
 //  physType: physType to use
@@ -53,11 +59,23 @@ export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.
 // returns condition value
 export const getPhysTypeCond = (physType) => (argCond) => physType.conds[argCond];
 
+// get physType color
+// takes:
+//  physType: physType to use
+// returns color value, as string
+export const getPhysTypeColor = (physType) => physType.color;
+
 // get physType ID
 // takes:
 //  physType: physType to use
 // returns ID value, as integer
 export const getPhysTypeID = (physType) => physType.id;
+
+// get physType name
+// takes:
+//  physType: physType to use
+// returns name, as string
+export const getPhysTypeName = (physType) => physType.name;
 
 // get key value from physType
 // takes:

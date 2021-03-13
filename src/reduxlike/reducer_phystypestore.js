@@ -11,7 +11,6 @@ import {
 
 import {
     getPhysTypeID,
-    getPhysTypeRootKey,
     getPhysTypeStore,
 } from './store_getters.js';
 

@@ -34,15 +34,15 @@ import {
 } from '../reduxlike/action_creators.js';
 
 import {
+    getPhysTypeAct,
     getPhysTypeCond,
     getPhysTypeID,
-    getPhysTypeRootKey,
+    getPhysTypeName,
     getPhysTypeStore,
     usePhysTypeConds,
 } from '../reduxlike/store_getters.js';
 
 import { physTypeDoPhysics } from '../sim/physics.js';
-import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 import { actAsFood } from '../phystypes/food_type.js';
 
 
@@ -64,7 +64,7 @@ const isBehaviorRequestWandering = {
 
 const isFoodType = {
     name: 'Is foodType?',
-    testFunc: (_) => (eventType) => getPhysTypeRootKey(eventType.physType)('act') === actAsFood,
+    testFunc: (_) => (eventType) => getPhysTypeAct(eventType.physType) === actAsFood,
 };
 
 const isFoodTouchedByCreature = {
@@ -74,7 +74,7 @@ const isFoodTouchedByCreature = {
         getPhysTypeStore(storeType)
             // keep only simple creatures
             .filter(
-                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature
+                (ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature
             )
 
             // keep only creatures closer than a given distance from this foodType
@@ -89,7 +89,7 @@ const isFoodTouchedByCreature = {
 
 const isSimpleCreature = {
     name: 'Is creatureType?',
-    testFunc: (_) => (eventType) => getPhysTypeRootKey(eventType.physType)('act') === actAsSimpleCreature,
+    testFunc: (_) => (eventType) => getPhysTypeAct(eventType.physType) === actAsSimpleCreature,
 };
 
 const isCreatureTouchingFood = {
@@ -99,7 +99,7 @@ const isCreatureTouchingFood = {
         getPhysTypeStore(storeType)
             // keep only food
             .filter(
-                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsFood
+                (ptToTest1) => getPhysTypeAct(ptToTest1) === actAsFood
             )
 
             // keep only food closer than a given distance from this creatureType
@@ -163,7 +163,7 @@ const leafCondsOOL = {
     func: (_) => (eventType) =>
         [
             action_addJournalEntry(
-                getPhysTypeRootKey(eventType.physType)('name') +
+                getPhysTypeName(eventType.physType) +
                 ' conditions out of limits!!'
             ),
 
@@ -184,7 +184,7 @@ const leafCreatureEatFood = {
             // announce glorious news in journal IF not already eating
             (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
                 ? action_addJournalEntry(
-                    getPhysTypeRootKey(eventType.physType)('name') +
+                    getPhysTypeName(eventType.physType) +
                     ' ATE SOME FOOD!!'
                 )
                 : action_doNothing(),
