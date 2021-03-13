@@ -24,7 +24,8 @@ import {
     getSimCurTime,
     getUIProp,
     getPhysTypeAct,
-    getPhysTypeName
+    getPhysTypeName,
+    genPhysTypeAvailID
 } from './store_getters.js';
 
 import {
@@ -56,18 +57,20 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             //  then get the chart object reference
             creature_time_chart:
                 ((chart) => {
+                    const id = genPhysTypeAvailID(storeType)(0);
+
                     if (getPhysTypeAct(actionType.physType) === actAsSimpleCreature) {
                         chart.data.datasets.push
                             (
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeName(actionType.physType),
-                                    id: getPhysTypeID(actionType.physType),
+                                    id: id,
                                 },
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeName(actionType.physType),
-                                    id: getPhysTypeID(actionType.physType),
+                                    id: id,
                                 }
                             );
                     }
@@ -80,12 +83,14 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             // push new dataset into the geo chart data, then get the chart object reference
             creature_geo_chart:
                 ((chart) => {
+                    const id = genPhysTypeAvailID(storeType)(0);
+
                     chart.data.datasets.push
                         ({
                             ...geoChartInitTemplate,
 
                             label: getPhysTypeName(actionType.physType),
-                            id: getPhysTypeID(actionType.physType),
+                            id: id,
 
                             // foodType is small dot; otherwise make big dot
                             pointRadius:

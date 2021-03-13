@@ -15,7 +15,6 @@ import { roundTo } from '../utils.js';
 
 
 // *** Default foodType assembler
-// REFACTOR: MUST FIGURE A CLEAN WAY TO CHECK IDs FOR CONFLICTS!
 // takes: 
 //  don't care
 // returns foodType
@@ -23,7 +22,7 @@ export const getDefaultFoodType = (_) =>
 ({
     name: 'New Food',
     color: '#00bb00ff',
-    id: roundTo(0)(mutableRandGen_seededRand(0, 1e6)),
+    id: null,
     act: actAsFood,
     conds: {
         // location

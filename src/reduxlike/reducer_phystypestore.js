@@ -10,6 +10,7 @@ import {
 } from '../const_vals.js';
 
 import {
+    genPhysTypeAvailID,
     getPhysTypeID,
     getPhysTypeStore,
 } from './store_getters.js';
@@ -30,7 +31,11 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         [ACTION_PHYSTYPE_ADD_PHYSTYPE]: (storeType) => (actionType) =>
         ([
             ...getPhysTypeStore(storeType),
-            actionType.physType,
+
+            {
+                ...actionType.physType,
+                id: genPhysTypeAvailID(storeType)(0),
+            },
         ]),
 
         [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType) => (actionType) =>
