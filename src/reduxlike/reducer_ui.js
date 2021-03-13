@@ -17,6 +17,7 @@ import {
 } from '../const_vals.js';
 
 import {
+    getPhysTypeID,
     getPhysTypeStore,
     getPhysTypeRootKey,
     getPhysTypeCond,
@@ -59,12 +60,12 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeRootKey(actionType.physType)('name'),
-                                    id: getPhysTypeRootKey(actionType.physType)('id'),
+                                    id: getPhysTypeID(actionType.physType),
                                 },
                                 {
                                     ...timeChartInitTemplate,
                                     label: getPhysTypeRootKey(actionType.physType)('name'),
-                                    id: getPhysTypeRootKey(actionType.physType)('id'),
+                                    id: getPhysTypeID(actionType.physType),
                                 }
                             );
                     }
@@ -82,7 +83,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                             ...geoChartInitTemplate,
 
                             label: getPhysTypeRootKey(actionType.physType)('name'),
-                            id: getPhysTypeRootKey(actionType.physType)('id'),
+                            id: getPhysTypeID(actionType.physType),
 
                             // foodType is small dot; otherwise make big dot
                             pointRadius:

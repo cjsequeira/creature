@@ -15,7 +15,7 @@ import { watchProps } from './watch_props.js';
 export const genPhysTypeAvailID = (storeType) => (proposedIDIntType) =>
     // is there a physType that already has the given ID?
     (getPhysTypeStore(storeType)
-        .filter((ptToTest) => getPhysTypeRootKey(ptToTest)('id') === proposedIDIntType)
+        .filter((ptToTest) => getPhysTypeID(ptToTest) === proposedIDIntType)
         .length > 0)
         // yes: increment the ID by one and check that
         ? genPhysTypeAvailID(storeType)(proposedIDIntType + 1)
@@ -53,6 +53,12 @@ export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.
 // returns condition value
 export const getPhysTypeCond = (physType) => (argCond) => physType.conds[argCond];
 
+// get physType ID
+// takes:
+//  physType: physType to use
+// returns ID value, as integer
+export const getPhysTypeID = (physType) => physType.id;
+
 // get key value from physType
 // takes:
 //  physType: physType to use
@@ -74,7 +80,7 @@ export const getPhysTypeStore = (storeType) => storeType.physTypeStore;
 // returns int, which would be -1 if physType not found in store
 export const getPhysTypeIndex = (storeType) => (physType) =>
     getPhysTypeStore(storeType).findIndex(
-        (ptToTest) => getPhysTypeRootKey(ptToTest)('id') === getPhysTypeRootKey(physType)('id')
+        (ptToTest) => getPhysTypeID(ptToTest) === getPhysTypeID(physType)
     );
 
 // get saved physType store

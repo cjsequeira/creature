@@ -35,6 +35,7 @@ import {
 
 import {
     getPhysTypeCond,
+    getPhysTypeID,
     getPhysTypeRootKey,
     getPhysTypeStore,
     usePhysTypeConds,
@@ -208,7 +209,7 @@ const leafRemoveFood = {
     name: 'Remove food',
     func: (_) => (eventType) =>
         action_DeletePhysType(
-            getPhysTypeRootKey(eventType.physType)('id')
+            getPhysTypeID(eventType.physType)
         ),
 };
 
