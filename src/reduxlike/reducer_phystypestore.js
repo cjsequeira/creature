@@ -13,12 +13,7 @@ import {
     getPhysTypeStore,
 } from './store_getters.js';
 
-import {
-    roundTo,
-    splice,
-} from '../utils.js';
-
-import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
+import { splice } from '../utils.js';
 
 
 // *** Remainder reducer 

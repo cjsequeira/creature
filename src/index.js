@@ -16,9 +16,9 @@ import {
     UPDATE_FREQ_SIM,
 } from './const_vals.js';
 
-import { 
-    actAsSimpleCreature, 
-    getDefaultSimpleCreature, 
+import {
+    actAsSimpleCreature,
+    getDefaultSimpleCreature,
 } from './phystypes/simple_creature.js';
 
 import {
@@ -41,13 +41,15 @@ import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 
 import {
-    getPhysTypeRootKey,
     didPhysTypePropChange,
     getSimRunning,
     getSimSavedClock,
     getPhysTypeStore,
     getPhysTypeCond,
 } from './reduxlike/store_getters.js';
+
+import { getDefaultFoodType } from './phystypes/food_type';
+import { applyFuncArray, repeat } from './utils';
 
 
 // ***********************************************************************************
@@ -67,6 +69,9 @@ appStore = dispatchActions(appStore)
         action_AddPhysType(getDefaultSimpleCreature()),
         action_AddPhysType(getDefaultSimpleCreature()),
         */
+
+        action_AddPhysType(getDefaultFoodType()),
+        action_AddPhysType(getDefaultFoodType()),
 
         // change the sim status to running
         action_startSim(),
@@ -109,7 +114,7 @@ function appUpdate(_) {
                 //  if any behaviors changed
                 action_comparePhysTypes
                     // selection function: select all creatureTypes
-                    ((ptToTest) => typeof(getPhysTypeCond(ptToTest)('behavior')) !== 'undefined')
+                    ((ptToTest) => typeof (getPhysTypeCond(ptToTest)('behavior')) !== 'undefined')
 
                     // comparison function: did creatureType 'conds.behavior' property change?
                     ((oldCt) => (newCt) =>

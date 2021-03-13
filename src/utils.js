@@ -24,8 +24,7 @@ export const geThan = (xFloatType) => (yFloatType) => (yFloatType >= xFloatType)
 //  and first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
 // the array of arguments will be completely flattened
-// assumes function is of form:
-//  f = target => argument, returns target type
+// assumes function is of signature (argAnyType) => targetAnyType
 // takes:
 //  func: function to apply
 //  targetAnyType: target that function applies to, as any
@@ -34,12 +33,17 @@ export const geThan = (xFloatType) => (yFloatType) => (yFloatType >= xFloatType)
 export const applyArgChain = (func) => (targetAnyType) => (...argsAnyType) =>
     argsAnyType.flat(Infinity).reduce((accum, cur) => func(accum || targetAnyType)(cur), null);
 
+// given an array of functions and one argument, apply each function to the argument
+// assumes function is of signature (argAnyType) => any
+// returns array of function application results
+export const applyFuncArray = (...funcs) => (argAnyType) =>
+    funcs.flat(Infinity).map((f) => f(argAnyType));
+
 // given a target and an array of functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all arguments are exhausted
 // the array of functions will be completely flattened
-// assumes function is of form:
-//  f = target, returns target type
+// assumes function is of signature (argAnyType) => targetAnyType
 // takes:
 //  targetAnyType: target that functions apply to, as any
 //  funcs: array of functions to apply
@@ -66,7 +70,7 @@ export const getNestedProp = (objAnyType) => (propStringType) =>
 // returns type of input
 export const repeat = (inputAnyType) => (nIntType) =>
     (nIntType > 0)
-        ? [...[inputAnyType], repeat(inputAnyType)(nIntType - 1)].flat()
+        ? [...[inputAnyType], repeat(inputAnyType)(nIntType - 1)].flat(Infinity)
         : inputAnyType;
 
 // given a delete count, an insertion index, an array, and a list of items to insert,

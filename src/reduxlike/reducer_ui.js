@@ -30,6 +30,7 @@ import {
 } from '../utils.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
+import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** UI reducer 
@@ -47,13 +48,11 @@ export const uiReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.ui,
 
-            // if Simple Creature, push two new datasets (glucose and neuro) into the time chart data, 
+            // push new datasets into the time chart data if applicable, 
             //  then get the chart object reference
             creature_time_chart:
-                // is given physType a Simple Creature?
-                (getPhysTypeRootKey(actionType.physType)('act') === actAsSimpleCreature)
-                    // yes: add glucose and neuro to time chart
-                    ? ((chart) => {
+                ((chart) => {
+                    if (getPhysTypeRootKey(actionType.physType)('act') === actAsSimpleCreature) {
                         chart.config.data.datasets.push
                             (
                                 {
@@ -65,29 +64,32 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                                     label: getPhysTypeRootKey(actionType.physType)('name'),
                                 }
                             );
+                    }
 
-                        return chart;
-                    })
-                        // apply the anonymous function above to the creature time chart
-                        (getUIProp(storeType)('creature_time_chart'))
+                    return chart;
+                })
+                    // apply anonymous function to update the chart passed in below
+                    (getUIProp(storeType)('creature_time_chart')),
 
-                    // no: keep time chart the same
-                    : getUIProp(storeType)('creature_time_chart'),
-
-            // push a new dataset into the geo chart data, then get the chart object reference
+            // push new dataset into the geo chart data, then get the chart object reference
             creature_geo_chart:
                 ((chart) => {
                     chart.config.data.datasets.push
                         ({
                             ...geoChartInitTemplate,
                             label: getPhysTypeRootKey(actionType.physType)('name'),
-                            pointRadius: 6,
+
+                            // foodType is small dot; otherwise make big dot
+                            pointRadius:
+                                (getPhysTypeRootKey(actionType.physType)('act') === actAsFood)
+                                    ? 3
+                                    : 6,
                         });
 
                     return chart;
                 })
-                    // apply the anonymous function above to the creature geo chart
-                    (getUIProp(storeType)('creature_geo_chart'))
+                    // apply anonymous function to update the chart passed in below
+                    (getUIProp(storeType)('creature_geo_chart')),
         }),
 
 

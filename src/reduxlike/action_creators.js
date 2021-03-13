@@ -118,6 +118,28 @@ export const action_uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condS
 });
 
 
+// *** physType store actions
+// add physTypes to store
+// takes:
+//  physType
+// returns actionType
+export const action_AddPhysType = (physType) =>
+({
+    type: ACTION_PHYSTYPE_ADD_PHYSTYPE,
+    physType,
+});
+
+// update physType with the given physType using the same ID
+// takes:
+//  physType
+// returns actionType
+export const action_UpdatePhysType = (physType) =>
+({
+    type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    physType,
+});
+ 
+
 // *** Sim control
 // advance sim time if running
 // takes: 
@@ -157,28 +179,6 @@ export const action_stopSim = (_) =>
     type: ACTION_SIM_STOP,
 });
 
-
-// *** physType store actions
-// add physType to store
-// takes:
-//  physType
-// returns actionType
-export const action_AddPhysType = (physType) =>
-({
-    type: ACTION_PHYSTYPE_ADD_PHYSTYPE,
-    physType,
-});
-
-// update physType with the given physType using the same ID
-// takes:
-//  physType
-// returns actionType
-export const action_UpdatePhysType = (physType) =>
-({
-    type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
-    physType,
-});
- 
 
 // *** storeType template with reducers for specific properties
 export const storeTypeTemplate = {
