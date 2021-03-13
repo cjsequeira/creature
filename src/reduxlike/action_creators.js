@@ -22,8 +22,9 @@ import {
 
 import { physTypeStoreReducer } from './reducer_phystypestore.js';
 import { remainderReducer } from './reducer_remainder.js';
-import { combineReducers } from './reduxlike_utils.js';
 import { simReducer } from './reducer_sim.js';
+import { uiReducer } from './reducer_ui.js';
+import { combineReducers } from './reduxlike_utils.js';
 import { resolveRules } from '../rulebook/rulebook.js';
 
 
@@ -183,8 +184,8 @@ export const action_UpdatePhysType = (physType) =>
 export const storeTypeTemplate = {
     physTypeStore: physTypeStoreReducer,
     sim: simReducer,
+    ui: uiReducer,
 
-    // REFACTOR
     remainder: remainderReducer,
 };
 

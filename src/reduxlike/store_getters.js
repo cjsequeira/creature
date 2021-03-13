@@ -126,4 +126,4 @@ export const getJournal = (storeType) => storeType.remainder.journal;
 //  storeType: store, as storeType
 //  propStringType: string name for prop of store UI object to look at
 // returns value, as any
-export const getUIProp = (storeType) => (argStringType) => storeType.remainder[argStringType];
+export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStringType];

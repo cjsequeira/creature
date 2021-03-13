@@ -134,7 +134,9 @@ const initial_store = {
 
         // initial "physTypes that passed comparison" store
         passedComparePhysTypeStore: [{}],
+    },
 
+    ui: {
         // creature chart time reference placeholder
         creature_time_chart: null,
 
@@ -402,8 +404,8 @@ export const storeInit = (creature_time_chart_context) => (creature_geo_chart_co
         ...initial_store,
 
         // UI
-        remainder: {
-            ...initial_store.remainder,
+        ui: {
+            ...initial_store.ui,
 
             // time chart
             creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),

@@ -149,11 +149,17 @@ const leafCondsOOL = {
         ),
 };
 
+const leafCreatureTouchedFood = {
+    name: 'Creature touched food!',
+    func: (_) => (eventType) =>
+        action_addJournalEntry(getPhysTypeRootKey(eventType.physType)('name') + ' TOUCHED FOOD!'),
+};
+
 const leafFoodTouched = {
     name: 'Food touched by creature!',
     func: (_) => (eventType) =>
         action_addJournalEntry(getPhysTypeRootKey(eventType.physType)('name') + ' TOUCHED BY CREATURE!!'),
-}
+};
 
 const leafNotCreatureType = {
     name: 'Not a creatureType! Preserve given physType',
