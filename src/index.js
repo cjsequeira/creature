@@ -20,7 +20,7 @@ import {
 import { getDefaultFoodType } from './phystypes/food_type';
 
 import {
-    action_AddPhysType,
+    action_addPhysType,
     action_advanceSimIfRunning,
     action_saveClockForSim,
     action_startSim,
@@ -59,7 +59,7 @@ appStore = dispatchActions(appStore)
     (
         // add a bunch of food
         repeatFunc(getDefaultFoodType)()(WORLD_NUM_FOOD)
-            .map((thisFood) => action_AddPhysType(thisFood)),
+            .map((thisFood) => action_addPhysType(thisFood)),
 
         // change the sim status to running
         action_startSim(),

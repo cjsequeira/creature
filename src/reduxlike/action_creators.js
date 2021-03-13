@@ -124,7 +124,7 @@ export const action_uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condS
 // takes:
 //  physType
 // returns actionType
-export const action_AddPhysType = (physType) =>
+export const action_addPhysType = (physType) =>
 ({
     type: ACTION_PHYSTYPE_ADD_PHYSTYPE,
     physType,
