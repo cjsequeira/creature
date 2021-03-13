@@ -3,8 +3,6 @@
 // *** Reducer for remainder properties of storeType
 
 // *** Our imports
-import { geoChartInitTemplate, timeChartInitTemplate } from './app_store.js';
-
 import {
     ACTION_COMPARE_COMPARE_PHYSTYPE,
     ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
@@ -12,7 +10,6 @@ import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
-    UI_NUM_TRAILS,
 } from '../const_vals.js';
 
 import {
@@ -20,16 +17,11 @@ import {
     getPhysTypeStore,
     getPassedComparePhysTypeStore,
     getSavedPhysTypeStore,
-    getPhysTypeRootKey,
     getPhysTypeCond,
     getSimCurTime,
+    getPhysTypeName,
+    getPhysTypeAct,
 } from './store_getters.js';
-
-import {
-    chartShiftData,
-    concatSliceMap,
-    fadeColors,
-} from '../utils.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
@@ -95,7 +87,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 ...getPassedComparePhysTypeStore(storeType).map(
                     (physType) => ({
                         timeFloatType: getSimCurTime(storeType),
-                        msgStringType: getPhysTypeRootKey(physType)('name') +
+                        msgStringType: getPhysTypeName(physType) +
                             ' ' + behaviorStrings[getPhysTypeCond(physType)('behavior')],
                     })
                 ),
@@ -116,7 +108,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
 
                 ...getPhysTypeStore(storeType)
                     // filter physType store to find simple creatures
-                    .filter((ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature)
+                    .filter((ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature)
 
                     // filter to find simple creatures with behavior of 'frozen'
                     .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')
@@ -125,7 +117,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                     .map(
                         (ptToMap) => ({
                             timeFloatType: getSimCurTime(storeType),
-                            msgStringType: getPhysTypeRootKey(ptToMap)('name') + ' is frozen; stopping sim',
+                            msgStringType: getPhysTypeName(ptToMap) + ' is frozen; stopping sim',
                         })
                     )
             ]

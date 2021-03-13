@@ -20,11 +20,8 @@ import {
 import { getDefaultFoodType } from './phystypes/food_type';
 
 import {
-    action_AddPhysType,
+    action_addPhysType,
     action_advanceSimIfRunning,
-    action_comparePhysTypes,
-    action_logChangedBehaviors,
-    action_saveAllPhysTypes,
     action_saveClockForSim,
     action_startSim,
     action_stopIfFrozen,
@@ -39,11 +36,9 @@ import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 
 import {
-    didPhysTypePropChange,
     getSimRunning,
     getSimSavedClock,
     getPhysTypeStore,
-    getPhysTypeCond,
 } from './reduxlike/store_getters.js';
 
 import { repeatFunc } from './utils';
@@ -64,7 +59,7 @@ appStore = dispatchActions(appStore)
     (
         // add a bunch of food
         repeatFunc(getDefaultFoodType)()(WORLD_NUM_FOOD)
-            .map((thisFood) => action_AddPhysType(thisFood)),
+            .map((thisFood) => action_addPhysType(thisFood)),
 
         // change the sim status to running
         action_startSim(),
@@ -95,27 +90,10 @@ function appUpdate(_) {
         // yes: dispatch a series of actions
         appStore = dispatchActions(appStore)
             (
-                // save current states of all physTypes
-                action_saveAllPhysTypes(),
-
                 // send an event into the system: update all physTypes
                 // the method below returns action(s)
                 mapEventsToActions(appStore)
                     (event_updateAllPhysTypes(getPhysTypeStore(appStore))),
-
-                // compare updated creatureTypes against saved creatureTypes to see
-                //  if any behaviors changed
-                action_comparePhysTypes
-                    // selection function: select all creatureTypes
-                    ((ptToTest) => typeof (getPhysTypeCond(ptToTest)('behavior')) !== 'undefined')
-
-                    // comparison function: did creatureType 'conds.behavior' property change?
-                    ((oldCt) => (newCt) =>
-                        didPhysTypePropChange(oldCt)(newCt)('conds.behavior')),
-
-                // journal: log creatureTypes with changed behaviors as computed due 
-                //  to action_comparePhysTypes action above
-                action_logChangedBehaviors(),
 
                 // if any creatureType now has a behavior of 'frozen', update the journal
                 //  and stop the sim

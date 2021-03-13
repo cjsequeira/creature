@@ -17,12 +17,15 @@ import {
 } from '../const_vals.js';
 
 import {
-    genPhysTypeAvailID,
+    getPhysTypeColor,
+    getPhysTypeID,
     getPhysTypeStore,
-    getPhysTypeRootKey,
     getPhysTypeCond,
     getSimCurTime,
-    getUIProp
+    getUIProp,
+    getPhysTypeAct,
+    getPhysTypeName,
+    genPhysTypeAvailID
 } from './store_getters.js';
 
 import {
@@ -56,17 +59,17 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                 ((chart) => {
                     const id = genPhysTypeAvailID(storeType)(0);
 
-                    if (getPhysTypeRootKey(actionType.physType)('act') === actAsSimpleCreature) {
+                    if (getPhysTypeAct(actionType.physType) === actAsSimpleCreature) {
                         chart.data.datasets.push
                             (
                                 {
                                     ...timeChartInitTemplate,
-                                    label: getPhysTypeRootKey(actionType.physType)('name'),
+                                    label: getPhysTypeName(actionType.physType),
                                     id: id,
                                 },
                                 {
                                     ...timeChartInitTemplate,
-                                    label: getPhysTypeRootKey(actionType.physType)('name'),
+                                    label: getPhysTypeName(actionType.physType),
                                     id: id,
                                 }
                             );
@@ -86,12 +89,12 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                         ({
                             ...geoChartInitTemplate,
 
-                            label: getPhysTypeRootKey(actionType.physType)('name'),
+                            label: getPhysTypeName(actionType.physType),
                             id: id,
 
                             // foodType is small dot; otherwise make big dot
                             pointRadius:
-                                (getPhysTypeRootKey(actionType.physType)('act') === actAsFood)
+                                (getPhysTypeAct(actionType.physType) === actAsFood)
                                     ? 3
                                     : 6,
                         });
@@ -139,7 +142,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                     mutable_updateGeoChartData(
                         accumData,
                         i,
-                        getPhysTypeRootKey(thisPhysType)('color'),
+                        getPhysTypeColor(thisPhysType),
                         ({
                             x: getPhysTypeCond(thisPhysType)('x'),
                             y: getPhysTypeCond(thisPhysType)('y'),
@@ -156,13 +159,13 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                 // update time chart data associated with all **simple creatures** in the store
                 getPhysTypeStore(storeType)
                     .filter(
-                        (filterPhysType) => getPhysTypeRootKey(filterPhysType)('act') === actAsSimpleCreature
+                        (filterPhysType) => getPhysTypeAct(filterPhysType) === actAsSimpleCreature
                     )
                     .reduce((accumData, chartPhysType, i) =>
                         mutable_updateTimeChartData(
                             accumData,
                             2 * i + actionType.offsetIntType,
-                            getPhysTypeRootKey(chartPhysType)('name') + ' ' + actionType.condStringType,
+                            getPhysTypeName(chartPhysType) + ' ' + actionType.condStringType,
                             ({
                                 time: getSimCurTime(storeType),
                                 value: getPhysTypeCond(chartPhysType)(actionType.condStringType),

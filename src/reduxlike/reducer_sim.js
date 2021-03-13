@@ -15,11 +15,11 @@ import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
     getPhysTypeStore,
-    getPhysTypeRootKey,
     getPhysTypeCond,
     getSimCurTime,
     getSimRunning,
-    getSimTimeStep
+    getSimTimeStep,
+    getPhysTypeAct
 } from './store_getters.js';
 
 
@@ -41,7 +41,7 @@ export const simReducer = (inStoreType) => (inActionType) =>
                 (
                     getPhysTypeStore(storeType)
                         // filter physType store to find simple creatures
-                        .filter((ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature)
+                        .filter((ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature)
 
                         // filter to find those with behavior of 'frozen'
                         .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')

@@ -34,15 +34,27 @@ import {
 } from '../reduxlike/action_creators.js';
 
 import {
+    getPhysTypeAct,
     getPhysTypeCond,
-    getPhysTypeRootKey,
+    getPhysTypeID,
+    getPhysTypeName,
     getPhysTypeStore,
     usePhysTypeConds,
 } from '../reduxlike/store_getters.js';
 
 import { physTypeDoPhysics } from '../sim/physics.js';
-import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 import { actAsFood } from '../phystypes/food_type.js';
+
+
+// *** Creature behavior strings
+// REFACTOR
+const behaviorStrings = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
+};
 
 
 // *** Rulebook test nodes
@@ -63,7 +75,7 @@ const isBehaviorRequestWandering = {
 
 const isFoodType = {
     name: 'Is foodType?',
-    testFunc: (_) => (eventType) => getPhysTypeRootKey(eventType.physType)('act') === actAsFood,
+    testFunc: (_) => (eventType) => getPhysTypeAct(eventType.physType) === actAsFood,
 };
 
 const isFoodTouchedByCreature = {
@@ -73,7 +85,7 @@ const isFoodTouchedByCreature = {
         getPhysTypeStore(storeType)
             // keep only simple creatures
             .filter(
-                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsSimpleCreature
+                (ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature
             )
 
             // keep only creatures closer than a given distance from this foodType
@@ -88,7 +100,7 @@ const isFoodTouchedByCreature = {
 
 const isSimpleCreature = {
     name: 'Is creatureType?',
-    testFunc: (_) => (eventType) => getPhysTypeRootKey(eventType.physType)('act') === actAsSimpleCreature,
+    testFunc: (_) => (eventType) => getPhysTypeAct(eventType.physType) === actAsSimpleCreature,
 };
 
 const isCreatureTouchingFood = {
@@ -98,7 +110,7 @@ const isCreatureTouchingFood = {
         getPhysTypeStore(storeType)
             // keep only food
             .filter(
-                (ptToTest1) => getPhysTypeRootKey(ptToTest1)('act') === actAsFood
+                (ptToTest1) => getPhysTypeAct(ptToTest1) === actAsFood
             )
 
             // keep only food closer than a given distance from this creatureType
@@ -133,28 +145,47 @@ const isGlucoseNeuroInRange = {
 const leafApproveBehavior = {
     name: 'Behavior request approved',
     func: (_) => (eventType) =>
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
-                })
-        ),
+        [
+            // update physType behavior
+            action_UpdatePhysType(
+                usePhysTypeConds
+                    (eventType.physType)
+                    ({
+                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                    })
+            ),
+
+            // announce behavior IF behavior has just changed
+            (getPhysTypeCond(eventType.physType)('behavior') !==
+                getPhysTypeCond(eventType.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                : action_doNothing(),
+        ]
 };
 
 const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
     func: (_) => (eventType) =>
-        action_UpdatePhysType(
-            usePhysTypeConds
-                (eventType.physType)
-                ({
-                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+        [
+            action_UpdatePhysType(
+                usePhysTypeConds
+                    (eventType.physType)
+                    ({
+                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
-                    speed: 0.0,
-                    accel: 0.0
-                })
-        ),
+                        speed: 0.0,
+                        accel: 0.0
+                    })
+            ),
+
+            // announce behavior IF behavior has just changed
+            (getPhysTypeCond(eventType.physType)('behavior') !==
+                getPhysTypeCond(eventType.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                : action_doNothing(),
+        ]
 };
 
 const leafCondsOOL = {
@@ -162,7 +193,7 @@ const leafCondsOOL = {
     func: (_) => (eventType) =>
         [
             action_addJournalEntry(
-                getPhysTypeRootKey(eventType.physType)('name') +
+                getPhysTypeName(eventType.physType) +
                 ' conditions out of limits!!'
             ),
 
@@ -183,8 +214,8 @@ const leafCreatureEatFood = {
             // announce glorious news in journal IF not already eating
             (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
                 ? action_addJournalEntry(
-                    getPhysTypeRootKey(eventType.physType)('name') +
-                    ' ATE SOME FOOD!!'
+                    getPhysTypeName(eventType.physType) +
+                    ' FOUND FOOD!!'
                 )
                 : action_doNothing(),
 
@@ -208,7 +239,7 @@ const leafRemoveFood = {
     name: 'Remove food',
     func: (_) => (eventType) =>
         action_DeletePhysType(
-            getPhysTypeRootKey(eventType.physType)('id')
+            getPhysTypeID(eventType.physType)
         ),
 };
 
