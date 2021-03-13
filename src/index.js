@@ -17,11 +17,6 @@ import {
 } from './const_vals.js';
 
 import {
-    actAsSimpleCreature,
-    getDefaultSimpleCreature,
-} from './phystypes/simple_creature.js';
-
-import {
     action_AddPhysType,
     action_advanceSimIfRunning,
     action_comparePhysTypes,
@@ -48,8 +43,8 @@ import {
     getPhysTypeCond,
 } from './reduxlike/store_getters.js';
 
-import { getDefaultFoodType } from './phystypes/food_type';
-import { applyFuncArray, repeat } from './utils';
+import { actAsFood, getDefaultFoodType } from './phystypes/food_type';
+import { applyFuncArray, repeatFunc } from './utils';
 
 
 // ***********************************************************************************
@@ -65,13 +60,8 @@ var appStore = storeInit
 // dispatch an initial series of actions
 appStore = dispatchActions(appStore)
     (
-        /*
-        action_AddPhysType(getDefaultSimpleCreature()),
-        action_AddPhysType(getDefaultSimpleCreature()),
-        */
-
-        action_AddPhysType(getDefaultFoodType()),
-        action_AddPhysType(getDefaultFoodType()),
+        // add a bunch of food
+        repeatFunc(getDefaultFoodType)()(4).map((thisFood) => action_AddPhysType(thisFood)),
 
         // change the sim status to running
         action_startSim(),

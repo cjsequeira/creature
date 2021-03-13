@@ -95,32 +95,6 @@ const initial_store = {
                 accel: 0.0,
             },
         },
-
-        // initial food element 1
-        {
-            name: 'Food 1',
-            color: '#008800ff',
-            id: 2,
-            act: actAsFood,
-            conds: {
-                // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-            },
-        },
-
-        // initial food element 2
-        {
-            name: 'Food 2',
-            color: '#008800ff',
-            id: 3,
-            act: actAsFood,
-            conds: {
-                // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-            },
-        },
     ],
 
     remainder: {
@@ -281,34 +255,6 @@ const creature_geo_chart_params_init = {
                 fill: false,
                 tension: 0.2,
                 pointRadius: 6,
-                data: [],
-                backgroundColor: [],
-                borderColor: [],
-                pointBackgroundColor: [],
-                pointBorderColor: []
-            },
-            {
-                label: 'Food 1',
-                xAxisId: 'my-x-axis',
-                yAxisId: 'my-y-axis',
-                showLine: false,
-                fill: false,
-                tension: 0.2,
-                pointRadius: 3,
-                data: [],
-                backgroundColor: [],
-                borderColor: [],
-                pointBackgroundColor: [],
-                pointBorderColor: []
-            },
-            {
-                label: 'Food 2',
-                xAxisId: 'my-x-axis',
-                yAxisId: 'my-y-axis',
-                showLine: false,
-                fill: false,
-                tension: 0.2,
-                pointRadius: 3,
                 data: [],
                 backgroundColor: [],
                 borderColor: [],

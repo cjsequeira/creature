@@ -62,16 +62,27 @@ export const getNestedProp = (objAnyType) => (propStringType) =>
         (accum_obj, this_prop) => accum_obj[this_prop],
         objAnyType);
 
-// given an input of a single element or an array, return an array with the
-//  input repeated n times
+// given an input, return an array with the input repeated n times
 // takes:
 //  inputAnyType: input, as any
 //  nIntType: number of times to repeat, as int
-// returns type of input
-export const repeat = (inputAnyType) => (nIntType) =>
+// returns array of input type
+export const repeat = (...inputAnyType) => (nIntType) =>
     (nIntType > 0)
         ? [...[inputAnyType], repeat(inputAnyType)(nIntType - 1)].flat(Infinity)
         : inputAnyType;
+
+// given a function, along with an argument, return an array with 
+//  the function applied to the argument n times
+// takes:
+//  func: function of signature (argAnyType) => any
+//  argAnyType: argument, as any
+//  nIntType: number of times to repeat, as int
+// returns array of function output type
+export const repeatFunc = (func) => (argAnyType) => (nIntType) =>
+    (nIntType > 0)
+        ? [...[func(argAnyType)], repeatFunc(func)(argAnyType)(nIntType - 1)].flat(Infinity)
+        : func(argAnyType);
 
 // given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
