@@ -1,4 +1,4 @@
-# Creature version 0.1.0 - README for developers
+# Creature version 0.1.1 - README for developers
 
 I got new rules let's count 'em:
 
