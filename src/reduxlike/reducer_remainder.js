@@ -155,26 +155,32 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.remainder,
 
-            // push two new datasets (glucose and neuro) into the time chart data, 
+            // if Simple Creature, push two new datasets (glucose and neuro) into the time chart data, 
             //  then get the chart object reference
             creature_time_chart:
-                ((chart) => {
-                    chart.config.data.datasets.push
-                        (
-                            {
-                                ...timeChartInitTemplate,
-                                label: getPhysTypeRootKey(actionType.physType)('name'),
-                            },
-                            {
-                                ...timeChartInitTemplate,
-                                label: getPhysTypeRootKey(actionType.physType)('name'),
-                            }
-                        );
+                // is given physType a Simple Creature?
+                (getPhysTypeRootKey(actionType.physType)('act') === actAsSimpleCreature)
+                    // yes: add glucose and neuro to time chart
+                    ? ((chart) => {
+                        chart.config.data.datasets.push
+                            (
+                                {
+                                    ...timeChartInitTemplate,
+                                    label: getPhysTypeRootKey(actionType.physType)('name'),
+                                },
+                                {
+                                    ...timeChartInitTemplate,
+                                    label: getPhysTypeRootKey(actionType.physType)('name'),
+                                }
+                            );
 
-                    return chart;
-                })
-                    // apply the anonymous function above to the creature time chart
-                    (getUIProp(storeType)('creature_time_chart')),
+                        return chart;
+                    })
+                        // apply the anonymous function above to the creature time chart
+                        (getUIProp(storeType)('creature_time_chart'))
+
+                    // no: keep time chart the same
+                    : getUIProp(storeType)('creature_time_chart'),
 
             // push a new dataset into the geo chart data, then get the chart object reference
             creature_geo_chart:
