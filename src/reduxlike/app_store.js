@@ -15,7 +15,6 @@ import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
     mutableRandGen_initRandGen,
-    mutableRandGen_seededRand
 } from '../sim/seeded_rand.js';
 
 
@@ -36,8 +35,9 @@ const initial_store = {
         savedClock: 0.0,
 
         // initial random number generator seed
-        initSeed: mutableRandGen_initRandGen(Date.now()),
-        //initSeed: mutableRandGen_initRandGen(0),
+        // REFACTOR to simply, "seed"
+        //initSeed: mutableRandGen_initRandGen(Date.now()),
+        initSeed: mutableRandGen_initRandGen(0),
     },
 
     // initial physTypeStore
@@ -58,12 +58,12 @@ const initial_store = {
                 behavior_request: null,
 
                 // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+                x: WORLD_SIZE_X / 2.0,
+                y: WORLD_SIZE_Y / 2.0,
 
                 // heading, speed, acceleration
-                heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
-                speed: mutableRandGen_seededRand(0.0, 1.0),
+                heading: 0.0,
+                speed: 1.0,
                 accel: 0.0,
             },
         },
@@ -84,12 +84,12 @@ const initial_store = {
                 behavior_request: null,
 
                 // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+                x: WORLD_SIZE_X / 2.0,
+                y: WORLD_SIZE_Y / 2.0,
 
                 // heading, speed, acceleration
-                heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
-                speed: mutableRandGen_seededRand(0.0, 1.0),
+                heading: 0.0,
+                speed: 1.0,
                 accel: 0.0,
             },
         },

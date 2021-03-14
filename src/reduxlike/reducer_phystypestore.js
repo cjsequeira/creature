@@ -6,19 +6,25 @@
 import {
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
+    ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    WORLD_SIZE_X,
+    WORLD_SIZE_Y,
 } from '../const_vals.js';
 
 import {
     genPhysTypeAvailID,
     getPhysTypeID,
     getPhysTypeStore,
+    usePhysTypeConds,
 } from './store_getters.js';
 
 import { splice } from '../utils.js';
 
+import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
-// *** Remainder reducer 
+
+// *** PhysTypeStore reducer 
 // reducer for "physTypeStore" property of storeType
 // takes:
 //  inStoreType: store to use as template for reduction, as storeType 
@@ -42,6 +48,17 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
             // keep only physTypes with IDs *not* matching the given ID
             getPhysTypeStore(storeType).filter(
                 (ptToTest) => getPhysTypeID(ptToTest) !== actionType.idIntType
+            ),
+
+        [ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS]: (storeType) => (_) =>
+            getPhysTypeStore(storeType).map(
+                (thisPt) =>
+                    usePhysTypeConds
+                        (thisPt)
+                        ({
+                            x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                            y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+                        })
             ),
 
         [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>

@@ -17,20 +17,27 @@
 // 
 
 // *** Our imports
+import { event_updatePhysType } from './event_creators.js';
+
 import {
     EVENT_UPDATE_ALL_PHYSTYPES,
+    EVENT_UPDATE_CREATURETYPE,
     EVENT_UPDATE_PHYSTYPE,
-    WORLD_TOUCH_DISTANCE
+    WORLD_TOUCH_DISTANCE,
 } from '../const_vals.js';
 
-import { orTests } from '../utils.js';
+import {
+    excludeRange,
+    orTests,
+} from '../utils.js';
+
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
-    action_UpdatePhysType,
+    action_updatePhysType,
     action_addJournalEntry,
     action_doNothing,
-    action_DeletePhysType,
+    action_deletePhysType,
 } from '../reduxlike/action_creators.js';
 
 import {
@@ -39,10 +46,17 @@ import {
     getPhysTypeID,
     getPhysTypeName,
     getPhysTypeStore,
+    getSimTimeStep,
     usePhysTypeConds,
 } from '../reduxlike/store_getters.js';
 
 import { physTypeDoPhysics } from '../sim/physics.js';
+
+import {
+    mutableRandGen_seededRand,
+    mutableRandGen_seededWeightedRand,
+} from '../sim/seeded_rand.js';
+
 import { actAsFood } from '../phystypes/food_type.js';
 
 
@@ -128,6 +142,11 @@ const isEventUpdateAllPhysTypes = {
     testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_ALL_PHYSTYPES,
 };
 
+const isEventUpdateCreatureType = {
+    name: 'Is event of type EVENT_UPDATE_CREATURETYPE?',
+    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_CREATURETYPE,
+};
+
 const isEventUpdatePhysType = {
     name: 'Is event of type EVENT_UPDATE_PHYSTYPE?',
     testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_PHYSTYPE,
@@ -147,7 +166,7 @@ const leafApproveBehavior = {
     func: (_) => (eventType) =>
         [
             // update physType behavior
-            action_UpdatePhysType(
+            action_updatePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -168,7 +187,7 @@ const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
     func: (_) => (eventType) =>
         [
-            action_UpdatePhysType(
+            action_updatePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -197,7 +216,10 @@ const leafCondsOOL = {
                 ' conditions out of limits!!'
             ),
 
-            action_UpdatePhysType(
+            action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')]),
+
+            action_updatePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -220,7 +242,7 @@ const leafCreatureEatFood = {
                 : action_doNothing(),
 
             // switch creatureType behavior to 'eating'
-            action_UpdatePhysType(
+            action_updatePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -230,15 +252,55 @@ const leafCreatureEatFood = {
         ],
 };
 
+const leafDoAndApproveWandering = {
+    name: 'Doing and approving behavior: wandering!',
+    func: (storeType) => (eventType) =>
+        [
+            // update creatureType behavior with random nudges to acceleration and heading
+            (
+                // apply anonymous function to passed-in accel and heading nudge
+                (accel) => (hdg_nudge) => action_updatePhysType(
+                    usePhysTypeConds
+                        (eventType.physType)
+                        ({
+                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+
+                            // glucose and neuro impacts are more severe 
+                            //  with higher accceleration magnitude
+                            glucose: getPhysTypeCond(eventType.physType)('glucose') -
+                                (0.3 * Math.abs(accel)) * getSimTimeStep(storeType),
+                            neuro: getPhysTypeCond(eventType.physType)('neuro') +
+                                (0.2 * Math.abs(accel)) * getSimTimeStep(storeType),
+
+                            heading: getPhysTypeCond(eventType.physType)('heading') + hdg_nudge,
+                            accel: accel,
+                        })
+                )
+            )
+                // accel: random, at least 2.0 magnitude
+                // heading nudge: small random nudge 
+                (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))
+                (mutableRandGen_seededRand(-0.1, 0.1)),
+
+
+            // announce behavior IF behavior has just changed
+            (getPhysTypeCond(eventType.physType)('behavior') !==
+                getPhysTypeCond(eventType.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                : action_doNothing(),
+        ]
+};
+
 const leafPreservePhysType = {
     name: 'Preserve given physType',
-    func: (_) => (eventType) => action_UpdatePhysType(eventType.physType),
+    func: (_) => (eventType) => action_updatePhysType(eventType.physType),
 };
 
 const leafRemoveFood = {
     name: 'Remove food',
     func: (_) => (eventType) =>
-        action_DeletePhysType(
+        action_deletePhysType(
             getPhysTypeID(eventType.physType)
         ),
 };
@@ -282,11 +344,34 @@ const orTestRules = (...testRules) => ({
 
 
 // *** The rulebook
-// REFACTOR: implement some version of "switch" / "select case"
 const ruleBook = {
-    testNode: isEventUpdatePhysType,
+    testNode: isEventUpdateCreatureType,
     yes:
     {
+        // build an event to update the creatureType per the behavior request below
+        //  which comes from weighted random draw using given desire functions
+        // this event will be processed by the rest of the rulebook, which will return
+        //  an action based on the rulebook and current app state
+        // the rulebook may assign the requested behavior, 
+        //  or may reject the requested behavior and assign a different behavior,
+        //  or may return an action totally unrelated to the creatureType object below!
+        preFunc: (_) => (eventType) =>
+            event_updatePhysType(
+                usePhysTypeConds
+                    // make an object based on the given physType, with a "behavior_request" prop-obj
+                    (eventType.physType)
+                    ({
+                        behavior_request:
+                            // select behavior request from list of given desire funcs using 
+                            // a weighted random number selector
+                            Object.keys(eventType.desireFuncType)[mutableRandGen_seededWeightedRand(
+                                // the code below maps each desire function to a numerical weight
+                                //  by evaluating it using the given physType
+                                Object.values(eventType.desireFuncType).map(f => f(eventType.physType))
+                            )]
+                    })
+            ),
+
         testNode: isSimpleCreature,
         yes: {
             testNode: isGlucoseNeuroInRange,
@@ -305,29 +390,37 @@ const ruleBook = {
                     testNode: isBehaviorRequestSleeping,
                     yes: leafApproveBehaviorStopMovement,
                     no: {
-                        testNode: orTestRules(isBehaviorRequestIdling, isBehaviorRequestWandering),
-                        yes: leafApproveBehavior,
-                        no: leafPreservePhysType,
+                        testNode: isBehaviorRequestWandering,
+                        yes: leafDoAndApproveWandering,
+                        no: {
+                            testNode: isBehaviorRequestIdling,
+                            yes: leafApproveBehavior,
+                            no: leafPreservePhysType
+                        }
                     },
                 },
             },
             no: leafCondsOOL,
         },
-        no: {
+        no: leafPreservePhysType,
+    },
+    no: {
+        testNode: isEventUpdatePhysType,
+        yes: {
             testNode: isFoodType,
             yes: {
                 testNode: isFoodTouchedByCreature,
                 yes: leafRemoveFood,
                 no: leafPreservePhysType,
             },
-            no: leafPreservePhysType
+            no: leafPreservePhysType,
         },
-    },
-    no: {
-        testNode: isEventUpdateAllPhysTypes,
-        yes: recursive_leafUpdateAllPhysTypes,
-        no: leafUnknownEvent,
-    },
+        no: {
+            testNode: isEventUpdateAllPhysTypes,
+            yes: recursive_leafUpdateAllPhysTypes,
+            no: leafUnknownEvent,
+        },
+    }
 };
 
 
@@ -348,23 +441,10 @@ export const resolveRules = (storeType) => (eventType) => findRule(storeType)(ev
 //  node: the rule node to use
 // returns actionType or [actionType], as determined by rulebook application
 const findRule = (storeType) => (eventType) => (node) => {
-    // define: is pre-function undefined? 
+    // is pre-function undefined? 
     //  if yes, apply (x => x) to eventType
     //  if no, apply pre-function to eventType
     const eventType_to_use = (node.preFunc || (_ => x => x))(storeType)(eventType)
-
-
-    /*
-    
-        if (node.testNode === undefined) {
-            console.log(node.name);
-        } else {
-            console.log(node.testNode.name);
-        }
-    
-    */
-
-
 
     // is test node undefined?
     return (node.testNode === undefined)

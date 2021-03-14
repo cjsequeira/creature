@@ -12,6 +12,7 @@ import {
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
+    ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
@@ -134,17 +135,26 @@ export const action_addPhysType = (physType) =>
 // takes:
 //  idIntType: the physType ID to delete
 // returns actionType
-export const action_DeletePhysType = (idIntType) =>
+export const action_deletePhysType = (idIntType) =>
 ({
     type: ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     idIntType,
+});
+
+// randomize locations of all physTypes
+// takes:
+//  don't care
+// returns actionType
+export const action_randomizeLocations = (_) =>
+({
+    type: ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS,
 });
 
 // update physType with the given physType using the same ID
 // takes:
 //  physType
 // returns actionType
-export const action_UpdatePhysType = (physType) =>
+export const action_updatePhysType = (physType) =>
 ({
     type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     physType,

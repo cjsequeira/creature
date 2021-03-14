@@ -15,6 +15,8 @@ import {
     UPDATE_FREQ_NONSIM,
     UPDATE_FREQ_SIM,
     WORLD_NUM_FOOD,
+    WORLD_SIZE_X,
+    WORLD_SIZE_Y,
 } from './const_vals.js';
 
 import { getDefaultFoodType } from './phystypes/food_type';
@@ -22,6 +24,7 @@ import { getDefaultFoodType } from './phystypes/food_type';
 import {
     action_addPhysType,
     action_advanceSimIfRunning,
+    action_randomizeLocations,
     action_saveClockForSim,
     action_startSim,
     action_stopIfFrozen,
@@ -58,8 +61,12 @@ var appStore = storeInit
 appStore = dispatchActions(appStore)
     (
         // add a bunch of food
-        repeatFunc(getDefaultFoodType)()(WORLD_NUM_FOOD)
-            .map((thisFood) => action_addPhysType(thisFood)),
+        repeatFunc(getDefaultFoodType)()(WORLD_NUM_FOOD).map(
+            (thisFood) => action_addPhysType(thisFood)
+        ),
+
+        // randomize locations of all physTypes
+        action_randomizeLocations(),
 
         // change the sim status to running
         action_startSim(),

@@ -4,17 +4,15 @@
 
 // *** Imports
 import { event_updatePhysType } from '../rulebook/event_creators.js';
-import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
 import {
     WORLD_SIZE_X,
     WORLD_SIZE_Y,
 } from '../const_vals.js';
 
-import { roundTo } from '../utils.js';
-
 
 // *** Default foodType assembler
+// WARNING: Establishes object with null ID!
 // takes: 
 //  don't care
 // returns foodType
@@ -26,8 +24,8 @@ export const getDefaultFoodType = (_) =>
     act: actAsFood,
     conds: {
         // location
-        x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-        y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+        x: WORLD_SIZE_X / 2.0,
+        y: WORLD_SIZE_Y / 2.0,
     },
 });
 
