@@ -10,6 +10,7 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 
 ## POTENTIAL next features:
 * Implement creature food-finding functionality
+* REFACTOR: Clean up/move all uses of mutableRand so it is obvious which code relies on "random" numbers and which does not
 
 ## Changelog:
 * **0.1.2**: Major bug fix in combineReducers
