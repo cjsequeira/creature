@@ -9,8 +9,10 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2984688a-76b0-4643-83ee-39ee6b0fcf79/deploy-status)](https://app.netlify.com/sites/arrogantfool-draft-creature/deploys)
 
 ## POTENTIAL next features:
+* Retool action dispatch to give the option whether or not to call "subscribed" function - to reduce UI redraws when not needed
 * Implement creature food-finding functionality
-* REFACTOR: Clean up/move all uses of mutableRand so it is obvious which code relies on "random" numbers and which does not
+* Implement filter functions for "randomize all" and "update all" physType actions
+* REFACTOR: Clean up/move all uses of mutableRand so it is obvious which code relies on "random" numbers and which does not - perhaps condense all uses of mutableRand or generation of random numbers into an action
 
 ## Changelog:
 * **0.1.2**: Major bug fix in combineReducers

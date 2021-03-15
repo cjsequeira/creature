@@ -81,17 +81,20 @@ appStore = dispatchActions(appStore)
         action_uiAddGeoChartData(),
     );
 
-// start repeatedly updating our application at sim frequency
-setInterval(appUpdate, UPDATE_FREQ_SIM);
+// establish intervals for updating sim and non-sim
+setInterval(appUpdateSim, UPDATE_FREQ_SIM);
+setInterval(appUpdateNonSim, UPDATE_FREQ_NONSIM);
+
 
 // ***********************************************************************************
 
 
-// *** Time-based callback function
+// *** Time-based callback functions
+// update sim
 // takes: 
 //  don't care
 // returns undefined
-function appUpdate(_) {
+function appUpdateSim(_) {
     // is simulator running?
     if (getSimRunning(appStore)) {
         // yes: dispatch a series of actions
@@ -109,24 +112,30 @@ function appUpdate(_) {
                 // advance sim if running
                 action_advanceSimIfRunning(),
             );
+    }
+};
 
-        // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
-        if (performance.now() > (getSimSavedClock(appStore) + UPDATE_FREQ_NONSIM)) {
-            // yes: dispatch a series of actions to the store to update the non-sim stuff
-            appStore = dispatchActions(appStore)
-                (
-                    // remember the current time
-                    action_saveClockForSim(performance.now()),
+// update non-sim
+// takes: 
+//  don't care
+// returns undefined
+function appUpdateNonSim(_) {
+    // is simulator running?
+    if (getSimRunning(appStore)) {
+        // yes: dispatch a series of actions to the store to update the non-sim stuff
+        appStore = dispatchActions(appStore)
+            (
+                // remember the current time
+                action_saveClockForSim(performance.now()),
 
-                    // add all simple creature glucose data to time chart at index 0
-                    action_uiAddTimeChartSimpleCreatureData(0)('glucose'),
+                // add all simple creature glucose data to time chart at index 0
+                action_uiAddTimeChartSimpleCreatureData(0)('glucose'),
 
-                    // add all simple creature neuro data to time chart at index 1
-                    action_uiAddTimeChartSimpleCreatureData(1)('neuro'),
+                // add all simple creature neuro data to time chart at index 1
+                action_uiAddTimeChartSimpleCreatureData(1)('neuro'),
 
-                    // add all x-y data to geo chart
-                    action_uiAddGeoChartData(),
-                );
-        }
+                // add all x-y data to geo chart
+                action_uiAddGeoChartData(),
+            );
     }
 };
