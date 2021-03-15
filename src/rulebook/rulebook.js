@@ -117,6 +117,8 @@ const isSimpleCreature = {
     testFunc: (_) => (eventType) => getPhysTypeAct(eventType.physType) === actAsSimpleCreature,
 };
 
+// REFACTOR IDEA: Create an event where the food being touched by the creature can be tagged in, for efficiencies
+// GOAL: Avoid scanning food to see what's being eaten - just send the specific food objects
 const isCreatureTouchingFood = {
     name: 'Is this creature touching food?',
     testFunc: (storeType) => (eventType) =>

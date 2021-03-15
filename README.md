@@ -11,6 +11,7 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 ## POTENTIAL next features:
 * Implement creature food-finding functionality
 * REFACTOR: Clean up/move all uses of mutableRand so it is obvious which code relies on "random" numbers and which does not
+* REFACTOR: Revise use of ChartJS data so that data sets are kept separate from ChartJS chart objects - challenge is rebuild/reassignment of app store during action dispatching. May require not storing chart object references in app store??? Or, make sure chart is always pointed to the chart data object during reducer execution???
 
 ## Changelog:
 * **0.1.2**: Major bug fix in combineReducers
