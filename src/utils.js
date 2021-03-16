@@ -62,6 +62,7 @@ export const getNestedProp = (objAnyType) => (propStringType) =>
         (accum_obj, this_prop) => accum_obj[this_prop],
         objAnyType);
 
+// REFACTOR: Not needed? Use Array
 // given an input, return an array with the input repeated n times
 // takes:
 //  inputAnyType: input, as any
@@ -72,6 +73,7 @@ export const repeat = (...inputAnyType) => (nIntType) =>
         ? [...[inputAnyType], repeat(inputAnyType)(nIntType - 1)].flat(Infinity)
         : inputAnyType;
 
+// REFACTOR: Not needed? Use Array
 // given a function, along with an argument, return an array with 
 //  the function applied to the argument n times
 // takes:
@@ -85,7 +87,8 @@ export const repeatFunc = (func) => (argAnyType) => (nIntType) =>
         : func(argAnyType);
 
 // given a function and a list of arguments, apply the function to enclose each argument
-// e.g. rollArgs(x => y => x + y)(1, 2) = 3
+// e.g. rollArgs(x => y => x + y)(1, 2) = (1 + 2) = 3
+// e.g. rollArgs(x => y => x + y)(1) = (y=> 1 + y)
 // takes:
 //  func: function of arbitrary signature
 //  args: list of args to apply
