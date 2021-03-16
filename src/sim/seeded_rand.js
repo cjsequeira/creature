@@ -7,6 +7,7 @@
 
 // *** Our imports
 import {
+    compose,
     selectWeight,
     sum,
 } from '../utils.js';
@@ -16,6 +17,38 @@ import {
 let randGen = {
     seed: 0,
 }
+
+
+// randType monad unit func
+// takes: 
+//  valFloatType: the value to wrap into randType
+// returns: randType with 0 seed
+// total signature: (float) => randType
+const rand_unit = valFloatType => ({
+    value: valFloatType,
+    nextSeed: 0,
+});
+
+// randType monad bind func
+// takes:
+//  func: the function to bind, of signature (float) => randType
+// returns function with signature (randType) => randType
+// total signature: ((float) => randType) => ((randType) => randType)
+const rand_bind = func =>
+    randType => ({
+        ...func(randType.value),
+        nextSeed: randType.nextSeed,
+    });
+
+// randType lift func
+// takes:
+//  func: the function to lift, of signature (float) => float
+// returns function with signature (float) => randType
+// total signature: ((float) => float) => ((float) => randType)
+const rand_lift = func =>
+    floatType => compose(rand_unit)(func)(floatType);
+
+
 
 
 // *** Random number utils
@@ -35,15 +68,15 @@ export function mutableRandGen_initRandGen(initSeedIntType) {
 // given an input seed, get a future seed
 // takes:
 //  seedIntType: numerical input seed, as int
-//  incIntType: number of seeds to step ahead
+//  incIntType: number of seeds to skip
 // returns the future seed
-export const rand_getNextSeed = seedIntType => incIntType =>
-    // step ahead more than one seed?
-    (incIntType > 1)
+export const rand_getNextSeed = seedIntType => skipIntType =>
+    // skip one or more seeds?
+    (skipIntType > 0)
         // yes: get the next seed, apply this function to it, decrement applications remaining
         ? rand_getNextSeed
-            (rand_getNextSeed(seedIntType)(1))
-            (incIntType - 1)
+            (rand_getNextSeed(seedIntType)(0))
+            (skipIntType - 1)
 
         // no: return the seed to use
         : (seedIntType * 9301 + 49297) % 233280;
@@ -92,3 +125,32 @@ export const mutableRandGen_seededWeightedRand = (weightsFloatType) =>
     selectWeight
         (weightsFloatType)
         (mutableRandGen_seededRand(0, sum(weightsFloatType)));
+
+
+
+
+
+const rand_props = obj => (...propStringTypes) => (...randGens) =>
+({
+    ...obj,
+
+    // all props become of type randType
+    ...Object.fromEntries(
+        // build an array of properties, each with a randType created by given randGen
+        propStringTypes.flat(Infinity).reduce((accumProp, propStringType, i) =>
+            // build an array of properties...
+            [
+                ...accumProp,
+                [
+                    // the property
+                    propStringType,
+
+                    // the randType assigned to the property, using i to get the appropriate seed
+                    randGens[i](rand_getNextSeed(0)(i)),
+                ]
+            ],
+            // ...starting with an empty array
+            []),
+    ),
+});
+

@@ -3,6 +3,14 @@
 // ****** Code utilities ******
 
 // *** Functional programming utilities
+// compose two functions f and g of a specific signature
+// takes:
+//  f: function of signature (typeA) => typeA
+//  g: function of signature (typeA) => typeA
+// returns: composed function of signature (typeA) => typeA
+export const compose = f => g =>
+  x => f(g(x));
+
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // takes:
 //  lenLimitIntType: slice input (PRESERVED SIGN), as int
