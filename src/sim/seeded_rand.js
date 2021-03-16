@@ -96,7 +96,7 @@ export const mutableRandGen_seededWeightedRand = (weightsFloatType) =>
 
 
 
-        // *** randType monad utilities
+// *** randType monad utilities
 // randType monad unit func
 // takes: 
 //  valFloatType: the value to wrap into randType
@@ -118,6 +118,50 @@ const rand_bind = func =>
         nextSeed: randType.nextSeed,
     });
 
+// randType monad unit object func
+// builds an randType object by converting given prop-vals to randTypes
+// takes: 
+//  objAnyType: the object to bundle randTypes into
+//  ...propValPairs: a list of pairs, each of:
+//  
+//      [propNameStringType, value]
+//  
+// returns object of:
+//  {
+//      ...objAnyType,
+//      ...{property1: randType1, property2: randType2, ...},
+//      nextSeed
+//  }
+export const rand_unitObj = objAnyType => (...propValPairs) =>
+({
+    ...objAnyType,
+
+    // all props in propValPairs become of type randType
+    ...Object.fromEntries(
+        // build an array of properties, each with a randType created as unit randType
+        propValPairs.reduce((accumProp, propValPair, i) =>
+            // build an array of properties...
+            [
+                ...accumProp,
+                [
+                    // the property
+                    propValPair[0],
+
+                    // the randType assigned to the property, using i to get the appropriate seed
+                    {
+                        ...rand_unit(propValPair[1]),
+                        nextSeed: rand_getNextSeed(0)(i),
+                    }
+                ],
+            ],
+            // ...starting with an empty array
+            []),
+    ),
+
+    // store what the next seed should be
+    nextSeed: rand_getNextSeed(0)(propValPairs.length - 1),
+});
+
 
 // *** randType support functions
 // randType lift func
@@ -128,7 +172,7 @@ const rand_bind = func =>
 const rand_lift = func =>
     floatType => compose(rand_unit)(func)(floatType);
 
-// randType object assembler func
+// randType object generator func
 // takes: 
 //  objAnyType: the object to bundle randTypes into
 //  ...propGenPairs: a list of pairs, each of:
@@ -141,11 +185,10 @@ const rand_lift = func =>
 // returns object of:
 //  {
 //      ...objAnyType,
-//      ...{property1: randType1, property2: randType2, ...}
+//      ...{property1: randType1, property2: randType2, ...},
+//      nextSeed
 //  }
-//
-//  where the final property has the randType with the most-recent seed
-export const rand_obj = objAnyType => (...propGenPairs) =>
+export const rand_genObj = objAnyType => (...propGenPairs) =>
 ({
     ...objAnyType,
 

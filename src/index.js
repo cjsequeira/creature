@@ -66,6 +66,13 @@ appStore = dispatchActions(appStore)
         ),
 
         // randomize locations of all physTypes
+        // REFACTOR IDEA: convert to action_updateSelectPhysTypesRandom
+        //  which would take a list of props as follows:
+        //  
+        //  ['x', seededRand(1.0)(WORLD_SIZE_X - 1.0)],  ['y', seededRand(1.0)(WORLD_SIZE_X - 1.0)] 
+        //
+        //  where seededRand is of signature (minFloat) => (maxFloat) => (seedInputIntType) => randType
+        //
         action_updateSelectPhysTypes
             // filter function: include all physTypes
             ((_) => true)
