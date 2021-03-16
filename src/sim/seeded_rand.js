@@ -32,11 +32,19 @@ export function mutableRandGen_initRandGen(initSeedIntType) {
 };
 
 
-// given an input seed, get the next seed
+// given an input seed, get a future seed
 // takes:
-//  seedIntType: numerical seed, as int
-// returns the seed to use next
-export const rand_getNextSeed = seedIntType => (seedIntType * 9301 + 49297) % 233280
+//  seedIntType: numerical input seed, as int
+//  incIntType: number of seeds to step ahead
+// returns the future seed
+export const rand_getNextSeed = seedIntType => incIntType =>
+    // step ahead more than one seed?
+    (incIntType > 1)
+        // yes: get the next seed, apply this function to it
+        ? rand_getNextSeed(rand_getNextSeed(seedIntType)(1))(incIntType - 1)
+
+        // no: return the seed to use
+        : (seedIntType * 9301 + 49297) % 233280;
 
 // get seeded random number
 // MUTABLE: Mutates randGen
@@ -69,7 +77,7 @@ export const seededRand = minFloatType => maxFloatType => seedIntType => ({
         ((seedIntType * 9301 + 49297) % 233280) /
         233280 * (maxFloatType - minFloatType),
 
-    nextSeed: rand_getNextSeed(seedIntType),
+    nextSeed: rand_getNextSeed(seedIntType)(1),
 });
 
 // using input rand generator and weights list, generate a random number
