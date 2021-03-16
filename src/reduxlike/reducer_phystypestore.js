@@ -8,6 +8,7 @@ import {
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
     WORLD_SIZE_X,
     WORLD_SIZE_Y,
 } from '../const_vals.js';
@@ -50,21 +51,9 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 (ptToTest) => getPhysTypeID(ptToTest) !== actionType.idIntType
             ),
 
-        [ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS]: (storeType) => (_) =>
-            getPhysTypeStore(storeType).map(
-                (thisPt) =>
-                    usePhysTypeConds
-                        (thisPt)
-                        ({
-                            x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                            y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-                        })
-            ),
-
         [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
-        ([
             // is the given physType located in the physTypeStore?  
-            ...(getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
+            (getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
                 > -1)
                 // yes: update it
                 ? splice
@@ -84,7 +73,20 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                     (actionType.physType)
 
                 // no: return the physTypeStore unaltered
-                : getPhysTypeStore(storeType)
+                : getPhysTypeStore(storeType),
+
+        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES]: (storeType) => (actionType) =>
+        // build an array out of two components
+        // REFACTOR for efficiency
+        ([
+            // first, the updated physTypes that pass the filter function
+            ...getPhysTypeStore(storeType)
+                .filter(actionType.filterFunc)
+                .map(actionType.updateFunc),
+
+            // second, the physTypes that fail the filter function - these are left AS IS
+            ...getPhysTypeStore(storeType)
+                .filter((thisPt) => !actionType.filterFunc(thisPt)),
         ]),
 
         // use inActionType.type as an entry key into the key-val list above

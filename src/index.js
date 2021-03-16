@@ -24,12 +24,12 @@ import { getDefaultFoodType } from './phystypes/food_type';
 import {
     action_addPhysType,
     action_advanceSimIfRunning,
-    action_randomizeLocations,
     action_saveClockForSim,
     action_startSim,
     action_stopIfFrozen,
     action_uiAddGeoChartData,
     action_uiAddTimeChartSimpleCreatureData,
+    action_updateSelectPhysTypes,
     dispatchActions,
     mapEventsToActions,
 } from './reduxlike/action_creators.js';
@@ -42,9 +42,9 @@ import {
     getSimRunning,
     getSimSavedClock,
     getPhysTypeStore,
+    usePhysTypeConds,
 } from './reduxlike/store_getters.js';
-
-import { repeatFunc } from './utils';
+import { mutableRandGen_seededRand } from './sim/seeded_rand';
 
 
 // ***********************************************************************************
@@ -66,7 +66,19 @@ appStore = dispatchActions(appStore)
         ),
 
         // randomize locations of all physTypes
-        action_randomizeLocations(),
+        action_updateSelectPhysTypes
+            // filter function: include all physTypes
+            ((_) => true)
+
+            // update function: random x and y
+            (
+                (thisPt) => usePhysTypeConds
+                    (thisPt)
+                    ({
+                        x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
+                        y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+                    })
+            ),
 
         // change the sim status to running
         action_startSim(),

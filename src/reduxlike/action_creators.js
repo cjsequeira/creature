@@ -12,8 +12,8 @@ import {
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
@@ -141,15 +141,6 @@ export const action_deletePhysType = (idIntType) =>
     idIntType,
 });
 
-// randomize locations of all physTypes
-// takes:
-//  don't care
-// returns actionType
-export const action_randomizeLocations = (_) =>
-({
-    type: ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS,
-});
-
 // update physType with the given physType using the same ID
 // takes:
 //  physType
@@ -160,6 +151,17 @@ export const action_updatePhysType = (physType) =>
     physType,
 });
  
+// atomically update all physTypes that pass a filter function
+// takes:
+//  filterFunc: of signature (physType) => bool
+//  updateFunc: of signature (physType) => physType
+// returns actionType
+export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
+({
+    type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
+    filterFunc,
+    updateFunc,
+});
 
 // *** Sim control
 // advance sim time if running
