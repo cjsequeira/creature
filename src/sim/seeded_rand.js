@@ -40,8 +40,10 @@ export function mutableRandGen_initRandGen(initSeedIntType) {
 export const rand_getNextSeed = seedIntType => incIntType =>
     // step ahead more than one seed?
     (incIntType > 1)
-        // yes: get the next seed, apply this function to it
-        ? rand_getNextSeed(rand_getNextSeed(seedIntType)(1))(incIntType - 1)
+        // yes: get the next seed, apply this function to it, decrement applications remaining
+        ? rand_getNextSeed
+            (rand_getNextSeed(seedIntType)(1))
+            (incIntType - 1)
 
         // no: return the seed to use
         : (seedIntType * 9301 + 49297) % 233280;
