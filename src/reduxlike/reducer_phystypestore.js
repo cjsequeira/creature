@@ -6,23 +6,17 @@
 import {
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    ACTION_PHYSTYPE_RANDOMIZE_LOCATIONS,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
-    WORLD_SIZE_X,
-    WORLD_SIZE_Y,
 } from '../const_vals.js';
 
 import {
     genPhysTypeAvailID,
     getPhysTypeID,
     getPhysTypeStore,
-    usePhysTypeConds,
 } from './store_getters.js';
 
 import { splice } from '../utils.js';
-
-import { mutableRandGen_seededRand } from '../sim/seeded_rand.js';
 
 
 // *** PhysTypeStore reducer 
