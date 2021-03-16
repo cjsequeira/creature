@@ -130,23 +130,23 @@ export const mutableRandGen_seededWeightedRand = (weightsFloatType) =>
 
 
 
-const rand_props = obj => (...propStringTypes) => (...randGens) =>
+const rand_props = obj => (...propGenPairs) =>
 ({
     ...obj,
 
     // all props become of type randType
     ...Object.fromEntries(
         // build an array of properties, each with a randType created by given randGen
-        propStringTypes.flat(Infinity).reduce((accumProp, propStringType, i) =>
+        propGenPairs.reduce((accumProp, propGenPair, i) =>
             // build an array of properties...
             [
                 ...accumProp,
                 [
                     // the property
-                    propStringType,
+                    propGenPair[0],
 
                     // the randType assigned to the property, using i to get the appropriate seed
-                    randGens[i](rand_getNextSeed(0)(i)),
+                    propGenPair[1](rand_getNextSeed(0)(i)),
                 ]
             ],
             // ...starting with an empty array
