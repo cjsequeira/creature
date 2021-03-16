@@ -18,79 +18,6 @@ let randGen = {
     seed: 0,
 }
 
-// *** randType monad utilities
-// randType monad unit func
-// takes: 
-//  valFloatType: the value to wrap into randType
-// returns: randType with 0 seed
-// total signature: (float) => randType
-export const rand_unit = valFloatType => ({
-    value: valFloatType,
-    nextSeed: rand_getNextSeed(0)(0),
-});
-
-// randType monad bind func
-// takes:
-//  func: the function to bind, of signature (float) => randType
-// returns function with signature (randType) => randType
-// total signature: ((float) => randType) => ((randType) => randType)
-const rand_bind = func =>
-    randType => ({
-        ...func(randType.value),
-        nextSeed: randType.nextSeed,
-    });
-
-
-// *** randType support functions
-// randType lift func
-// takes:
-//  func: the function to lift, of signature (float) => float
-// returns function with signature (float) => randType
-// total signature: ((float) => float) => ((float) => randType)
-const rand_lift = func =>
-    floatType => compose(rand_unit)(func)(floatType);
-
-// randType object assembler func
-// takes: 
-//  objAnyType: the object to bundle randTypes into
-//  ...propGenPairs: a list of pairs, each of:
-//  
-//      [propNameStringType, randGenFunc]
-//  
-//      where randGenFunc is signature (seedIntType) => randType
-//      e.g. rand_seededRand(0)(1) would be an appropriately signed randGenFunc
-//
-// returns object of:
-//  {
-//      ...objAnyType,
-//      ...{property1: randType1, property2: randType2, ...}
-//  }
-//
-//  where the final property has the randType with the most-recent seed
-export const rand_obj = objAnyType => (...propGenPairs) =>
-({
-    ...objAnyType,
-
-    // all props become of type randType
-    ...Object.fromEntries(
-        // build an array of properties, each with a randType created by given randGenFunc
-        propGenPairs.reduce((accumProp, propGenPair, i) =>
-            // build an array of properties...
-            [
-                ...accumProp,
-                [
-                    // the property
-                    propGenPair[0],
-
-                    // the randType assigned to the property, using i to get the appropriate seed
-                    propGenPair[1](rand_getNextSeed(0)(i)),
-                ]
-            ],
-            // ...starting with an empty array
-            []),
-    ),
-});
-
 
 // *** Random number utils
 // init random number generator
@@ -169,5 +96,78 @@ export const mutableRandGen_seededWeightedRand = (weightsFloatType) =>
 
 
 
+        // *** randType monad utilities
+// randType monad unit func
+// takes: 
+//  valFloatType: the value to wrap into randType
+// returns: randType with 0 seed
+// total signature: (float) => randType
+export const rand_unit = valFloatType => ({
+    value: valFloatType,
+    nextSeed: rand_getNextSeed(0)(0),
+});
+
+// randType monad bind func
+// takes:
+//  func: the function to bind, of signature (float) => randType
+// returns function with signature (randType) => randType
+// total signature: ((float) => randType) => ((randType) => randType)
+const rand_bind = func =>
+    randType => ({
+        ...func(randType.value),
+        nextSeed: randType.nextSeed,
+    });
 
 
+// *** randType support functions
+// randType lift func
+// takes:
+//  func: the function to lift, of signature (float) => float
+// returns function with signature (float) => randType
+// total signature: ((float) => float) => ((float) => randType)
+const rand_lift = func =>
+    floatType => compose(rand_unit)(func)(floatType);
+
+// randType object assembler func
+// takes: 
+//  objAnyType: the object to bundle randTypes into
+//  ...propGenPairs: a list of pairs, each of:
+//  
+//      [propNameStringType, randGenFunc]
+//  
+//      where randGenFunc is signature (seedIntType) => randType
+//      e.g. rand_seededRand(0)(1) would be an appropriately signed randGenFunc
+//
+// returns object of:
+//  {
+//      ...objAnyType,
+//      ...{property1: randType1, property2: randType2, ...}
+//  }
+//
+//  where the final property has the randType with the most-recent seed
+export const rand_obj = objAnyType => (...propGenPairs) =>
+({
+    ...objAnyType,
+
+    // all props in propGenPairs become of type randType
+    ...Object.fromEntries(
+        // build an array of properties, each with a randType created by given randGenFunc
+        propGenPairs.reduce((accumProp, propGenPair, i) =>
+            // build an array of properties...
+            [
+                ...accumProp,
+                [
+                    // the property
+                    propGenPair[0],
+
+                    // the randType assigned to the property, using i to get the appropriate seed
+                    propGenPair[1](rand_getNextSeed(0)(i)),
+                ],
+            ],
+            // ...starting with an empty array
+            []),
+    ),
+
+    // store what the next seed should be
+    nextSeed: rand_getNextSeed(0)(propGenPairs.length + 1),
+});
