@@ -84,6 +84,15 @@ export const repeatFunc = (func) => (argAnyType) => (nIntType) =>
         ? [...[func(argAnyType)], repeatFunc(func)(argAnyType)(nIntType - 1)].flat(Infinity)
         : func(argAnyType);
 
+// given a function and a list of arguments, apply the function to enclose each argument
+// e.g. rollArgs(x => y => x + y)(1, 2) = 3
+// takes:
+//  func: function of arbitrary signature
+//  args: list of args to apply
+// returns any (could be a function or could be an evaluation)
+export const rollArgs = (f) => (...args) =>
+    args.flat(Infinity).reduce((fArgs, thisArg) => fArgs(thisArg), f);
+
 // given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
 //  and the specified number of items removed at that index
