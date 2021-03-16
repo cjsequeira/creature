@@ -31,6 +31,13 @@ export function mutableRandGen_initRandGen(initSeedIntType) {
     return initSeedIntType;
 };
 
+
+// given an input seed, get the next seed
+// takes:
+//  seedIntType: numerical seed, as int
+// returns the seed to use next
+export const rand_getNextSeed = seedIntType => (seedIntType * 9301 + 49297) % 233280
+
 // get seeded random number
 // MUTABLE: Mutates randGen
 // reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
@@ -50,6 +57,20 @@ export function mutableRandGen_seededRand(minFloatType, maxFloatType) {
     // return calculated random value
     return value;
 };
+
+// get seeded random number
+// takes:
+//  minFloatType: minimum bound of random number range, as float
+//  maxFloatType: maximum bound of random number range, as float
+//  seed: the seed to use
+// returns randType
+export const seededRand = minFloatType => maxFloatType => seedIntType => ({
+    value: minFloatType +
+        ((seedIntType * 9301 + 49297) % 233280) /
+        233280 * (maxFloatType - minFloatType),
+
+    nextSeed: rand_getNextSeed(seedIntType),
+});
 
 // using input rand generator and weights list, generate a random number
 //  to use for weight selection based on the weights list

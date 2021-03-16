@@ -18,6 +18,11 @@ export function mutable_renderFunction(storeType) {
 
     // MUTABLE: update status box
     mutable_updateStatusBox(storeType);
+
+
+    console.log(storeType.sim.seed);
+
+
 };
 
 // update simulator status box with given HTML message

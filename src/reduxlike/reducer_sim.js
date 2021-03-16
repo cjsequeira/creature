@@ -6,6 +6,7 @@
 import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_SIM_ADVANCE,
+    ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
@@ -67,6 +68,12 @@ export const simReducer = (inStoreType) => (inActionType) =>
 
                     // no: keep the time the same as it currently is
                     : getSimCurTime(storeType),
+        }),
+
+        [ACTION_SIM_INC_SEED]: (storeType) => (actionType) =>
+        ({
+            ...storeType.sim,
+            seed: storeType.sim.seed + actionType.seedIncIntType,
         }),
 
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>

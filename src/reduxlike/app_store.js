@@ -38,6 +38,8 @@ const initial_store = {
         // REFACTOR to simply, "seed"
         //initSeed: mutableRandGen_initRandGen(Date.now()),
         initSeed: mutableRandGen_initRandGen(0),
+
+        seed: 0,
     },
 
     // initial physTypeStore
