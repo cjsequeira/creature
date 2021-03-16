@@ -74,7 +74,7 @@ export function mutableRandGen_seededRand(minFloatType, maxFloatType) {
 //  maxFloatType: maximum bound of random number range, as float
 //  seed: the seed to use
 // returns randType
-export const seededRand = minFloatType => maxFloatType => seedIntType => ({
+export const rand_seededRand = minFloatType => maxFloatType => seedIntType => ({
     value: minFloatType +
         ((seedIntType * 9301 + 49297) % 233280) /
         233280 * (maxFloatType - minFloatType),
