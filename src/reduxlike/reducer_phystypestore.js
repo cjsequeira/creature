@@ -21,7 +21,7 @@ import {
 } from './store_getters.js';
 
 import { splice } from '../utils.js';
-import { rand_genRandTypeObjArray, rand_unwrapRandTypeObj } from '../sim/seeded_rand.js';
+import { rand_genRandTypeObj, rand_genRandTypeObjArray, rand_unitObj, rand_unwrapRandTypeObj } from '../sim/seeded_rand.js';
 
 
 // *** PhysTypeStore reducer 
@@ -74,6 +74,8 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 // no: return the physTypeStore unaltered
                 : getPhysTypeStore(storeType),
 
+        /*
+        // REFACTOR: FIX so objects don't switch array order when they meet or fail a filter!!!
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES]: (storeType) => (actionType) =>
         // build an array out of two components
         // REFACTOR for efficiency
@@ -87,10 +89,51 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
             ...getPhysTypeStore(storeType)
                 .filter((thisPt) => !actionType.filterFunc(thisPt)),
         ]),
+        */
 
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
-        // build an array out of two components
-        // REFACTOR for efficiency
+            // generate a randTypeObj version of the physTypeStore
+            getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
+                [
+                    ...accumRandTypeObj,
+
+                    // does this physType pass the filter function?
+                    (actionType.filterFunc(thisPt))
+                        // yes: create randTypeObj using given randType generators
+                        ? rand_genRandTypeObj
+                            (getPhysTypeCondsObj(thisPt))
+                            (actionType.gensForRand)
+                            (
+                                (
+                                    accumRandTypeObj.slice(-1)[0] ||
+                                    { nextSeed: getSimSeed(storeType) }
+                                ).nextSeed
+                            )
+
+                        // no: convert the physType into a unit randTypeObj as is
+                        : rand_unitObj
+                            (getPhysTypeCondsObj(thisPt))
+                            ({})
+                            (
+                                (
+                                    accumRandTypeObj.slice(-1)[0] ||
+                                    { nextSeed: getSimSeed(storeType) }
+                                ).nextSeed
+                            )
+
+                    // start with an empty array
+                ], [])
+
+                // map each randTypeObj back to a physType with updated random conditions
+                .map(
+                    (thisRandTypeObj, i) =>
+                        usePhysTypeConds
+                            (getPhysTypeStore(storeType)[i])
+                            (rand_unwrapRandTypeObj(thisRandTypeObj))
+                ),
+
+
+        /*
         ([
             // generate an array of randTypeObj objects
             ...rand_genRandTypeObjArray
@@ -122,6 +165,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
             ...getPhysTypeStore(storeType)
                 .filter((thisPt) => !actionType.filterFunc(thisPt)),
         ]),
+        */
 
         // use inActionType.type as an entry key into the key-val list above
         // key is used to select a function that takes a storeType object  

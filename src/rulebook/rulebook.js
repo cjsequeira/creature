@@ -57,6 +57,7 @@ import {
     mutableRandGen_seededRand,
     mutableRandGen_seededWeightedRand,
     rand_seededRand,
+    rand_unit,
 } from '../sim/seeded_rand.js';
 
 import { actAsFood } from '../phystypes/food_type.js';
@@ -260,6 +261,7 @@ const leafDoAndApproveWandering = {
     name: 'Doing and approving behavior: wandering!',
     func: (storeType) => (eventType) =>
         [
+
             // update creatureType behavior with random nudges to acceleration and heading
             (
                 // apply anonymous function to passed-in accel and heading nudge
@@ -286,34 +288,16 @@ const leafDoAndApproveWandering = {
                 (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))
                 (mutableRandGen_seededRand(-0.1, 0.1)),
 
+
             /*
         action_updateSelectPhysTypesRand
             // find the given physType in the store
             ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
 
-            // conds to update through randomizing
-            ({
-                // glucose and neuro impacts are more severe 
-                //  with higher accceleration magnitude
-                glucose: (seed) => 
-                getPhysTypeCond(eventType.physType)('glucose') -
-                    (0.3 * Math.abs(rand_seededRand(-4.0)(15.0)(seed))) * 
-                    getSimTimeStep(storeType),
-                neuro: (seed) => 
-                getPhysTypeCond(eventType.physType)('neuro') +
-                    (0.2 * Math.abs(rand_seededRand(-4.0)(15.0)(seed))) * 
-                    getSimTimeStep(storeType),
+            // conds to update
+            (
 
-                heading: (seed) => 
-                getPhysTypeCond(eventType.physType)('heading') + hdg_nudge,
-                accel: accel,
-            })
-
-            // conds to update without randomizing
-            ({
-                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
-            }),
-
+            ),
             */
 
             // announce behavior IF behavior has just changed

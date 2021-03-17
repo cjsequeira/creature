@@ -14,7 +14,7 @@ import {
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
-import { rand_genRandTypeObjArray, rand_getNextSeed } from '../sim/seeded_rand.js';
+import { rand_genRandTypeObj, rand_genRandTypeObjArray, rand_getNextSeed, rand_unitObj } from '../sim/seeded_rand.js';
 
 import {
     getPhysTypeStore,
@@ -61,26 +61,45 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     : getSimRunning(storeType),
         }),
 
-        // REFACTOR for efficiency?
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
         ({
             ...storeType.sim,
+
             seed:
-                // build an array of randTypeObj objects in order to get the next seed for future use
-                rand_genRandTypeObjArray
-                    // conds objects of physTypes that pass the given filter function
-                    (getPhysTypeStore(storeType)
-                        .filter(actionType.filterFunc)
-                        .map((thisPt) => getPhysTypeCondsObj(thisPt)))
+                // generate a randTypeObj version of the physTypeStore
+                getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
+                    [
+                        ...accumRandTypeObj,
 
-                    // array of randType generator functions
-                    (actionType.gensForRand)
+                        // does this physType pass the filter function?
+                        (actionType.filterFunc(thisPt))
+                            // yes: create randTypeObj using given randType generators
+                            ? rand_genRandTypeObj
+                                (getPhysTypeCondsObj(thisPt))
+                                (actionType.gensForRand)
+                                (
+                                    (
+                                        accumRandTypeObj.slice(-1)[0] ||
+                                        { nextSeed: getSimSeed(storeType) }
+                                    ).nextSeed
+                                )
 
-                    // seed to start with
-                    (getSimSeed(storeType))
+                            // no: convert the physType into a unit randTypeObj as is
+                            : rand_unitObj
+                                (getPhysTypeCondsObj(thisPt))
+                                ({})
+                                (
+                                    (
+                                        accumRandTypeObj.slice(-1)[0] ||
+                                        { nextSeed: getSimSeed(storeType) }
+                                    ).nextSeed
+                                )
 
-                    // save the final "nextSeed" as the next seed for the simulator to use
-                    .slice(-1)[0].nextSeed,
+                        // start with an empty array
+                    ], [])
+
+                    // grab the last seed
+                    .slice(-1)[0].nextSeed
         }),
 
         [ACTION_SIM_ADVANCE]: (storeType) => (_) =>

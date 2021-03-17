@@ -121,7 +121,7 @@ export const rand_unit = valFloatType => ({
 //  func: the function to bind, of signature (float) => randType
 // returns function with signature (randType) => randType
 // total signature: (float => randType) => (randType => randType)
-const rand_bind = func =>
+export const rand_bind = func =>
     randType => ({
         ...func(randType.value),
         nextSeed: randType.nextSeed,
@@ -138,6 +138,8 @@ const rand_bind = func =>
 //      property2: value2,
 //      ...
 //  }
+//
+//  seedIntType: the seed to use
 //  
 // returns object of:
 //  {
@@ -145,7 +147,7 @@ const rand_bind = func =>
 //      ...{property1: randType1, property2: randType2, ...},
 //      nextSeed
 //  }
-export const rand_unitObj = (objAnyType) => (objForRand) =>
+export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) => 
     // build an object out of entries
     Object.entries(objForRand).reduce(
         (accumProp, propValPair, i) =>
@@ -159,7 +161,7 @@ export const rand_unitObj = (objAnyType) => (objForRand) =>
             // the unit randType assigned to the property, using i to get the appropriate seed
             {
                 ...rand_unit(propValPair[1]),
-                nextSeed: rand_getNextSeed(0)(i),
+                nextSeed: rand_getNextSeed(seedIntType)(i),
             }
 
         }),
@@ -168,7 +170,7 @@ export const rand_unitObj = (objAnyType) => (objForRand) =>
         {
             ...objAnyType,
             [TYPE_RANDTYPE_OBJ]: true,
-            nextSeed: rand_getNextSeed(0)(Object.entries(objForRand).length - 1),
+            nextSeed: rand_getNextSeed(seedIntType)(Object.entries(objForRand).length - 1),
         }
     );
 
