@@ -59,6 +59,12 @@ export const getPhysTypeAct = (physType) => physType.act;
 // returns condition value
 export const getPhysTypeCond = (physType) => (argCond) => physType.conds[argCond];
 
+// get conds object from physType
+// takes:
+//  physType: physType to use
+// returns conds object
+export const getPhysTypeCondsObj = (physType) => physType.conds;
+
 // get physType color
 // takes:
 //  physType: physType to use

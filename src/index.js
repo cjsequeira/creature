@@ -30,6 +30,7 @@ import {
     action_uiAddGeoChartData,
     action_uiAddTimeChartSimpleCreatureData,
     action_updateSelectPhysTypes,
+    action_updateSelectPhysTypesRand,
     dispatchActions,
     mapEventsToActions,
 } from './reduxlike/action_creators.js';
@@ -44,7 +45,7 @@ import {
     getPhysTypeStore,
     usePhysTypeConds,
 } from './reduxlike/store_getters.js';
-import { mutableRandGen_seededRand } from './sim/seeded_rand';
+import { mutableRandGen_seededRand, rand_seededRand } from './sim/seeded_rand';
 
 
 // ***********************************************************************************
@@ -61,31 +62,22 @@ var appStore = storeInit
 appStore = dispatchActions(appStore)
     (
         // add a bunch of food
-        Array(WORLD_NUM_FOOD).fill(getDefaultFoodType()).map(
-            (thisFood) => action_addPhysType(thisFood)
-        ),
+        Array(WORLD_NUM_FOOD)
+            .fill(getDefaultFoodType())
+            .map(
+                (thisFood) => action_addPhysType(thisFood)
+            ),
 
-        // randomize locations of all physTypes
-        // REFACTOR IDEA: convert to action_updateSelectPhysTypesRandom
-        //  which would take a list of props as follows:
-        //  
-        //  ['x', seededRand(1.0)(WORLD_SIZE_X - 1.0)],  ['y', seededRand(1.0)(WORLD_SIZE_X - 1.0)] 
-        //
-        //  where seededRand is of signature (minFloat) => (maxFloat) => (seedInputIntType) => randType
-        //
-        action_updateSelectPhysTypes
+        // atomically randomize locations of all physTypes
+        action_updateSelectPhysTypesRand
             // filter function: include all physTypes
             ((_) => true)
 
-            // update function: random x and y
-            (
-                (thisPt) => usePhysTypeConds
-                    (thisPt)
-                    ({
-                        x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                        y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
-                    })
-            ),
+            // randomize properties: x and y
+            ({
+                x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0),
+                y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0),
+            }),
 
         // change the sim status to running
         action_startSim(),

@@ -14,6 +14,7 @@ import {
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
@@ -163,6 +164,31 @@ export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
     filterFunc,
     updateFunc,
 });
+
+// atomically update all physTypes that pass a filter function by
+//  applying random values to the specified conds
+// takes:
+//  filterFunc: of signature (physType) => bool
+//  condsForRand: an object with conds and randomType generators, as:
+//
+//  {
+//      cond1: randGen1,
+//      cond2: randGen2,
+//      ...
+//  }
+//
+//  where randGen1, randGen2, ... are of signature (seedIntType) => randType
+//  for example, seededRand(0.0)(1.0) would have the appropriate signature 
+//      while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
+//  
+// returns [actionType]
+export const action_updateSelectPhysTypesRand = (filterFunc) => (condsForRand) =>
+({
+    type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
+    filterFunc,
+    condsForRand,
+});
+
 
 // *** Sim control
 // advance sim time if running

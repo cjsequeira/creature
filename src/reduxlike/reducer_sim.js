@@ -5,6 +5,7 @@
 // *** Our imports
 import {
     ACTION_COMPARE_STOP_IF_FROZEN,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
@@ -13,6 +14,7 @@ import {
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
+import { rand_genRandTypeObj, rand_unwrapRandTypeObj } from '../sim/seeded_rand.js';
 
 import {
     getPhysTypeStore,
@@ -20,7 +22,8 @@ import {
     getSimCurTime,
     getSimRunning,
     getSimTimeStep,
-    getPhysTypeAct
+    getPhysTypeAct,
+    usePhysTypeConds
 } from './store_getters.js';
 
 
@@ -56,6 +59,14 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     // no: leave "running" unchanged
                     : getSimRunning(storeType),
         }),
+
+
+
+
+
+
+
+        
 
         [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
         ({
