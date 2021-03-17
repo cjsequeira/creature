@@ -17,6 +17,7 @@ import {
     getPhysTypeStore,
     getPhysTypeCondsObj,
     usePhysTypeConds,
+    getSimSeed,
 } from './store_getters.js';
 
 import { splice } from '../utils.js';
@@ -102,7 +103,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 (actionType.condsForRand)
 
                 // seed to start with
-                (storeType.sim.seed)
+                (getSimSeed(storeType))
 
                 // then unwrap each randTypeObj object and merge it back in with the appropriate physType
                 .map(

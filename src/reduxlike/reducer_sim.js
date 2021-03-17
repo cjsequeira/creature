@@ -7,14 +7,13 @@ import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
-    ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
-import { rand_genRandTypeObj, rand_unwrapRandTypeObj } from '../sim/seeded_rand.js';
+import { rand_genRandTypeObjArray } from '../sim/seeded_rand.js';
 
 import {
     getPhysTypeStore,
@@ -23,7 +22,8 @@ import {
     getSimRunning,
     getSimTimeStep,
     getPhysTypeAct,
-    usePhysTypeConds
+    getPhysTypeCondsObj,
+    getSimSeed
 } from './store_getters.js';
 
 
@@ -61,12 +61,26 @@ export const simReducer = (inStoreType) => (inActionType) =>
         }),
 
 
+        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
+        ({
+            ...storeType.sim,
+            seed:
+                // build an array of randTypeObj objects in order to get the next seed for future use
+                rand_genRandTypeObjArray
+                    // conds objects of physTypes that pass the given filter function
+                    (getPhysTypeStore(storeType)
+                        .filter(actionType.filterFunc)
+                        .map((thisPt) => getPhysTypeCondsObj(thisPt)))
 
+                    // conds to generate randTypes for
+                    (actionType.condsForRand)
 
+                    // seed to start with
+                    (getSimSeed(storeType))
 
-
-
-        
+                    // save the final "nextSeed" as the next seed for the simulator to use
+                    .slice(-1)[0].nextSeed,
+        }),
 
         [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
         ({
@@ -79,12 +93,6 @@ export const simReducer = (inStoreType) => (inActionType) =>
 
                     // no: keep the time the same as it currently is
                     : getSimCurTime(storeType),
-        }),
-
-        [ACTION_SIM_INC_SEED]: (storeType) => (actionType) =>
-        ({
-            ...storeType.sim,
-            seed: storeType.sim.seed + actionType.seedIncIntType,
         }),
 
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>

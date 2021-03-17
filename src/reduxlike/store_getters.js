@@ -148,6 +148,12 @@ export const getSimRunning = (storeType) => storeType.sim.running;
 // returns number
 export const getSimSavedClock = (storeType) => storeType.sim.savedClock;
 
+// return simulator seed
+// takes: 
+//  storeType: store, as storeType
+// returns number
+export const getSimSeed = (storeType) => storeType.sim.seed;
+
 // return simulator timestep
 // takes: 
 //  storeType: store, as storeType
