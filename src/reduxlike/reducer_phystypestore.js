@@ -114,8 +114,14 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                             //  and the map index
                             (getPhysTypeStore(storeType).filter(actionType.filterFunc)[i])
 
-                            // unwrap the randTypeObj conds into a conds object with random values
-                            (rand_unwrapRandTypeObj(thisRandTypeObjConds))
+                            // provide the conds to be updated
+                            ({
+                                // unwrap the randTypeObj conds into a conds object with random values
+                                ...rand_unwrapRandTypeObj(thisRandTypeObjConds),
+
+                                // merge in given conds that are not to be randomized
+                                ...actionType.condsNonRand,
+                            })
                 ),
 
             // also include the physTypes that fail the filter function - these are left AS IS

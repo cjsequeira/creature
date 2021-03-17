@@ -29,7 +29,6 @@ import {
     action_stopIfFrozen,
     action_uiAddGeoChartData,
     action_uiAddTimeChartSimpleCreatureData,
-    action_updateSelectPhysTypes,
     action_updateSelectPhysTypesRand,
     dispatchActions,
     mapEventsToActions,
@@ -43,9 +42,9 @@ import {
     getSimRunning,
     getSimSavedClock,
     getPhysTypeStore,
-    usePhysTypeConds,
 } from './reduxlike/store_getters.js';
-import { mutableRandGen_seededRand, rand_seededRand } from './sim/seeded_rand';
+
+import { rand_seededRand } from './sim/seeded_rand';
 
 
 // ***********************************************************************************
@@ -73,11 +72,14 @@ appStore = dispatchActions(appStore)
             // filter function: include all physTypes
             ((_) => true)
 
-            // randomize properties: x and y
+            // randomize conds: x and y
             ({
                 x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0),
                 y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0),
-            }),
+            })
+
+            // no changes to other conds
+            ({hellome: 'meet the real me'}),
 
         // change the sim status to running
         action_startSim(),

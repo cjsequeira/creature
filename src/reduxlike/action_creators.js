@@ -182,11 +182,12 @@ export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
 //      while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //  
 // returns [actionType]
-export const action_updateSelectPhysTypesRand = (filterFunc) => (condsForRand) =>
+export const action_updateSelectPhysTypesRand = (filterFunc) => (condsForRand) => (condsNonRand) =>
 ({
     type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     filterFunc,
     condsForRand,
+    condsNonRand,
 });
 
 
@@ -198,6 +199,16 @@ export const action_updateSelectPhysTypesRand = (filterFunc) => (condsForRand) =
 export const action_advanceSimIfRunning = (_) =>
 ({
     type: ACTION_SIM_ADVANCE,
+});
+
+// increment system seed
+// takes:
+//  seedIncIntType: how many times to advance the system seed
+// returns actionType
+export const action_incSimSeed = (seedIncIntType) =>
+({
+    type: ACTION_SIM_INC_SEED,
+    seedIncIntType,
 });
 
 // save system clock

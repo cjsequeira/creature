@@ -38,6 +38,7 @@ import {
     action_addJournalEntry,
     action_doNothing,
     action_deletePhysType,
+    action_updateSelectPhysTypesRand,
 } from '../reduxlike/action_creators.js';
 
 import {
@@ -279,10 +280,11 @@ const leafDoAndApproveWandering = {
                         })
                 )
             )
-                // accel: random, at least 2.0 magnitude
+                // accel: random
                 // heading nudge: small random nudge 
                 (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))
                 (mutableRandGen_seededRand(-0.1, 0.1)),
+
 
 
             // announce behavior IF behavior has just changed
