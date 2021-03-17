@@ -75,8 +75,8 @@ appStore = dispatchActions(appStore)
 
             // randomize conds: x and y
             (
-                (seed) => ({ x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0)(seed) }),
-                (seed) => ({ y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0)(seed) }),
+                (seed1) => ({ x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0)(seed1) }),
+                (seed2) => ({ y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0)(seed2) }),
             ),
 
         // change the sim status to running
