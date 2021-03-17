@@ -182,12 +182,11 @@ export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
 //          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //
 // returns [actionType]
-export const action_updateSelectPhysTypesRand = (filterFunc) => (...gensForRand) => (condsNonRand) =>
+export const action_updateSelectPhysTypesRand = (filterFunc) => (...gensForRand) =>
 ({
     type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     filterFunc,
     gensForRand,
-    condsNonRand,
 });
 
 

@@ -77,10 +77,7 @@ appStore = dispatchActions(appStore)
             (
                 (seed) => ({ x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0)(seed) }),
                 (seed) => ({ y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0)(seed) }),
-            )
-
-            // no changes to other conds
-            ({}),
+            ),
 
         // change the sim status to running
         action_startSim(),

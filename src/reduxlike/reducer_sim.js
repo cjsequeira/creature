@@ -61,6 +61,7 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     : getSimRunning(storeType),
         }),
 
+        // REFACTOR for efficiency?
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
         ({
             ...storeType.sim,
