@@ -56,6 +56,7 @@ import { physTypeDoPhysics } from '../sim/physics.js';
 import {
     mutableRandGen_seededRand,
     mutableRandGen_seededWeightedRand,
+    rand_seededRand,
 } from '../sim/seeded_rand.js';
 
 import { actAsFood } from '../phystypes/food_type.js';
@@ -280,12 +281,40 @@ const leafDoAndApproveWandering = {
                         })
                 )
             )
-                // accel: random
+                // accel: random with minimum magnitude of 2.0
                 // heading nudge: small random nudge 
                 (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))
                 (mutableRandGen_seededRand(-0.1, 0.1)),
 
+            /*
+        action_updateSelectPhysTypesRand
+            // find the given physType in the store
+            ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
 
+            // conds to update through randomizing
+            ({
+                // glucose and neuro impacts are more severe 
+                //  with higher accceleration magnitude
+                glucose: (seed) => 
+                getPhysTypeCond(eventType.physType)('glucose') -
+                    (0.3 * Math.abs(rand_seededRand(-4.0)(15.0)(seed))) * 
+                    getSimTimeStep(storeType),
+                neuro: (seed) => 
+                getPhysTypeCond(eventType.physType)('neuro') +
+                    (0.2 * Math.abs(rand_seededRand(-4.0)(15.0)(seed))) * 
+                    getSimTimeStep(storeType),
+
+                heading: (seed) => 
+                getPhysTypeCond(eventType.physType)('heading') + hdg_nudge,
+                accel: accel,
+            })
+
+            // conds to update without randomizing
+            ({
+                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+            }),
+
+            */
 
             // announce behavior IF behavior has just changed
             (getPhysTypeCond(eventType.physType)('behavior') !==

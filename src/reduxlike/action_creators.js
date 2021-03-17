@@ -169,24 +169,24 @@ export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
 //  applying random values to the specified conds
 // takes:
 //  filterFunc: of signature (physType) => bool
-//  condsForRand: an object with conds and randomType generators, as:
+//  ...gensForRand: an array of functions with properties and randomType generators, as:
 //
-//  {
-//      cond1: randGen1,
-//      cond2: randGen2,
+//  [
+//      (seed1): {property1a: randGen1a(seed1), property1b: randGen1b(seed1), ... }
+//      (seed2): {property2a: randGen2a(seed2), property2b: randGen2b(seed2), ... }
 //      ...
-//  }
+//  ]
 //
-//  where randGen1, randGen2, ... are of signature (seedIntType) => randType
-//  for example, seededRand(0.0)(1.0) would have the appropriate signature 
-//      while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
-//  
+//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randType
+//      for example, seededRand(0.0)(1.0) would have the appropriate signature 
+//          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
+//
 // returns [actionType]
-export const action_updateSelectPhysTypesRand = (filterFunc) => (condsForRand) => (condsNonRand) =>
+export const action_updateSelectPhysTypesRand = (filterFunc) => (...gensForRand) => (condsNonRand) =>
 ({
     type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     filterFunc,
-    condsForRand,
+    gensForRand,
     condsNonRand,
 });
 

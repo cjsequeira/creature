@@ -72,8 +72,8 @@ export const simReducer = (inStoreType) => (inActionType) =>
                         .filter(actionType.filterFunc)
                         .map((thisPt) => getPhysTypeCondsObj(thisPt)))
 
-                    // conds to generate randTypes for
-                    (actionType.condsForRand)
+                    // array of randType generator functions
+                    (actionType.gensForRand)
 
                     // seed to start with
                     (getSimSeed(storeType))

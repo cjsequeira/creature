@@ -193,15 +193,15 @@ const rand_unwrapRandType = randType => randType.value;
 // builds a randType object by generating randType random values for the given props
 // takes: 
 //  objAnyType: the object to bundle randTypes into
-//  objForRand: an object with properties and randomType generators, as:
+//  ...gensForRand: an array of functions with properties and randomType generators, as:
 //
-//  {
-//      property1: randGen1,
-//      property2: randGen2,
+//  [
+//      (seed1): {property1a: randGen1a(seed1), property1b: randGen1b(seed1), ... }
+//      (seed2): {property2a: randGen2a(seed2), property2b: randGen2b(seed2), ... }
 //      ...
-//  }
+//  ]
 //
-//      where randGen1, randGen2, ... are of signature (seedIntType) => randType
+//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randType
 //      for example, seededRand(0.0)(1.0) would have the appropriate signature 
 //          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //
@@ -211,28 +211,26 @@ const rand_unwrapRandType = randType => randType.value;
 //  {
 //      ...objAnyType,
 //      ...{property1: randType1, property2: randType2, ...},
+//      [TYPE_RANDTYPE_OBJ]: true,
 //      nextSeed
 //  }
-export const rand_genRandTypeObj = (objAnyType) => (objForRand) => (seedIntType) =>
-    // build an object out of entries
-    Object.entries(objForRand).reduce(
-        (accumProp, propGenPair, i) =>
-        ({
-            // object built so far
-            ...accumProp,
+export const rand_genRandTypeObj = (objAnyType) => (...gensForRand) => (seedIntType) =>
+    // build an object by applying each generator function
+    gensForRand.flat(Infinity).reduce((accumObj, thisGenFunc, i) =>
+    ({
+        ...accumObj,
 
-            // the property to assign a randType to
-            // and, the randType assigned to the property, using i to get the appropriate seed
-            [propGenPair[0]]: propGenPair[1](rand_getNextSeed(seedIntType)(i))
-        }),
-        // the initial object to accumulate upon, consisting of objAnyType and 
-        //  the next seed to be used
+        // get randTypes for requested properties by applying generator functions
+        ...thisGenFunc(rand_getNextSeed(seedIntType)(i)),
+
+        // store the proper next seed
+        nextSeed: rand_getNextSeed(seedIntType)(i + 2),
+    }),
+        // start with a template object
         {
             ...objAnyType,
             [TYPE_RANDTYPE_OBJ]: true,
-            nextSeed: rand_getNextSeed(seedIntType)(Object.entries(objForRand).length + 1),
-        }
-    );
+        });
 
 // randType object array random number generator function
 // builds an array of randType objects by generating randType random values for the given props
@@ -240,15 +238,15 @@ export const rand_genRandTypeObj = (objAnyType) => (objForRand) => (seedIntType)
 //  having the most advanced seed
 // takes: 
 //  objAnyType: the object to bundle randTypes into
-//  objForRand: an object with properties and randomType generators, as:
+//  ...gensForRand: an array of functions with properties and randomType generators, as:
 //
-//  {
-//      property1: randGen1,
-//      property2: randGen2,
+//  [
+//      (seed1): {property1a: randGen1a(seed1), property1b: randGen1b(seed1), ... }
+//      (seed2): {property2a: randGen2a(seed2), property2b: randGen2b(seed2), ... }
 //      ...
-//  }
+//  ]
 //
-//      where randGen1, randGen2, ... are of signature (seedIntType) => randType
+//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randType
 //      for example, seededRand(0.0)(1.0) would have the appropriate signature 
 //          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //
@@ -260,7 +258,7 @@ export const rand_genRandTypeObj = (objAnyType) => (objForRand) => (seedIntType)
 //      ...{property1: randType1, property2: randType2, ...},
 //      nextSeed
 //  }
-export const rand_genRandTypeObjArray = (...objArrayAnyType) => (objForRand) => (seedIntType) =>
+export const rand_genRandTypeObjArray = (...objArrayAnyType) => (...gensForRand) => (seedIntType) =>
     // for all objects in the given array...
     objArrayAnyType.flat(Infinity).reduce((accumArray, thisObj) =>
         [
@@ -271,7 +269,7 @@ export const rand_genRandTypeObjArray = (...objArrayAnyType) => (objForRand) => 
             //  being sure to assign the proper starting seed
             rand_genRandTypeObj
                 (thisObj)
-                (objForRand)
+                (gensForRand)
                 ((accumArray.slice(-1)[0] || { nextSeed: seedIntType }).nextSeed),
         ],
         // start with an empty array

@@ -61,6 +61,7 @@ var appStore = storeInit
 appStore = dispatchActions(appStore)
     (
         // add a bunch of food
+        //Array(4) 
         Array(WORLD_NUM_FOOD)
             .fill(getDefaultFoodType())
             .map(
@@ -73,13 +74,13 @@ appStore = dispatchActions(appStore)
             ((_) => true)
 
             // randomize conds: x and y
-            ({
-                x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0),
-                y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0),
-            })
+            (
+                (seed) => ({ x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0)(seed) }),
+                (seed) => ({ y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0)(seed) }),
+            )
 
             // no changes to other conds
-            ({hellome: 'meet the real me'}),
+            ({}),
 
         // change the sim status to running
         action_startSim(),
