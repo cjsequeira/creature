@@ -17,12 +17,12 @@
 // 
 
 // *** Our imports
-import { event_updatePhysType } from './event_creators.js';
+import { event_replacePhysType } from './event_creators.js';
 
 import {
     EVENT_UPDATE_ALL_PHYSTYPES,
-    EVENT_UPDATE_CREATURETYPE,
-    EVENT_UPDATE_PHYSTYPE,
+    EVENT_REPLACE_CREATURETYPE,
+    EVENT_REPLACE_PHYSTYPE,
     WORLD_TOUCH_DISTANCE,
 } from '../const_vals.js';
 
@@ -149,14 +149,14 @@ const isEventUpdateAllPhysTypes = {
     testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_ALL_PHYSTYPES,
 };
 
-const isEventUpdateCreatureType = {
-    name: 'Is event of type EVENT_UPDATE_CREATURETYPE?',
-    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_CREATURETYPE,
+const isEventReplaceCreatureType = {
+    name: 'Is event of type EVENT_REPLACE_CREATURETYPE?',
+    testFunc: (_) => (eventType) => eventType.type === EVENT_REPLACE_CREATURETYPE,
 };
 
-const isEventUpdatePhysType = {
-    name: 'Is event of type EVENT_UPDATE_PHYSTYPE?',
-    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_PHYSTYPE,
+const isEventReplacePhysType = {
+    name: 'Is event of type EVENT_REPLACE_PHYSTYPE?',
+    testFunc: (_) => (eventType) => eventType.type === EVENT_REPLACE_PHYSTYPE,
 };
 
 const isGlucoseNeuroInRange = {
@@ -260,34 +260,6 @@ const leafDoAndApproveWandering = {
     name: 'Doing and approving behavior: wandering!',
     func: (storeType) => (eventType) =>
         [
-            /*
-                        // update creatureType behavior with random nudges to acceleration and heading
-                        (
-                            // apply anonymous function to passed-in accel and heading nudge
-                            (accel) => (hdg_nudge) => action_replacePhysType(
-                                usePhysTypeConds
-                                    (eventType.physType)
-                                    ({
-                                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
-            
-                                        // glucose and neuro impacts are more severe 
-                                        //  with higher accceleration magnitude
-                                        glucose: getPhysTypeCond(eventType.physType)('glucose') -
-                                            (0.3 * Math.abs(accel)) * getSimTimeStep(storeType),
-                                        neuro: getPhysTypeCond(eventType.physType)('neuro') +
-                                            (0.2 * Math.abs(accel)) * getSimTimeStep(storeType),
-            
-                                        heading: getPhysTypeCond(eventType.physType)('heading') + hdg_nudge,
-                                        accel: accel,
-                                    })
-                            )
-                        )
-                            // accel: random with minimum magnitude of 2.0
-                            // heading nudge: small random nudge 
-                            (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))
-                            (mutableRandGen_seededRand(-0.1, 0.1)),
-            */
-
             action_updateSelectPhysTypesRand
                 // find the given physType in the store
                 ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
@@ -395,7 +367,7 @@ const orTestRules = (...testRules) => ({
 
 // *** The rulebook
 const ruleBook = {
-    testNode: isEventUpdateCreatureType,
+    testNode: isEventReplaceCreatureType,
     yes:
     {
         // build an event to update the creatureType per the behavior request below
@@ -406,7 +378,7 @@ const ruleBook = {
         //  or may reject the requested behavior and assign a different behavior,
         //  or may return an action totally unrelated to the creatureType object below!
         preFunc: (_) => (eventType) =>
-            event_updatePhysType(
+            event_replacePhysType(
                 usePhysTypeConds
                     // make an object based on the given physType, with a "behavior_request" prop-obj
                     (eventType.physType)
@@ -455,7 +427,7 @@ const ruleBook = {
         no: leafPreservePhysType,
     },
     no: {
-        testNode: isEventUpdatePhysType,
+        testNode: isEventReplacePhysType,
         yes: {
             testNode: isFoodType,
             yes: {

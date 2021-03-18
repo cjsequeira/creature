@@ -118,7 +118,10 @@ export const simReducer = (inStoreType) => (inActionType) =>
         [ACTION_SIM_INC_SEED]: (storeType) => (actionType) =>
         ({
             ...storeType.sim,
-            seed: rand_getNextSeed(getSimSeed(storeType))(actionType.seedIncIntType - 1),
+            seed:
+                (actionType.seedIncIntType > 0)
+                    ? rand_getNextSeed(getSimSeed(storeType))(actionType.seedIncIntType - 1)
+                    : getSimSeed(storeType)
         }),
 
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>

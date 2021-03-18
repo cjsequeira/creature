@@ -5,8 +5,8 @@
 // *** Our imports
 import {
     EVENT_UPDATE_ALL_PHYSTYPES,
-    EVENT_UPDATE_CREATURETYPE,
-    EVENT_UPDATE_PHYSTYPE
+    EVENT_REPLACE_CREATURETYPE,
+    EVENT_REPLACE_PHYSTYPE
 } from '../const_vals.js';
 
 
@@ -21,24 +21,24 @@ export const event_updateAllPhysTypes = (physTypeStore) =>
     physTypeStore,
 });
 
-// update creatureType of the same ID as the given creatureType
+// replace creatureType of the same ID as the given creatureType
 // takes:
 //  physType
 //  desireFuncType: behaviors with associated desire weights
 // returns eventType
-export const event_updateCreatureType = (physType) => (desireFuncType) =>
+export const event_replaceCreatureType = (physType) => (desireFuncType) =>
 ({
-    type: EVENT_UPDATE_CREATURETYPE,
+    type: EVENT_REPLACE_CREATURETYPE,
     physType,
     desireFuncType,
 });
 
-// update physType of the same ID as the given physType
+// replace physType of the same ID as the given physType
 // takes:
 //  physType
 // returns eventType
-export const event_updatePhysType = (physType) =>
+export const event_replacePhysType = (physType) =>
 ({
-    type: EVENT_UPDATE_PHYSTYPE,
+    type: EVENT_REPLACE_PHYSTYPE,
     physType,
 });

@@ -91,9 +91,9 @@ export const rand_getNextSeed = seedIntType => skipIntType =>
 // takes:
 //  minFloatType: minimum bound of random number range, as float
 //  maxFloatType: maximum bound of random number range, as float
-//  seed: the seed to use
+//  seedIntType: the seed to use
 // returns randType
-export const rand_seededRand = minFloatType => maxFloatType => seedIntType => ({
+export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType) => ({
     [TYPE_RANDTYPE]: true,
 
     value: minFloatType +
@@ -103,6 +103,16 @@ export const rand_seededRand = minFloatType => maxFloatType => seedIntType => ({
     nextSeed: rand_getNextSeed(seedIntType)(1),
 });
 
+// using input rand generator and weights list, generate a random number
+//  to use for weight selection based on the weights list
+// takes:
+//  weightsFloatType: array of weights, as float
+//  seedIntType: the seed to use
+// returns number: numerical index into weights list, as int
+export const rand_seededWeightedRand = (weightsFloatType) => (seedIntType) =>
+    selectWeight
+        (weightsFloatType)
+        (rand_seededRand(0.0)(sum(weightsFloatType))(seedIntType));
 
 // *** randType monad utilities
 // randType monad unit func

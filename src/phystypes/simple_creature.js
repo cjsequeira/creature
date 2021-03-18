@@ -9,7 +9,7 @@ import {
     getSimTimeStep
 } from '../reduxlike/store_getters.js';
 
-import { event_updateCreatureType } from '../rulebook/event_creators.js';
+import { event_replaceCreatureType } from '../rulebook/event_creators.js';
 
 import {
     WORLD_SIZE_X,
@@ -74,7 +74,7 @@ export const actAsSimpleCreature = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actIdling = (storeType) => (physType) =>
-    event_updateCreatureType
+    event_replaceCreatureType
         // pass in physType object with specific glucose, neuro, accel
         (usePhysTypeConds
             (physType)
@@ -100,7 +100,7 @@ const actIdling = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actWandering = (_) => (physType) =>
-    event_updateCreatureType
+    event_replaceCreatureType
         // for 'wandering', the rulebook will assign conditions
         (physType)
         // pass in behavior change desires specific to this behavior function
@@ -121,7 +121,7 @@ const actWandering = (_) => (physType) =>
 //  physType
 // returns physType
 const actEating = (storeType) => (physType) =>
-    event_updateCreatureType
+    event_replaceCreatureType
         // pass in physType object with specific glucose and neuro
         (usePhysTypeConds
             (physType)
@@ -146,7 +146,7 @@ const actEating = (storeType) => (physType) =>
 //  physType
 // returns physType
 const actSleeping = (storeType) => (physType) =>
-    event_updateCreatureType
+    event_replaceCreatureType
         // pass in physType object with specific glucose and neuro
         (usePhysTypeConds
             (physType)

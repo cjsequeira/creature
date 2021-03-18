@@ -3,7 +3,7 @@
 // ****** Simple Creature code ******
 
 // *** Imports
-import { event_updatePhysType } from '../rulebook/event_creators.js';
+import { event_replacePhysType } from '../rulebook/event_creators.js';
 
 import {
     WORLD_SIZE_X,
@@ -36,4 +36,4 @@ export const getDefaultFoodType = (_) =>
 //  storeType
 //  physType
 // returns eventType
-export const actAsFood = (_) => (physType) => event_updatePhysType(physType);
+export const actAsFood = (_) => (physType) => event_replacePhysType(physType);
