@@ -21,7 +21,12 @@ import {
 } from './store_getters.js';
 
 import { splice } from '../utils.js';
-import { rand_genRandTypeObj, rand_unitObj, rand_unwrapRandTypeObj } from '../sim/seeded_rand.js';
+
+import {
+    rand_genRandTypeObj,
+    rand_unitObj,
+    rand_unwrapRandTypeObj,
+} from '../sim/seeded_rand.js';
 
 
 // *** PhysTypeStore reducer 

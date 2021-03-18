@@ -10,22 +10,6 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 
 ## POTENTIAL next features:
 * Implement creature food-finding functionality
-* REFACTOR: Clean up/move all uses of mutableRand so it is obvious which code relies on "random" numbers and which does not
-* * Explore how random numbers propagate through the code - e.g. just like probability concept of "random variables"
-* * Remove/move to all uses of random in reducers? "Random" suggests side effects/state changes!
-* * Monadic something-or-other: wrap a function in another function that returns {function output, updated seed}, then use another function to separate the output from the seed and save the seed in the store
-* * Could make an action_applyRandom function that generates two actions: one action that does the random thing and gets an updated seed (or seed increment?), and a second action to save the updated seed in the store
-
-For example:
-
-    // actionGenerator: action generator of signature (arg0) => (arg1) => ... => (argN) => actionType
-    // ...randGenerators: random num generators of array length N+1, signature (nth seed) => float
-    
-    action_applyRandom = (actionGenerator) => (...randGenerators) => ([
-        randGenerators.reduce((fArgs, thisGen, i) => fArgs(thisGen(i)), actionGenerator),
-        action_incrementSeed(randGenerators.length), 
-    ])
-
 * REFACTOR: Revise use of ChartJS data so that data sets are kept separate from ChartJS chart objects - challenge is rebuild/reassignment of app store during action dispatching. May require not storing chart object references in app store??? Or, make sure chart is always pointed to the chart data object during reducer execution???
 
 ## Changelog:

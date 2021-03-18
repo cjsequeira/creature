@@ -4,6 +4,17 @@
 
 // *** Our imports
 import {
+    getPhysTypeStore,
+    getPhysTypeCond,
+    getSimCurTime,
+    getSimRunning,
+    getSimTimeStep,
+    getPhysTypeAct,
+    getPhysTypeCondsObj,
+    getSimSeed
+} from './store_getters.js';
+
+import {
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
@@ -15,18 +26,12 @@ import {
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
-import { rand_genRandTypeObj, rand_genRandTypeObjArray, rand_getNextSeed, rand_unitObj } from '../sim/seeded_rand.js';
 
 import {
-    getPhysTypeStore,
-    getPhysTypeCond,
-    getSimCurTime,
-    getSimRunning,
-    getSimTimeStep,
-    getPhysTypeAct,
-    getPhysTypeCondsObj,
-    getSimSeed
-} from './store_getters.js';
+    rand_genRandTypeObj,
+    rand_getNextSeed,
+    rand_unitObj,
+} from '../sim/seeded_rand.js';
 
 
 // *** Sim reducer 
@@ -62,6 +67,7 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     : getSimRunning(storeType),
         }),
 
+        // REFACTOR for efficiency
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
         ({
             ...storeType.sim,

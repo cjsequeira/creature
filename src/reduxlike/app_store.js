@@ -13,10 +13,6 @@ import {
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
-import {
-    mutableRandGen_initRandGen,
-} from '../sim/seeded_rand.js';
-
 
 // *** Initial app store
 const initial_store = {
@@ -35,10 +31,6 @@ const initial_store = {
         savedClock: 0.0,
 
         // initial random number generator seed
-        // REFACTOR to simply, "seed"
-        //initSeed: mutableRandGen_initRandGen(Date.now()),
-        initSeed: mutableRandGen_initRandGen(0),
-
         seed: 0,
     },
 

@@ -1,12 +1,10 @@
 'use strict'
 
-import { TYPE_RANDTYPE, TYPE_RANDTYPE_OBJ } from '../const_vals.js';
-// ****** Pseudo-random number generator ******
-// THIS IS THE ONLY PART OF THE APPLICATION THAT CONTAINS ITS OWN SEPARATE MUTABLE STATE!
-// REFACTOR: Mutable random number generator system must be part of the app store,
-// or will not be able to save/undo app store and repeat the same behavior!
+// ****** Immutable pseudo-random number functions ******
 
 // *** Our imports
+import { TYPE_RANDTYPE, TYPE_RANDTYPE_OBJ } from '../const_vals.js';
+
 import {
     compose,
     selectWeight,
@@ -14,68 +12,13 @@ import {
 } from '../utils.js';
 
 
-// *** Our random number generator state, defined with 0 seed
-let randGen = {
-    seed: 0,
-}
-
-
-// *** Mutable random number utils
-// init random number generator
-// MUTABLE: Mutates randGen
-// takes: 
-//  initSeedIntType: numerical seed, as int
-// returns the given seed
-export function mutableRandGen_initRandGen(initSeedIntType) {
-    // MUTABLE: Store given seed in random number generator
-    randGen.seed = initSeedIntType;
-
-    return initSeedIntType;
-};
-
-// get seeded random number
-// MUTABLE: Mutates randGen
-// reference: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
-// takes:
-//  minFloatType: minimum bound of random number range, as float
-//  maxFloatType: maximum bound of random number range, as float
-// returns number, as float
-export function mutableRandGen_seededRand(minFloatType, maxFloatType) {
-    // calculate random value using current seed
-    const value = minFloatType +
-        ((randGen.seed * 9301 + 49297) % 233280) /
-        233280 * (maxFloatType - minFloatType);
-
-    // MUTABLE: generate new seed and save in random generator mutable state
-    randGen.seed = (randGen.seed * 9301 + 49297) % 233280;
-
-    // return calculated random value
-    return value;
-};
-
-// using input rand generator and weights list, generate a random number
-//  to use for weight selection based on the weights list
-// MUTABLE: Mutates randGen
-// takes:
-//  weightsFloatType: array of weights, as float
-// returns number: numerical index into weights list, as int
-export const mutableRandGen_seededWeightedRand = (weightsFloatType) =>
-    selectWeight
-        (weightsFloatType)
-        (mutableRandGen_seededRand(0, sum(weightsFloatType)));
-
-
-
-
-
-
-// *** randType immutable random number utilities
+// *** randType immutable random number generation utilities
 // given an input seed, get a future seed
 // takes:
 //  seedIntType: numerical input seed, as int
 //  incIntType: number of seeds to skip
 // returns the future seed
-export const rand_getNextSeed = seedIntType => skipIntType =>
+export const rand_getNextSeed = (seedIntType) => (skipIntType) =>
     // skip one or more seeds?
     (skipIntType > 0)
         // yes: get the next seed, apply this function to it, decrement applications remaining
@@ -85,7 +28,6 @@ export const rand_getNextSeed = seedIntType => skipIntType =>
 
         // no: return the seed to use
         : (seedIntType * 9301 + 49297) % 233280;
-
 
 // get seeded random number
 // takes:
@@ -129,7 +71,8 @@ export const rand_chooseWeight = (weightsFloatType) => (seedIntType) =>
 //  valAnyType: the value to wrap into randType
 // returns: randType with 0 seed
 // total signature: (any) => randType
-export const rand_unit = valAnyType => ({
+export const rand_unit = (valAnyType) =>
+({
     [TYPE_RANDTYPE]: true,
     value: valAnyType,
     nextSeed: 0,
@@ -141,7 +84,8 @@ export const rand_unit = valAnyType => ({
 // returns function with signature (randType) => randType
 // total signature: (any => randType) => (randType => randType)
 export const rand_bind = func =>
-    randType => ({
+    randType =>
+    ({
         ...func(randType.value),
         nextSeed: randType.nextSeed,
     });
@@ -166,6 +110,7 @@ export const rand_bind = func =>
 //      ...{property1: randType1, property2: randType2, ...},
 //      nextSeed
 //  }
+// REFACTOR: Do we need to pass in seedIntType? DO we need rand_unitObj at all??
 export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
     // build an object out of entries
     Object.entries(objForRand).reduce(
@@ -182,7 +127,6 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
                 ...rand_unit(propValPair[1]),
                 nextSeed: rand_getNextSeed(seedIntType)(i),
             }
-
         }),
         // the initial object to accumulate upon, consisting of objAnyType and 
         //  the next seed to be used

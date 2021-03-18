@@ -61,11 +61,8 @@ import {
 import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
-    mutableRandGen_seededWeightedRand,
-    rand_bind,
     rand_chooseWeight,
     rand_getNextSeed,
-    rand_lift,
     rand_seededRand,
     rand_unit,
     rand_unwrapRandType,
@@ -431,7 +428,10 @@ const recursive_leafUpdateAllPhysTypes = {
                         })
                         (ruleBook)
                         .nextSeed,
-            }), rand_unit([])
+            }),
+
+            // start with a unit randType with an array value
+            rand_unit([])
         ),
 };
 
