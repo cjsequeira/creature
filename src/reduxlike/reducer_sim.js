@@ -70,38 +70,33 @@ export const simReducer = (inStoreType) => (inActionType) =>
                 (getPhysTypeStore(storeType))
                     // yes: generate a randTypeObj version of the physTypeStore
                     ? getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
-                        [
-                            ...accumRandTypeObj,
-
-                            // does this physType pass the filter function?
-                            (actionType.filterFunc(thisPt))
-                                // yes: create randTypeObj using given randType generators
-                                ? rand_genRandTypeObj
-                                    (getPhysTypeCondsObj(thisPt))
-                                    (actionType.gensForRand)
+                        // does this physType pass the filter function?
+                        (actionType.filterFunc(thisPt))
+                            // yes: create randTypeObj using given randType generators
+                            ? rand_genRandTypeObj
+                                (getPhysTypeCondsObj(thisPt))
+                                (actionType.gensForRand)
+                                (
                                     (
-                                        (
-                                            accumRandTypeObj.slice(-1)[0] ||
-                                            { nextSeed: getSimSeed(storeType) }
-                                        ).nextSeed
-                                    )
+                                        accumRandTypeObj || { nextSeed: getSimSeed(storeType) }
+                                    ).nextSeed
+                                )
 
-                                // no: convert the physType into a unit randTypeObj as is
-                                : rand_unitObj
-                                    (getPhysTypeCondsObj(thisPt))
-                                    ({})
+                            // no: convert the physType into a unit randTypeObj as is
+                            : rand_unitObj
+                                (getPhysTypeCondsObj(thisPt))
+                                ({})
+                                (
                                     (
-                                        (
-                                            accumRandTypeObj.slice(-1)[0] ||
-                                            { nextSeed: getSimSeed(storeType) }
-                                        ).nextSeed
-                                    )
+                                        accumRandTypeObj || { nextSeed: getSimSeed(storeType) }
+                                    ).nextSeed
+                                )
 
-                            // start with an empty array
-                        ], [])
+                        // start with nothing
+                        , null)
 
                         // grab the last seed
-                        .slice(-1)[0].nextSeed
+                        .nextSeed
 
                     // no: keep the seed the same
                     : getSimSeed(storeType)
