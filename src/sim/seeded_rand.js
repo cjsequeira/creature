@@ -103,13 +103,12 @@ export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType)
     nextSeed: rand_getNextSeed(seedIntType)(1),
 });
 
-// using input rand generator and weights list, generate a random number
-//  to use for weight selection based on the weights list
+// generate a random index into a weights list
 // takes:
 //  weightsFloatType: array of weights, as float
 //  seedIntType: the seed to use
 // returns number: numerical index into weights list, as int
-export const rand_seededWeightedRand = (weightsFloatType) => (seedIntType) =>
+export const rand_chooseWeight = (weightsFloatType) => (seedIntType) =>
     selectWeight
         (weightsFloatType)
         (rand_seededRand(0.0)(sum(weightsFloatType))(seedIntType));

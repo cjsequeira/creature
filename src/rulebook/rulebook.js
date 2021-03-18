@@ -377,6 +377,8 @@ const ruleBook = {
         // the rulebook may assign the requested behavior, 
         //  or may reject the requested behavior and assign a different behavior,
         //  or may return an action totally unrelated to the creatureType object below!
+
+        // REFACTOR to remove mutable rand!!
         preFunc: (_) => (eventType) =>
             event_replacePhysType(
                 usePhysTypeConds
