@@ -15,6 +15,8 @@
 //      In other words, we could still have button clicks dispatch events directly rather
 //      than going through the rulebook.
 // 
+// RANDTYPE MONAD: The rulebook's findRule function operates within the randType monad!!!
+//
 
 // *** Our imports
 import { event_replacePhysType } from './event_creators.js';
@@ -39,6 +41,7 @@ import {
     action_doNothing,
     action_deletePhysType,
     action_updateSelectPhysTypesRand,
+    action_setSimSeed,
 } from '../reduxlike/action_creators.js';
 
 import {
@@ -55,8 +58,9 @@ import {
 import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
-    mutableRandGen_seededRand,
     mutableRandGen_seededWeightedRand,
+    rand_bind,
+    rand_lift,
     rand_seededRand,
     rand_unit,
     rand_unwrapRandType,
@@ -79,27 +83,31 @@ const behaviorStrings = {
 // *** Rulebook test nodes
 const isBehaviorRequestIdling = {
     name: 'Requesting behavior: idling?',
-    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'idling',
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeCond(rand_eventType.value.physType)('behavior_request') === 'idling',
 };
 
 const isBehaviorRequestSleeping = {
     name: 'Requested behavior: sleeping?',
-    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'sleeping',
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeCond(rand_eventType.value.physType)('behavior_request') === 'sleeping',
 };
 
 const isBehaviorRequestWandering = {
     name: 'Requesting behavior: wandering?',
-    testFunc: (_) => (eventType) => getPhysTypeCond(eventType.physType)('behavior_request') === 'wandering',
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeCond(rand_eventType.value.physType)('behavior_request') === 'wandering',
 };
 
 const isFoodType = {
     name: 'Is foodType?',
-    testFunc: (_) => (eventType) => getPhysTypeAct(eventType.physType) === actAsFood,
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeAct(rand_eventType.value.physType) === actAsFood,
 };
 
 const isFoodTouchedByCreature = {
     name: 'Is this food being touched by creature?',
-    testFunc: (storeType) => (eventType) =>
+    testFunc: (storeType) => (rand_eventType) =>
         // get physType store
         getPhysTypeStore(storeType)
             // keep only simple creatures
@@ -109,8 +117,10 @@ const isFoodTouchedByCreature = {
 
             // keep only creatures closer than a given distance from this foodType
             .filter((ptToTest2) => Math.sqrt(
-                Math.pow(getPhysTypeCond(ptToTest2)('x') - getPhysTypeCond(eventType.physType)('x'), 2.0) +
-                Math.pow(getPhysTypeCond(ptToTest2)('y') - getPhysTypeCond(eventType.physType)('y'), 2.0)
+                Math.pow(getPhysTypeCond(ptToTest2)('x') -
+                    getPhysTypeCond(rand_eventType.value.physType)('x'), 2.0) +
+                Math.pow(getPhysTypeCond(ptToTest2)('y') -
+                    getPhysTypeCond(rand_eventType.value.physType)('y'), 2.0)
             ) < WORLD_TOUCH_DISTANCE)
 
             // any creatures remaining closer than a given distance?
@@ -119,14 +129,15 @@ const isFoodTouchedByCreature = {
 
 const isSimpleCreature = {
     name: 'Is creatureType?',
-    testFunc: (_) => (eventType) => getPhysTypeAct(eventType.physType) === actAsSimpleCreature,
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeAct(rand_eventType.value.physType) === actAsSimpleCreature,
 };
 
 // REFACTOR IDEA: Create an event where the food being touched by the creature can be tagged in, for efficiencies
 // GOAL: Avoid scanning food to see what's being eaten - just send the specific food objects
 const isCreatureTouchingFood = {
     name: 'Is this creature touching food?',
-    testFunc: (storeType) => (eventType) =>
+    testFunc: (storeType) => (rand_eventType) =>
         // get physType store
         getPhysTypeStore(storeType)
             // keep only food
@@ -136,8 +147,10 @@ const isCreatureTouchingFood = {
 
             // keep only food closer than a given distance from this creatureType
             .filter((ptToTest2) => Math.sqrt(
-                Math.pow(getPhysTypeCond(ptToTest2)('x') - getPhysTypeCond(eventType.physType)('x'), 2.0) +
-                Math.pow(getPhysTypeCond(ptToTest2)('y') - getPhysTypeCond(eventType.physType)('y'), 2.0)
+                Math.pow(getPhysTypeCond(ptToTest2)('x') -
+                    getPhysTypeCond(rand_eventType.value.physType)('x'), 2.0) +
+                Math.pow(getPhysTypeCond(ptToTest2)('y') -
+                    getPhysTypeCond(rand_eventType.value.physType)('y'), 2.0)
             ) < WORLD_TOUCH_DISTANCE)
 
             // any food remaining closer than a given distance?
@@ -146,59 +159,62 @@ const isCreatureTouchingFood = {
 
 const isEventUpdateAllPhysTypes = {
     name: 'Is event of type EVENT_UPDATE_ALL_PHYSTYPES?',
-    testFunc: (_) => (eventType) => eventType.type === EVENT_UPDATE_ALL_PHYSTYPES,
+    testFunc: (_) => (rand_eventType) => rand_eventType.value.type === EVENT_UPDATE_ALL_PHYSTYPES,
 };
 
 const isEventReplaceCreatureType = {
     name: 'Is event of type EVENT_REPLACE_CREATURETYPE?',
-    testFunc: (_) => (eventType) => eventType.type === EVENT_REPLACE_CREATURETYPE,
+    testFunc: (_) => (rand_eventType) => rand_eventType.value.type === EVENT_REPLACE_CREATURETYPE,
 };
 
 const isEventReplacePhysType = {
     name: 'Is event of type EVENT_REPLACE_PHYSTYPE?',
-    testFunc: (_) => (eventType) => eventType.type === EVENT_REPLACE_PHYSTYPE,
+    testFunc: (_) => (rand_eventType) => rand_eventType.value.type === EVENT_REPLACE_PHYSTYPE,
 };
 
 const isGlucoseNeuroInRange = {
     name: 'Glucose and neuro in range?',
-    testFunc: (_) => (eventType) =>
-        (getPhysTypeCond(eventType.physType)('glucose') > 0.0) &&
-        (getPhysTypeCond(eventType.physType)('neuro') < 100.0),
+    testFunc: (_) => (rand_eventType) =>
+        (getPhysTypeCond(rand_eventType.value.physType)('glucose') > 0.0) &&
+        (getPhysTypeCond(rand_eventType.value.physType)('neuro') < 100.0),
 };
 
 
 // *** Rulebook leaf nodes
 const leafApproveBehavior = {
     name: 'Behavior request approved',
-    func: (_) => (eventType) =>
+    func: (_) => (rand_eventType) =>
         [
             // update physType behavior
             action_replacePhysType(
                 usePhysTypeConds
-                    (eventType.physType)
+                    (rand_eventType.value.physType)
                     ({
-                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                        behavior: getPhysTypeCond(rand_eventType.value.physType)('behavior_request'),
                     })
             ),
 
             // announce behavior IF behavior has just changed
-            (getPhysTypeCond(eventType.physType)('behavior') !==
-                getPhysTypeCond(eventType.physType)('behavior_request'))
-                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
+            (getPhysTypeCond(rand_eventType.value.physType)('behavior') !==
+                getPhysTypeCond(rand_eventType.value.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(rand_eventType.value.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(rand_eventType.value.physType)('behavior_request')])
                 : action_doNothing(),
+
+            // update the system seed
+            action_setSimSeed(rand_eventType.nextSeed),
         ]
 };
 
 const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
-    func: (_) => (eventType) =>
+    func: (_) => (rand_eventType) =>
         [
             action_replacePhysType(
                 usePhysTypeConds
-                    (eventType.physType)
+                    (rand_eventType.value.physType)
                     ({
-                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                        behavior: getPhysTypeCond(rand_eventType.value.physType)('behavior_request'),
 
                         speed: 0.0,
                         accel: 0.0
@@ -206,41 +222,49 @@ const leafApproveBehaviorStopMovement = {
             ),
 
             // announce behavior IF behavior has just changed
-            (getPhysTypeCond(eventType.physType)('behavior') !==
-                getPhysTypeCond(eventType.physType)('behavior_request'))
-                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
+            (getPhysTypeCond(rand_eventType.value.physType)('behavior') !==
+                getPhysTypeCond(rand_eventType.value.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(rand_eventType.value.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(rand_eventType.value.physType)('behavior_request')])
                 : action_doNothing(),
+
+            // update the system seed
+            action_setSimSeed(rand_eventType.nextSeed),
         ]
 };
 
 const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
-    func: (_) => (eventType) =>
+    func: (_) => (rand_eventType) =>
         [
+            // make an announcement
             action_addJournalEntry(
-                getPhysTypeName(eventType.physType) +
+                getPhysTypeName(rand_eventType.value.physType) +
                 ' conditions out of limits!!'
             ),
 
+            // change behavior to frozen
             action_replacePhysType(
                 usePhysTypeConds
-                    (eventType.physType)
+                    (rand_eventType.value.physType)
                     ({
                         behavior: 'frozen',
                     })
             ),
+
+            // update the system seed
+            action_setSimSeed(rand_eventType.nextSeed),
         ]
 };
 
 const leafCreatureEatFood = {
     name: 'Creature touched food! ',
-    func: (_) => (eventType) =>
+    func: (_) => (rand_eventType) =>
         [
             // announce glorious news in journal IF not already eating
-            (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
+            (getPhysTypeCond(rand_eventType.value.physType)('behavior') !== 'eating')
                 ? action_addJournalEntry(
-                    getPhysTypeName(eventType.physType) +
+                    getPhysTypeName(rand_eventType.value.physType) +
                     ' FOUND FOOD!!'
                 )
                 : action_doNothing(),
@@ -248,43 +272,46 @@ const leafCreatureEatFood = {
             // switch creatureType behavior to 'eating'
             action_replacePhysType(
                 usePhysTypeConds
-                    (eventType.physType)
+                    (rand_eventType.value.physType)
                     ({
                         behavior: 'eating',
                     })
             ),
+
+            // update the system seed
+            action_setSimSeed(rand_eventType.nextSeed),
         ],
 };
 
 const leafDoAndApproveWandering = {
     name: 'Doing and approving behavior: wandering!',
-    func: (storeType) => (eventType) =>
+    func: (storeType) => (rand_eventType) =>
         [
             action_updateSelectPhysTypesRand
                 // find the given physType in the store
-                ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
+                ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(rand_eventType.value.physType))
 
                 // conds to update
                 (
                     // be sure to include conds that will not be randomized
-                    (_) => getPhysTypeCondsObj(eventType.physType),
+                    (_) => getPhysTypeCondsObj(rand_eventType.value.physType),
 
                     // conds driven by randomized acceleration
                     (seed1) => {
                         return (
                             (randNum) =>
                             ({
-                                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                                behavior: getPhysTypeCond(rand_eventType.value.physType)('behavior_request'),
 
                                 // glucose and neuro impacts are more severe 
                                 //  with higher accceleration magnitude
                                 glucose:
-                                    getPhysTypeCond(eventType.physType)('glucose') -
+                                    getPhysTypeCond(rand_eventType.value.physType)('glucose') -
                                     0.3 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
                                 neuro:
-                                    getPhysTypeCond(eventType.physType)('neuro') +
+                                    getPhysTypeCond(rand_eventType.value.physType)('neuro') +
                                     0.2 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
@@ -300,36 +327,54 @@ const leafDoAndApproveWandering = {
                     // conds driven by randomized heading nudge
                     (seed2) =>
                     ({
-                        heading: getPhysTypeCond(eventType.physType)('heading') +
+                        heading: getPhysTypeCond(rand_eventType.value.physType)('heading') +
                             rand_unwrapRandType(rand_seededRand(-0.1)(0.1)(seed2))
                     })
                 ),
 
             // announce behavior IF behavior has just changed
-            (getPhysTypeCond(eventType.physType)('behavior') !==
-                getPhysTypeCond(eventType.physType)('behavior_request'))
-                ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
+            (getPhysTypeCond(rand_eventType.value.physType)('behavior') !==
+                getPhysTypeCond(rand_eventType.value.physType)('behavior_request'))
+                ? action_addJournalEntry(getPhysTypeName(rand_eventType.value.physType) +
+                    ' ' + behaviorStrings[getPhysTypeCond(rand_eventType.value.physType)('behavior_request')])
                 : action_doNothing(),
+
+            // update system seed
+            action_setSimSeed(rand_eventType.nextSeed),
         ]
 };
 
 const leafPreservePhysType = {
     name: 'Preserve given physType',
-    func: (_) => (eventType) => action_replacePhysType(eventType.physType),
+    func: (_) => (rand_eventType) =>
+        [
+            // replace the physType with the given physType
+            action_replacePhysType(rand_eventType.value.physType),
+
+            // update system seed
+            action_setSimSeed(rand_eventType.nextSeed),
+        ]
 };
 
 const leafRemoveFood = {
     name: 'Remove food',
-    func: (_) => (eventType) =>
-        action_deletePhysType(
-            getPhysTypeID(eventType.physType)
-        ),
+    func: (_) => (rand_eventType) =>
+        [
+            // delete the given physType
+            action_deletePhysType(
+                getPhysTypeID(rand_eventType.value.physType)
+            ),
+
+            // update system seed
+            action_setSimSeed(rand_eventType.nextSeed),
+        ]
 };
 
 const leafUnknownEvent = {
     name: 'Unknown event!',
-    func: (_) => (_) => action_doNothing(),
+    func: (_) => (rand_eventType) =>
+        // do nothing except update system seed
+        action_setSimSeed(rand_eventType.nextSeed)
 };
 
 const recursive_leafUpdateAllPhysTypes = {
@@ -338,7 +383,7 @@ const recursive_leafUpdateAllPhysTypes = {
         // action to update all physTypes "atomically," meaning we use the same 
         //  given storeType for each physType update process, which means that the order
         //  of update doesn't matter - one physType cannot react to another physType just updated.
-        // function signature is (physTypeStore) => actionType
+        // total signature of line below is (physTypeStore) => actionType or [actionType]
         getPhysTypeStore(storeType).map((thisPhysType) =>
             // consult the rulebook using the eventType generated by physType "act"
             // the rulebook returns an actionType
@@ -354,7 +399,7 @@ const recursive_leafUpdateAllPhysTypes = {
 // takes:
 //  ...testRules: array of rulebook test nodes
 // returns object with testFunc property as: function combining test nodes with logical "or"
-// the testFunc signature is (storeType) => (eventType) => bool
+// the expected testFunc signature is (storeType) => (rand_eventType) => bool
 const orTestRules = (...testRules) => ({
     name: 'orTestRules',
     testFunc: (storeType) => orTests(
@@ -379,26 +424,34 @@ const ruleBook = {
         //  or may return an action totally unrelated to the creatureType object below!
 
         // REFACTOR to remove mutable rand!!
-        // IDEA: Retool rulebook to indicate what creature is ALLOWED to do as a SUBSELECT of
-        //  desired behaviors - then have
-        //  store reducer select actual behavior based on random draw of ALLOWABLE behaviors
-        //  If creature is not interested in ALLOWED behaviors, then creature behavior won't change!
-        preFunc: (_) => (eventType) =>
-            event_replacePhysType(
-                usePhysTypeConds
-                    // make an object based on the given physType, with a "behavior_request" prop-obj
-                    (eventType.physType)
-                    ({
-                        behavior_request:
-                            // select behavior request from list of given desire funcs using 
-                            // a weighted random number selector
-                            Object.keys(eventType.desireFuncType)[mutableRandGen_seededWeightedRand(
-                                // the code below maps each desire function to a numerical weight
-                                //  by evaluating it using the given physType
-                                Object.values(eventType.desireFuncType).map(f => f(eventType.physType))
-                            )]
-                    })
-            ),
+        // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
+        preFunc: (_) => (rand_eventType) =>
+        ({
+            // eventType
+            value:
+                // signature (physType) => eventType
+                event_replacePhysType
+
+                    // physType arg for event_replacePhysType
+                    (
+                        // signature: (physType) => (conds) => physType
+                        usePhysTypeConds
+                            // make an object based on the given physType, with a "behavior_request" prop-obj
+                            (rand_eventType.value.physType)
+                            ({
+                                behavior_request:
+                                    // select behavior request from list of given desire funcs using 
+                                    // a weighted random number selector
+                                    Object.keys(rand_eventType.value.desireFuncType)[mutableRandGen_seededWeightedRand(
+                                        // the code below maps each desire function to a numerical weight
+                                        //  by evaluating it using the given physType
+                                        Object.values(rand_eventType.value.desireFuncType).map(f => f(rand_eventType.value.physType))
+                                    )]
+                            })
+                    ),
+
+            nextSeed: rand_eventType.nextSeed,
+        }),
 
         testNode: isSimpleCreature,
         yes: {
@@ -406,10 +459,17 @@ const ruleBook = {
             yes: {
                 // produce event containing physType with laws of physics applied
                 // the function application below INCLUDES wall collision testing!
-                preFunc: (storeType) => (eventType) =>
+                // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
+                preFunc: (storeType) => (rand_eventType) =>
                 ({
-                    ...eventType,
-                    physType: physTypeDoPhysics(storeType)(eventType.physType),
+                    // eventType
+                    value:
+                        ({
+                            ...rand_eventType.value,
+                            physType: physTypeDoPhysics(storeType)(rand_eventType.value.physType),
+                        }),
+
+                    nextSeed: rand_eventType.nextSeed,
                 }),
 
                 testNode: isCreatureTouchingFood,
@@ -460,32 +520,41 @@ const ruleBook = {
 //  storeType
 //  eventType
 // returns actionType or [actionType]
-export const resolveRules = (storeType) => (eventType) => findRule(storeType)(eventType)(ruleBook);
+export const resolveRules = (storeType) => (eventType) =>
+    // wrap the given eventType in a randType to create a rand_eventType
+    // then jump into the randType monad
+    rand_findRule(storeType)(rand_unit(eventType))(ruleBook);
 
 // recursive rulebook node finder
+// MONAD: operates within the randType monad
 // assumes a rule exists in the rulebook for every possible physType
 // takes:
-//  eventType
+//  rand_eventType: an eventType wrapped in a randType
 //  node: the rule node to use
 // returns actionType or [actionType], as determined by rulebook application
-const findRule = (storeType) => (eventType) => (node) => {
+const rand_findRule = (storeType) => (rand_eventType) => (node) => {
     // is pre-function undefined? 
-    //  if yes, apply (x => x) to eventType
-    //  if no, apply pre-function to eventType
-    const eventType_to_use = (node.preFunc || (_ => x => x))(storeType)(eventType)
+    //  if yes, apply (_ => x => x) to rand_eventType
+    //  if no, apply pre-function to rand_eventType
+    // expected pre-function signature: (storeType) => (rand_eventType) => rand_eventType
+    const rand_eventType_to_use = (node.preFunc || (_ => x => x))(storeType)(rand_eventType)
 
     // is test node undefined?
     return (node.testNode === undefined)
-        // yes: we assume the given node is a leaf node with a rule to apply
-        // so, return the physType with the rule applied
-        ? node.func(storeType)(eventType_to_use)
+        // yes: we assume the given node is a leaf node with a function to apply
+        // we apply the function "func" to return an actionType or [actionType]
+        // expected func signature: (storeType) => (rand_eventType) => actionType or [actionType]
+        // REFACTOR MONAD: to make a node.func unwrapper that gives the proper action_setSimSeed!!!
+        //  This will reduce boilerplate code in all leaf nodes!
+        ? node.func(storeType)(rand_eventType_to_use)
 
         // no: we assume the given node is a test node with a test function
-        // so, apply the given node's test func to the eventType
-        : (node.testNode.testFunc(storeType)(eventType_to_use))
+        // so, apply the given node's test function "testFunc" to the eventType
+        // expected testFunc signature: (storeType) => (rand_eventType) => bool
+        : (node.testNode.testFunc(storeType)(rand_eventType_to_use))
             // test func returned true? follow node.yes
-            ? findRule(storeType)(eventType_to_use)(node.yes)
+            ? rand_findRule(storeType)(rand_eventType_to_use)(node.yes)
 
             // test func returned false? follow node.no
-            : findRule(storeType)(eventType_to_use)(node.no)
+            : rand_findRule(storeType)(rand_eventType_to_use)(node.no)
 };
