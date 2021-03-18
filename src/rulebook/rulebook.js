@@ -34,7 +34,7 @@ import {
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
-    action_updatePhysType,
+    action_replacePhysType,
     action_addJournalEntry,
     action_doNothing,
     action_deletePhysType,
@@ -44,6 +44,7 @@ import {
 import {
     getPhysTypeAct,
     getPhysTypeCond,
+    getPhysTypeCondsObj,
     getPhysTypeID,
     getPhysTypeName,
     getPhysTypeStore,
@@ -58,6 +59,7 @@ import {
     mutableRandGen_seededWeightedRand,
     rand_seededRand,
     rand_unit,
+    rand_unwrapRandType,
 } from '../sim/seeded_rand.js';
 
 import { actAsFood } from '../phystypes/food_type.js';
@@ -171,7 +173,7 @@ const leafApproveBehavior = {
     func: (_) => (eventType) =>
         [
             // update physType behavior
-            action_updatePhysType(
+            action_replacePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -183,7 +185,7 @@ const leafApproveBehavior = {
             (getPhysTypeCond(eventType.physType)('behavior') !==
                 getPhysTypeCond(eventType.physType)('behavior_request'))
                 ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                 : action_doNothing(),
         ]
 };
@@ -192,7 +194,7 @@ const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
     func: (_) => (eventType) =>
         [
-            action_updatePhysType(
+            action_replacePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -207,7 +209,7 @@ const leafApproveBehaviorStopMovement = {
             (getPhysTypeCond(eventType.physType)('behavior') !==
                 getPhysTypeCond(eventType.physType)('behavior_request'))
                 ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                 : action_doNothing(),
         ]
 };
@@ -221,10 +223,7 @@ const leafCondsOOL = {
                 ' conditions out of limits!!'
             ),
 
-            action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')]),
-
-            action_updatePhysType(
+            action_replacePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -247,7 +246,7 @@ const leafCreatureEatFood = {
                 : action_doNothing(),
 
             // switch creatureType behavior to 'eating'
-            action_updatePhysType(
+            action_replacePhysType(
                 usePhysTypeConds
                     (eventType.physType)
                     ({
@@ -261,57 +260,91 @@ const leafDoAndApproveWandering = {
     name: 'Doing and approving behavior: wandering!',
     func: (storeType) => (eventType) =>
         [
-
-            // update creatureType behavior with random nudges to acceleration and heading
-            (
-                // apply anonymous function to passed-in accel and heading nudge
-                (accel) => (hdg_nudge) => action_updatePhysType(
-                    usePhysTypeConds
-                        (eventType.physType)
-                        ({
-                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
-
-                            // glucose and neuro impacts are more severe 
-                            //  with higher accceleration magnitude
-                            glucose: getPhysTypeCond(eventType.physType)('glucose') -
-                                (0.3 * Math.abs(accel)) * getSimTimeStep(storeType),
-                            neuro: getPhysTypeCond(eventType.physType)('neuro') +
-                                (0.2 * Math.abs(accel)) * getSimTimeStep(storeType),
-
-                            heading: getPhysTypeCond(eventType.physType)('heading') + hdg_nudge,
-                            accel: accel,
-                        })
-                )
-            )
-                // accel: random with minimum magnitude of 2.0
-                // heading nudge: small random nudge 
-                (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))
-                (mutableRandGen_seededRand(-0.1, 0.1)),
-
-
             /*
-        action_updateSelectPhysTypesRand
-            // find the given physType in the store
-            ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
-
-            // conds to update
-            (
-
-            ),
+                        // update creatureType behavior with random nudges to acceleration and heading
+                        (
+                            // apply anonymous function to passed-in accel and heading nudge
+                            (accel) => (hdg_nudge) => action_replacePhysType(
+                                usePhysTypeConds
+                                    (eventType.physType)
+                                    ({
+                                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+            
+                                        // glucose and neuro impacts are more severe 
+                                        //  with higher accceleration magnitude
+                                        glucose: getPhysTypeCond(eventType.physType)('glucose') -
+                                            (0.3 * Math.abs(accel)) * getSimTimeStep(storeType),
+                                        neuro: getPhysTypeCond(eventType.physType)('neuro') +
+                                            (0.2 * Math.abs(accel)) * getSimTimeStep(storeType),
+            
+                                        heading: getPhysTypeCond(eventType.physType)('heading') + hdg_nudge,
+                                        accel: accel,
+                                    })
+                            )
+                        )
+                            // accel: random with minimum magnitude of 2.0
+                            // heading nudge: small random nudge 
+                            (excludeRange(2.0)(mutableRandGen_seededRand(-4.0, 15.0)))
+                            (mutableRandGen_seededRand(-0.1, 0.1)),
             */
+
+            action_updateSelectPhysTypesRand
+                // find the given physType in the store
+                ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
+
+                // conds to update
+                (
+                    // be sure to include conds that will not be randomized
+                    (_) => getPhysTypeCondsObj(eventType.physType),
+
+                    // conds driven by randomized acceleration
+                    (seed1) => {
+                        return (
+                            (randNum) =>
+                            ({
+                                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+
+                                // glucose and neuro impacts are more severe 
+                                //  with higher accceleration magnitude
+                                glucose:
+                                    getPhysTypeCond(eventType.physType)('glucose') -
+                                    0.3 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
+
+                                neuro:
+                                    getPhysTypeCond(eventType.physType)('neuro') +
+                                    0.2 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
+
+                                accel: randNum,
+                            })
+                        )
+                            (excludeRange
+                                (2.0)
+                                (rand_unwrapRandType(rand_seededRand(-4.0)(15.0)(seed1)))
+                            )
+                    },
+
+                    // conds driven by randomized heading nudge
+                    (seed2) =>
+                    ({
+                        heading: getPhysTypeCond(eventType.physType)('heading') +
+                            rand_unwrapRandType(rand_seededRand(-0.1)(0.1)(seed2))
+                    })
+                ),
 
             // announce behavior IF behavior has just changed
             (getPhysTypeCond(eventType.physType)('behavior') !==
                 getPhysTypeCond(eventType.physType)('behavior_request'))
                 ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior')])
+                    ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                 : action_doNothing(),
         ]
 };
 
 const leafPreservePhysType = {
     name: 'Preserve given physType',
-    func: (_) => (eventType) => action_updatePhysType(eventType.physType),
+    func: (_) => (eventType) => action_replacePhysType(eventType.physType),
 };
 
 const leafRemoveFood = {

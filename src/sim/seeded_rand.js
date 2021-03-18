@@ -181,7 +181,7 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
 //  func: the function to lift, of signature (float) => float
 // returns function with signature (float) => randType
 // total signature: (float => float) => (float => randType)
-const rand_lift = func =>
+export const rand_lift = func =>
     floatType => compose(rand_unit)(func)(floatType);
 
 // randType unwrap func
@@ -189,7 +189,7 @@ const rand_lift = func =>
 //  randType
 // returns float
 // total signature: (randType) => float
-const rand_unwrapRandType = randType => randType.value;
+export const rand_unwrapRandType = randType => randType.value;
 
 // randType object random number generator function
 // builds a randType object by generating randType random values for the given props

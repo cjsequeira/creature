@@ -12,7 +12,7 @@ import {
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    ACTION_PHYSTYPE_REPLACE_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
@@ -143,16 +143,16 @@ export const action_deletePhysType = (idIntType) =>
     idIntType,
 });
 
-// update physType with the given physType using the same ID
+// replace physType with the given physType using the same ID
 // takes:
 //  physType
 // returns actionType
-export const action_updatePhysType = (physType) =>
+export const action_replacePhysType = (physType) =>
 ({
-    type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    type: ACTION_PHYSTYPE_REPLACE_PHYSTYPE,
     physType,
 });
- 
+
 // atomically update all physTypes that pass a filter function
 // takes:
 //  filterFunc: of signature (physType) => bool

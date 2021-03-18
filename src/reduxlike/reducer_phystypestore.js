@@ -6,7 +6,7 @@
 import {
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    ACTION_PHYSTYPE_REPLACE_PHYSTYPE,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
 } from '../const_vals.js';
@@ -21,7 +21,7 @@ import {
 } from './store_getters.js';
 
 import { splice } from '../utils.js';
-import { rand_genRandTypeObj, rand_genRandTypeObjArray, rand_unitObj, rand_unwrapRandTypeObj } from '../sim/seeded_rand.js';
+import { rand_genRandTypeObj, rand_unitObj, rand_unwrapRandTypeObj } from '../sim/seeded_rand.js';
 
 
 // *** PhysTypeStore reducer 
@@ -50,7 +50,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 (ptToTest) => getPhysTypeID(ptToTest) !== actionType.idIntType
             ),
 
-        [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
+        [ACTION_PHYSTYPE_REPLACE_PHYSTYPE]: (storeType) => (actionType) =>
             // is the given physType located in the physTypeStore?  
             (getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
                 > -1)
