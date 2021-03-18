@@ -18,6 +18,7 @@ import {
     ACTION_SIM_ADVANCE,
     ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
+    ACTION_SIM_SET_SEED,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_UI_ADD_GEO_CHART_DATA,
@@ -208,6 +209,16 @@ export const action_incSimSeed = (seedIncIntType) =>
 ({
     type: ACTION_SIM_INC_SEED,
     seedIncIntType,
+});
+
+// set system seed
+// takes:
+//  seedIntType: the seed to set
+// returns actionType
+export const action_setSimSeed = (seedIntType) =>
+({
+    type: ACTION_SIM_SET_SEED,
+    seedIntType,
 });
 
 // save system clock

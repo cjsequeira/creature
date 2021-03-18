@@ -103,6 +103,7 @@ export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType)
     nextSeed: rand_getNextSeed(seedIntType)(1),
 });
 
+// REFACTOR: FIX THIS CODE!!!
 // generate a random index into a weights list
 // takes:
 //  weightsFloatType: array of weights, as float
