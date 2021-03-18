@@ -9,6 +9,7 @@ import {
     ACTION_SIM_ADVANCE,
     ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
+    ACTION_SIM_SET_SEED,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
 } from '../const_vals.js';
@@ -128,6 +129,12 @@ export const simReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.sim,
             savedClock: actionType.clockFloatType,
+        }),
+
+        [ACTION_SIM_SET_SEED]: (storeType) => (actionType) =>
+        ({
+            ...storeType.sim,
+            seed: actionType.seedIntType,
         }),
 
         [ACTION_SIM_START]: (storeType) => (_) =>

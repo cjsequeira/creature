@@ -11,14 +11,13 @@ import {
 
 
 // *** PhysType events
-// update all physTypes in given store
+// update all physTypes in store
 // takes:
 //  physTypeStore: array of physTypes
 // returns eventType
-export const event_updateAllPhysTypes = (physTypeStore) =>
+export const event_updateAllPhysTypes = (_) =>
 ({
     type: EVENT_UPDATE_ALL_PHYSTYPES,
-    physTypeStore,
 });
 
 // replace creatureType of the same ID as the given creatureType

@@ -35,7 +35,7 @@ import {
 } from './reduxlike/action_creators.js';
 
 import { storeInit } from './reduxlike/app_store.js';
-import { event_updateAllPhysTypes } from './rulebook/event_creators';
+import { event_replacePhysType, event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 
 import {
@@ -59,9 +59,9 @@ var appStore = storeInit
 
 // dispatch an initial series of actions
 appStore = dispatchActions(appStore)
-    (
+    (        
         // add a bunch of food
-        //Array(9)
+        //Array(2)
         Array(WORLD_NUM_FOOD)
             .fill(getDefaultFoodType())
             .map(
@@ -110,8 +110,9 @@ function appUpdate(_) {
             (
                 // send an event into the system: update all physTypes
                 // the method below returns action(s)
-                mapEventsToActions(appStore)
-                    (event_updateAllPhysTypes(getPhysTypeStore(appStore))),
+                mapEventsToActions
+                    (appStore)
+                    (event_updateAllPhysTypes()),
 
                 // if any creatureType now has a behavior of 'frozen', update the journal
                 //  and stop the sim

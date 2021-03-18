@@ -100,11 +100,12 @@ export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType)
         ((seedIntType * 9301 + 49297) % 233280) /
         233280 * (maxFloatType - minFloatType),
 
+    // REFACTOR BUG: Seed skip should be 0! Must check ALL users of rand_seededRand
     nextSeed: rand_getNextSeed(seedIntType)(1),
 });
 
-// REFACTOR: FIX THIS CODE!!!
 // generate a random index into a weights list
+// WARNING: The customer must externally advance the seed by one increment!!!!
 // takes:
 //  weightsFloatType: array of weights, as float
 //  seedIntType: the seed to use
@@ -112,7 +113,14 @@ export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType)
 export const rand_chooseWeight = (weightsFloatType) => (seedIntType) =>
     selectWeight
         (weightsFloatType)
-        (rand_seededRand(0.0)(sum(weightsFloatType))(seedIntType));
+        (
+            rand_unwrapRandType(
+                rand_seededRand
+                    (0.0)
+                    (sum(weightsFloatType))
+                    (seedIntType)
+            )
+        );
 
 
 // *** randType monad utilities
@@ -124,7 +132,7 @@ export const rand_chooseWeight = (weightsFloatType) => (seedIntType) =>
 export const rand_unit = valAnyType => ({
     [TYPE_RANDTYPE]: true,
     value: valAnyType,
-    nextSeed: rand_getNextSeed(0)(0),
+    nextSeed: 0,
 });
 
 // randType monad bind func
@@ -158,7 +166,7 @@ export const rand_bind = func =>
 //      ...{property1: randType1, property2: randType2, ...},
 //      nextSeed
 //  }
-export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) => 
+export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
     // build an object out of entries
     Object.entries(objForRand).reduce(
         (accumProp, propValPair, i) =>
