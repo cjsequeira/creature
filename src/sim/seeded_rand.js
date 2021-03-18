@@ -113,31 +113,32 @@ export const rand_chooseWeight = (weightsFloatType) => (seedIntType) =>
         (weightsFloatType)
         (rand_seededRand(0.0)(sum(weightsFloatType))(seedIntType));
 
+
 // *** randType monad utilities
 // randType monad unit func
 // takes: 
-//  valFloatType: the value to wrap into randType
+//  valAnyType: the value to wrap into randType
 // returns: randType with 0 seed
-// total signature: (float) => randType
-export const rand_unit = valFloatType => ({
+// total signature: (any) => randType
+export const rand_unit = valAnyType => ({
     [TYPE_RANDTYPE]: true,
-    value: valFloatType,
+    value: valAnyType,
     nextSeed: rand_getNextSeed(0)(0),
 });
 
 // randType monad bind func
 // takes:
-//  func: the function to bind, of signature (float) => randType
+//  func: the function to bind, of signature (any) => randType
 // returns function with signature (randType) => randType
-// total signature: (float => randType) => (randType => randType)
+// total signature: (any => randType) => (randType => randType)
 export const rand_bind = func =>
     randType => ({
         ...func(randType.value),
         nextSeed: randType.nextSeed,
     });
 
-// randType monad unit object func
-// builds a randType object by converting given prop-vals to randTypes
+// randTypeObj monad unit object func
+// builds a randTypeObj object by converting given prop-vals to randTypes
 // takes: 
 //  objAnyType: the object to bundle randTypes into
 //  objForRand: an object with numerical properties, as:
@@ -150,7 +151,7 @@ export const rand_bind = func =>
 //
 //  seedIntType: the seed to use
 //  
-// returns object of:
+// returns randTypeObj object of:
 //  {
 //      ...objAnyType,
 //      ...{property1: randType1, property2: randType2, ...},
@@ -187,17 +188,17 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
 // *** randType support functions
 // randType lift func
 // takes:
-//  func: the function to lift, of signature (float) => float
-// returns function with signature (float) => randType
-// total signature: (float => float) => (float => randType)
+//  func: the function to lift, of signature (typeA) => typeA
+// returns function with signature (typeA) => randType
+// total signature: (typeA => typeA) => (typeA => randType)
 export const rand_lift = func =>
-    floatType => compose(rand_unit)(func)(floatType);
+    typeA => compose(rand_unit)(func)(typeA);
 
 // randType unwrap func
 // takes:
 //  randType
-// returns float
-// total signature: (randType) => float
+// returns any
+// total signature: (randType) => any
 export const rand_unwrapRandType = randType => randType.value;
 
 // randType object random number generator function

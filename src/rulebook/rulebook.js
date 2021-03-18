@@ -379,6 +379,10 @@ const ruleBook = {
         //  or may return an action totally unrelated to the creatureType object below!
 
         // REFACTOR to remove mutable rand!!
+        // IDEA: Retool rulebook to indicate what creature is ALLOWED to do as a SUBSELECT of
+        //  desired behaviors - then have
+        //  store reducer select actual behavior based on random draw of ALLOWABLE behaviors
+        //  If creature is not interested in ALLOWED behaviors, then creature behavior won't change!
         preFunc: (_) => (eventType) =>
             event_replacePhysType(
                 usePhysTypeConds
