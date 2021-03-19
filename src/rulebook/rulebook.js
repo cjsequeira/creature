@@ -182,11 +182,8 @@ const ruleBook = {
                 preFunc: (storeType) => (rand_eventType) =>
                 ({
                     // eventType
-                    value:
-                        ({
-                            ...rand_eventType.value,
-                            physType: physTypeDoPhysics(storeType)(rand_eventType.value.physType),
-                        }),
+                    value: event_replacePhysType
+                        (physTypeDoPhysics(storeType)(rand_eventType.value.physType)),
 
                     nextSeed: rand_eventType.nextSeed,
                 }),
