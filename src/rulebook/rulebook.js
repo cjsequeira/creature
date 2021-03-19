@@ -124,6 +124,15 @@ const orTestRules = (...testRules) => ({
     )
 });
 
+// unwrap a rand_actionType into an actionType plus an action to update the simulation seed
+// takes:
+//  rand_actionType: an actionType wrapped in a randType
+// returns [actionType]
+const rand_actionTypeVal = (rand_actionType) => ([
+    rand_val(rand_actionType),
+    action_setSimSeed(rand_nextSeed(rand_actionType)),
+]);
+
 
 // *** The rulebook
 const ruleBook = {
@@ -138,43 +147,39 @@ const ruleBook = {
         //  or may reject the requested behavior and assign a different behavior,
         //  or may return an action totally unrelated to the creatureType object below!
 
-        // REFACTOR to remove mutable rand!!
         // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
         preFunc: (_) => (rand_eventType) =>
-        ({
-            // eventType
-            value:
-                // signature (physType) => eventType
-                event_replacePhysType
-
-                    // physType arg for event_replacePhysType
-                    (
-                        // signature: (physType) => (conds) => physType
-                        usePhysTypeConds
-                            // make an object based on the given physType, with a "behavior_request" prop-obj
-                            (rand_val(rand_eventType).physType)
-                            ({
-                                behavior_request:
-                                    // select behavior request from list of given desire funcs using 
-                                    // a weighted random number selector
-                                    Object.keys(rand_val(rand_eventType).desireFuncType)
-                                    // use a randomly-chosen index to select a behavioral desire
-                                    [rand_chooseWeight
-                                        // list of numerical desires
-                                        (
-                                            // the code below maps each desire function to a numerical weight
-                                            //  by evaluating it using the given physType
-                                            Object.values(rand_val(rand_eventType).desireFuncType).map(f => f(rand_val(rand_eventType).physType))
-                                        )
-                                        // seed for rand_chooseWeight
-                                        (rand_nextSeed(rand_eventType))
-                                    ]
-                            })
-                    ),
-
-            // our use of rand_chooseWeight requires a manual advance to the next system seed!
-            nextSeed: rand_getNextSeed(rand_nextSeed(rand_eventType))(0),
-        }),
+            // generate an updated rand_eventType
+            rand_genRandType
+                // rand_genRandType value
+                (event_replacePhysType
+                    (usePhysTypeConds
+                        // make an object based on the given physType, with a "behavior_request" prop-obj
+                        (rand_val(rand_eventType).physType)
+                        ({
+                            behavior_request:
+                                // select behavior request from list of given desire funcs using 
+                                // a weighted random number selector
+                                Object.keys(rand_val(rand_eventType).desireFuncType)
+                                // use a randomly-chosen index to select a behavioral desire
+                                [rand_chooseWeight
+                                    // list of numerical desires
+                                    (
+                                        // the code below maps each desire function to a numerical weight
+                                        //  by evaluating it using the given physType
+                                        Object.values(rand_val(rand_eventType).desireFuncType)
+                                            .map(f => f(rand_val(rand_eventType).physType))
+                                    )
+                                    // seed for rand_chooseWeight
+                                    (rand_nextSeed(rand_eventType))
+                                ]
+                        })
+                    )
+                )
+                // rand_genRandType seed
+                // since we just used a system seed, we must point to the next seed when
+                //  assembling an updated rand_eventType
+                (rand_getNextSeed(rand_nextSeed(rand_eventType))(0)),
 
         testNode: isSimpleCreature,
         yes: {
