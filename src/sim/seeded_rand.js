@@ -141,11 +141,11 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
 // *** randType support functions
 // randType lift func
 // takes:
-//  func: the function to lift, of signature (typeA) => any
-// returns function with signature (typeA) => randType
-// total signature: (typeA => any) => (typeA => randType)
+//  func: the function to lift, of signature (any) => any
+// returns function with signature (any) => randType
+// total signature: (any => any) => (any => randType)
 export const rand_lift = func =>
-    typeA => compose(rand_unit)(func)(typeA);
+    anyType => compose(rand_unit)(func)(anyType);
 
 // randType unwrap func
 // takes:
