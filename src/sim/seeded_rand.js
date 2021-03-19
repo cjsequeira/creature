@@ -149,6 +149,24 @@ export const rand_genRandType = (valueAnyType) => (seedIntType) =>
     nextSeed: seedIntType,
 });
 
+// randType concatenation function
+// ASSUMES that prototype.concat() is defined for lhs!
+// e.g. this function could concatenate two randTypes with arrays as values 
+// takes:
+//  lhs: the randType on the left-hand side
+//  rhs: the randType to concat: THE SEED FROM RHS WILL BE USED!
+// returns: randType with:
+//  {
+//      value: rand_val(lhs) + rand_val(rhs)
+//      nextSeed: rand_nextSeed(rhs)    
+//  }
+export const rand_concat = (lhs) => (rhs) =>
+({
+    [TYPE_RANDTYPE]: true,
+    value: rand_val(lhs).concat(rand_val(rhs)),
+    nextSeed: rand_nextSeed(rhs),
+});
+
 // randType lift func
 // takes:
 //  func: the function to lift, of signature (any) => any
