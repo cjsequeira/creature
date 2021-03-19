@@ -173,32 +173,27 @@ export const leafDoAndApproveWandering = {
                         (_) => getPhysTypeCondsObj(eventType.physType),
 
                         // conds driven by randomized acceleration
-                        (seed1) => {
-                            return (
-                                (randNum) =>
-                                ({
-                                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                        (seed1) =>
+                            ((randNum) => ({
+                                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
-                                    // glucose and neuro impacts are more severe 
-                                    //  with higher accceleration magnitude
-                                    glucose:
-                                        getPhysTypeCond(eventType.physType)('glucose') -
-                                        0.3 * Math.abs(randNum) *
-                                        getSimTimeStep(storeType),
+                                // glucose and neuro impacts are more severe 
+                                //  with higher accceleration magnitude
+                                glucose:
+                                    getPhysTypeCond(eventType.physType)('glucose') -
+                                    0.3 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
 
-                                    neuro:
-                                        getPhysTypeCond(eventType.physType)('neuro') +
-                                        0.2 * Math.abs(randNum) *
-                                        getSimTimeStep(storeType),
+                                neuro:
+                                    getPhysTypeCond(eventType.physType)('neuro') +
+                                    0.2 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
 
-                                    accel: randNum,
-                                })
-                            )
-                                (excludeRange
-                                    (2.0)
+                                accel: randNum,
+                            }))
+                                (excludeRange(2.0)
                                     (rand_val(rand_seededRand(-4.0)(15.0)(seed1)))
-                                )
-                        },
+                                ),
 
                         // conds driven by randomized heading nudge
                         (seed2) =>
