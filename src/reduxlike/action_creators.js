@@ -12,9 +12,13 @@ import {
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    ACTION_PHYSTYPE_REPLACE_PHYSTYPE,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
+    ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
+    ACTION_SIM_SET_SEED,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
     ACTION_UI_ADD_GEO_CHART_DATA,
@@ -134,22 +138,58 @@ export const action_addPhysType = (physType) =>
 // takes:
 //  idIntType: the physType ID to delete
 // returns actionType
-export const action_DeletePhysType = (idIntType) =>
+export const action_deletePhysType = (idIntType) =>
 ({
     type: ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     idIntType,
 });
 
-// update physType with the given physType using the same ID
+// replace physType with the given physType using the same ID
 // takes:
 //  physType
 // returns actionType
-export const action_UpdatePhysType = (physType) =>
+export const action_replacePhysType = (physType) =>
 ({
-    type: ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    type: ACTION_PHYSTYPE_REPLACE_PHYSTYPE,
     physType,
 });
- 
+
+// atomically update all physTypes that pass a filter function
+// takes:
+//  filterFunc: of signature (physType) => bool
+//  updateFunc: of signature (physType) => physType
+// returns actionType
+export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
+({
+    type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
+    filterFunc,
+    updateFunc,
+});
+
+// atomically update all physTypes that pass a filter function by
+//  applying random values to the specified conds
+// takes:
+//  filterFunc: of signature (physType) => bool
+//  ...gensForRand: an array of functions with properties and randomType generators, as:
+//
+//  [
+//      (seed1): {property1a: randGen1a(seed1), property1b: randGen1b(seed1), ... }
+//      (seed2): {property2a: randGen2a(seed2), property2b: randGen2b(seed2), ... }
+//      ...
+//  ]
+//
+//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randType
+//      for example, seededRand(0.0)(1.0) would have the appropriate signature 
+//          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
+//
+// returns [actionType]
+export const action_updateSelectPhysTypesRand = (filterFunc) => (...gensForRand) =>
+({
+    type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
+    filterFunc,
+    gensForRand,
+});
+
 
 // *** Sim control
 // advance sim time if running
@@ -159,6 +199,26 @@ export const action_UpdatePhysType = (physType) =>
 export const action_advanceSimIfRunning = (_) =>
 ({
     type: ACTION_SIM_ADVANCE,
+});
+
+// increment system seed
+// takes:
+//  seedIncIntType: how many times to advance the system seed
+// returns actionType
+export const action_incSimSeed = (seedIncIntType) =>
+({
+    type: ACTION_SIM_INC_SEED,
+    seedIncIntType,
+});
+
+// set system seed
+// takes:
+//  seedIntType: the seed to set
+// returns actionType
+export const action_setSimSeed = (seedIntType) =>
+({
+    type: ACTION_SIM_SET_SEED,
+    seedIntType,
 });
 
 // save system clock

@@ -6,19 +6,30 @@
 import {
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    ACTION_PHYSTYPE_UPDATE_PHYSTYPE,
+    ACTION_PHYSTYPE_REPLACE_PHYSTYPE,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
 } from '../const_vals.js';
 
 import {
     genPhysTypeAvailID,
     getPhysTypeID,
     getPhysTypeStore,
+    getPhysTypeCondsObj,
+    usePhysTypeConds,
+    getSimSeed,
 } from './store_getters.js';
 
 import { splice } from '../utils.js';
 
+import {
+    rand_genRandTypeObj,
+    rand_unitObj,
+    rand_unwrapRandTypeObj,
+} from '../sim/seeded_rand.js';
 
-// *** Remainder reducer 
+
+// *** PhysTypeStore reducer 
 // reducer for "physTypeStore" property of storeType
 // takes:
 //  inStoreType: store to use as template for reduction, as storeType 
@@ -44,10 +55,9 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 (ptToTest) => getPhysTypeID(ptToTest) !== actionType.idIntType
             ),
 
-        [ACTION_PHYSTYPE_UPDATE_PHYSTYPE]: (storeType) => (actionType) =>
-        ([
+        [ACTION_PHYSTYPE_REPLACE_PHYSTYPE]: (storeType) => (actionType) =>
             // is the given physType located in the physTypeStore?  
-            ...(getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
+            (getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
                 > -1)
                 // yes: update it
                 ? splice
@@ -67,8 +77,100 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                     (actionType.physType)
 
                 // no: return the physTypeStore unaltered
-                : getPhysTypeStore(storeType)
+                : getPhysTypeStore(storeType),
+
+        /*
+        // REFACTOR: FIX so objects don't switch array order when they meet or fail a filter!!!
+        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES]: (storeType) => (actionType) =>
+        // build an array out of two components
+        // REFACTOR for efficiency
+        ([
+            // first, the updated physTypes that pass the filter function
+            ...getPhysTypeStore(storeType)
+                .filter(actionType.filterFunc)
+                .map(actionType.updateFunc),
+
+            // second, the physTypes that fail the filter function - these are left AS IS
+            ...getPhysTypeStore(storeType)
+                .filter((thisPt) => !actionType.filterFunc(thisPt)),
         ]),
+        */
+
+        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
+            // generate a randTypeObj version of the physTypeStore
+            getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
+                [
+                    ...accumRandTypeObj,
+
+                    // does this physType pass the filter function?
+                    (actionType.filterFunc(thisPt))
+                        // yes: create randTypeObj using given randType generators
+                        ? rand_genRandTypeObj
+                            (getPhysTypeCondsObj(thisPt))
+                            (actionType.gensForRand)
+                            (
+                                (
+                                    accumRandTypeObj.slice(-1)[0] ||
+                                    { nextSeed: getSimSeed(storeType) }
+                                ).nextSeed
+                            )
+
+                        // no: convert the physType into a unit randTypeObj as is
+                        : rand_unitObj
+                            (getPhysTypeCondsObj(thisPt))
+                            ({})
+                            (
+                                (
+                                    accumRandTypeObj.slice(-1)[0] ||
+                                    { nextSeed: getSimSeed(storeType) }
+                                ).nextSeed
+                            )
+
+                    // start with an empty array
+                ], [])
+
+                // map each randTypeObj back to a physType with updated random conditions
+                .map(
+                    (thisRandTypeObj, i) =>
+                        usePhysTypeConds
+                            (getPhysTypeStore(storeType)[i])
+                            (rand_unwrapRandTypeObj(thisRandTypeObj))
+                ),
+
+
+        /*
+        ([
+            // generate an array of randTypeObj objects
+            ...rand_genRandTypeObjArray
+                // conds objects of physTypes that pass the given filter function
+                (getPhysTypeStore(storeType)
+                    .filter(actionType.filterFunc)
+                    .map((thisPt) => getPhysTypeCondsObj(thisPt)))
+
+                // array of randType generator functions
+                (actionType.gensForRand)
+
+                // seed to start with
+                (getSimSeed(storeType))
+
+                // then unwrap each randTypeObj object and merge it back in with the appropriate physType
+                .map(
+                    (thisRandTypeObjConds, i) =>
+                        // assign conds to physType
+                        usePhysTypeConds
+                            // select the associated physType using the same given filter func 
+                            //  and the map index
+                            (getPhysTypeStore(storeType).filter(actionType.filterFunc)[i])
+
+                            // unwrap the randTypeObj conds into a conds object with random values
+                            (rand_unwrapRandTypeObj(thisRandTypeObjConds))
+                ),
+
+            // also include the physTypes that fail the filter function - these are left AS IS
+            ...getPhysTypeStore(storeType)
+                .filter((thisPt) => !actionType.filterFunc(thisPt)),
+        ]),
+        */
 
         // use inActionType.type as an entry key into the key-val list above
         // key is used to select a function that takes a storeType object  
@@ -80,3 +182,6 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         //  and actionType to get a storeType "physTypeStore" property array
         (inStoreType)
         (inActionType);
+
+
+

@@ -15,6 +15,8 @@ import {
     UPDATE_FREQ_NONSIM,
     UPDATE_FREQ_SIM,
     WORLD_NUM_FOOD,
+    WORLD_SIZE_X,
+    WORLD_SIZE_Y,
 } from './const_vals.js';
 
 import { getDefaultFoodType } from './phystypes/food_type';
@@ -27,12 +29,13 @@ import {
     action_stopIfFrozen,
     action_uiAddGeoChartData,
     action_uiAddTimeChartSimpleCreatureData,
+    action_updateSelectPhysTypesRand,
     dispatchActions,
     mapEventsToActions,
 } from './reduxlike/action_creators.js';
 
 import { storeInit } from './reduxlike/app_store.js';
-import { event_updateAllPhysTypes } from './rulebook/event_creators';
+import { event_replacePhysType, event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 
 import {
@@ -41,7 +44,7 @@ import {
     getPhysTypeStore,
 } from './reduxlike/store_getters.js';
 
-import { repeatFunc } from './utils';
+import { rand_seededRand } from './sim/seeded_rand';
 
 
 // ***********************************************************************************
@@ -56,10 +59,25 @@ var appStore = storeInit
 
 // dispatch an initial series of actions
 appStore = dispatchActions(appStore)
-    (
+    (        
         // add a bunch of food
-        repeatFunc(getDefaultFoodType)()(WORLD_NUM_FOOD)
-            .map((thisFood) => action_addPhysType(thisFood)),
+        //Array(2)
+        Array(WORLD_NUM_FOOD)
+            .fill(getDefaultFoodType())
+            .map(
+                (thisFood) => action_addPhysType(thisFood)
+            ),
+
+        // atomically randomize locations of all physTypes
+        action_updateSelectPhysTypesRand
+            // filter function: include all physTypes
+            ((_) => true)
+
+            // randomize conds: x and y
+            (
+                (seed1) => ({ x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0)(seed1) }),
+                (seed2) => ({ y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0)(seed2) }),
+            ),
 
         // change the sim status to running
         action_startSim(),
@@ -92,8 +110,9 @@ function appUpdate(_) {
             (
                 // send an event into the system: update all physTypes
                 // the method below returns action(s)
-                mapEventsToActions(appStore)
-                    (event_updateAllPhysTypes(getPhysTypeStore(appStore))),
+                mapEventsToActions
+                    (appStore)
+                    (event_updateAllPhysTypes()),
 
                 // if any creatureType now has a behavior of 'frozen', update the journal
                 //  and stop the sim

@@ -4,9 +4,23 @@
 
 // *** Our imports
 import {
+    getPhysTypeStore,
+    getPhysTypeCond,
+    getSimCurTime,
+    getSimRunning,
+    getSimTimeStep,
+    getPhysTypeAct,
+    getPhysTypeCondsObj,
+    getSimSeed
+} from './store_getters.js';
+
+import {
     ACTION_COMPARE_STOP_IF_FROZEN,
+    ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
+    ACTION_SIM_INC_SEED,
     ACTION_SIM_SAVE_CLOCK,
+    ACTION_SIM_SET_SEED,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
 } from '../const_vals.js';
@@ -14,13 +28,10 @@ import {
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
-    getPhysTypeStore,
-    getPhysTypeCond,
-    getSimCurTime,
-    getSimRunning,
-    getSimTimeStep,
-    getPhysTypeAct
-} from './store_getters.js';
+    rand_genRandTypeObj,
+    rand_getNextSeed,
+    rand_unitObj,
+} from '../sim/seeded_rand.js';
 
 
 // *** Sim reducer 
@@ -56,6 +67,48 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     : getSimRunning(storeType),
         }),
 
+        // REFACTOR for efficiency
+        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
+        ({
+            ...storeType.sim,
+
+            seed:
+                // does the physType store have physTypes in it?
+                (getPhysTypeStore(storeType))
+                    // yes: generate a randTypeObj version of the physTypeStore
+                    ? getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
+                        // does this physType pass the filter function?
+                        (actionType.filterFunc(thisPt))
+                            // yes: create randTypeObj using given randType generators
+                            ? rand_genRandTypeObj
+                                (getPhysTypeCondsObj(thisPt))
+                                (actionType.gensForRand)
+                                (
+                                    (
+                                        accumRandTypeObj || { nextSeed: getSimSeed(storeType) }
+                                    ).nextSeed
+                                )
+
+                            // no: convert the physType into a unit randTypeObj as is
+                            : rand_unitObj
+                                (getPhysTypeCondsObj(thisPt))
+                                ({})
+                                (
+                                    (
+                                        accumRandTypeObj || { nextSeed: getSimSeed(storeType) }
+                                    ).nextSeed
+                                )
+
+                        // start with nothing
+                        , null)
+
+                        // grab the last seed
+                        .nextSeed
+
+                    // no: keep the seed the same
+                    : getSimSeed(storeType)
+        }),
+
         [ACTION_SIM_ADVANCE]: (storeType) => (_) =>
         ({
             ...storeType.sim,
@@ -69,10 +122,25 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     : getSimCurTime(storeType),
         }),
 
+        [ACTION_SIM_INC_SEED]: (storeType) => (actionType) =>
+        ({
+            ...storeType.sim,
+            seed:
+                (actionType.seedIncIntType > 0)
+                    ? rand_getNextSeed(getSimSeed(storeType))(actionType.seedIncIntType - 1)
+                    : getSimSeed(storeType)
+        }),
+
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>
         ({
             ...storeType.sim,
             savedClock: actionType.clockFloatType,
+        }),
+
+        [ACTION_SIM_SET_SEED]: (storeType) => (actionType) =>
+        ({
+            ...storeType.sim,
+            seed: actionType.seedIntType,
         }),
 
         [ACTION_SIM_START]: (storeType) => (_) =>

@@ -12,15 +12,16 @@ import { getJournal, getUIProp } from './store_getters.js';
 //  storeType
 // returns undefined
 export function mutable_renderFunction(storeType) {
-    // render time chart and geo chart
+    // MUTABLE: render time chart and geo chart
     getUIProp(storeType)('creature_time_chart').update();
     getUIProp(storeType)('creature_geo_chart').update();
 
-    // update status box
+    // MUTABLE: update status box
     mutable_updateStatusBox(storeType);
 };
 
 // update simulator status box with given HTML message
+// MUTABLE: causes simulator status box to change
 // takes:
 //  storeType: store, as storeType
 // returns undefined

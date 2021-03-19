@@ -13,11 +13,6 @@ import {
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
-import {
-    mutableRandGen_initRandGen,
-    mutableRandGen_seededRand
-} from '../sim/seeded_rand.js';
-
 
 // *** Initial app store
 const initial_store = {
@@ -35,9 +30,8 @@ const initial_store = {
         timeStep: UPDATE_FREQ_SIM / 1000.0,
         savedClock: 0.0,
 
-        // initial random number generator seed
-        initSeed: mutableRandGen_initRandGen(Date.now()),
-        //initSeed: mutableRandGen_initRandGen(0),
+        // random number generator seed
+        seed: Date.now(),
     },
 
     // initial physTypeStore
@@ -58,12 +52,12 @@ const initial_store = {
                 behavior_request: null,
 
                 // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+                x: WORLD_SIZE_X / 2.0,
+                y: WORLD_SIZE_Y / 2.0,
 
                 // heading, speed, acceleration
-                heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
-                speed: mutableRandGen_seededRand(0.0, 1.0),
+                heading: 0.0,
+                speed: 1.0,
                 accel: 0.0,
             },
         },
@@ -84,12 +78,12 @@ const initial_store = {
                 behavior_request: null,
 
                 // location
-                x: mutableRandGen_seededRand(1.0, WORLD_SIZE_X - 1.0),
-                y: mutableRandGen_seededRand(1.0, WORLD_SIZE_Y - 1.0),
+                x: WORLD_SIZE_X / 2.0,
+                y: WORLD_SIZE_Y / 2.0,
 
                 // heading, speed, acceleration
-                heading: 2.0 * Math.PI * mutableRandGen_seededRand(0.0, 1.0),
-                speed: mutableRandGen_seededRand(0.0, 1.0),
+                heading: 0.0,
+                speed: 1.0,
                 accel: 0.0,
             },
         },
@@ -127,62 +121,65 @@ const initial_store = {
 const creature_time_chart_params_init = {
     type: 'scatter',
     data: {
-        datasets: [{
-            label: 'Vinny glucose',
-            xAxisId: 'my-x-axis',
-            yAxisId: 'my-y-axis',
-            showLine: true,
-            fill: false,
-            tension: 0.2,
-            data: [],
-            backgroundColor: '#0000ccff',
-            borderColor: '#0000ccff',
-            pointBackgroundColor: '#0000ccff',
-            pointBorderColor: '#0000ccff',
-            pointRadius: 1,
-        },
-        {
-            label: 'Vinny neuro',
-            xAxisId: 'my-x-axis',
-            yAxisId: 'my-y-axis',
-            showLine: true,
-            fill: false,
-            tension: 0.2,
-            data: [],
-            backgroundColor: '#00cc00ff',
-            borderColor: '#00cc00ff',
-            pointBackgroundColor: '#00cc00ff',
-            pointBorderColor: '#00cc00ff',
-            pointRadius: 1,
-        },
-        {
-            label: 'Eddie glucose',
-            xAxisId: 'my-x-axis',
-            yAxisId: 'my-y-axis',
-            showLine: true,
-            fill: false,
-            tension: 0.2,
-            data: [],
-            backgroundColor: '#f7036cff',
-            borderColor: '#f7036cff',
-            pointBackgroundColor: '#f7036cff',
-            pointBorderColor: '#f7036cff',
-            pointRadius: 1,
-        },
-        {
-            label: 'Eddie neuro',
-            xAxisId: 'my-x-axis',
-            yAxisId: 'my-y-axis',
-            showLine: true,
-            fill: false,
-            tension: 0.2,
-            data: [],
-            backgroundColor: '#3289eaff',
-            borderColor: '#3289eaff',
-            pointBackgroundColor: '#3289eaff',
-            pointBorderColor: '#3289eaff',
-            pointRadius: 1,
-        }]
+        datasets: [
+            {
+                label: 'Vinny glucose',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: true,
+                fill: false,
+                tension: 0.2,
+                data: [],
+                backgroundColor: '#0000ccff',
+                borderColor: '#0000ccff',
+                pointBackgroundColor: '#0000ccff',
+                pointBorderColor: '#0000ccff',
+                pointRadius: 1,
+            },
+            {
+                label: 'Vinny neuro',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: true,
+                fill: false,
+                tension: 0.2,
+                data: [],
+                backgroundColor: '#00cc00ff',
+                borderColor: '#00cc00ff',
+                pointBackgroundColor: '#00cc00ff',
+                pointBorderColor: '#00cc00ff',
+                pointRadius: 1,
+            },
+
+            {
+                label: 'Eddie glucose',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: true,
+                fill: false,
+                tension: 0.2,
+                data: [],
+                backgroundColor: '#f7036cff',
+                borderColor: '#f7036cff',
+                pointBackgroundColor: '#f7036cff',
+                pointBorderColor: '#f7036cff',
+                pointRadius: 1,
+            },
+            {
+                label: 'Eddie neuro',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: true,
+                fill: false,
+                tension: 0.2,
+                data: [],
+                backgroundColor: '#3289eaff',
+                borderColor: '#3289eaff',
+                pointBackgroundColor: '#3289eaff',
+                pointBorderColor: '#3289eaff',
+                pointRadius: 1,
+            }
+        ]
     },
     options: {
         animation: {
@@ -246,6 +243,7 @@ const creature_geo_chart_params_init = {
                 pointBackgroundColor: [],
                 pointBorderColor: []
             },
+
             {
                 label: 'Eddie',
                 id: 1,

@@ -3,6 +3,14 @@
 // ****** Code utilities ******
 
 // *** Functional programming utilities
+// compose two functions f and g of a specific signature
+// takes:
+//  f: function of signature (typeA) => typeA
+//  g: function of signature (typeA) => typeA
+// returns: composed function of signature (typeA) => typeA
+export const compose = f => g =>
+  x => f(g(x));
+
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // takes:
 //  lenLimitIntType: slice input (PRESERVED SIGN), as int
@@ -62,6 +70,7 @@ export const getNestedProp = (objAnyType) => (propStringType) =>
         (accum_obj, this_prop) => accum_obj[this_prop],
         objAnyType);
 
+// REFACTOR: Not needed? Use Array
 // given an input, return an array with the input repeated n times
 // takes:
 //  inputAnyType: input, as any
@@ -72,6 +81,7 @@ export const repeat = (...inputAnyType) => (nIntType) =>
         ? [...[inputAnyType], repeat(inputAnyType)(nIntType - 1)].flat(Infinity)
         : inputAnyType;
 
+// REFACTOR: Not needed? Use Array
 // given a function, along with an argument, return an array with 
 //  the function applied to the argument n times
 // takes:
@@ -83,6 +93,16 @@ export const repeatFunc = (func) => (argAnyType) => (nIntType) =>
     (nIntType > 0)
         ? [...[func(argAnyType)], repeatFunc(func)(argAnyType)(nIntType - 1)].flat(Infinity)
         : func(argAnyType);
+
+// given a function and a list of arguments, apply the function to enclose each argument
+// e.g. rollArgs(x => y => x + y)(1, 2) = (1 + 2) = 3
+// e.g. rollArgs(x => y => x + y)(1) = (y=> 1 + y)
+// takes:
+//  func: function of arbitrary signature
+//  args: list of args to apply
+// returns any (could be a function or could be an evaluation)
+export const rollArgs = (f) => (...args) =>
+    args.flat(Infinity).reduce((fArgs, thisArg) => fArgs(thisArg), f);
 
 // given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
