@@ -26,31 +26,31 @@ import { rand_val } from '../sim/seeded_rand.js';
 
 // *** Rulebook test nodes
 export const isBehaviorRequestIdling = {
-    name: 'Requesting behavior: idling?',
+    name: 'isBehaviorRequestIdling',
     testFunc: (_) => (rand_eventType) =>
         getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'idling',
 };
 
 export const isBehaviorRequestSleeping = {
-    name: 'Requested behavior: sleeping?',
+    name: 'isBehaviorRequestSleeping',
     testFunc: (_) => (rand_eventType) =>
         getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'sleeping',
 };
 
 export const isBehaviorRequestWandering = {
-    name: 'Requesting behavior: wandering?',
+    name: 'isBehaviorRequestWandering',
     testFunc: (_) => (rand_eventType) =>
         getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'wandering',
 };
 
 export const isFoodType = {
-    name: 'Is foodType?',
+    name: 'isFoodType',
     testFunc: (_) => (rand_eventType) =>
         getPhysTypeAct(rand_val(rand_eventType).physType) === actAsFood,
 };
 
 export const isFoodTouchedByCreature = {
-    name: 'Is this food being touched by creature?',
+    name: 'isFoodTouchedByCreature',
     testFunc: (storeType) => (rand_eventType) =>
         // get physType store
         getPhysTypeStore(storeType)
@@ -72,7 +72,7 @@ export const isFoodTouchedByCreature = {
 };
 
 export const isSimpleCreature = {
-    name: 'Is creatureType?',
+    name: 'isSimpleCreature',
     testFunc: (_) => (rand_eventType) =>
         getPhysTypeAct(rand_val(rand_eventType).physType) === actAsSimpleCreature,
 };
@@ -80,7 +80,7 @@ export const isSimpleCreature = {
 // REFACTOR IDEA: Create an event where the food being touched by the creature can be tagged in, for efficiencies
 // GOAL: Avoid scanning food to see what's being eaten - just send the specific food objects
 export const isCreatureTouchingFood = {
-    name: 'Is this creature touching food?',
+    name: 'isCreatureTouchingFood',
     testFunc: (storeType) => (rand_eventType) =>
         // get physType store
         getPhysTypeStore(storeType)
@@ -102,22 +102,22 @@ export const isCreatureTouchingFood = {
 };
 
 export const isEventUpdateAllPhysTypes = {
-    name: 'Is event of type EVENT_UPDATE_ALL_PHYSTYPES?',
+    name: 'isEventUpdateAllPhysTypes',
     testFunc: (_) => (rand_eventType) => rand_val(rand_eventType).type === EVENT_UPDATE_ALL_PHYSTYPES,
 };
 
 export const isEventReplaceCreatureType = {
-    name: 'Is event of type EVENT_REPLACE_CREATURETYPE?',
+    name: 'isEventReplaceCreatureType',
     testFunc: (_) => (rand_eventType) => rand_val(rand_eventType).type === EVENT_REPLACE_CREATURETYPE,
 };
 
 export const isEventReplacePhysType = {
-    name: 'Is event of type EVENT_REPLACE_PHYSTYPE?',
+    name: 'isEventReplacePhysType',
     testFunc: (_) => (rand_eventType) => rand_val(rand_eventType).type === EVENT_REPLACE_PHYSTYPE,
 };
 
 export const isGlucoseNeuroInRange = {
-    name: 'Glucose and neuro in range?',
+    name: 'isGlucoseNeuroInRange',
     testFunc: (_) => (rand_eventType) =>
         (getPhysTypeCond(rand_val(rand_eventType).physType)('glucose') > 0.0) &&
         (getPhysTypeCond(rand_val(rand_eventType).physType)('neuro') < 100.0),

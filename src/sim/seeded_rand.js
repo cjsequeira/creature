@@ -3,7 +3,10 @@
 // ****** Immutable pseudo-random number functions ******
 
 // *** Our imports
-import { TYPE_RANDTYPE, TYPE_RANDTYPE_OBJ } from '../const_vals.js';
+import {
+    TYPE_RANDTYPE,
+    TYPE_RANDTYPE_OBJ
+} from '../const_vals.js';
 
 import {
     compose,
@@ -35,7 +38,8 @@ export const rand_getNextSeed = (seedIntType) => (skipIntType) =>
 //  maxFloatType: maximum bound of random number range, as float
 //  seedIntType: the seed to use
 // returns randType
-export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType) => ({
+export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType) =>
+({
     [TYPE_RANDTYPE]: true,
 
     value: minFloatType +
@@ -83,7 +87,7 @@ export const rand_unit = (valAnyType) =>
 //  func: the function to bind, of signature (any) => randType
 // returns function with signature (randType) => randType
 // total signature: (any => randType) => (randType => randType)
-export const rand_bind = func =>
+export const rand_bind = (func) =>
     randType =>
     ({
         [TYPE_RANDTYPE]: true,
