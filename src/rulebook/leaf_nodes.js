@@ -4,7 +4,10 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { excludeRange } from '../utils.js';
+import {
+    compose,
+    excludeRange,
+} from '../utils.js';
 
 import {
     action_replacePhysType,
@@ -24,6 +27,8 @@ import {
 } from '../reduxlike/store_getters.js';
 
 import {
+    rand_bind,
+    rand_lift,
     rand_seededRand,
     rand_val,
 } from '../sim/seeded_rand.js';
@@ -231,6 +236,14 @@ export const leafPreservePhysType = {
 export const leafRemoveFood = {
     name: 'Remove food',
     func: (_) => (rand_eventType) =>
+        compose(rand_bind)(rand_lift)
+            (
+                // delete the given physType
+                (eventType) => compose(action_deletePhysType)(getPhysTypeID)(eventType.physType)
+            )
+            (rand_eventType),
+
+    /*
     ({
         value:
             [
@@ -242,6 +255,7 @@ export const leafRemoveFood = {
 
         nextSeed: rand_eventType.nextSeed,
     }),
+    */
 };
 
 export const leafUnknownEvent = {
@@ -254,18 +268,7 @@ export const leafUnknownEvent = {
         compose(rand_bind)(rand_lift)(action_doNothing)
             // provide the given rand_eventType
             (rand_eventType),
-
-    /*
-    ({
-        value:
-            // do nothing except update system seed
-            action_doNothing(),
-
-        nextSeed: rand_eventType.nextSeed,
-    }),
-    */
 };
-
 
 
 
