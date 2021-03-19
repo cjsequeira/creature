@@ -50,41 +50,42 @@ const behaviorStrings = {
 export const leafApproveBehavior = {
     name: 'Behavior request approved',
     func: (_) => (rand_eventType) =>
-    ({
-        value:
-            [
+        // action creator is nominally (any) => actionType
+        // lift action creator to give a rand_actionType: (any) => rand_actionType
+        // then bind the lifted function to take a rand_eventType
+        // total signature: (rand_eventType) => rand_actionType
+        compose(rand_bind)(rand_lift)
+            ((eventType) => [
                 // update physType behavior
                 action_replacePhysType(
                     usePhysTypeConds
-                        (rand_eventType.value.physType)
+                        (eventType.physType)
                         ({
-                            behavior: getPhysTypeCond(rand_eventType.value.physType)('behavior_request'),
+                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
                         })
                 ),
 
                 // announce behavior IF behavior has just changed
-                (getPhysTypeCond(rand_eventType.value.physType)('behavior') !==
-                    getPhysTypeCond(rand_eventType.value.physType)('behavior_request'))
-                    ? action_addJournalEntry(getPhysTypeName(rand_eventType.value.physType) +
-                        ' ' + behaviorStrings[getPhysTypeCond(rand_eventType.value.physType)('behavior_request')])
+                (getPhysTypeCond(eventType.physType)('behavior') !==
+                    getPhysTypeCond(eventType.physType)('behavior_request'))
+                    ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                        ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
-            ],
-
-        nextSeed: rand_eventType.nextSeed,
-    })
+            ])
+            (rand_eventType)
 };
 
 export const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
     func: (_) => (rand_eventType) =>
-    ({
-        value:
-            [
+        // total signature: (rand_eventType) => rand_actionType
+        compose(rand_bind)(rand_lift)
+            ((eventType) => [
                 action_replacePhysType(
                     usePhysTypeConds
-                        (rand_eventType.value.physType)
+                        (eventType.physType)
                         ({
-                            behavior: getPhysTypeCond(rand_eventType.value.physType)('behavior_request'),
+                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
                             speed: 0.0,
                             accel: 0.0
@@ -92,53 +93,49 @@ export const leafApproveBehaviorStopMovement = {
                 ),
 
                 // announce behavior IF behavior has just changed
-                (getPhysTypeCond(rand_eventType.value.physType)('behavior') !==
-                    getPhysTypeCond(rand_eventType.value.physType)('behavior_request'))
-                    ? action_addJournalEntry(getPhysTypeName(rand_eventType.value.physType) +
-                        ' ' + behaviorStrings[getPhysTypeCond(rand_eventType.value.physType)('behavior_request')])
+                (getPhysTypeCond(eventType.physType)('behavior') !==
+                    getPhysTypeCond(eventType.physType)('behavior_request'))
+                    ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                        ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
-            ],
-
-        nextSeed: rand_eventType.nextSeed,
-    })
+            ])
+            (rand_eventType)
 };
 
 export const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
     func: (_) => (rand_eventType) =>
-    ({
-        value:
-            [
+        // total signature: (rand_eventType) => rand_actionType
+        compose(rand_bind)(rand_lift)
+            ((eventType) => [
                 // make an announcement
                 action_addJournalEntry(
-                    getPhysTypeName(rand_eventType.value.physType) +
+                    getPhysTypeName(eventType.physType) +
                     ' conditions out of limits!!'
                 ),
 
                 // change behavior to frozen
                 action_replacePhysType(
                     usePhysTypeConds
-                        (rand_eventType.value.physType)
+                        (eventType.physType)
                         ({
                             behavior: 'frozen',
                         })
                 ),
-            ],
-
-        nextSeed: rand_eventType.nextSeed,
-    }),
+            ])
+            (rand_eventType),
 };
 
 export const leafCreatureEatFood = {
     name: 'Creature touched food! ',
     func: (_) => (rand_eventType) =>
-    ({
-        value:
-            [
+        // total signature: (rand_eventType) => rand_actionType
+        compose(rand_bind)(rand_lift)
+            ((eventType) => [
                 // announce glorious news in journal IF not already eating
-                (getPhysTypeCond(rand_eventType.value.physType)('behavior') !== 'eating')
+                (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
                     ? action_addJournalEntry(
-                        getPhysTypeName(rand_eventType.value.physType) +
+                        getPhysTypeName(eventType.physType) +
                         ' FOUND FOOD!!'
                     )
                     : action_doNothing(),
@@ -146,48 +143,46 @@ export const leafCreatureEatFood = {
                 // switch creatureType behavior to 'eating'
                 action_replacePhysType(
                     usePhysTypeConds
-                        (rand_eventType.value.physType)
+                        (eventType.physType)
                         ({
                             behavior: 'eating',
                         })
                 ),
-            ],
-
-        nextSeed: rand_eventType.nextSeed,
-    }),
+            ])
+            (rand_eventType),
 };
 
 export const leafDoAndApproveWandering = {
     name: 'Doing and approving behavior: wandering!',
     func: (storeType) => (rand_eventType) =>
-    ({
-        value:
-            [
+        // total signature: (rand_eventType) => rand_actionType
+        compose(rand_bind)(rand_lift)
+            ((eventType) => [
                 action_updateSelectPhysTypesRand
                     // find the given physType in the store
-                    ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(rand_eventType.value.physType))
+                    ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
 
                     // conds to update
                     (
                         // be sure to include conds that will not be randomized
-                        (_) => getPhysTypeCondsObj(rand_eventType.value.physType),
+                        (_) => getPhysTypeCondsObj(eventType.physType),
 
                         // conds driven by randomized acceleration
                         (seed1) => {
                             return (
                                 (randNum) =>
                                 ({
-                                    behavior: getPhysTypeCond(rand_eventType.value.physType)('behavior_request'),
+                                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
                                     // glucose and neuro impacts are more severe 
                                     //  with higher accceleration magnitude
                                     glucose:
-                                        getPhysTypeCond(rand_eventType.value.physType)('glucose') -
+                                        getPhysTypeCond(eventType.physType)('glucose') -
                                         0.3 * Math.abs(randNum) *
                                         getSimTimeStep(storeType),
 
                                     neuro:
-                                        getPhysTypeCond(rand_eventType.value.physType)('neuro') +
+                                        getPhysTypeCond(eventType.physType)('neuro') +
                                         0.2 * Math.abs(randNum) *
                                         getSimTimeStep(storeType),
 
@@ -203,112 +198,46 @@ export const leafDoAndApproveWandering = {
                         // conds driven by randomized heading nudge
                         (seed2) =>
                         ({
-                            heading: getPhysTypeCond(rand_eventType.value.physType)('heading') +
+                            heading: getPhysTypeCond(eventType.physType)('heading') +
                                 rand_val(rand_seededRand(-0.3)(0.3)(seed2)),
                         })
                     ),
 
                 // announce behavior IF behavior has just changed
-                (getPhysTypeCond(rand_eventType.value.physType)('behavior') !==
-                    getPhysTypeCond(rand_eventType.value.physType)('behavior_request'))
-                    ? action_addJournalEntry(getPhysTypeName(rand_eventType.value.physType) +
-                        ' ' + behaviorStrings[getPhysTypeCond(rand_eventType.value.physType)('behavior_request')])
+                (getPhysTypeCond(eventType.physType)('behavior') !==
+                    getPhysTypeCond(eventType.physType)('behavior_request'))
+                    ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                        ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
-            ],
-
-        nextSeed: rand_eventType.nextSeed,
-    }),
+            ])
+            (rand_eventType),
 };
 
 export const leafPreservePhysType = {
     name: 'Preserve given physType',
     func: (_) => (rand_eventType) =>
-    ({
-        value: [
+        // total signature: (rand_eventType) => rand_actionType
+        compose(rand_bind)(rand_lift)
             // replace the physType with the given physType
-            action_replacePhysType(rand_eventType.value.physType),
-        ],
-
-        nextSeed: rand_eventType.nextSeed,
-    }),
+            ((eventType) => action_replacePhysType(eventType.physType))
+            (rand_eventType),
 };
 
 export const leafRemoveFood = {
     name: 'Remove food',
     func: (_) => (rand_eventType) =>
+        // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
-            (
-                // delete the given physType
-                (eventType) => compose(action_deletePhysType)(getPhysTypeID)(eventType.physType)
-            )
+            // delete the given physType
+            ((eventType) => compose(action_deletePhysType)(getPhysTypeID)(eventType.physType))
             (rand_eventType),
-
-    /*
-    ({
-        value:
-            [
-                // delete the given physType
-                action_deletePhysType(
-                    getPhysTypeID(rand_eventType.value.physType)
-                ),
-            ],
-
-        nextSeed: rand_eventType.nextSeed,
-    }),
-    */
 };
 
 export const leafUnknownEvent = {
     name: 'Unknown event!',
     func: (_) => (rand_eventType) =>
-        // action creator is nominally (any) => actionType
-        // lift action creator to give a rand_actionType: (any) => rand_actionType
-        // then bind the lifted function to take a rand_eventType
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)(action_doNothing)
-            // provide the given rand_eventType
+        compose(rand_bind)(rand_lift)
+            ((_) => action_doNothing())
             (rand_eventType),
 };
-
-
-
-
-/*
-// total signature: (any => any) => (any => randType)
-export const rand_lift = func =>
-    anyType => compose(rand_unit)(func)(anyType);
-
-// total signature: (any) => randType
-export const rand_unit = (valAnyType) =>
-({
-    [TYPE_RANDTYPE]: true,
-    value: valAnyType,
-    nextSeed: 0,
-});
-
-// total signature: (any => randType) => (randType => randType)
-export const rand_bind = func =>
-    randType =>
-    ({
-        ...func(randType.value),
-        nextSeed: randType.nextSeed,
-    });
-
-export const leafUnknownEvent = {
-    name: 'Unknown event!',
-    func: (_) =>
-    (eventType) =>
-        // eventType => actionType
-        action_doNothing
-        (eventType)
-};
-
-// eventType => rand_actionType
-// gives: eventType => { value: actionType, nextSeed: 0}
-rand_lift(action_doNothing)
-
-// rand_eventType => rand_actionType
-// gives: {value: eventType, nextSeed: x } => {value: actionType, nextSeed: x }
-rand_bind(rand_lift(action_doNothing))
-compose(rand_bind)(rand_lift)(action_doNothing)
-*/
