@@ -61,6 +61,7 @@ import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
     rand_chooseWeight,
+    rand_concat,
     rand_genRandType,
     rand_getNextSeed,
     rand_nextSeed,
@@ -71,31 +72,20 @@ import {
 
 // *** Recursive leaf nodes
 // signature of leaf func: (storeType) => (rand_eventType) => rand_actionType
-// REFACTOR: Any way to streamline this func further?
 export const recursive_leafUpdateAllPhysTypes = {
     name: 'recursive_leafUpdateAllPhysTypes',
     func: (storeType) => (rand_eventType) =>
         // reduce the entire physType store to a single rand_actionType
-        //  composed of value: [actionType], and nextSeed: the appropriate incremented seed to
-        //  assign back to the simulator
         getPhysTypeStore(storeType).reduce(
             (accum_rand_actionType, thisPt) =>
-                // use anonymous function as shorthand to produce a concatenated [actionType]
-                (
-                    (in_rand_actionType) => rand_genRandType
-                        ([
-                            // include the actionTypes accumulated so far
-                            ...rand_val(accum_rand_actionType),
+                // concatenate randTypes
+                rand_concat
+                    // left-hand side: accumulated rand_actionType so far
+                    (accum_rand_actionType)
 
-                            // then include the next [actionType]
-                            rand_val(in_rand_actionType),
-                        ])
-
-                        // use the seed from the next [actionType]
-                        (rand_nextSeed(in_rand_actionType))
-                )
-                    // generate rand_actionType to pass in as an argument...
+                    // right-hand side: 
                     (
+                        // apply rulebook to this physType to get a rand_actionType...
                         rand_findRule
                             // ... using the given store...
                             (storeType)
@@ -113,11 +103,9 @@ export const recursive_leafUpdateAllPhysTypes = {
 
                             // use our rulebook
                             (ruleBook)
-                    ),
 
-            // start with a unit randType with an empty array as a value
-            rand_unit([])
-        ),
+                        // start reduction with a unit randType with a value of an empty array
+                    ), rand_unit([])),
 };
 
 
@@ -263,7 +251,7 @@ const ruleBook = {
 // *** Rulebook functions
 // general rulebook resolver
 //  find a rule in the rulebook for an event, then apply the rule to get an action
-// THE RULEBOOK IS: (eventType) -> rulebook(storeType) -> actionType or [actionType]
+// THE RULEBOOK IS: (eventType) -> rulebook(storeType) -> [actionType]
 // takes: 
 //  storeType
 //  eventType
@@ -271,8 +259,11 @@ const ruleBook = {
 export const resolveRules = (storeType) => (eventType) =>
     compose
         // unwrap the rand_actionType produced by rand_findRule below
-        // when unwrapped, we get an actionType or [actionType], plus an action to update the seed!!
+        // when unwrapped, we get an [actionType] that consists of a combination of:
+        //  actionType or [actionType], plus an action to update the seed!!
         (rand_actionTypeVal)
+
+        // get a rand_actionType through application of rand_findRule
         (
             // wrap the given eventType in a randType to create a rand_eventType
             // then jump into the randType monad
@@ -284,7 +275,8 @@ export const resolveRules = (storeType) => (eventType) =>
                 // function signature: (eventType) => rand_eventType
                 (rand_genRandType(eventType)(getSimSeed(storeType)))
         )
-        // use our rulebook to use as the first rule node
+
+        // use our rulebook as the starting rule node for rand_findRule
         (ruleBook);
 
 // recursive rulebook node finder
