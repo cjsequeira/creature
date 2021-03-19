@@ -30,8 +30,8 @@ const initial_store = {
         timeStep: UPDATE_FREQ_SIM / 1000.0,
         savedClock: 0.0,
 
-        // initial random number generator seed
-        seed: 0,
+        // random number generator seed
+        seed: Date.now(),
     },
 
     // initial physTypeStore

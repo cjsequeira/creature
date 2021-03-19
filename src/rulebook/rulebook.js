@@ -341,7 +341,7 @@ const leafDoAndApproveWandering = {
                         (seed2) =>
                         ({
                             heading: getPhysTypeCond(rand_eventType.value.physType)('heading') +
-                                rand_unwrapRandType(rand_seededRand(-0.1)(0.1)(seed2)),
+                                rand_unwrapRandType(rand_seededRand(-0.3)(0.3)(seed2)),
                         })
                     ),
 
