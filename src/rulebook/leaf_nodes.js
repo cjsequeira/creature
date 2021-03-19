@@ -247,6 +247,15 @@ export const leafRemoveFood = {
 export const leafUnknownEvent = {
     name: 'Unknown event!',
     func: (_) => (rand_eventType) =>
+        // action creator is nominally (any) => actionType
+        // lift action creator to give a rand_actionType: (any) => rand_actionType
+        // then bind the lifted function to take a rand_eventType
+        // total signature: (rand_eventType) => rand_actionType
+        compose(rand_bind)(rand_lift)(action_doNothing)
+            // provide the given rand_eventType
+            (rand_eventType),
+
+    /*
     ({
         value:
             // do nothing except update system seed
@@ -254,4 +263,49 @@ export const leafUnknownEvent = {
 
         nextSeed: rand_eventType.nextSeed,
     }),
+    */
 };
+
+
+
+
+
+/*
+// total signature: (any => any) => (any => randType)
+export const rand_lift = func =>
+    anyType => compose(rand_unit)(func)(anyType);
+
+// total signature: (any) => randType
+export const rand_unit = (valAnyType) =>
+({
+    [TYPE_RANDTYPE]: true,
+    value: valAnyType,
+    nextSeed: 0,
+});
+
+// total signature: (any => randType) => (randType => randType)
+export const rand_bind = func =>
+    randType =>
+    ({
+        ...func(randType.value),
+        nextSeed: randType.nextSeed,
+    });
+
+export const leafUnknownEvent = {
+    name: 'Unknown event!',
+    func: (_) =>
+    (eventType) =>
+        // eventType => actionType
+        action_doNothing
+        (eventType)
+};
+
+// eventType => rand_actionType
+// gives: eventType => { value: actionType, nextSeed: 0}
+rand_lift(action_doNothing)
+
+// rand_eventType => rand_actionType
+// gives: {value: eventType, nextSeed: x } => {value: actionType, nextSeed: x }
+rand_bind(rand_lift(action_doNothing))
+compose(rand_bind)(rand_lift)(action_doNothing)
+*/
