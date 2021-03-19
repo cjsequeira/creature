@@ -146,17 +146,6 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
 
 
 // *** randM support functions
-// randM generator func - builds a randM from a given value and given seed
-// takes:
-//  valueAnyType: the value to use
-//  seedIntType: the seed to use as the next seed
-export const rand_genRandM = (valueAnyType) => (seedIntType) =>
-({
-    [TYPE_RANDM]: true,
-    value: valueAnyType,
-    nextSeed: seedIntType,
-});
-
 // randM concatenation function
 // ASSUMES that prototype.concat() is defined for lhs!
 // e.g. this function could concatenate two randMs with arrays as values 
@@ -206,6 +195,17 @@ export const rand_val = (randM) => randM.value;
 export const rand_nextSeed = (randM) => randM.nextSeed;
 
 // *** randM generators
+// randM generator func - builds a randM from a given value and given seed
+// takes:
+//  valueAnyType: the value to use
+//  seedIntType: the seed to use as the next seed
+export const rand_genRandM = (valueAnyType) => (seedIntType) =>
+({
+    [TYPE_RANDM]: true,
+    value: valueAnyType,
+    nextSeed: seedIntType,
+});
+
 // randM object random number generator function
 // builds a randM object by generating randM random values for the given props
 // takes: 
