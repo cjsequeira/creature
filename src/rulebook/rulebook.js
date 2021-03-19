@@ -72,6 +72,7 @@ import {
 
 // *** Recursive leaf nodes
 // signature of leaf func: (storeType) => (rand_eventType) => rand_actionType
+// REFACTOR: Any way to streamline this func further?
 export const recursive_leafUpdateAllPhysTypes = {
     name: 'recursive_leafUpdateAllPhysTypes',
     func: (storeType) => (rand_eventType) =>
