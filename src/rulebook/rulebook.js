@@ -265,6 +265,7 @@ export const resolveRules = (storeType) => (eventType) =>
             // wrap the given eventType in a randType to create a rand_eventType
             // then jump into the randType monad
             rand_findRule
+                // store to use
                 (storeType)
 
                 // eventType to use, wrapped into a randType to make "rand_eventType"
