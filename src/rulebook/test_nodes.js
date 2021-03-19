@@ -2,8 +2,6 @@
 
 // ****** Simulation rulebook: test nodes ******
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
-//
-
 
 // *** Our imports
 
@@ -23,31 +21,32 @@ import {
 } from '../reduxlike/store_getters.js';
 
 import { actAsFood } from '../phystypes/food_type.js';
+import { rand_val } from '../sim/seeded_rand.js';
 
 
 // *** Rulebook test nodes
 export const isBehaviorRequestIdling = {
     name: 'Requesting behavior: idling?',
     testFunc: (_) => (rand_eventType) =>
-        getPhysTypeCond(rand_eventType.value.physType)('behavior_request') === 'idling',
+        getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'idling',
 };
 
 export const isBehaviorRequestSleeping = {
     name: 'Requested behavior: sleeping?',
     testFunc: (_) => (rand_eventType) =>
-        getPhysTypeCond(rand_eventType.value.physType)('behavior_request') === 'sleeping',
+        getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'sleeping',
 };
 
 export const isBehaviorRequestWandering = {
     name: 'Requesting behavior: wandering?',
     testFunc: (_) => (rand_eventType) =>
-        getPhysTypeCond(rand_eventType.value.physType)('behavior_request') === 'wandering',
+        getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'wandering',
 };
 
 export const isFoodType = {
     name: 'Is foodType?',
     testFunc: (_) => (rand_eventType) =>
-        getPhysTypeAct(rand_eventType.value.physType) === actAsFood,
+        getPhysTypeAct(rand_val(rand_eventType).physType) === actAsFood,
 };
 
 export const isFoodTouchedByCreature = {
@@ -63,9 +62,9 @@ export const isFoodTouchedByCreature = {
             // keep only creatures closer than a given distance from this foodType
             .filter((ptToTest2) => Math.sqrt(
                 Math.pow(getPhysTypeCond(ptToTest2)('x') -
-                    getPhysTypeCond(rand_eventType.value.physType)('x'), 2.0) +
+                    getPhysTypeCond(rand_val(rand_eventType).physType)('x'), 2.0) +
                 Math.pow(getPhysTypeCond(ptToTest2)('y') -
-                    getPhysTypeCond(rand_eventType.value.physType)('y'), 2.0)
+                    getPhysTypeCond(rand_val(rand_eventType).physType)('y'), 2.0)
             ) < WORLD_TOUCH_DISTANCE)
 
             // any creatures remaining closer than a given distance?
@@ -75,7 +74,7 @@ export const isFoodTouchedByCreature = {
 export const isSimpleCreature = {
     name: 'Is creatureType?',
     testFunc: (_) => (rand_eventType) =>
-        getPhysTypeAct(rand_eventType.value.physType) === actAsSimpleCreature,
+        getPhysTypeAct(rand_val(rand_eventType).physType) === actAsSimpleCreature,
 };
 
 // REFACTOR IDEA: Create an event where the food being touched by the creature can be tagged in, for efficiencies
@@ -93,9 +92,9 @@ export const isCreatureTouchingFood = {
             // keep only food closer than a given distance from this creatureType
             .filter((ptToTest2) => Math.sqrt(
                 Math.pow(getPhysTypeCond(ptToTest2)('x') -
-                    getPhysTypeCond(rand_eventType.value.physType)('x'), 2.0) +
+                    getPhysTypeCond(rand_val(rand_eventType).physType)('x'), 2.0) +
                 Math.pow(getPhysTypeCond(ptToTest2)('y') -
-                    getPhysTypeCond(rand_eventType.value.physType)('y'), 2.0)
+                    getPhysTypeCond(rand_val(rand_eventType).physType)('y'), 2.0)
             ) < WORLD_TOUCH_DISTANCE)
 
             // any food remaining closer than a given distance?
@@ -104,22 +103,22 @@ export const isCreatureTouchingFood = {
 
 export const isEventUpdateAllPhysTypes = {
     name: 'Is event of type EVENT_UPDATE_ALL_PHYSTYPES?',
-    testFunc: (_) => (rand_eventType) => rand_eventType.value.type === EVENT_UPDATE_ALL_PHYSTYPES,
+    testFunc: (_) => (rand_eventType) => rand_val(rand_eventType).type === EVENT_UPDATE_ALL_PHYSTYPES,
 };
 
 export const isEventReplaceCreatureType = {
     name: 'Is event of type EVENT_REPLACE_CREATURETYPE?',
-    testFunc: (_) => (rand_eventType) => rand_eventType.value.type === EVENT_REPLACE_CREATURETYPE,
+    testFunc: (_) => (rand_eventType) => rand_val(rand_eventType).type === EVENT_REPLACE_CREATURETYPE,
 };
 
 export const isEventReplacePhysType = {
     name: 'Is event of type EVENT_REPLACE_PHYSTYPE?',
-    testFunc: (_) => (rand_eventType) => rand_eventType.value.type === EVENT_REPLACE_PHYSTYPE,
+    testFunc: (_) => (rand_eventType) => rand_val(rand_eventType).type === EVENT_REPLACE_PHYSTYPE,
 };
 
 export const isGlucoseNeuroInRange = {
     name: 'Glucose and neuro in range?',
     testFunc: (_) => (rand_eventType) =>
-        (getPhysTypeCond(rand_eventType.value.physType)('glucose') > 0.0) &&
-        (getPhysTypeCond(rand_eventType.value.physType)('neuro') < 100.0),
+        (getPhysTypeCond(rand_val(rand_eventType).physType)('glucose') > 0.0) &&
+        (getPhysTypeCond(rand_val(rand_eventType).physType)('neuro') < 100.0),
 };
