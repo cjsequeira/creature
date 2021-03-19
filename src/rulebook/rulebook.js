@@ -73,35 +73,53 @@ import {
 // *** Recursive leaf nodes
 // signature of leaf func: (storeType) => (rand_eventType) => rand_actionType
 export const recursive_leafUpdateAllPhysTypes = {
-    name: 'RECURSIVE: Update all physTypes',
+    name: 'recursive_leafUpdateAllPhysTypes',
     func: (storeType) => (rand_eventType) =>
         getPhysTypeStore(storeType).reduce(
             (accum_rand_actionType, thisPt) =>
-            ({
-                value:
-                    [
-                        ...accum_rand_actionType.value,
+                ((x) => rand_genRandType
+                    (
+                        [
+                            // include the actionTypes accumulated so far
+                            ...rand_val(accum_rand_actionType),
 
+                            // then use the rulebook to get the next [actionType]...
+                            rand_findRule
+                                //... using the given storeType...
+                                (storeType)
+
+                                // ... and a rand_eventType...
+                                (x)
+
+                                // use our rulebook
+                                (ruleBook)
+                                .value,
+                        ],
+                    )
+                    (
+                        // then use the rulebook to get the next [actionType]...
                         rand_findRule
+                            //... using the given storeType...
                             (storeType)
-                            ({
-                                value: thisPt.act(storeType)(thisPt),
-                                nextSeed: (accum_rand_actionType.nextSeed || rand_eventType.nextSeed),
-                            })
-                            (ruleBook)
-                            .value,
-                    ],
 
-                nextSeed:
-                    rand_findRule
-                        (storeType)
-                        ({
-                            value: thisPt.act(storeType)(thisPt),
-                            nextSeed: (accum_rand_actionType.nextSeed || rand_eventType.nextSeed),
-                        })
-                        (ruleBook)
-                        .nextSeed,
-            }),
+                            // ... and a rand_eventType...
+                            (x)
+
+                            // use our rulebook
+                            (ruleBook)
+                            .nextSeed
+                    )
+                )
+                    // generate a rand_eventType to pass in as an argument...
+                    (
+                        rand_genRandType
+                            // ... built from the eventType produced by physType "act"...
+                            (thisPt.act(storeType)(thisPt))
+
+                            // ... and the seed of the accumulated rand_actionType OR
+                            //  the given rand_eventType
+                            (accum_rand_actionType.nextSeed || rand_eventType.nextSeed)
+                    ),
 
             // start with a unit randType with an array value
             rand_unit([])
@@ -292,10 +310,8 @@ const rand_findRule = (storeType) => (rand_eventType) => (node) => {
     // is test node undefined?
     return (node.testNode === undefined)
         // yes: we assume the given node is a leaf node with a function to apply
-        // we apply the function "func" to return an actionType or [actionType]
-        // expected func signature: (storeType) => (rand_eventType) => actionType or [actionType]
-        // REFACTOR MONAD: to make a node.func unwrapper that gives the proper action_setSimSeed!!!
-        //  This will reduce boilerplate code in all leaf nodes!
+        // we apply the function "func" to return a rand_actionType
+        // expected func signature: (storeType) => (rand_eventType) => rand_actionType
         ? node.func(storeType)(rand_eventType_to_use)
 
         // no: we assume the given node is a test node with a test function

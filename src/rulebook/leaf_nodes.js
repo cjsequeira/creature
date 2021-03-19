@@ -180,26 +180,25 @@ export const leafDoAndApproveWandering = {
                                 accel: randNum,
                             }))
                                 // anonymous function argument: random accel that's at least 
-                                //  a minimum argument
+                                //  a minimum magnitude
                                 (
                                     excludeRange
                                         (2.0)
-                                        (rand_val(
-                                            rand_seededRand(-4.0)(15.0)(seed1)
-                                        ))
+                                        (rand_val(rand_seededRand(-4.0)(20.0)(seed1)))
                                 ),
 
                         // conds driven by randomized heading nudge
-                        (seed2) =>
-                        ({
-                            heading: getPhysTypeCond(eventType.physType)('heading') +
-                                rand_val(rand_seededRand(-0.3)(0.3)(seed2)),
+                        (seed2) => ({
+                            heading:
+                                getPhysTypeCond(eventType.physType)('heading') +
+                                rand_val(rand_seededRand(-0.4)(0.4)(seed2)),
                         })
                     ),
 
                 // announce behavior IF behavior has just changed
                 (getPhysTypeCond(eventType.physType)('behavior') !==
                     getPhysTypeCond(eventType.physType)('behavior_request'))
+
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
                         ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
@@ -238,4 +237,3 @@ export const leafUnknownEvent = {
             ((_) => action_doNothing())
             (rand_eventType),
 };
-
