@@ -157,6 +157,14 @@ export const rand_genRandType = (valueAnyType) => (seedIntType) =>
 export const rand_lift = (func) =>
     anyType => compose(rand_unit)(func)(anyType);
 
+// randType func to lift and then bind
+// takes:
+//  func: the function to lift and then bind, of signature (any) => any
+// returns function with signature (randType) => randType
+// total signature: (any => any) => (randType => randType)
+export const rand_liftBind = (func) =>
+    randType => compose(rand_bind)(rand_lift)(func)(randType);
+
 // randType value unwrap func
 // takes:
 //  randType

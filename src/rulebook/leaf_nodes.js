@@ -29,6 +29,7 @@ import {
 import {
     rand_bind,
     rand_lift,
+    rand_liftBind,
     rand_seededRand,
     rand_val,
 } from '../sim/seeded_rand.js';
@@ -54,7 +55,7 @@ export const leafApproveBehavior = {
         // lift action creator to give a rand_actionType: (any) => rand_actionType
         // then bind the lifted function to take a rand_eventType
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 // update physType behavior
@@ -80,7 +81,7 @@ export const leafApproveBehaviorStopMovement = {
     name: 'Behavior request approved and movement stopped',
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 action_replacePhysType(
@@ -108,7 +109,7 @@ export const leafCondsOOL = {
     name: 'Creature conditions out of limits!',
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 // make an announcement
@@ -133,7 +134,7 @@ export const leafCreatureEatFood = {
     name: 'Creature touched food! ',
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 // announce glorious news in journal IF not already eating
@@ -160,7 +161,7 @@ export const leafDoAndApproveWandering = {
     name: 'Doing and approving behavior: wandering!',
     func: (storeType) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 action_updateSelectPhysTypesRand
@@ -217,7 +218,7 @@ export const leafPreservePhysType = {
     name: 'Preserve given physType',
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // replace the physType with the given physType
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => action_replacePhysType(eventType.physType))
@@ -228,7 +229,7 @@ export const leafRemoveFood = {
     name: 'Remove food',
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // delete the given physType
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => compose(action_deletePhysType)(getPhysTypeID)(eventType.physType))
@@ -239,8 +240,9 @@ export const leafUnknownEvent = {
     name: 'Unknown event!',
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
-        compose(rand_bind)(rand_lift)
+        rand_liftBind
             // signature of this func: (_) => actionType or [actionType]
             ((_) => action_doNothing())
             (rand_eventType),
 };
+
