@@ -152,29 +152,32 @@ const ruleBook = {
             // generate an updated rand_eventType
             rand_genRandType
                 // rand_genRandType value
-                (event_replacePhysType
-                    (usePhysTypeConds
-                        // make an object based on the given physType, with a "behavior_request" prop-obj
-                        (rand_val(rand_eventType).physType)
-                        ({
-                            behavior_request:
-                                // select behavior request from list of given desire funcs using 
-                                // a weighted random number selector
-                                Object.keys(rand_val(rand_eventType).desireFuncType)
-                                // use a randomly-chosen index to select a behavioral desire
-                                [rand_chooseWeight
-                                    // list of numerical desires
-                                    (
-                                        // the code below maps each desire function to a numerical weight
-                                        //  by evaluating it using the given physType
-                                        Object.values(rand_val(rand_eventType).desireFuncType)
-                                            .map(f => f(rand_val(rand_eventType).physType))
-                                    )
-                                    // seed for rand_chooseWeight
-                                    (rand_nextSeed(rand_eventType))
-                                ]
-                        })
-                    )
+                (compose
+                    // create a new event using...
+                    (event_replacePhysType)
+
+                    // ... an object based on the given physType, with a "behavior_request" prop-obj
+                    (usePhysTypeConds(rand_val(rand_eventType).physType))
+
+                    // here is the "behavior_request" prop-obj
+                    ({
+                        behavior_request:
+                            // select behavior request from list of given desire funcs using 
+                            // a weighted random number selector
+                            Object.keys(rand_val(rand_eventType).desireFuncType)
+                            // use a randomly-chosen index to select a behavioral desire
+                            [rand_chooseWeight
+                                // list of numerical desires
+                                (
+                                    // the code below maps each desire function to a numerical weight
+                                    //  by evaluating it using the given physType
+                                    Object.values(rand_val(rand_eventType).desireFuncType)
+                                        .map(f => f(rand_val(rand_eventType).physType))
+                                )
+                                // seed for rand_chooseWeight
+                                (rand_nextSeed(rand_eventType))
+                            ]
+                    })
                 )
                 // rand_genRandType seed
                 // since we just used a system seed, we must point to the next seed when
