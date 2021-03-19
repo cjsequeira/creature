@@ -64,6 +64,7 @@ import {
     rand_chooseWeight,
     rand_getNextSeed,
     rand_unit,
+    rand_val,
 } from '../sim/seeded_rand.js';
 
 
@@ -183,11 +184,8 @@ const ruleBook = {
                 preFunc: (storeType) => (rand_eventType) =>
                 ({
                     // eventType
-                    value:
-                        compose
-                            (event_replacePhysType)
-                            (physTypeDoPhysics(storeType))
-                            (rand_eventType.value.physType),
+                    value: compose(event_replacePhysType)(physTypeDoPhysics(storeType))
+                        (rand_val(rand_eventType).physType),
 
                     nextSeed: rand_eventType.nextSeed,
                 }),
