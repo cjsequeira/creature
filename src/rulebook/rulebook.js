@@ -193,12 +193,19 @@ const ruleBook = {
                 // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
                 preFunc: (storeType) => (rand_eventType) =>
                     rand_genRandType
+                        // rand_genRandType value
                         (
                             compose
+                                // create a new event using...
                                 (event_replacePhysType)
+
+                                // ...a physType with physics applied
                                 (physTypeDoPhysics(storeType))
+
+                                // the physType to apply physics to
                                 (rand_val(rand_eventType).physType)
                         )
+                        // rand_genRandType seed
                         (rand_nextSeed(rand_eventType)),
 
                 testNode: isCreatureTouchingFood,
@@ -249,24 +256,23 @@ const ruleBook = {
 //  storeType
 //  eventType
 // returns [actionType]
-export const resolveRules = (storeType) => (eventType) => {
-    // wrap the given eventType in a randType to create a rand_eventType
-    // then jump into the randType monad
-    const rand_actionType =
-        rand_findRule
-            (storeType)
-            (rand_genRandType(eventType)(getSimSeed(storeType)))
-            (ruleBook);
+export const resolveRules = (storeType) => (eventType) =>
+    compose
+        // unwrap the rand_actionType produced by rand_findRule below
+        // when unwrapped, we get an actionType or [actionType], plus an action to update the seed!!
+        (rand_actionTypeVal)
+        (
+            // wrap the given eventType in a randType to create a rand_eventType
+            // then jump into the randType monad
+            rand_findRule
+                (storeType)
 
-    // manually unwrap the rand_actionType produced by rand_findRule
-    // when unwrapped, we get an actionType or [actionType], plus an action to update the seed!!
-    // REFACTOR to make a rand_actionType unwrapping function!
-    // return value: [actionType]
-    return [
-        rand_actionType.value,
-        action_setSimSeed(rand_actionType.nextSeed),
-    ];
-};
+                // eventType to use, wrapped into a randType to make "rand_eventType"
+                // function signature: (eventType) => rand_eventType
+                (rand_genRandType(eventType)(getSimSeed(storeType)))
+        )
+        // use our rulebook to use as the first rule node
+        (ruleBook);
 
 // recursive rulebook node finder
 // MONAD: operates within the randType monad
