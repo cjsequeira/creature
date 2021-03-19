@@ -23,7 +23,7 @@ import {
 import { splice } from '../utils.js';
 
 import {
-    rand_genRandTypeObj,
+    rand_genRandMObj,
     rand_unitObj,
     rand_valObj,
 } from '../sim/seeded_rand.js';
@@ -97,31 +97,31 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         */
 
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
-            // generate a randTypeObj version of the physTypeStore
-            getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
+            // generate a randMObj version of the physTypeStore
+            getPhysTypeStore(storeType).reduce((accumRandMObj, thisPt) =>
                 [
-                    ...accumRandTypeObj,
+                    ...accumRandMObj,
 
                     // does this physType pass the filter function?
                     (actionType.filterFunc(thisPt))
-                        // yes: create randTypeObj using given randType generators
-                        ? rand_genRandTypeObj
+                        // yes: create randMObj using given randM generators
+                        ? rand_genRandMObj
                             (getPhysTypeCondsObj(thisPt))
                             (actionType.gensForRand)
                             (
                                 (
-                                    accumRandTypeObj.slice(-1)[0] ||
+                                    accumRandMObj.slice(-1)[0] ||
                                     { nextSeed: getSimSeed(storeType) }
                                 ).nextSeed
                             )
 
-                        // no: convert the physType into a unit randTypeObj as is
+                        // no: convert the physType into a unit randMObj as is
                         : rand_unitObj
                             (getPhysTypeCondsObj(thisPt))
                             ({})
                             (
                                 (
-                                    accumRandTypeObj.slice(-1)[0] ||
+                                    accumRandMObj.slice(-1)[0] ||
                                     { nextSeed: getSimSeed(storeType) }
                                 ).nextSeed
                             )
@@ -129,41 +129,41 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                     // start with an empty array
                 ], [])
 
-                // map each randTypeObj back to a physType with updated random conditions
+                // map each randMObj back to a physType with updated random conditions
                 .map(
-                    (thisRandTypeObj, i) =>
+                    (thisRandMObj, i) =>
                         usePhysTypeConds
                             (getPhysTypeStore(storeType)[i])
-                            (rand_valObj(thisRandTypeObj))
+                            (rand_valObj(thisRandMObj))
                 ),
 
 
         /*
         ([
-            // generate an array of randTypeObj objects
-            ...rand_genRandTypeObjArray
+            // generate an array of randMObj objects
+            ...rand_genRandMObjArray
                 // conds objects of physTypes that pass the given filter function
                 (getPhysTypeStore(storeType)
                     .filter(actionType.filterFunc)
                     .map((thisPt) => getPhysTypeCondsObj(thisPt)))
 
-                // array of randType generator functions
+                // array of randM generator functions
                 (actionType.gensForRand)
 
                 // seed to start with
                 (getSimSeed(storeType))
 
-                // then unwrap each randTypeObj object and merge it back in with the appropriate physType
+                // then unwrap each randMObj object and merge it back in with the appropriate physType
                 .map(
-                    (thisRandTypeObjConds, i) =>
+                    (thisRandMObjConds, i) =>
                         // assign conds to physType
                         usePhysTypeConds
                             // select the associated physType using the same given filter func 
                             //  and the map index
                             (getPhysTypeStore(storeType).filter(actionType.filterFunc)[i])
 
-                            // unwrap the randTypeObj conds into a conds object with random values
-                            (rand_valObj(thisRandTypeObjConds))
+                            // unwrap the randMObj conds into a conds object with random values
+                            (rand_valObj(thisRandMObjConds))
                 ),
 
             // also include the physTypes that fail the filter function - these are left AS IS

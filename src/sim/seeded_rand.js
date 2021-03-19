@@ -4,8 +4,8 @@
 
 // *** Our imports
 import {
-    TYPE_RANDTYPE,
-    TYPE_RANDTYPE_OBJ
+    TYPE_RANDM,
+    TYPE_RANDM_OBJ
 } from '../const_vals.js';
 
 import {
@@ -15,7 +15,7 @@ import {
 } from '../utils.js';
 
 
-// *** randType immutable random number generation utilities
+// *** randM immutable random number generation utilities
 // given an input seed, get a future seed
 // takes:
 //  seedIntType: numerical input seed, as int
@@ -37,10 +37,10 @@ export const rand_getNextSeed = (seedIntType) => (skipIntType) =>
 //  minFloatType: minimum bound of random number range, as float
 //  maxFloatType: maximum bound of random number range, as float
 //  seedIntType: the seed to use
-// returns randType
+// returns randM
 export const rand_seededRand = (minFloatType) => (maxFloatType) => (seedIntType) =>
 ({
-    [TYPE_RANDTYPE]: true,
+    [TYPE_RANDM]: true,
 
     value: minFloatType +
         ((seedIntType * 9301 + 49297) % 233280) /
@@ -69,36 +69,36 @@ export const rand_chooseWeight = (weightsFloatType) => (seedIntType) =>
         );
 
 
-// *** randType monad utilities
-// randType monad unit func
+// *** randM monad utilities
+// randM monad unit func
 // takes: 
-//  valAnyType: the value to wrap into randType
-// returns: randType with 0 seed
-// total signature: (any) => randType
+//  valAnyType: the value to wrap into randM
+// returns: randM with 0 seed
+// total signature: (any) => randM
 export const rand_unit = (valAnyType) =>
 ({
-    [TYPE_RANDTYPE]: true,
+    [TYPE_RANDM]: true,
     value: valAnyType,
     nextSeed: 0,
 });
 
-// randType monad bind func
+// randM monad bind func
 // takes:
-//  func: the function to bind, of signature (any) => randType
-// returns function with signature (randType) => randType
-// total signature: (any => randType) => (randType => randType)
+//  func: the function to bind, of signature (any) => randM
+// returns function with signature (randM) => randM
+// total signature: (any => randM) => (randM => randM)
 export const rand_bind = (func) =>
-    randType =>
+    randM =>
     ({
-        [TYPE_RANDTYPE]: true,
-        ...func(randType.value),
-        nextSeed: randType.nextSeed,
+        [TYPE_RANDM]: true,
+        ...func(randM.value),
+        nextSeed: randM.nextSeed,
     });
 
-// randTypeObj monad?? unit object func
-// builds a randTypeObj object by converting given prop-vals to randTypes
+// randMObj monad?? unit object func
+// builds a randMObj object by converting given prop-vals to randMs
 // takes: 
-//  objAnyType: the object to bundle randTypes into
+//  objAnyType: the object to bundle randMs into
 //  objForRand: an object with numerical properties, as:
 //
 //  {
@@ -109,10 +109,10 @@ export const rand_bind = (func) =>
 //
 //  seedIntType: the seed to use
 //  
-// returns randTypeObj object of:
+// returns randMObj object of:
 //  {
 //      ...objAnyType,
-//      ...{property1: randType1, property2: randType2, ...},
+//      ...{property1: randM1, property2: randM2, ...},
 //      nextSeed
 //  }
 // REFACTOR: Do we need to pass in seedIntType? DO we need rand_unitObj at all??
@@ -124,10 +124,10 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
             // object built so far
             ...accumProp,
 
-            // the property to assign a randType to
+            // the property to assign a randM to
             [propValPair[0]]:
 
-            // the unit randType assigned to the property, using i to get the appropriate seed
+            // the unit randM assigned to the property, using i to get the appropriate seed
             {
                 ...rand_unit(propValPair[1]),
                 nextSeed: rand_getNextSeed(seedIntType)(i),
@@ -137,76 +137,76 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
         //  the next seed to be used
         {
             ...objAnyType,
-            [TYPE_RANDTYPE_OBJ]: true,
+            [TYPE_RANDM_OBJ]: true,
             nextSeed: rand_getNextSeed(seedIntType)(Object.entries(objForRand).length - 1),
         }
     );
 
 
-// *** randType support functions
-// randType generator func - builds a randType from a given value and given seed
+// *** randM support functions
+// randM generator func - builds a randM from a given value and given seed
 // takes:
 //  valueAnyType: the value to use
 //  seedIntType: the seed to use as the next seed
-export const rand_genRandType = (valueAnyType) => (seedIntType) =>
+export const rand_genRandM = (valueAnyType) => (seedIntType) =>
 ({
-    [TYPE_RANDTYPE]: true,
+    [TYPE_RANDM]: true,
     value: valueAnyType,
     nextSeed: seedIntType,
 });
 
-// randType concatenation function
+// randM concatenation function
 // ASSUMES that prototype.concat() is defined for lhs!
-// e.g. this function could concatenate two randTypes with arrays as values 
+// e.g. this function could concatenate two randMs with arrays as values 
 // takes:
-//  lhs: the randType on the left-hand side
-//  rhs: the randType to concat: THE SEED FROM RHS WILL BE USED!
-// returns: randType with:
+//  lhs: the randM on the left-hand side
+//  rhs: the randM to concat: THE SEED FROM RHS WILL BE USED!
+// returns: randM with:
 //  {
 //      value: rand_val(lhs) + rand_val(rhs)
 //      nextSeed: rand_nextSeed(rhs)    
 //  }
 export const rand_concat = (lhs) => (rhs) =>
 ({
-    [TYPE_RANDTYPE]: true,
+    [TYPE_RANDM]: true,
     value: rand_val(lhs).concat(rand_val(rhs)),
     nextSeed: rand_nextSeed(rhs),
 });
 
-// randType lift func
+// randM lift func
 // takes:
 //  func: the function to lift, of signature (any) => any
-// returns function with signature (any) => randType
-// total signature: (any => any) => (any => randType)
+// returns function with signature (any) => randM
+// total signature: (any => any) => (any => randM)
 export const rand_lift = (func) =>
     anyType => compose(rand_unit)(func)(anyType);
 
-// randType func to lift and then bind
+// randM func to lift and then bind
 // takes:
 //  func: the function to lift and then bind, of signature (any) => any
-// returns function with signature (randType) => randType
-// total signature: (any => any) => (randType => randType)
+// returns function with signature (randM) => randM
+// total signature: (any => any) => (randM => randM)
 export const rand_liftBind = (func) =>
-    randType => compose(rand_bind)(rand_lift)(func)(randType);
+    randM => compose(rand_bind)(rand_lift)(func)(randM);
 
-// randType value unwrap func
+// randM value unwrap func
 // takes:
-//  randType
+//  randM
 // returns any
-// total signature: (randType) => any
-export const rand_val = (randType) => randType.value;
+// total signature: (randM) => any
+export const rand_val = (randM) => randM.value;
 
-// randType seed unwrap func
+// randM seed unwrap func
 // takes:
-//  randType
+//  randM
 // returns int
-// total signature: (randType) => int
-export const rand_nextSeed = (randType) => randType.nextSeed;
+// total signature: (randM) => int
+export const rand_nextSeed = (randM) => randM.nextSeed;
 
-// randType object random number generator function
-// builds a randType object by generating randType random values for the given props
+// randM object random number generator function
+// builds a randM object by generating randM random values for the given props
 // takes: 
-//  objAnyType: the object to bundle randTypes into
+//  objAnyType: the object to bundle randMs into
 //  ...gensForRand: an array of functions with properties and randomType generators, as:
 //
 //  [
@@ -215,7 +215,7 @@ export const rand_nextSeed = (randType) => randType.nextSeed;
 //      ...
 //  ]
 //
-//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randType
+//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randM
 //      for example, seededRand(0.0)(1.0) would have the appropriate signature 
 //          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //
@@ -224,17 +224,17 @@ export const rand_nextSeed = (randType) => randType.nextSeed;
 // returns object of:
 //  {
 //      ...objAnyType,
-//      ...{property1: randType1, property2: randType2, ...},
-//      [TYPE_RANDTYPE_OBJ]: true,
+//      ...{property1: randM1, property2: randM2, ...},
+//      [TYPE_RANDM_OBJ]: true,
 //      nextSeed
 //  }
-export const rand_genRandTypeObj = (objAnyType) => (...gensForRand) => (seedIntType) =>
+export const rand_genRandMObj = (objAnyType) => (...gensForRand) => (seedIntType) =>
     // build an object by applying each generator function
     gensForRand.flat(Infinity).reduce((accumObj, thisGenFunc, i) =>
     ({
         ...accumObj,
 
-        // get randTypes for requested properties by applying generator functions
+        // get randMs for requested properties by applying generator functions
         ...thisGenFunc(rand_getNextSeed(seedIntType)(i)),
 
         // store the proper next seed
@@ -243,15 +243,15 @@ export const rand_genRandTypeObj = (objAnyType) => (...gensForRand) => (seedIntT
         // start with a template object
         {
             ...objAnyType,
-            [TYPE_RANDTYPE_OBJ]: true,
+            [TYPE_RANDM_OBJ]: true,
         });
 
-// randType object array random number generator function
-// builds an array of randType objects by generating randType random values for the given props
+// randM object array random number generator function
+// builds an array of randM objects by generating randM random values for the given props
 // each object in the array has the appropriate seed, with the final object in the array
 //  having the most advanced seed
 // takes: 
-//  objAnyType: the object to bundle randTypes into
+//  objAnyType: the object to bundle randMs into
 //  ...gensForRand: an array of functions with properties and randomType generators, as:
 //
 //  [
@@ -260,7 +260,7 @@ export const rand_genRandTypeObj = (objAnyType) => (...gensForRand) => (seedIntT
 //      ...
 //  ]
 //
-//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randType
+//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randM
 //      for example, seededRand(0.0)(1.0) would have the appropriate signature 
 //          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //
@@ -269,19 +269,19 @@ export const rand_genRandTypeObj = (objAnyType) => (...gensForRand) => (seedIntT
 // returns object of:
 //  {
 //      ...objAnyType,
-//      ...{property1: randType1, property2: randType2, ...},
+//      ...{property1: randM1, property2: randM2, ...},
 //      nextSeed
 //  }
-export const rand_genRandTypeObjArray = (...objArrayAnyType) => (...gensForRand) => (seedIntType) =>
+export const rand_genRandMObjArray = (...objArrayAnyType) => (...gensForRand) => (seedIntType) =>
     // for all objects in the given array...
     objArrayAnyType.flat(Infinity).reduce((accumArray, thisObj) =>
         [
-            // array of randTypeObj objects built so far
+            // array of randMObj objects built so far
             ...accumArray,
 
-            // build another randTypeObj object out of property-value entries,
+            // build another randMObj object out of property-value entries,
             //  being sure to assign the proper starting seed
-            rand_genRandTypeObj
+            rand_genRandMObj
                 (thisObj)
                 (gensForRand)
                 ((accumArray.slice(-1)[0] || { nextSeed: seedIntType }).nextSeed),
@@ -289,16 +289,16 @@ export const rand_genRandTypeObjArray = (...objArrayAnyType) => (...gensForRand)
         // start with an empty array
         []);
 
-// unwrap the floating-point values in a randTypeObj
+// unwrap the floating-point values in a randMObj
 // takes:
-//  randTypeObj
-// returns object with randType prop-vals unwrapped into float
-// total signature: (randTypeObj) => objAnyType
-export const rand_valObj = (randTypeObj) =>
+//  randMObj
+// returns object with randM prop-vals unwrapped into float
+// total signature: (randMObj) => objAnyType
+export const rand_valObj = (randMObj) =>
     // build an object out of entries
-    Object.entries(randTypeObj)
-        // filter out markers of randTypeObj
-        .filter((propGenPair) => propGenPair[0] !== TYPE_RANDTYPE_OBJ)
+    Object.entries(randMObj)
+        // filter out markers of randMObj
+        .filter((propGenPair) => propGenPair[0] !== TYPE_RANDM_OBJ)
         .filter((propGenPair) => propGenPair[0] !== 'nextSeed')
 
         // reduce the remaining entries
@@ -310,8 +310,8 @@ export const rand_valObj = (randTypeObj) =>
 
                 // property name to add
                 [propGenPair[0]]:
-                    // unwrap randTypes and leave others as is
-                    ({ ...propGenPair[1] }.hasOwnProperty(TYPE_RANDTYPE))
+                    // unwrap randMs and leave others as is
+                    ({ ...propGenPair[1] }.hasOwnProperty(TYPE_RANDM))
                         ? rand_val(propGenPair[1])
                         : propGenPair[1]
             }),

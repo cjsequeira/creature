@@ -15,7 +15,7 @@
 //      In other words, we could still have button clicks dispatch events directly rather
 //      than going through the rulebook.
 // 
-// RANDTYPE MONAD: The rulebook's findRule function operates within the randType monad!!!
+// RANDM MONAD: The rulebook's findRule function operates within the randM monad!!!
 //  findRule takes a rand_eventType and returns a rand_actionType
 //  the rand_actionType is unwrapped to get [actionType] plus an action to update the sim seed!!!
 //
@@ -62,7 +62,7 @@ import { physTypeDoPhysics } from '../sim/physics.js';
 import {
     rand_chooseWeight,
     rand_concat,
-    rand_genRandType,
+    rand_genRandM,
     rand_getNextSeed,
     rand_nextSeed,
     rand_unit,
@@ -78,7 +78,7 @@ export const recursive_leafUpdateAllPhysTypes = {
         // reduce the entire physType store to a single rand_actionType
         getPhysTypeStore(storeType).reduce(
             (accum_rand_actionType, thisPt) =>
-                // concatenate randTypes
+                // concatenate randMs
                 rand_concat
                     // left-hand side: accumulated rand_actionType so far
                     (accum_rand_actionType)
@@ -92,7 +92,7 @@ export const recursive_leafUpdateAllPhysTypes = {
 
                             // ... and a rand_eventType...
                             (
-                                rand_genRandType
+                                rand_genRandM
                                     // ... built from the eventType produced by physType "act"...
                                     (thisPt.act(storeType)(thisPt))
 
@@ -104,7 +104,7 @@ export const recursive_leafUpdateAllPhysTypes = {
                             // use our rulebook
                             (ruleBook)
 
-                        // start reduction with a unit randType with a value of an empty array
+                        // start reduction with a unit randM with a value of an empty array
                     ), rand_unit([])),
 };
 
@@ -126,7 +126,7 @@ const orTestRules = (...testRules) => ({
 
 // unwrap a rand_actionType into an actionType plus an action to update the simulation seed
 // takes:
-//  rand_actionType: an actionType wrapped in a randType
+//  rand_actionType: an actionType wrapped in a randM
 // returns [actionType]
 const rand_actionTypeVal = (rand_actionType) => ([
     rand_val(rand_actionType),
@@ -150,8 +150,8 @@ const ruleBook = {
         // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
         preFunc: (_) => (rand_eventType) =>
             // generate an updated rand_eventType
-            rand_genRandType
-                // rand_genRandType value
+            rand_genRandM
+                // rand_genRandM value
                 (compose
                     // create a new event using...
                     (event_replacePhysType)
@@ -179,7 +179,7 @@ const ruleBook = {
                             ]
                     })
                 )
-                // rand_genRandType seed
+                // rand_genRandM seed
                 // since we just used a system seed, we must point to the next seed when
                 //  assembling an updated rand_eventType
                 (rand_getNextSeed(rand_nextSeed(rand_eventType))(0)),
@@ -192,8 +192,8 @@ const ruleBook = {
                 // the function application below INCLUDES wall collision testing!
                 // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
                 preFunc: (storeType) => (rand_eventType) =>
-                    rand_genRandType
-                        // rand_genRandType value
+                    rand_genRandM
+                        // rand_genRandM value
                         (
                             compose
                                 // create a new event using...
@@ -205,7 +205,7 @@ const ruleBook = {
                                 // the physType to apply physics to
                                 (rand_val(rand_eventType).physType)
                         )
-                        // rand_genRandType seed
+                        // rand_genRandM seed
                         (rand_nextSeed(rand_eventType)),
 
                 testNode: isCreatureTouchingFood,
@@ -265,25 +265,25 @@ export const resolveRules = (storeType) => (eventType) =>
 
         // get a rand_actionType through application of rand_findRule
         (
-            // wrap the given eventType in a randType to create a rand_eventType
-            // then jump into the randType monad
+            // wrap the given eventType in a randM to create a rand_eventType
+            // then jump into the randM monad
             rand_findRule
                 // store to use
                 (storeType)
 
-                // eventType to use, wrapped into a randType to make "rand_eventType"
+                // eventType to use, wrapped into a randM to make "rand_eventType"
                 // function signature: (eventType) => rand_eventType
-                (rand_genRandType(eventType)(getSimSeed(storeType)))
+                (rand_genRandM(eventType)(getSimSeed(storeType)))
         )
 
         // use our rulebook as the starting rule node for rand_findRule
         (ruleBook);
 
 // recursive rulebook node finder
-// MONAD: operates within the randType monad
+// MONAD: operates within the randM monad
 // assumes a rule exists in the rulebook for every possible physType
 // takes:
-//  rand_eventType: an eventType wrapped in a randType
+//  rand_eventType: an eventType wrapped in a randM
 //  node: the rule node to use
 // returns rand_actionType 
 const rand_findRule = (storeType) => (rand_eventType) => (node) => {

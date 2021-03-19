@@ -93,4 +93,4 @@ Description:
 
 ### **eventType**: The type for simulator-specific events - TO BE ADDED
 
-### **randType, rand_eventType, rand_actionType **: Monadic types for use of immutable pseudo-random numbers - TO BE ADDED
+### **randM, rand_eventType, rand_actionType **: Monadic types for use of immutable pseudo-random numbers - TO BE ADDED

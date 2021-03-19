@@ -28,7 +28,7 @@ import {
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 
 import {
-    rand_genRandTypeObj,
+    rand_genRandMObj,
     rand_getNextSeed,
     rand_unitObj,
 } from '../sim/seeded_rand.js';
@@ -75,27 +75,27 @@ export const simReducer = (inStoreType) => (inActionType) =>
             seed:
                 // does the physType store have physTypes in it?
                 (getPhysTypeStore(storeType))
-                    // yes: generate a randTypeObj version of the physTypeStore
-                    ? getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
+                    // yes: generate a randMObj version of the physTypeStore
+                    ? getPhysTypeStore(storeType).reduce((accumRandMObj, thisPt) =>
                         // does this physType pass the filter function?
                         (actionType.filterFunc(thisPt))
-                            // yes: create randTypeObj using given randType generators
-                            ? rand_genRandTypeObj
+                            // yes: create randMObj using given randM generators
+                            ? rand_genRandMObj
                                 (getPhysTypeCondsObj(thisPt))
                                 (actionType.gensForRand)
                                 (
                                     (
-                                        accumRandTypeObj || { nextSeed: getSimSeed(storeType) }
+                                        accumRandMObj || { nextSeed: getSimSeed(storeType) }
                                     ).nextSeed
                                 )
 
-                            // no: convert the physType into a unit randTypeObj as is
+                            // no: convert the physType into a unit randMObj as is
                             : rand_unitObj
                                 (getPhysTypeCondsObj(thisPt))
                                 ({})
                                 (
                                     (
-                                        accumRandTypeObj || { nextSeed: getSimSeed(storeType) }
+                                        accumRandMObj || { nextSeed: getSimSeed(storeType) }
                                     ).nextSeed
                                 )
 

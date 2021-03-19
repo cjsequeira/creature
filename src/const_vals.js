@@ -37,8 +37,8 @@ export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
 
 // *** Special datatype names
-export const TYPE_RANDTYPE = 'TYPE_RANDTYPE';
-export const TYPE_RANDTYPE_OBJ = 'TYPE_RANDTYPE_OBJ';
+export const TYPE_RANDM = 'TYPE_RANDM';
+export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 
 
 // *** Event names
