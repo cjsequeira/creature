@@ -75,53 +75,47 @@ import {
 export const recursive_leafUpdateAllPhysTypes = {
     name: 'recursive_leafUpdateAllPhysTypes',
     func: (storeType) => (rand_eventType) =>
+        // reduce the entire physType store to a single rand_actionType
+        //  composed of value: [actionType], and nextSeed: the appropriate incremented seed to
+        //  assign back to the simulator
         getPhysTypeStore(storeType).reduce(
             (accum_rand_actionType, thisPt) =>
-                ((x) => rand_genRandType
-                    (
-                        [
+                // use anonymous function as shorthand to produce a concatenated [actionType]
+                (
+                    (in_rand_actionType) => rand_genRandType
+                        ([
                             // include the actionTypes accumulated so far
                             ...rand_val(accum_rand_actionType),
 
-                            // then use the rulebook to get the next [actionType]...
-                            rand_findRule
-                                //... using the given storeType...
-                                (storeType)
+                            // then include the next [actionType]
+                            rand_val(in_rand_actionType),
+                        ])
 
-                                // ... and a rand_eventType...
-                                (x)
-
-                                // use our rulebook
-                                (ruleBook)
-                                .value,
-                        ],
-                    )
+                        // use the seed from the next [actionType]
+                        (rand_nextSeed(in_rand_actionType))
+                )
+                    // generate rand_actionType to pass in as an argument...
                     (
-                        // then use the rulebook to get the next [actionType]...
                         rand_findRule
-                            //... using the given storeType...
+                            // ... using the given store...
                             (storeType)
 
                             // ... and a rand_eventType...
-                            (x)
+                            (
+                                rand_genRandType
+                                    // ... built from the eventType produced by physType "act"...
+                                    (thisPt.act(storeType)(thisPt))
+
+                                    // ... and the seed of the accumulated rand_actionType OR
+                                    //  the given rand_eventType
+                                    (accum_rand_actionType.nextSeed || rand_eventType.nextSeed)
+                            )
 
                             // use our rulebook
                             (ruleBook)
-                            .nextSeed
-                    )
-                )
-                    // generate a rand_eventType to pass in as an argument...
-                    (
-                        rand_genRandType
-                            // ... built from the eventType produced by physType "act"...
-                            (thisPt.act(storeType)(thisPt))
-
-                            // ... and the seed of the accumulated rand_actionType OR
-                            //  the given rand_eventType
-                            (accum_rand_actionType.nextSeed || rand_eventType.nextSeed)
                     ),
 
-            // start with a unit randType with an array value
+            // start with a unit randType with an empty array as a value
             rand_unit([])
         ),
 };
