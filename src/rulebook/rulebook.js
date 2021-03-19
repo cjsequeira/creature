@@ -48,7 +48,7 @@ import {
     isSimpleCreature,
 } from './test_nodes.js';
 
-import { orTests } from '../utils.js';
+import { compose, orTests } from '../utils.js';
 import { action_setSimSeed } from '../reduxlike/action_creators.js';
 
 import {
@@ -183,8 +183,11 @@ const ruleBook = {
                 preFunc: (storeType) => (rand_eventType) =>
                 ({
                     // eventType
-                    value: event_replacePhysType
-                        (physTypeDoPhysics(storeType)(rand_eventType.value.physType)),
+                    value:
+                        compose
+                            (event_replacePhysType)
+                            (physTypeDoPhysics(storeType))
+                            (rand_eventType.value.physType),
 
                     nextSeed: rand_eventType.nextSeed,
                 }),
