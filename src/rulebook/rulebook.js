@@ -62,7 +62,9 @@ import { physTypeDoPhysics } from '../sim/physics.js';
 import {
     rand_bind,
     rand_chooseWeight,
+    rand_genRandType,
     rand_getNextSeed,
+    rand_nextSeed,
     rand_unit,
     rand_val,
 } from '../sim/seeded_rand.js';
@@ -150,28 +152,28 @@ const ruleBook = {
                         // signature: (physType) => (conds) => physType
                         usePhysTypeConds
                             // make an object based on the given physType, with a "behavior_request" prop-obj
-                            (rand_eventType.value.physType)
+                            (rand_val(rand_eventType).physType)
                             ({
                                 behavior_request:
                                     // select behavior request from list of given desire funcs using 
                                     // a weighted random number selector
-                                    Object.keys(rand_eventType.value.desireFuncType)
+                                    Object.keys(rand_val(rand_eventType).desireFuncType)
                                     // use a randomly-chosen index to select a behavioral desire
                                     [rand_chooseWeight
                                         // list of numerical desires
                                         (
                                             // the code below maps each desire function to a numerical weight
                                             //  by evaluating it using the given physType
-                                            Object.values(rand_eventType.value.desireFuncType).map(f => f(rand_eventType.value.physType))
+                                            Object.values(rand_val(rand_eventType).desireFuncType).map(f => f(rand_val(rand_eventType).physType))
                                         )
                                         // seed for rand_chooseWeight
-                                        (rand_eventType.nextSeed)
+                                        (rand_nextSeed(rand_eventType))
                                     ]
                             })
                     ),
 
             // our use of rand_chooseWeight requires a manual advance to the next system seed!
-            nextSeed: rand_getNextSeed(rand_eventType.nextSeed)(0),
+            nextSeed: rand_getNextSeed(rand_nextSeed(rand_eventType))(0),
         }),
 
         testNode: isSimpleCreature,
@@ -182,13 +184,14 @@ const ruleBook = {
                 // the function application below INCLUDES wall collision testing!
                 // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
                 preFunc: (storeType) => (rand_eventType) =>
-                ({
-                    // eventType
-                    value: compose(event_replacePhysType)(physTypeDoPhysics(storeType))
-                        (rand_val(rand_eventType).physType),
-
-                    nextSeed: rand_eventType.nextSeed,
-                }),
+                    rand_genRandType
+                        (
+                            compose
+                                (event_replacePhysType)
+                                (physTypeDoPhysics(storeType))
+                                (rand_val(rand_eventType).physType)
+                        )
+                        (rand_nextSeed(rand_eventType)),
 
                 testNode: isCreatureTouchingFood,
                 yes: leafCreatureEatFood,
@@ -244,10 +247,7 @@ export const resolveRules = (storeType) => (eventType) => {
     const rand_actionType =
         rand_findRule
             (storeType)
-            ({
-                value: eventType,
-                nextSeed: getSimSeed(storeType),
-            })
+            (rand_genRandType(eventType)(getSimSeed(storeType)))
             (ruleBook);
 
     // manually unwrap the rand_actionType produced by rand_findRule

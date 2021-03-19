@@ -90,7 +90,7 @@ export const rand_bind = func =>
         nextSeed: randType.nextSeed,
     });
 
-// randTypeObj monad unit object func
+// randTypeObj monad?? unit object func
 // builds a randTypeObj object by converting given prop-vals to randTypes
 // takes: 
 //  objAnyType: the object to bundle randTypes into
@@ -139,20 +139,37 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
 
 
 // *** randType support functions
+// randType generator func - builds a randType from a given value and given seed
+// takes:
+//  valueAnyType: the value to use
+//  seedIntType: the seed to use as the next seed
+export const rand_genRandType = (valueAnyType) => (seedIntType) =>
+({
+    value: valueAnyType,
+    nextSeed: seedIntType,
+});
+
 // randType lift func
 // takes:
 //  func: the function to lift, of signature (any) => any
 // returns function with signature (any) => randType
 // total signature: (any => any) => (any => randType)
-export const rand_lift = func =>
+export const rand_lift = (func) =>
     anyType => compose(rand_unit)(func)(anyType);
 
-// randType unwrap func
+// randType value unwrap func
 // takes:
 //  randType
 // returns any
 // total signature: (randType) => any
-export const rand_val = randType => randType.value;
+export const rand_val = (randType) => randType.value;
+
+// randType seed unwrap func
+// takes:
+//  randType
+// returns int
+// total signature: (randType) => int
+export const rand_nextSeed = (randType) => randType.nextSeed;
 
 // randType object random number generator function
 // builds a randType object by generating randType random values for the given props
