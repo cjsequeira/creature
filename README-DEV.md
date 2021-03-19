@@ -1,4 +1,4 @@
-# Creature version 0.1.2 - README for developers
+# Creature version 0.1.3 - README for developers
 
 ## System architecture
 
@@ -92,3 +92,5 @@ Description:
 ### **actionType**: The type for Redux-like actions - TO BE ADDED
 
 ### **eventType**: The type for simulator-specific events - TO BE ADDED
+
+### **randType**: A monad for immutable pseudo-random numbers - TO BE ADDED
