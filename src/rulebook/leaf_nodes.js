@@ -55,6 +55,7 @@ export const leafApproveBehavior = {
         // then bind the lifted function to take a rand_eventType
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
+            // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 // update physType behavior
                 action_replacePhysType(
@@ -80,6 +81,7 @@ export const leafApproveBehaviorStopMovement = {
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
+            // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 action_replacePhysType(
                     usePhysTypeConds
@@ -107,6 +109,7 @@ export const leafCondsOOL = {
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
+            // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 // make an announcement
                 action_addJournalEntry(
@@ -131,6 +134,7 @@ export const leafCreatureEatFood = {
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
+            // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 // announce glorious news in journal IF not already eating
                 (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
@@ -157,6 +161,7 @@ export const leafDoAndApproveWandering = {
     func: (storeType) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
+            // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 action_updateSelectPhysTypesRand
                     // find the given physType in the store
@@ -219,6 +224,7 @@ export const leafPreservePhysType = {
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
             // replace the physType with the given physType
+            // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => action_replacePhysType(eventType.physType))
             (rand_eventType),
 };
@@ -229,6 +235,7 @@ export const leafRemoveFood = {
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
             // delete the given physType
+            // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => compose(action_deletePhysType)(getPhysTypeID)(eventType.physType))
             (rand_eventType),
 };
@@ -238,6 +245,7 @@ export const leafUnknownEvent = {
     func: (_) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         compose(rand_bind)(rand_lift)
+            // signature of this func: (_) => actionType or [actionType]
             ((_) => action_doNothing())
             (rand_eventType),
 };

@@ -281,6 +281,9 @@ const rand_findRule = (storeType) => (rand_eventType) => (node) => {
         // expected func signature: (storeType) => (rand_eventType) => actionType or [actionType]
         // REFACTOR MONAD: to make a node.func unwrapper that gives the proper action_setSimSeed!!!
         //  This will reduce boilerplate code in all leaf nodes!
+        // REFACTOR: can we put rand_bind(rand_lift) here and remove from leaf nodes?
+        //  e.g. compose(rand_bind)(rand_lift)(node.func(storeType))
+        //  Then node.func would go back to being (storeType) => (eventType) => actionType!
         ? node.func(storeType)(rand_eventType_to_use)
 
         // no: we assume the given node is a test node with a test function
