@@ -86,6 +86,7 @@ export const rand_unit = (valAnyType) =>
 export const rand_bind = func =>
     randType =>
     ({
+        [TYPE_RANDTYPE]: true,
         ...func(randType.value),
         nextSeed: randType.nextSeed,
     });
@@ -145,6 +146,7 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
 //  seedIntType: the seed to use as the next seed
 export const rand_genRandType = (valueAnyType) => (seedIntType) =>
 ({
+    [TYPE_RANDTYPE]: true,
     value: valueAnyType,
     nextSeed: seedIntType,
 });
