@@ -27,8 +27,6 @@ import {
 } from '../reduxlike/store_getters.js';
 
 import {
-    rand_bind,
-    rand_lift,
     rand_liftBind,
     rand_seededRand,
     rand_val,
@@ -59,17 +57,15 @@ export const leafApproveBehavior = {
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
                 // update physType behavior
-                action_replacePhysType(
-                    usePhysTypeConds
-                        (eventType.physType)
-                        ({
-                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
-                        })
-                ),
+                compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
+                    ({
+                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                    }),
 
                 // announce behavior IF behavior has just changed
                 (getPhysTypeCond(eventType.physType)('behavior') !==
                     getPhysTypeCond(eventType.physType)('behavior_request'))
+
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
                         ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
@@ -84,20 +80,18 @@ export const leafApproveBehaviorStopMovement = {
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => [
-                action_replacePhysType(
-                    usePhysTypeConds
-                        (eventType.physType)
-                        ({
-                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
+                    ({
+                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
-                            speed: 0.0,
-                            accel: 0.0
-                        })
-                ),
+                        speed: 0.0,
+                        accel: 0.0
+                    }),
 
                 // announce behavior IF behavior has just changed
                 (getPhysTypeCond(eventType.physType)('behavior') !==
                     getPhysTypeCond(eventType.physType)('behavior_request'))
+
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
                         ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
@@ -119,13 +113,10 @@ export const leafCondsOOL = {
                 ),
 
                 // change behavior to frozen
-                action_replacePhysType(
-                    usePhysTypeConds
-                        (eventType.physType)
-                        ({
-                            behavior: 'frozen',
-                        })
-                ),
+                compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
+                    ({
+                        behavior: 'frozen',
+                    }),
             ])
             (rand_eventType),
 };
@@ -141,18 +132,14 @@ export const leafCreatureEatFood = {
                 (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
                     ? action_addJournalEntry(
                         getPhysTypeName(eventType.physType) +
-                        ' FOUND FOOD!!'
-                    )
+                        ' FOUND FOOD!!')
                     : action_doNothing(),
 
                 // switch creatureType behavior to 'eating'
-                action_replacePhysType(
-                    usePhysTypeConds
-                        (eventType.physType)
-                        ({
-                            behavior: 'eating',
-                        })
-                ),
+                compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
+                    ({
+                        behavior: 'eating',
+                    }),
             ])
             (rand_eventType),
 };
@@ -170,12 +157,12 @@ export const leafDoAndApproveWandering = {
 
                     // conds to update
                     (
-                        // be sure to include conds that will not be randomized
-                        (_) => getPhysTypeCondsObj(eventType.physType),
-
                         // conds driven by randomized acceleration
                         (seed1) =>
+                            // anonymous function to produce randomized conds
                             ((randNum) => ({
+                                // be sure to include conds that will not be randomized
+                                ...getPhysTypeCondsObj(eventType.physType),
                                 behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
                                 // glucose and neuro impacts are more severe 
@@ -192,8 +179,14 @@ export const leafDoAndApproveWandering = {
 
                                 accel: randNum,
                             }))
-                                (excludeRange(2.0)
-                                    (rand_val(rand_seededRand(-4.0)(15.0)(seed1)))
+                                // anonymous function argument: random accel that's at least 
+                                //  a minimum argument
+                                (
+                                    excludeRange
+                                        (2.0)
+                                        (rand_val(
+                                            rand_seededRand(-4.0)(15.0)(seed1)
+                                        ))
                                 ),
 
                         // conds driven by randomized heading nudge
