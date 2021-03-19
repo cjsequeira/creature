@@ -76,36 +76,39 @@ export const recursive_leafUpdateAllPhysTypes = {
     name: 'recursive_leafUpdateAllPhysTypes',
     func: (storeType) => (rand_eventType) =>
         // reduce the entire physType store to a single rand_actionType
-        getPhysTypeStore(storeType).reduce(
-            (accum_rand_actionType, thisPt) =>
-                // concatenate randMs
-                rand_concat
-                    // left-hand side: accumulated rand_actionType so far
-                    (accum_rand_actionType)
+        getPhysTypeStore(storeType).reduce((accum_rand_actionType, thisPt) =>
+            // concatenate randMs
+            rand_concat
+                // left-hand side: accumulated rand_actionType so far
+                (accum_rand_actionType)
 
-                    // right-hand side: 
-                    (
-                        // apply rulebook to this physType to get a rand_actionType...
-                        rand_findRule
-                            // ... using the given store...
-                            (storeType)
+                // right-hand side: 
+                (
+                    // apply rulebook to this physType to get a rand_actionType...
+                    rand_findRule
+                        // ... using the given store...
+                        (storeType)
 
-                            // ... and a rand_eventType...
-                            (
-                                rand_genRandM
-                                    // ... built from the eventType produced by physType "act"...
-                                    (thisPt.act(storeType)(thisPt))
+                        // ... and a rand_eventType...
+                        (
+                            rand_genRandM
+                                // ... built from the eventType produced by physType "act"...
+                                (thisPt.act(storeType)(thisPt))
 
-                                    // ... and the seed of the accumulated rand_actionType OR
-                                    //  the given rand_eventType
-                                    (accum_rand_actionType.nextSeed || rand_eventType.nextSeed)
-                            )
+                                // ... and the seed of the accumulated rand_actionType OR
+                                //  the given rand_eventType if accumulated rand_actionType is empty
+                                (
+                                    (rand_val(accum_rand_actionType).length === 0)
+                                        ? rand_nextSeed(rand_eventType)
+                                        : rand_nextSeed(accum_rand_actionType)
+                                )
+                        )
 
-                            // use our rulebook
-                            (ruleBook)
+                        // use our rulebook
+                        (ruleBook)
 
-                        // start reduction with a unit randM with a value of an empty array
-                    ), rand_unit([])),
+                    // start reduction with a unit randM with a value of an empty array
+                ), rand_unit([])),
 };
 
 
