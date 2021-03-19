@@ -25,7 +25,7 @@ import {
 
 import {
     rand_seededRand,
-    rand_unwrapRandType,
+    rand_val,
 } from '../sim/seeded_rand.js';
 
 
@@ -191,7 +191,7 @@ export const leafDoAndApproveWandering = {
                             )
                                 (excludeRange
                                     (2.0)
-                                    (rand_unwrapRandType(rand_seededRand(-4.0)(15.0)(seed1)))
+                                    (rand_val(rand_seededRand(-4.0)(15.0)(seed1)))
                                 )
                         },
 
@@ -199,7 +199,7 @@ export const leafDoAndApproveWandering = {
                         (seed2) =>
                         ({
                             heading: getPhysTypeCond(rand_eventType.value.physType)('heading') +
-                                rand_unwrapRandType(rand_seededRand(-0.3)(0.3)(seed2)),
+                                rand_val(rand_seededRand(-0.3)(0.3)(seed2)),
                         })
                     ),
 

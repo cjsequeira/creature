@@ -25,7 +25,7 @@ import { splice } from '../utils.js';
 import {
     rand_genRandTypeObj,
     rand_unitObj,
-    rand_unwrapRandTypeObj,
+    rand_valObj,
 } from '../sim/seeded_rand.js';
 
 
@@ -134,7 +134,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                     (thisRandTypeObj, i) =>
                         usePhysTypeConds
                             (getPhysTypeStore(storeType)[i])
-                            (rand_unwrapRandTypeObj(thisRandTypeObj))
+                            (rand_valObj(thisRandTypeObj))
                 ),
 
 
@@ -163,7 +163,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                             (getPhysTypeStore(storeType).filter(actionType.filterFunc)[i])
 
                             // unwrap the randTypeObj conds into a conds object with random values
-                            (rand_unwrapRandTypeObj(thisRandTypeObjConds))
+                            (rand_valObj(thisRandTypeObjConds))
                 ),
 
             // also include the physTypes that fail the filter function - these are left AS IS

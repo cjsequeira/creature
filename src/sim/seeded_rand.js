@@ -56,7 +56,7 @@ export const rand_chooseWeight = (weightsFloatType) => (seedIntType) =>
     selectWeight
         (weightsFloatType)
         (
-            rand_unwrapRandType(
+            rand_val(
                 rand_seededRand
                     (0.0)
                     (sum(weightsFloatType))
@@ -141,9 +141,9 @@ export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
 // *** randType support functions
 // randType lift func
 // takes:
-//  func: the function to lift, of signature (typeA) => typeA
+//  func: the function to lift, of signature (typeA) => any
 // returns function with signature (typeA) => randType
-// total signature: (typeA => typeA) => (typeA => randType)
+// total signature: (typeA => any) => (typeA => randType)
 export const rand_lift = func =>
     typeA => compose(rand_unit)(func)(typeA);
 
@@ -152,7 +152,7 @@ export const rand_lift = func =>
 //  randType
 // returns any
 // total signature: (randType) => any
-export const rand_unwrapRandType = randType => randType.value;
+export const rand_val = randType => randType.value;
 
 // randType object random number generator function
 // builds a randType object by generating randType random values for the given props
@@ -245,7 +245,7 @@ export const rand_genRandTypeObjArray = (...objArrayAnyType) => (...gensForRand)
 //  randTypeObj
 // returns object with randType prop-vals unwrapped into float
 // total signature: (randTypeObj) => objAnyType
-export const rand_unwrapRandTypeObj = (randTypeObj) =>
+export const rand_valObj = (randTypeObj) =>
     // build an object out of entries
     Object.entries(randTypeObj)
         // filter out markers of randTypeObj
@@ -263,7 +263,7 @@ export const rand_unwrapRandTypeObj = (randTypeObj) =>
                 [propGenPair[0]]:
                     // unwrap randTypes and leave others as is
                     ({ ...propGenPair[1] }.hasOwnProperty(TYPE_RANDTYPE))
-                        ? rand_unwrapRandType(propGenPair[1])
+                        ? rand_val(propGenPair[1])
                         : propGenPair[1]
             }),
             // start reduction with an empty object

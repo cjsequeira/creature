@@ -60,6 +60,7 @@ import {
 import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
+    rand_bind,
     rand_chooseWeight,
     rand_getNextSeed,
     rand_unit,
