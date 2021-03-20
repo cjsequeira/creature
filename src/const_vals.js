@@ -70,7 +70,7 @@ export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
 
 // *** World constants
 // initial number of food items
-export const WORLD_NUM_FOOD = 60;
+export const WORLD_NUM_FOOD = 70;
 
 // x and y sizes
 export const WORLD_SIZE_X = 20.0;

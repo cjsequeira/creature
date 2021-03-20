@@ -40,13 +40,13 @@ const initial_store = {
         // Simple Creature Vinny
         {
             name: 'Vinny',
-            color: '#0000ccff',
+            color: '#f7036cff',
             id: 0,
             act: actAsSimpleCreature,
             conds: {
                 // internal biology
-                glucose: 50.0,
-                neuro: 50.0,
+                glucose: 60.0,
+                neuro: 60.0,
 
                 // behavior
                 behavior: 'idling',
@@ -57,22 +57,22 @@ const initial_store = {
                 y: WORLD_SIZE_Y / 2.0,
 
                 // heading, speed, acceleration
-                heading: 0.0,
+                heading: Math.PI,
                 speed: 1.0,
                 accel: 0.0,
             },
         },
 
-        // Simple Creature Eddie
+        // Simple Creature Johnny
         {
-            name: 'Eddie',
-            color: '#f7036cff',
+            name: 'Johnny',
+            color: '#0000ccff',
             id: 1,
             act: actAsSimpleCreature,
             conds: {
                 // internal biology
-                glucose: 50.0,
-                neuro: 50.0,
+                glucose: 40.0,
+                neuro: 40.0,
 
                 // behavior
                 behavior: 'idling',
@@ -131,10 +131,10 @@ const creature_time_chart_params_init = {
                 fill: false,
                 tension: 0.2,
                 data: [],
-                backgroundColor: '#0000ccff',
-                borderColor: '#0000ccff',
-                pointBackgroundColor: '#0000ccff',
-                pointBorderColor: '#0000ccff',
+                backgroundColor: '#f7036cff',
+                borderColor: '#f7036cff',
+                pointBackgroundColor: '#f7036cff',
+                pointBorderColor: '#f7036cff',
                 pointRadius: 1,
             },
             {
@@ -145,39 +145,39 @@ const creature_time_chart_params_init = {
                 fill: false,
                 tension: 0.2,
                 data: [],
-                backgroundColor: '#00cc00ff',
-                borderColor: '#00cc00ff',
-                pointBackgroundColor: '#00cc00ff',
-                pointBorderColor: '#00cc00ff',
-                pointRadius: 1,
-            },
-
-            {
-                label: 'Eddie glucose',
-                xAxisId: 'my-x-axis',
-                yAxisId: 'my-y-axis',
-                showLine: true,
-                fill: false,
-                tension: 0.2,
-                data: [],
-                backgroundColor: '#f7036cff',
-                borderColor: '#f7036cff',
-                pointBackgroundColor: '#f7036cff',
-                pointBorderColor: '#f7036cff',
-                pointRadius: 1,
-            },
-            {
-                label: 'Eddie neuro',
-                xAxisId: 'my-x-axis',
-                yAxisId: 'my-y-axis',
-                showLine: true,
-                fill: false,
-                tension: 0.2,
-                data: [],
                 backgroundColor: '#3289eaff',
                 borderColor: '#3289eaff',
                 pointBackgroundColor: '#3289eaff',
                 pointBorderColor: '#3289eaff',
+                pointRadius: 1,
+            },
+
+            {
+                label: 'Johnny glucose',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: true,
+                fill: false,
+                tension: 0.2,
+                data: [],
+                backgroundColor: '#0000ccff',
+                borderColor: '#0000ccff',
+                pointBackgroundColor: '#0000ccff',
+                pointBorderColor: '#0000ccff',
+                pointRadius: 1,
+            },
+            {
+                label: 'Johnny neuro',
+                xAxisId: 'my-x-axis',
+                yAxisId: 'my-y-axis',
+                showLine: true,
+                fill: false,
+                tension: 0.2,
+                data: [],
+                backgroundColor: '#00cc00ff',
+                borderColor: '#00cc00ff',
+                pointBackgroundColor: '#00cc00ff',
+                pointBorderColor: '#00cc00ff',
                 pointRadius: 1,
             }
         ]
@@ -246,7 +246,7 @@ const creature_geo_chart_params_init = {
             },
 
             {
-                label: 'Eddie',
+                label: 'Johnny',
                 id: 1,
                 xAxisId: 'my-x-axis',
                 yAxisId: 'my-y-axis',
