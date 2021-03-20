@@ -54,7 +54,7 @@ export const CREATURE_STATUS_BOX = 'page_creature_status';
 
 
 // *** UI
-export const UI_NUM_TRAILS = 20;
+export const UI_NUM_TRAILS = 10;
 
 
 // *** Update frequencies

@@ -146,7 +146,14 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                         ({
                             x: getPhysTypeCond(thisPhysType)('x'),
                             y: getPhysTypeCond(thisPhysType)('y'),
-                        })
+                        }),
+                        (
+                            // draw full number of trails for simple creatures
+                            // draw one trail for all other physTypes
+                            (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
+                                ? UI_NUM_TRAILS
+                                : 1
+                        )
                     ),
                     getUIProp(storeType)('creature_geo_chart')),
         }),
@@ -241,8 +248,10 @@ function mutable_updateTimeChartData(chart, dataIndexIntType, labelStringType, t
 //  dataIndexIntType: chart data index, as int
 //  colorStringType: color for data, as string
 //  xyFloatTuple: floating-point datapoint to add, as {x, y}
+//  numTrailsIntType: number of trailing dots to draw
 // returns nothing
-function mutable_updateGeoChartData(chart, dataIndexIntType, colorStringType, xyFloatTuple) {
+function mutable_updateGeoChartData
+    (chart, dataIndexIntType, colorStringType, xyFloatTuple, numTrailsIntType) {
     // if given data index is beyond the existing number of data blocks, ignore the update request
     if (dataIndexIntType > (chart.data.datasets.length - 1)) {
         return chart;
@@ -250,7 +259,7 @@ function mutable_updateGeoChartData(chart, dataIndexIntType, colorStringType, xy
 
     // all of our slice limits are -UI_NUM_TRAILS, so define a shorthand 
     //  function with that limit built in 
-    const concatSliceTrailsMap = concatSliceMap(-UI_NUM_TRAILS);
+    const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
 
     // define a shorthand function specific to concatenating a color 
     //  and mapping color list to a fade
