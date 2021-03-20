@@ -112,7 +112,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             creature_time_chart:
                 ((chart) => {
                     chart.data.datasets = chart.data.datasets.filter(
-                        (dsToTest) => dsToTest.id !== actionType.idIntType
+                        (dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)
                     );
 
                     return chart;
@@ -123,7 +123,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             creature_geo_chart:
                 ((chart) => {
                     chart.data.datasets = chart.data.datasets.filter(
-                        (dsToTest) => dsToTest.id !== actionType.idIntType
+                        (dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)
                     );
 
                     return chart;

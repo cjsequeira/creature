@@ -34,7 +34,6 @@ import {
     leafCreatureEatFood,
     leafDoAndApproveWandering,
     leafPreservePhysType,
-    leafRemoveFood,
     leafUnknownEvent,
 } from './leaf_nodes.js';
 
@@ -50,10 +49,7 @@ import {
     isBehaviorRequestWandering,
     isCreatureTouchingFood,
     isEventReplaceCreatureType,
-    isEventReplacePhysType,
     isEventUpdateAllPhysTypes,
-    isFoodTouchedByCreature,
-    isFoodType,
     isGlucoseNeuroInRange,
     isSimpleCreature,
 } from './test_nodes.js';
@@ -139,7 +135,7 @@ const orTestRules = (...testRules) => ({
 // takes:
 //  rand_actionType: an actionType wrapped in a randM
 // returns [actionType]
-const rand_actionTypeVal = (rand_actionType) => 
+const rand_actionTypeVal = (rand_actionType) =>
 ([
     rand_val(rand_actionType),
     action_setSimSeed(rand_nextSeed(rand_actionType)),
@@ -178,22 +174,10 @@ const ruleBook = {
         no: leafPreservePhysType,
     },
     no: {
-        testNode: isEventReplacePhysType,
-        yes: {
-            testNode: isFoodType,
-            yes: {
-                testNode: isFoodTouchedByCreature,
-                yes: leafRemoveFood,
-                no: leafPreservePhysType,
-            },
-            no: leafPreservePhysType,
-        },
-        no: {
-            testNode: isEventUpdateAllPhysTypes,
-            yes: recursive_leafUpdateAllPhysTypes,
-            no: leafUnknownEvent,
-        },
-    }
+        testNode: isEventUpdateAllPhysTypes,
+        yes: recursive_leafUpdateAllPhysTypes,
+        no: leafUnknownEvent,
+    },
 };
 
 

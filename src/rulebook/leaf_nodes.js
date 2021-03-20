@@ -31,6 +31,7 @@ import {
     rand_seededRand,
     rand_val,
 } from '../sim/seeded_rand.js';
+import { EVENT_INSERT_FOODTYPES } from '../const_vals.js';
 
 
 // *** Creature behavior strings
@@ -140,6 +141,11 @@ export const leafCreatureEatFood = {
                     ({
                         behavior: 'eating',
                     }),
+
+                // remove food that is being touched
+                eventType[EVENT_INSERT_FOODTYPES].map((thisFoodType) =>
+                    action_deletePhysType(thisFoodType)
+                ),
             ])
             (rand_eventType),
 };
@@ -214,17 +220,6 @@ export const leafPreservePhysType = {
             // replace the physType with the given physType
             // signature of this func: (eventType) => actionType or [actionType]
             ((eventType) => action_replacePhysType(eventType.physType))
-            (rand_eventType),
-};
-
-export const leafRemoveFood = {
-    name: 'leafRemoveFood',
-    func: (_) => (rand_eventType) =>
-        // total signature: (rand_eventType) => rand_actionType
-        rand_liftBind
-            // delete the given physType
-            // signature of this func: (eventType) => actionType or [actionType]
-            ((eventType) => compose(action_deletePhysType)(getPhysTypeID)(eventType.physType))
             (rand_eventType),
 };
 

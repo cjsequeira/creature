@@ -22,6 +22,26 @@ import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** Rulebook pre-functions
+// produce event containing physType with laws of physics applied
+// the function application below INCLUDES wall collision testing!
+// preFunc signature is (storeType) => (rand_eventType) => rand_eventType
+export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
+    rand_genRandM
+        // rand_genRandM value
+        (
+            compose
+                // create a new event using...
+                (event_replacePhysType)
+
+                // ...a physType with physics applied
+                (physTypeDoPhysics(storeType))
+
+                // the physType to apply physics to
+                (rand_val(rand_eventType).physType)
+        )
+        // rand_genRandM seed
+        (rand_nextSeed(rand_eventType));
+
 // build an event to update the creatureType per the behavior request below
 //  which comes from weighted random draw using given desire functions
 // this event will be processed by the rest of the rulebook, which will return
@@ -65,26 +85,6 @@ export const preFuncGenBehaviorRequest = (_) => (rand_eventType) =>
         // since we just used a system seed for rand_chooseWeight, 
         //  we must point to the next seed when assembling an updated rand_eventType
         (rand_getNextSeed(rand_nextSeed(rand_eventType))(0));
-
-// produce event containing physType with laws of physics applied
-// the function application below INCLUDES wall collision testing!
-// preFunc signature is (storeType) => (rand_eventType) => rand_eventType
-export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
-    rand_genRandM
-        // rand_genRandM value
-        (
-            compose
-                // create a new event using...
-                (event_replacePhysType)
-
-                // ...a physType with physics applied
-                (physTypeDoPhysics(storeType))
-
-                // the physType to apply physics to
-                (rand_val(rand_eventType).physType)
-        )
-        // rand_genRandM seed
-        (rand_nextSeed(rand_eventType));
 
 // tag food touched by creature by bundling it into the given rand_eventType
 export const preFuncTagTouchedFood = (storeType) => (rand_eventType) =>
