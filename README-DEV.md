@@ -15,6 +15,10 @@ The Creature system adheres as much as possible to two important rules as observ
 1. NO STATE IN ACTION CREATORS: Action creators never rely on or even read the current application state. That is the job of separate logic - most notably the rulebook, which translates events to actions based on the current application state.
 2. NO ACTIONS IN REDUCERS: Reducers never dispatch actions. This prevents unpredictable reducer behavior, rendering behavior, and app state changes. Action dispatching is the job of separate logic, such as the rulebook.
 
+## Monads
+
+The Creature system rulebook features the use of a [monad](https://blog.jcoglan.com/2011/03/05/translation-from-haskell-to-javascript-of-selected-portions-of-the-best-introduction-to-monads-ive-ever-read/) called **randM**. The purpose of this monad is to wrap an arbitrary datatype into a package along with a seed used for generating pseudo-random numbers. The system rulebook executes almost entirely within this monad, allowing rules and support functions to use pseudo-random numbers at will. At the end of rulebook execution, the monad is unwrapped into an action to update the system seed to the appropriate value.
+
 ## Complex data types:
 ### **physType**: The basic type for physical objects that act in the world
 
