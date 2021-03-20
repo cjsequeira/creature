@@ -169,12 +169,12 @@ export const leafDoAndApproveWandering = {
                                 //  with higher accceleration magnitude
                                 glucose:
                                     getPhysTypeCond(eventType.physType)('glucose') -
-                                    0.3 * Math.abs(randNum) *
+                                    0.2 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
                                 neuro:
                                     getPhysTypeCond(eventType.physType)('neuro') +
-                                    0.2 * Math.abs(randNum) *
+                                    0.1 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
                                 accel: randNum,
@@ -184,14 +184,14 @@ export const leafDoAndApproveWandering = {
                                 (
                                     excludeRange
                                         (2.0)
-                                        (rand_val(rand_seededRand(-4.0)(20.0)(seed1)))
+                                        (rand_val(rand_seededRand(-3.0)(15.0)(seed1)))
                                 ),
 
                         // conds driven by randomized heading nudge
                         (seed2) => ({
                             heading:
                                 getPhysTypeCond(eventType.physType)('heading') +
-                                rand_val(rand_seededRand(-0.4)(0.4)(seed2)),
+                                rand_val(rand_seededRand(-0.3)(0.3)(seed2)),
                         })
                     ),
 

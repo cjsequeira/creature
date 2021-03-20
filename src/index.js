@@ -35,13 +35,12 @@ import {
 } from './reduxlike/action_creators.js';
 
 import { storeInit } from './reduxlike/app_store.js';
-import { event_replacePhysType, event_updateAllPhysTypes } from './rulebook/event_creators';
+import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 
 import {
     getSimRunning,
     getSimSavedClock,
-    getPhysTypeStore,
 } from './reduxlike/store_getters.js';
 
 import { rand_seededRand } from './sim/seeded_rand';

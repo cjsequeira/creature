@@ -31,8 +31,8 @@ const initial_store = {
         savedClock: 0.0,
 
         // random number generator seed
-        //seed: Date.now(),
-        seed: 0,
+        seed: Date.now(),
+        //seed: 0,
     },
 
     // initial physTypeStore
@@ -145,10 +145,10 @@ const creature_time_chart_params_init = {
                 fill: false,
                 tension: 0.2,
                 data: [],
-                backgroundColor: '#3289eaff',
-                borderColor: '#3289eaff',
-                pointBackgroundColor: '#3289eaff',
-                pointBorderColor: '#3289eaff',
+                backgroundColor: '#778999ff',
+                borderColor: '#778999ff',
+                pointBackgroundColor: '#778999ff',
+                pointBorderColor: '#778999ff',
                 pointRadius: 1,
             },
 
