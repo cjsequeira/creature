@@ -114,6 +114,9 @@ const initial_store = {
         // status box reference placeholder
         status_box: null,
 
+        // creature time chart data buffer and x axis settings buffer
+        chartDataBufferTime: null,
+        chartXAxisBuffer: null,
 
         // creature geo chart data buffer
         chartDataBufferGeo: null,
@@ -366,6 +369,9 @@ export const storeInit = (creature_time_chart_context) => (creature_geo_chart_co
             // status box
             status_box: status_box_context,
 
+            // time chart data buffer and x axis settings buffer
+            chartDataBufferTime: creature_time_chart_params_init.data,
+            chartXAxisBuffer: creature_time_chart_params_init.options.scales.xAxes[0],
 
             // geo chart data buffer
             chartDataBufferGeo: creature_geo_chart_params_init.data,

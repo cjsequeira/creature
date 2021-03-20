@@ -6,18 +6,20 @@ import { getJournal, getUIProp } from './store_getters.js';
 // ****** App store rendering functions ******
 
 // *** Function to be called when app store changes
-// MUTABLE: may apply functions that mutate the application beyond the app store
-// ignores return values from renderFunc applications
+// MUTABLE: calls functions that mutate the application beyond the app store
 // takes: 
 //  storeType
 // returns undefined
 export function mutable_renderFunction(storeType) {
-    // MUTABLE: render time chart and geo chart
-    getUIProp(storeType)('creature_time_chart').update();
+    // MUTABLE: point time chart data to internal data buffer and proper x axis settings, then draw
+    let creatureTimeChartHandle = getUIProp(storeType)('creature_time_chart');
+    creatureTimeChartHandle.data = getUIProp(storeType)('chartDataBufferTime');
+    creatureTimeChartHandle.options.scales.xAxes[0] = getUIProp(storeType)('chartXAxisBuffer');
+    creatureTimeChartHandle.update();
 
     // MUTABLE: point geo chart data to internal data buffer, then draw
     let creatureGeoChartHandle = getUIProp(storeType)('creature_geo_chart');
-    creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo'),
+    creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo');
     creatureGeoChartHandle.update();
 
     // MUTABLE: update status box
