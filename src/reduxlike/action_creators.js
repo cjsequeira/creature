@@ -178,7 +178,7 @@ export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
 //      ...
 //  ]
 //
-//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randType
+//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randM
 //      for example, seededRand(0.0)(1.0) would have the appropriate signature 
 //          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //

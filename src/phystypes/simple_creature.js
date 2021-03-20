@@ -89,7 +89,7 @@ const actIdling = (storeType) => (physType) =>
             'idling': (_) =>
                 4.0,
             'wandering': (physType) =>
-                (getPhysTypeCond(physType)('glucose') < 50.0) ? 7.0 : 0.1,
+                (getPhysTypeCond(physType)('glucose') < 60.0) ? 7.0 : 0.1,
             'sleeping': (physType) =>
                 (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
         });
@@ -126,8 +126,8 @@ const actEating = (storeType) => (physType) =>
         (usePhysTypeConds
             (physType)
             ({
-                glucose: getPhysTypeCond(physType)('glucose') + 34.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 24.0 * getSimTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') + 30.0 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 20.0 * getSimTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
@@ -135,7 +135,7 @@ const actEating = (storeType) => (physType) =>
             'idling': (_) =>
                 4.0,
             'wandering': (physType) =>
-                (getPhysTypeCond(physType)('glucose') < 50.0) ? 7.0 : 0.1,
+                (getPhysTypeCond(physType)('glucose') < 60.0) ? 7.0 : 0.1,
             'sleeping': (physType) =>
                 (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
         });
@@ -160,5 +160,5 @@ const actSleeping = (storeType) => (physType) =>
             'sleeping': (_) =>
                 5.0,
             'idling': (physType) =>
-                (getPhysTypeCond(physType)('neuro') < 60.0) ? 5.0 : 0.1
+                (getPhysTypeCond(physType)('neuro') < 70.0) ? 5.0 : 0.1
         });

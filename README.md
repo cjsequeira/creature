@@ -13,7 +13,7 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 * REFACTOR: Revise use of ChartJS data so that data sets are kept separate from ChartJS chart objects - challenge is rebuild/reassignment of app store during action dispatching. May require not storing chart object references in app store??? Or, make sure chart is always pointed to the chart data object during reducer execution???
 
 ## Changelog:
-* **0.1.3**: Implementation of immutable random numbers in "randType" monad
+* **0.1.3**: Implementation of immutable random numbers in "randM" monad
 * **0.1.2**: Major bug fix in combineReducers
 * **0.1.1**: Cleanup of creature behavior announcement code
 * **0.1.0**: Establishment of "creature eats food" rules

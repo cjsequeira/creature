@@ -37,8 +37,8 @@ export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
 
 // *** Special datatype names
-export const TYPE_RANDTYPE = 'TYPE_RANDTYPE';
-export const TYPE_RANDTYPE_OBJ = 'TYPE_RANDTYPE_OBJ';
+export const TYPE_RANDM = 'TYPE_RANDM';
+export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 
 
 // *** Event names
@@ -70,7 +70,7 @@ export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
 
 // *** World constants
 // initial number of food items
-export const WORLD_NUM_FOOD = 60;
+export const WORLD_NUM_FOOD = 70;
 
 // x and y sizes
 export const WORLD_SIZE_X = 20.0;

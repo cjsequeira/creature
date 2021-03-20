@@ -23,9 +23,9 @@ import {
 import { splice } from '../utils.js';
 
 import {
-    rand_genRandTypeObj,
-    rand_unitObj,
-    rand_unwrapRandTypeObj,
+    rand_genRandMObj,
+    rand_nextSeed,
+    rand_valObj,
 } from '../sim/seeded_rand.js';
 
 
@@ -79,98 +79,63 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 // no: return the physTypeStore unaltered
                 : getPhysTypeStore(storeType),
 
-        /*
-        // REFACTOR: FIX so objects don't switch array order when they meet or fail a filter!!!
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES]: (storeType) => (actionType) =>
-        // build an array out of two components
-        // REFACTOR for efficiency
-        ([
-            // first, the updated physTypes that pass the filter function
-            ...getPhysTypeStore(storeType)
-                .filter(actionType.filterFunc)
-                .map(actionType.updateFunc),
+            // for all physTypes in the physType store...
+            getPhysTypeStore(storeType).map((thisPt) =>
+                // ...does this physType pass the filter function?
+                // filter func signature: (physType) => bool
+                (actionType.filterFunc(thisPt))
+                    // yes: apply the update funcion
+                    // update func signature: (physType) => physType
+                    ? actionType.updateFunc(thisPt)
 
-            // second, the physTypes that fail the filter function - these are left AS IS
-            ...getPhysTypeStore(storeType)
-                .filter((thisPt) => !actionType.filterFunc(thisPt)),
-        ]),
-        */
+                    // no: keep the physType the same
+                    : thisPt
+            ),
 
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
-            // generate a randTypeObj version of the physTypeStore
-            getPhysTypeStore(storeType).reduce((accumRandTypeObj, thisPt) =>
+            // NOTE: the simulator seed is updated in the SIM REDUCER!!!
+
+            // generate a randMObj version of the physTypeStore
+            getPhysTypeStore(storeType).reduce((accumRandMObj, thisPt) =>
                 [
-                    ...accumRandTypeObj,
+                    ...accumRandMObj,
 
                     // does this physType pass the filter function?
                     (actionType.filterFunc(thisPt))
-                        // yes: create randTypeObj using given randType generators
-                        ? rand_genRandTypeObj
+                        // yes: create randMObj using given randM generators
+                        ? rand_genRandMObj
                             (getPhysTypeCondsObj(thisPt))
                             (actionType.gensForRand)
                             (
-                                (
-                                    accumRandTypeObj.slice(-1)[0] ||
-                                    { nextSeed: getSimSeed(storeType) }
-                                ).nextSeed
+                                // use the proper seed
+                                (accumRandMObj.length > 0)
+                                    ? rand_nextSeed(accumRandMObj.slice(-1)[0])
+                                    : getSimSeed(storeType)
                             )
 
-                        // no: convert the physType into a unit randTypeObj as is
-                        : rand_unitObj
+                        // no: create randMObj with no randM generators
+                        // we do this in order to maintain the proper seed
+                        : rand_genRandMObj
                             (getPhysTypeCondsObj(thisPt))
-                            ({})
+                            ()
                             (
-                                (
-                                    accumRandTypeObj.slice(-1)[0] ||
-                                    { nextSeed: getSimSeed(storeType) }
-                                ).nextSeed
+                                // use the proper seed
+                                (accumRandMObj.length > 0)
+                                    ? rand_nextSeed(accumRandMObj.slice(-1)[0])
+                                    : getSimSeed(storeType)
                             )
 
                     // start with an empty array
                 ], [])
 
-                // map each randTypeObj back to a physType with updated random conditions
+                // map each randMObj back to a physType with updated random conditions
                 .map(
-                    (thisRandTypeObj, i) =>
+                    (thisRandMObj, i) =>
                         usePhysTypeConds
                             (getPhysTypeStore(storeType)[i])
-                            (rand_unwrapRandTypeObj(thisRandTypeObj))
+                            (rand_valObj(thisRandMObj))
                 ),
-
-
-        /*
-        ([
-            // generate an array of randTypeObj objects
-            ...rand_genRandTypeObjArray
-                // conds objects of physTypes that pass the given filter function
-                (getPhysTypeStore(storeType)
-                    .filter(actionType.filterFunc)
-                    .map((thisPt) => getPhysTypeCondsObj(thisPt)))
-
-                // array of randType generator functions
-                (actionType.gensForRand)
-
-                // seed to start with
-                (getSimSeed(storeType))
-
-                // then unwrap each randTypeObj object and merge it back in with the appropriate physType
-                .map(
-                    (thisRandTypeObjConds, i) =>
-                        // assign conds to physType
-                        usePhysTypeConds
-                            // select the associated physType using the same given filter func 
-                            //  and the map index
-                            (getPhysTypeStore(storeType).filter(actionType.filterFunc)[i])
-
-                            // unwrap the randTypeObj conds into a conds object with random values
-                            (rand_unwrapRandTypeObj(thisRandTypeObjConds))
-                ),
-
-            // also include the physTypes that fail the filter function - these are left AS IS
-            ...getPhysTypeStore(storeType)
-                .filter((thisPt) => !actionType.filterFunc(thisPt)),
-        ]),
-        */
 
         // use inActionType.type as an entry key into the key-val list above
         // key is used to select a function that takes a storeType object  

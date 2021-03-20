@@ -91,6 +91,9 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
                 heading: inGetCond('heading') + 2.35,
 
                 // establish a minimum speed
-                speed: 1.0,
+                speed:
+                    (inGetCond('speed') > 1.0)
+                        ? inGetCond('speed')
+                        : 1.0,
             });
 };

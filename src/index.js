@@ -35,13 +35,12 @@ import {
 } from './reduxlike/action_creators.js';
 
 import { storeInit } from './reduxlike/app_store.js';
-import { event_replacePhysType, event_updateAllPhysTypes } from './rulebook/event_creators';
+import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 
 import {
     getSimRunning,
     getSimSavedClock,
-    getPhysTypeStore,
 } from './reduxlike/store_getters.js';
 
 import { rand_seededRand } from './sim/seeded_rand';
@@ -75,8 +74,8 @@ appStore = dispatchActions(appStore)
 
             // randomize conds: x and y
             (
-                (seed1) => ({ x: rand_seededRand(1.0)(WORLD_SIZE_X - 1.0)(seed1) }),
-                (seed2) => ({ y: rand_seededRand(1.0)(WORLD_SIZE_Y - 1.0)(seed2) }),
+                (seed1) => ({ x: rand_seededRand(0.1)(WORLD_SIZE_X - 0.1)(seed1) }),
+                (seed2) => ({ y: rand_seededRand(0.1)(WORLD_SIZE_Y - 0.1)(seed2) }),
             ),
 
         // change the sim status to running
