@@ -107,10 +107,10 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     : getSimSeed(storeType)
         }),
 
-        [ACTION_SIM_SAVE_CLOCK]: (storeType) => (actionType) =>
+        [ACTION_SIM_SAVE_CLOCK]: (storeType) => (_) =>
         ({
             ...storeType.sim,
-            savedClock: actionType.clockFloatType,
+            savedClock: performance.now(),
         }),
 
         [ACTION_SIM_SET_SEED]: (storeType) => (actionType) =>

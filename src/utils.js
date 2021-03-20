@@ -1,5 +1,7 @@
 'use strict'
 
+import { getPhysTypeName } from "./reduxlike/store_getters";
+
 // ****** Code utilities ******
 
 // *** Functional programming utilities

@@ -110,16 +110,11 @@ export const action_uiAddGeoChartData = (_) =>
 
 // add time chart data for simple creature
 // takes:
-//  dataIndexIntType: chart data index, as int
-//  labelStringType: label for legend, as string
-//  timeValFloatTuple: floating-point data coordinate, as {time, value}
-//  don't care: storeType
+//  don't care
 // returns actionType
-export const action_uiAddTimeChartSimpleCreatureData = (offsetIntType) => (condStringType) =>
+export const action_uiAddTimeChartSimpleCreatureData = (_) =>
 ({
     type: ACTION_UI_ADD_TIME_CHART_DATA,
-    offsetIntType,
-    condStringType,
 });
 
 
@@ -223,13 +218,11 @@ export const action_setSimSeed = (seedIntType) =>
 
 // save system clock
 // takes: 
-//  clockFloatType: clock value, as float
-//  don't care: storeType
+//  don't care
 // returns actionType
-export const action_saveClockForSim = (clockFloatType) =>
+export const action_saveClockForSim = (_) =>
 ({
     type: ACTION_SIM_SAVE_CLOCK,
-    clockFloatType
 });
 
 // start sim
@@ -261,17 +254,27 @@ export const storeTypeTemplate = {
 };
 
 
-// *** Dispatch a list of actions, then call subscribedFunc, then return updated storeType
+// *** Dispatch a list of actions, then call subscribedFunc
+//  then return updated storeType
 // takes:
 //  storeType
 //  ...actions: list of actions to dispatch, as actionType
 // returns undefined
 export const dispatchActions = (inStoreType) => (...actions) => {
-    let outStoreType = null;
+    // build an initial object that will become the next app store
+    let outStoreType = {
+        ...inStoreType,
+
+        // reset list of UI changes before we begin
+        ui: {
+            ...inStoreType.ui,
+            changesList: [],
+        }
+    };
 
     // process each action atomically
     actions.flat(Infinity).forEach((action) =>
-        outStoreType = combineReducers(storeTypeTemplate)(outStoreType || inStoreType)(action)
+        outStoreType = combineReducers(storeTypeTemplate)(outStoreType)(action)
     );
 
     // call subscribed func (typically used for rendering UI)
