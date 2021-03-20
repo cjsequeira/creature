@@ -14,7 +14,11 @@ import { getJournal, getUIProp } from './store_getters.js';
 export function mutable_renderFunction(storeType) {
     // MUTABLE: render time chart and geo chart
     getUIProp(storeType)('creature_time_chart').update();
-    getUIProp(storeType)('creature_geo_chart').update();
+
+    // MUTABLE: point geo chart data to internal data buffer, then draw
+    let creatureGeoChartHandle = getUIProp(storeType)('creature_geo_chart');
+    creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo'),
+    creatureGeoChartHandle.update();
 
     // MUTABLE: update status box
     mutable_updateStatusBox(storeType);

@@ -1,5 +1,7 @@
 'use strict'
 
+import { getPhysTypeName } from "./reduxlike/store_getters";
+
 // ****** Code utilities ******
 
 // *** Functional programming utilities
@@ -229,6 +231,27 @@ export const chartParamsUseTitle = (chartParams) => (titleStringType) => ({
             text: titleStringType
         }
     }
+});
+
+// return an initialized dataset ready for use
+// takes:
+//  physType
+// returns ChartJS dataset
+export const chartInitDataSet = (physType) =>
+({
+    label: getPhysTypeName(physType),
+    id: 0,
+    xAxisId: 'my-x-axis',
+    yAxisId: 'my-y-axis',
+    showLine: false,
+    fill: false,
+    tension: 0.2,
+    pointRadius: 6,
+    data: [],
+    backgroundColor: [],
+    borderColor: [],
+    pointBackgroundColor: [],
+    pointBorderColor: []
 });
 
 // return chart data excluding all elements less than provided x

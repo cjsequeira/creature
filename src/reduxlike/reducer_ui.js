@@ -29,6 +29,7 @@ import {
 } from './store_getters.js';
 
 import {
+    chartInitDataSet,
     chartShiftData,
     concatSliceMap,
     fadeColors,
@@ -136,26 +137,46 @@ export const uiReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.ui,
 
-            creature_geo_chart:
-                // update geo chart data associated with all physTypes in the store
-                getPhysTypeStore(storeType).reduce((accumData, thisPhysType, i) =>
-                    mutable_updateGeoChartData(
-                        accumData,
-                        i,
-                        getPhysTypeColor(thisPhysType),
-                        ({
-                            x: getPhysTypeCond(thisPhysType)('x'),
-                            y: getPhysTypeCond(thisPhysType)('y'),
-                        }),
-                        (
-                            // draw full number of trails for simple creatures
-                            // draw one trail for all other physTypes
-                            (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
-                                ? UI_NUM_TRAILS
-                                : 1
+            chartDataBufferGeo:
+            {
+                ...getUIProp(storeType)('chartDataBufferGeo'),
+
+                datasets:
+                    // update geo chart data buffer associated with all physTypes in the store
+                    getPhysTypeStore(storeType).map((thisPhysType, i) =>
+                        updateGeoChartDataset(
+                            // dataset to update
+                            (
+                                // is there already a dataset at this index?
+                                (i < getUIProp(storeType)('chartDataBufferGeo').datasets.length)
+                                    // yes: update that dataset
+                                    ? getUIProp(storeType)('chartDataBufferGeo').datasets[i]
+
+                                    // no: build a new dataset
+                                    : chartInitDataSet(thisPhysType)
+                            ),
+
+                            // color to use
+                            getPhysTypeColor(thisPhysType),
+
+                            // data to add
+                            ({
+                                x: getPhysTypeCond(thisPhysType)('x'),
+                                y: getPhysTypeCond(thisPhysType)('y'),
+                            }),
+
+                            // number of trails
+                            (
+                                // draw full number of trails for simple creatures
+                                // draw one trail for all other physTypes
+                                (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
+                                    ? UI_NUM_TRAILS
+                                    : 1
+                            )
                         )
                     ),
-                    getUIProp(storeType)('creature_geo_chart')),
+
+            },
         }),
 
         [ACTION_UI_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
@@ -241,23 +262,15 @@ function mutable_updateTimeChartData(chart, dataIndexIntType, labelStringType, t
     return chart;
 }
 
-// update geospatial chart data
-// MUTABLE: mutates object at "chart" reference
+// update specific geospatial chart dataset
 // takes: 
-//  chart: HTML DOM chart reference
-//  dataIndexIntType: chart data index, as int
+//  inDataSet: geo chart ChartJS dataset to use
 //  colorStringType: color for data, as string
 //  xyFloatTuple: floating-point datapoint to add, as {x, y}
 //  numTrailsIntType: number of trailing dots to draw
-// returns nothing
-function mutable_updateGeoChartData
-    (chart, dataIndexIntType, colorStringType, xyFloatTuple, numTrailsIntType) {
-    // if given data index is beyond the existing number of data blocks, ignore the update request
-    if (dataIndexIntType > (chart.data.datasets.length - 1)) {
-        return chart;
-    }
-
-    // all of our slice limits are -UI_NUM_TRAILS, so define a shorthand 
+// returns geo chart Chart JS dataset type
+function updateGeoChartDataset(inDataSet, colorStringType, xyFloatTuple, numTrailsIntType) {
+    // all of our slice limits are -numTrailsIntType, so define a shorthand 
     //  function with that limit built in 
     const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
 
@@ -265,29 +278,29 @@ function mutable_updateGeoChartData
     //  and mapping color list to a fade
     const concatAndFade = concatSliceTrailsMap(fadeColors)(colorStringType);
 
-    // MUTABLE: add data and colors to chart, then slice to max length, 
-    //  then fade colors 
-    chart.data.datasets[dataIndexIntType] = {
-        ...chart.data.datasets[dataIndexIntType],
+    // return a ChartJS dataset object with data and colors added, 
+    //  then sliced to max length, then color-faded
+    return {
+        ...inDataSet,
 
         data: concatSliceTrailsMap
-            (x => x)                                            // identity function for mapping
-            ({ x: xyFloatTuple.x, y: xyFloatTuple.y })          // concatenate xyFloatTuple
-            ([chart.data.datasets[dataIndexIntType].data]),     // array: current chart xy data
+            (x => x)                            // identity function for mapping
+            ({                                  // concatenate xyFloatTuple
+                x: xyFloatTuple.x,
+                y: xyFloatTuple.y
+            })
+            ([inDataSet.data]),                 // array: current chart xy data
 
         backgroundColor:
-            concatAndFade([chart.data.datasets[dataIndexIntType].backgroundColor]),
+            concatAndFade([inDataSet.backgroundColor]),
 
         borderColor:
-            concatAndFade([chart.data.datasets[dataIndexIntType].borderColor]),
+            concatAndFade([inDataSet.borderColor]),
 
         pointBackgroundColor:
-            concatAndFade([chart.data.datasets[dataIndexIntType].pointBackgroundColor]),
+            concatAndFade([inDataSet.pointBackgroundColor]),
 
         pointBorderColor:
-            concatAndFade([chart.data.datasets[dataIndexIntType].pointBorderColor]),
+            concatAndFade([inDataSet.pointBorderColor]),
     };
-
-    // return the passed-in chart reference
-    return chart;
 }

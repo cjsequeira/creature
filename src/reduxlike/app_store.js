@@ -105,14 +105,18 @@ const initial_store = {
     },
 
     ui: {
-        // creature chart time reference placeholder
+        // creature time chart  reference placeholder
         creature_time_chart: null,
 
-        // creature chart geospatial reference placeholder
+        // creature geospatial chart reference placeholder
         creature_geo_chart: null,
 
         // status box reference placeholder
         status_box: null,
+
+
+        // creature geo chart data buffer
+        chartDataBufferGeo: null,
     },
 };
 
@@ -361,6 +365,10 @@ export const storeInit = (creature_time_chart_context) => (creature_geo_chart_co
 
             // status box
             status_box: status_box_context,
+
+
+            // geo chart data buffer
+            chartDataBufferGeo: creature_geo_chart_params_init.data,
         },
 
         // set function to be called when the app store changes
