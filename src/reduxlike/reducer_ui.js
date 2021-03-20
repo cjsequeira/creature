@@ -218,7 +218,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                                 getPhysTypeName(thisPhysType) + ' ' + 'glucose',
 
                                 // minimum x below which data "falls off" chart,
-                                getUIProp(storeType)('chartXAxisBuffer').ticks.min,
+                                getUIProp(storeType)('chartXAxisBuffer').ticks.min - 2.0,
 
                                 // data tuple to add
                                 ({
@@ -239,7 +239,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                                 getPhysTypeName(thisPhysType) + ' ' + 'neuro',
 
                                 // minimum x below which data "falls off" chart,
-                                getUIProp(storeType)('chartXAxisBuffer').ticks.min,
+                                getUIProp(storeType)('chartXAxisBuffer').ticks.min - 2.0,
 
                                 // data tuple to add
                                 ({

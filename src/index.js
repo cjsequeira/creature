@@ -56,8 +56,8 @@ var appStore = storeInit
 appStore = dispatchActions(appStore)
     (
         // add a bunch of food
-        //Array(2)
-        Array(WORLD_NUM_FOOD)
+        Array(2)
+            //Array(WORLD_NUM_FOOD)
             .fill(getDefaultFoodType())
             .map(
                 (thisFood) => action_addPhysType(thisFood)
@@ -127,15 +127,12 @@ function appUpdateSim(_) {
 //  don't care
 // returns undefined
 function appUpdateGeoChart(_) {
-    // is simulator running?
-    if (getSimRunning(appStore)) {
-        // yes: dispatch action to update geo chart
-        appStore = dispatchActions(appStore)
-            (
-                // add current physType store x-y data to geo chart
-                action_uiAddGeoChartData(),
-            );
-    }
+    // dispatch action to update geo chart
+    appStore = dispatchActions(appStore)
+        (
+            // add current physType store x-y data to geo chart
+            action_uiAddGeoChartData(),
+        );
 };
 
 // *** Time-based callback function for time data chart
@@ -143,13 +140,10 @@ function appUpdateGeoChart(_) {
 //  don't care
 // returns undefined
 function appUpdateTimeChart(_) {
-    // is simulator running?
-    if (getSimRunning(appStore)) {
-        // yes: dispatch action to update time chart
-        appStore = dispatchActions(appStore)
-            (
-                // add current simple creature data to time chart
-                action_uiAddTimeChartSimpleCreatureData(),
-            );
-    }
+    // dispatch action to update time chart
+    appStore = dispatchActions(appStore)
+        (
+            // add current simple creature data to time chart
+            action_uiAddTimeChartSimpleCreatureData(),
+        );
 };
