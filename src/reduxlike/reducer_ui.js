@@ -29,7 +29,6 @@ import {
 } from './store_getters.js';
 
 import {
-    chartInitDataSet,
     chartShiftData,
     concatSliceMap,
     fadeColors,
@@ -81,29 +80,30 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                     // apply anonymous function to update the chart passed in below
                     (getUIProp(storeType)('creature_time_chart')),
 
-            // push new dataset into the geo chart data, then get the chart object reference
-            creature_geo_chart:
-                ((chart) => {
-                    const id = genPhysTypeAvailID(storeType)(0);
+            // add new dataset into the geo chart data buffer
+            chartDataBufferGeo: {
+                ...getUIProp(storeType)('chartDataBufferGeo'),
 
-                    chart.data.datasets.push
-                        ({
-                            ...geoChartInitTemplate,
+                datasets: [
+                    ...getUIProp(storeType)('chartDataBufferGeo').datasets,
 
-                            label: getPhysTypeName(actionType.physType),
-                            id: id,
+                    {
+                        // start construction of new dataset using template
+                        ...geoChartInitTemplate,
 
-                            // foodType is small dot; otherwise make big dot
-                            pointRadius:
-                                (getPhysTypeAct(actionType.physType) === actAsFood)
-                                    ? 3
-                                    : 6,
-                        });
+                        // set label and ID
+                        label: getPhysTypeName(actionType.physType),
+                        id: genPhysTypeAvailID(storeType)(0),
 
-                    return chart;
-                })
-                    // apply anonymous function to update the chart passed in below
-                    (getUIProp(storeType)('creature_geo_chart')),
+                        // point radius: foodType is small dot; otherwise make big dot
+                        pointRadius:
+                            (getPhysTypeAct(actionType.physType) === actAsFood)
+                                ? 3
+                                : 6,
+                    },
+                ]
+            },
+
         }),
 
         [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType) => (actionType) =>
@@ -121,16 +121,15 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                     // apply anonymous function to update the chart passed in below
                     (getUIProp(storeType)('creature_time_chart')),
 
-            creature_geo_chart:
-                ((chart) => {
-                    chart.data.datasets = chart.data.datasets.filter(
-                        (dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)
-                    );
+            chartDataBufferGeo: {
+                ...getUIProp(storeType)('chartDataBufferGeo'),
 
-                    return chart;
-                })
-                    // apply anonymous function to update the chart passed in below
-                    (getUIProp(storeType)('creature_geo_chart')),
+                datasets:
+                    // filter out the dataset associated with the given physType ID
+                    getUIProp(storeType)('chartDataBufferGeo').datasets.filter
+                        ((dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)),
+            },
+
         }),
 
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
@@ -145,16 +144,8 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                     // update geo chart data buffer associated with all physTypes in the store
                     getPhysTypeStore(storeType).map((thisPhysType, i) =>
                         updateGeoChartDataset(
-                            // dataset to update
-                            (
-                                // is there already a dataset at this index?
-                                (i < getUIProp(storeType)('chartDataBufferGeo').datasets.length)
-                                    // yes: update that dataset
-                                    ? getUIProp(storeType)('chartDataBufferGeo').datasets[i]
-
-                                    // no: build a new dataset
-                                    : chartInitDataSet(thisPhysType)
-                            ),
+                            // dataset to update: ASSUMED TO EXIST!
+                            (getUIProp(storeType)('chartDataBufferGeo').datasets[i]),
 
                             // color to use
                             getPhysTypeColor(thisPhysType),
