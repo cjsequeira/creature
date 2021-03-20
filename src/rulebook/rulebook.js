@@ -15,10 +15,16 @@
 //      In other words, we could still have button clicks dispatch events directly rather
 //      than going through the rulebook.
 // 
-// RANDM MONAD: The rulebook's findRule function operates within the randM monad!!!
-//  findRule takes a rand_eventType and returns a rand_actionType
-//  the rand_actionType is unwrapped to get [actionType] plus an action to update the sim seed!!!
+// RANDM MONAD: The rulebook's rand_findRule function operates within the randM monad!!!
+// This allows code within the rulebook to use immutable random numbers at will.
 //
+// rand_findRule takes a rand_eventType and returns a rand_actionType
+//
+//      rand_eventType: an eventType wrapped within a randM monad
+//      rand_actionType: an actionType wrapped within a randM monad
+//
+// the rand_actionType is unwrapped at the end to get [actionType] plus an action
+// to update the sim seed!!! This ensures the sim seed stays in sync with its use
 
 // *** Our imports
 import {
@@ -131,7 +137,8 @@ const orTestRules = (...testRules) => ({
 // takes:
 //  rand_actionType: an actionType wrapped in a randM
 // returns [actionType]
-const rand_actionTypeVal = (rand_actionType) => ([
+const rand_actionTypeVal = (rand_actionType) => 
+([
     rand_val(rand_actionType),
     action_setSimSeed(rand_nextSeed(rand_actionType)),
 ]);
