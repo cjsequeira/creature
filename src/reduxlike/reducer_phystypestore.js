@@ -24,6 +24,7 @@ import { splice } from '../utils.js';
 
 import {
     rand_genRandMObj,
+    rand_nextSeed,
     rand_unitObj,
     rand_valObj,
 } from '../sim/seeded_rand.js';
@@ -109,10 +110,10 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                             (getPhysTypeCondsObj(thisPt))
                             (actionType.gensForRand)
                             (
-                                (
-                                    accumRandMObj.slice(-1)[0] ||
-                                    { nextSeed: getSimSeed(storeType) }
-                                ).nextSeed
+                                // use the proper seed
+                                (accumRandMObj.length > 0)
+                                    ? rand_nextSeed(accumRandMObj.slice(-1)[0])
+                                    : getSimSeed(storeType)
                             )
 
                         // no: convert the physType into a unit randMObj as is
@@ -120,10 +121,10 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                             (getPhysTypeCondsObj(thisPt))
                             ({})
                             (
-                                (
-                                    accumRandMObj.slice(-1)[0] ||
-                                    { nextSeed: getSimSeed(storeType) }
-                                ).nextSeed
+                                // use the proper seed
+                                (accumRandMObj.length > 0)
+                                    ? rand_nextSeed(accumRandMObj.slice(-1)[0])
+                                    : getSimSeed(storeType)
                             )
 
                     // start with an empty array
@@ -136,41 +137,6 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                             (getPhysTypeStore(storeType)[i])
                             (rand_valObj(thisRandMObj))
                 ),
-
-
-        /*
-        ([
-            // generate an array of randMObj objects
-            ...rand_genRandMObjArray
-                // conds objects of physTypes that pass the given filter function
-                (getPhysTypeStore(storeType)
-                    .filter(actionType.filterFunc)
-                    .map((thisPt) => getPhysTypeCondsObj(thisPt)))
-
-                // array of randM generator functions
-                (actionType.gensForRand)
-
-                // seed to start with
-                (getSimSeed(storeType))
-
-                // then unwrap each randMObj object and merge it back in with the appropriate physType
-                .map(
-                    (thisRandMObjConds, i) =>
-                        // assign conds to physType
-                        usePhysTypeConds
-                            // select the associated physType using the same given filter func 
-                            //  and the map index
-                            (getPhysTypeStore(storeType).filter(actionType.filterFunc)[i])
-
-                            // unwrap the randMObj conds into a conds object with random values
-                            (rand_valObj(thisRandMObjConds))
-                ),
-
-            // also include the physTypes that fail the filter function - these are left AS IS
-            ...getPhysTypeStore(storeType)
-                .filter((thisPt) => !actionType.filterFunc(thisPt)),
-        ]),
-        */
 
         // use inActionType.type as an entry key into the key-val list above
         // key is used to select a function that takes a storeType object  

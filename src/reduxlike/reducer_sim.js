@@ -30,6 +30,7 @@ import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 import {
     rand_genRandMObj,
     rand_getNextSeed,
+    rand_nextSeed,
     rand_unitObj,
 } from '../sim/seeded_rand.js';
 
@@ -74,7 +75,7 @@ export const simReducer = (inStoreType) => (inActionType) =>
 
             seed:
                 // does the physType store have physTypes in it?
-                (getPhysTypeStore(storeType))
+                (getPhysTypeStore(storeType).length > 0)
                     // yes: generate a randMObj version of the physTypeStore
                     ? getPhysTypeStore(storeType).reduce((accumRandMObj, thisPt) =>
                         // does this physType pass the filter function?
@@ -84,9 +85,10 @@ export const simReducer = (inStoreType) => (inActionType) =>
                                 (getPhysTypeCondsObj(thisPt))
                                 (actionType.gensForRand)
                                 (
-                                    (
-                                        accumRandMObj || { nextSeed: getSimSeed(storeType) }
-                                    ).nextSeed
+                                    // use the proper seed
+                                    (accumRandMObj !== null)
+                                        ? rand_nextSeed(accumRandMObj)
+                                        : getSimSeed(storeType)
                                 )
 
                             // no: convert the physType into a unit randMObj as is
@@ -94,9 +96,10 @@ export const simReducer = (inStoreType) => (inActionType) =>
                                 (getPhysTypeCondsObj(thisPt))
                                 ({})
                                 (
-                                    (
-                                        accumRandMObj || { nextSeed: getSimSeed(storeType) }
-                                    ).nextSeed
+                                    // use the proper seed
+                                    (accumRandMObj !== null)
+                                        ? rand_nextSeed(accumRandMObj)
+                                        : getSimSeed(storeType)
                                 )
 
                         // start with nothing

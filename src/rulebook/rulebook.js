@@ -98,9 +98,9 @@ export const recursive_leafUpdateAllPhysTypes = {
                                 // ... and the seed of the accumulated rand_actionType OR
                                 //  the given rand_eventType if accumulated rand_actionType is empty
                                 (
-                                    (rand_val(accum_rand_actionType).length === 0)
-                                        ? rand_nextSeed(rand_eventType)
-                                        : rand_nextSeed(accum_rand_actionType)
+                                    (rand_val(accum_rand_actionType).length > 0)
+                                        ? rand_nextSeed(accum_rand_actionType)
+                                        : rand_nextSeed(rand_eventType)
                                 )
                         )
 

@@ -247,49 +247,6 @@ export const rand_genRandMObj = (objAnyType) => (...gensForRand) => (seedIntType
             nextSeed: rand_getNextSeed(seedIntType)(gensForRand.flat(Infinity).length),
         });
 
-// randM object array random number generator function
-// builds an array of randM objects by generating randM random values for the given props
-// each object in the array has the appropriate seed, with the final object in the array
-//  having the most advanced seed
-// takes: 
-//  objAnyType: the object to bundle randMs into
-//  ...gensForRand: an array of functions with properties and randomType generators, as:
-//
-//  [
-//      (seed1): {property1a: randGen1a(seed1), property1b: randGen1b(seed1), ... }
-//      (seed2): {property2a: randGen2a(seed2), property2b: randGen2b(seed2), ... }
-//      ...
-//  ]
-//
-//      where randGen1a, randGen1b, ... are of signature (seedIntType) => randM
-//      for example, seededRand(0.0)(1.0) would have the appropriate signature 
-//          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
-//
-//  seedIntType: the seed to start with
-//  
-// returns object of:
-//  {
-//      ...objAnyType,
-//      ...{property1: randM1, property2: randM2, ...},
-//      nextSeed
-//  }
-export const rand_genRandMObjArray = (...objArrayAnyType) => (...gensForRand) => (seedIntType) =>
-    // for all objects in the given array...
-    objArrayAnyType.flat(Infinity).reduce((accumArray, thisObj) =>
-        [
-            // array of randMObj objects built so far
-            ...accumArray,
-
-            // build another randMObj object out of property-value entries,
-            //  being sure to assign the proper starting seed
-            rand_genRandMObj
-                (thisObj)
-                (gensForRand)
-                ((accumArray.slice(-1)[0] || { nextSeed: seedIntType }).nextSeed),
-        ],
-        // start with an empty array
-        []);
-
 // unwrap the floating-point values in a randMObj
 // takes:
 //  randMObj
