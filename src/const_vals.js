@@ -46,6 +46,9 @@ export const EVENT_REPLACE_CREATURETYPE = 'EVENT_REPLACE_CREATURETYPE';
 export const EVENT_REPLACE_PHYSTYPE = 'EVENT_REPLACE_PHYSTYPE';
 export const EVENT_UPDATE_ALL_PHYSTYPES = 'EVENT_UPDATE_ALL_PHYSTYPES';
 
+// *** Event insert data types
+export const EVENT_INSERT_FOODTYPES = 'EVENT_INSERT_FOODTYPES';
+
 
 // *** HTML page references 
 export const CREATURE_GEO_CHART = 'page_geo_chart';
@@ -54,7 +57,7 @@ export const CREATURE_STATUS_BOX = 'page_creature_status';
 
 
 // *** UI
-export const UI_NUM_TRAILS = 20;
+export const UI_NUM_TRAILS = 10;
 
 
 // *** Update frequencies

@@ -136,12 +136,12 @@ export const action_addPhysType = (physType) =>
 
 // delete physType from store
 // takes:
-//  idIntType: the physType ID to delete
+//  physType
 // returns actionType
-export const action_deletePhysType = (idIntType) =>
+export const action_deletePhysType = (physType) =>
 ({
     type: ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    idIntType,
+    physType,
 });
 
 // replace physType with the given physType using the same ID

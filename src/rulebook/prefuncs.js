@@ -4,21 +4,44 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { event_replacePhysType } from './event_creators.js';
+import { eventInsert_insertData, event_replacePhysType } from './event_creators.js';
 import { compose } from '../utils.js';
-import { usePhysTypeConds } from '../reduxlike/store_getters.js';
+import { getPhysTypeAct, getPhysTypeCond, getPhysTypeStore, usePhysTypeConds } from '../reduxlike/store_getters.js';
 import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
     rand_chooseWeight,
     rand_genRandM,
     rand_getNextSeed,
+    rand_liftBind,
     rand_nextSeed,
     rand_val,
 } from '../sim/seeded_rand.js';
+import { EVENT_INSERT_FOODTYPES, WORLD_TOUCH_DISTANCE } from '../const_vals.js';
+import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** Rulebook pre-functions
+// produce event containing physType with laws of physics applied
+// the function application below INCLUDES wall collision testing!
+// preFunc signature is (storeType) => (rand_eventType) => rand_eventType
+export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
+    rand_genRandM
+        // rand_genRandM value
+        (
+            compose
+                // create a new event using...
+                (event_replacePhysType)
+
+                // ...a physType with physics applied
+                (physTypeDoPhysics(storeType))
+
+                // the physType to apply physics to
+                (rand_val(rand_eventType).physType)
+        )
+        // rand_genRandM seed
+        (rand_nextSeed(rand_eventType));
+
 // build an event to update the creatureType per the behavior request below
 //  which comes from weighted random draw using given desire functions
 // this event will be processed by the rest of the rulebook, which will return
@@ -63,22 +86,38 @@ export const preFuncGenBehaviorRequest = (_) => (rand_eventType) =>
         //  we must point to the next seed when assembling an updated rand_eventType
         (rand_getNextSeed(rand_nextSeed(rand_eventType))(0));
 
-// produce event containing physType with laws of physics applied
-// the function application below INCLUDES wall collision testing!
-// preFunc signature is (storeType) => (rand_eventType) => rand_eventType
-export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
-    rand_genRandM
-        // rand_genRandM value
-        (
-            compose
-                // create a new event using...
-                (event_replacePhysType)
+// tag food touched by creature by bundling it into the given rand_eventType
+export const preFuncTagTouchedFood = (storeType) => (rand_eventType) =>
+    // total signature: (rand_eventType) => rand_eventType
+    rand_liftBind
+        // signature of this function: (eventType) => eventType
+        // rand_liftBind lifts the function to signature (eventType) => rand_eventType
+        //  then binds it to signature (rand_eventType) => rand_eventType
+        ((eventType) =>
+            // insert data into the given eventType
+            eventInsert_insertData(eventType)
+                // type of data to insert: foodType
+                (EVENT_INSERT_FOODTYPES)
 
-                // ...a physType with physics applied
-                (physTypeDoPhysics(storeType))
+                // data to insert: foodTypes closer than a given distance from this creatureType
+                (
+                    // get physType store
+                    getPhysTypeStore(storeType)
+                        // keep only food
+                        .filter(
+                            (ptToTest1) => getPhysTypeAct(ptToTest1) === actAsFood
+                        )
 
-                // the physType to apply physics to
-                (rand_val(rand_eventType).physType)
+                        // keep only food closer than a given distance from this creatureType
+                        .filter((ptToTest2) => Math.sqrt(
+                            Math.pow(getPhysTypeCond(ptToTest2)('x') -
+                                getPhysTypeCond(eventType.physType)('x'), 2.0) +
+                            Math.pow(getPhysTypeCond(ptToTest2)('y') -
+                                getPhysTypeCond(eventType.physType)('y'), 2.0)
+                        ) < WORLD_TOUCH_DISTANCE)
+                )
         )
-        // rand_genRandM seed
-        (rand_nextSeed(rand_eventType));
+        // apply rand_liftBind to the given rand_eventType to unwrap the contained eventType
+        //  for use in the function above
+        // the rand_liftBind function then returns a rand_eventType
+        (rand_eventType);

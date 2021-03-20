@@ -52,12 +52,13 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType) => (actionType) =>
             // keep only physTypes with IDs *not* matching the given ID
             getPhysTypeStore(storeType).filter(
-                (ptToTest) => getPhysTypeID(ptToTest) !== actionType.idIntType
+                (ptToTest) => getPhysTypeID(ptToTest) !== getPhysTypeID(actionType.physType)
             ),
 
         [ACTION_PHYSTYPE_REPLACE_PHYSTYPE]: (storeType) => (actionType) =>
             // is the given physType located in the physTypeStore?  
-            (getPhysTypeStore(storeType).findIndex((ptToFind) => ptToFind.id === actionType.physType.id)
+            (getPhysTypeStore(storeType).findIndex
+                ((ptToFind) => ptToFind.id === actionType.physType.id)
                 > -1)
                 // yes: update it
                 ? splice
