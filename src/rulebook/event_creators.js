@@ -41,3 +41,16 @@ export const event_replacePhysType = (physType) =>
     type: EVENT_REPLACE_PHYSTYPE,
     physType,
 });
+
+// *** Event helpers
+// insert data into an event
+// takes:
+//  eventType: the eventType object to insert into
+//  insertType: the data type of the data being inserted
+//  insertData: the data to insert
+// returns eventType
+export const eventInsert_insertData = (eventType) => (insertType) => (insertData) =>
+({
+    ...eventType,
+    [insertType]: insertData,
+});

@@ -3,13 +3,21 @@
 // ****** Code utilities ******
 
 // *** Functional programming utilities
-// compose two functions f and g of a specific signature
+// compose two functions f and g of a specific one-argument signature
 // takes:
 //  f: function of signature (typeA) => typeA
-//  g: function of signature (typeA) => typeA
-// returns: composed function of signature (typeA) => typeA
+//  g: function of signature (any) => typeA
+// returns: composed function of signature (any) => typeA
 export const compose = f => g =>
-  x => f(g(x));
+    anyType => f(g(anyType));
+
+// compose two functions f and g of a specific two-argument signature
+// takes:
+//  f: function of signature (typeB) => (typeA) => typeA
+//  g: function of signature (typeB) => (any) => typeA
+// returns: composed function of signature (typeA) => typeA
+export const compose2 = f => g =>
+    (typeB) => (anyType) => f(typeB)(g(typeB)(anyType))
 
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // takes:

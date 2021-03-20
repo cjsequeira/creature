@@ -41,6 +41,7 @@ import {
 import {
     preFuncApplyPhysics,
     preFuncGenBehaviorRequest,
+    preFuncTagTouchedFood,
 } from './prefuncs.js';
 
 import {
@@ -59,6 +60,7 @@ import {
 
 import {
     compose,
+    compose2,
     orTests,
 } from '../utils.js';
 
@@ -154,7 +156,7 @@ const ruleBook = {
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
-                preFunc: preFuncApplyPhysics,
+                preFunc: compose2(preFuncTagTouchedFood)(preFuncApplyPhysics),
                 testNode: isCreatureTouchingFood,
                 yes: leafCreatureEatFood,
                 no: {
