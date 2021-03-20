@@ -31,8 +31,8 @@ const initial_store = {
         savedClock: 0.0,
 
         // random number generator seed
-        //seed: Date.now(),
-        seed: 0,
+        seed: Date.now(),
+        //seed: 0,
     },
 
     // initial physTypeStore
