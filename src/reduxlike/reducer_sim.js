@@ -10,7 +10,6 @@ import {
     getSimRunning,
     getSimTimeStep,
     getPhysTypeAct,
-    getPhysTypeCondsObj,
     getSimSeed
 } from './store_getters.js';
 
@@ -26,13 +25,7 @@ import {
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
-
-import {
-    rand_genRandMObj,
-    rand_getNextSeed,
-    rand_nextSeed,
-    rand_unitObj,
-} from '../sim/seeded_rand.js';
+import { rand_getNextSeed } from '../sim/seeded_rand.js';
 
 
 // *** Sim reducer 
@@ -68,7 +61,6 @@ export const simReducer = (inStoreType) => (inActionType) =>
                     : getSimRunning(storeType),
         }),
 
-        // REFACTOR for efficiency
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
         ({
             ...storeType.sim,
@@ -76,38 +68,19 @@ export const simReducer = (inStoreType) => (inActionType) =>
             seed:
                 // does the physType store have physTypes in it?
                 (getPhysTypeStore(storeType).length > 0)
-                    // yes: generate a randMObj version of the physTypeStore
-                    ? getPhysTypeStore(storeType).reduce((accumRandMObj, thisPt) =>
+                    // yes: get to the next seed by counting randM generators
+                    ? getPhysTypeStore(storeType).reduce((accumSeed, thisPt) =>
                         // does this physType pass the filter function?
                         (actionType.filterFunc(thisPt))
-                            // yes: create randMObj using given randM generators
-                            ? rand_genRandMObj
-                                (getPhysTypeCondsObj(thisPt))
-                                (actionType.gensForRand)
-                                (
-                                    // use the proper seed
-                                    (accumRandMObj !== null)
-                                        ? rand_nextSeed(accumRandMObj)
-                                        : getSimSeed(storeType)
-                                )
+                            // yes: advance the seed by the number of randM generators 
+                            //  in this physType, minus 1
+                            ? rand_getNextSeed(accumSeed)(actionType.gensForRand.length - 1)
 
-                            // no: convert the physType into a unit randMObj as is
-                            : rand_unitObj
-                                (getPhysTypeCondsObj(thisPt))
-                                ({})
-                                (
-                                    // use the proper seed
-                                    (accumRandMObj !== null)
-                                        ? rand_nextSeed(accumRandMObj)
-                                        : getSimSeed(storeType)
-                                )
+                            // no: don't go to the next seed
+                            : accumSeed
 
-                        // start with nothing
-                        , null)
-
-                        // grab the last seed
-                        .nextSeed
-
+                        // start with the current sim seed
+                        , getSimSeed(storeType))
                     // no: keep the seed the same
                     : getSimSeed(storeType)
         }),

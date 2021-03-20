@@ -25,7 +25,6 @@ import { splice } from '../utils.js';
 import {
     rand_genRandMObj,
     rand_nextSeed,
-    rand_unitObj,
     rand_valObj,
 } from '../sim/seeded_rand.js';
 
@@ -98,6 +97,8 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         */
 
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
+            // NOTE: the simulator seed is updated in the SIM REDUCER!!!
+
             // generate a randMObj version of the physTypeStore
             getPhysTypeStore(storeType).reduce((accumRandMObj, thisPt) =>
                 [
@@ -116,10 +117,11 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                                     : getSimSeed(storeType)
                             )
 
-                        // no: convert the physType into a unit randMObj as is
-                        : rand_unitObj
+                        // no: create randMObj with no randM generators
+                        // we do this in order to maintain the proper seed
+                        : rand_genRandMObj
                             (getPhysTypeCondsObj(thisPt))
-                            ({})
+                            ()
                             (
                                 // use the proper seed
                                 (accumRandMObj.length > 0)

@@ -108,8 +108,6 @@ export const rand_bind = (func) =>
 //      property2: value2,
 //      ...
 //  }
-//
-//  seedIntType: the seed to use
 //  
 // returns randMObj object of:
 //  {
@@ -117,30 +115,38 @@ export const rand_bind = (func) =>
 //      ...{property1: randM1, property2: randM2, ...},
 //      nextSeed
 //  }
-// REFACTOR: Do we need to pass in seedIntType? DO we need rand_unitObj at all??
-export const rand_unitObj = (objAnyType) => (objForRand) => (seedIntType) =>
+// REFACTOR: DO we need rand_unitObj at all??
+export const rand_unitObj = (objAnyType) => (objForRand) =>
     // build an object out of entries
     Object.entries(objForRand).reduce(
-        (accumProp, propValPair, i) =>
-        ({
+        (accumProp, propValPair, i) => ({
             // object built so far
             ...accumProp,
 
             // the property to assign a randM to
             [propValPair[0]]:
-
             // the unit randM assigned to the property, using i to get the appropriate seed
             {
                 ...rand_unit(propValPair[1]),
-                nextSeed: rand_getNextSeed(seedIntType)(i),
+                nextSeed:
+                    (
+                        (i > 0)
+                            ? rand_getNextSeed(0)(i - 1)
+                            : 0
+                    )
             }
         }),
-        // the initial object to accumulate upon, consisting of objAnyType and 
+        // the initial object to accumulate upon, consisting of objAnyType and
         //  the next seed to be used
         {
             ...objAnyType,
             [TYPE_RANDM_OBJ]: true,
-            nextSeed: rand_getNextSeed(seedIntType)(Object.entries(objForRand).length - 1),
+            nextSeed:
+                (
+                    (Object.entries(objForRand).length > 1)
+                        ? rand_getNextSeed(0)(Object.entries(objForRand).length - 2)
+                        : 0
+                )
         }
     );
 
@@ -233,19 +239,31 @@ export const rand_genRandM = (valueAnyType) => (seedIntType) =>
 //  }
 export const rand_genRandMObj = (objAnyType) => (...gensForRand) => (seedIntType) =>
     // build an object by applying each generator function
-    gensForRand.flat(Infinity).reduce((accumObj, thisGenFunc, i) =>
-    ({
-        ...accumObj,
+    gensForRand.flat(Infinity).reduce(
+        (accumObj, thisGenFunc, i) => ({
+            ...accumObj,
 
-        // get randMs for requested properties by applying generator functions
-        ...thisGenFunc(rand_getNextSeed(seedIntType)(i)),
-    }),
+            // get randMs for requested properties by applying generator functions
+            ...thisGenFunc(
+                (i > 0)
+                    ? rand_getNextSeed(seedIntType)(i - 1)
+                    : seedIntType
+            )
+
+            // store the proper next seed
+            //nextSeed: rand_getNextSeed(seedIntType)(i + 2),
+        }),
         // start with a template object
         {
             ...objAnyType,
             [TYPE_RANDM_OBJ]: true,
-            nextSeed: rand_getNextSeed(seedIntType)(gensForRand.flat(Infinity).length),
-        });
+            nextSeed: (
+                (gensForRand.flat(Infinity).length > 0)
+                    ? rand_getNextSeed(seedIntType)(gensForRand.flat(Infinity).length - 1)
+                    : seedIntType
+            )
+        }
+    );
 
 // unwrap the floating-point values in a randMObj
 // takes:
