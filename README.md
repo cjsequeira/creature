@@ -10,6 +10,9 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 
 ## POTENTIAL next features:
 * Implement creature food-finding functionality
+* Add creature collision bounce behavior
+* REFACTOR: Clean up creature "I touched food / creature touched me" code for efficiency
+* REFACTOR: Ensure that no trails are drawn in geo chart for non-creature objects
 * REFACTOR: Revise use of ChartJS data so that data sets are kept separate from ChartJS chart objects - challenge is rebuild/reassignment of app store during action dispatching. May require not storing chart object references in app store??? Or, make sure chart is always pointed to the chart data object during reducer execution???
 
 ## Changelog:
