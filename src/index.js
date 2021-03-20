@@ -12,8 +12,9 @@ import {
     CREATURE_GEO_CHART,
     CREATURE_STATUS_BOX,
     CREATURE_TIME_CHART,
-    UPDATE_FREQ_NONSIM,
+    UPDATE_FREQ_GEO_CHART,
     UPDATE_FREQ_SIM,
+    UPDATE_FREQ_TIME_CHART,
     WORLD_NUM_FOOD,
     WORLD_SIZE_X,
     WORLD_SIZE_Y,
@@ -37,12 +38,7 @@ import {
 import { storeInit } from './reduxlike/app_store.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
-
-import {
-    getSimRunning,
-    getSimSavedClock,
-} from './reduxlike/store_getters.js';
-
+import { getSimRunning } from './reduxlike/store_getters.js';
 import { rand_seededRand } from './sim/seeded_rand';
 
 
@@ -58,7 +54,7 @@ var appStore = storeInit
 
 // dispatch an initial series of actions
 appStore = dispatchActions(appStore)
-    (        
+    (
         // add a bunch of food
         //Array(2)
         Array(WORLD_NUM_FOOD)
@@ -81,30 +77,30 @@ appStore = dispatchActions(appStore)
         // change the sim status to running
         action_startSim(),
 
-        // add all initial simple creature glucose data to time chart at index 0
-        action_uiAddTimeChartSimpleCreatureData(0)('glucose'),
-
-        // add all initial simple creature neuro data to time chart at index 1
-        action_uiAddTimeChartSimpleCreatureData(1)('neuro'),
+        // add all initial simple creature data to time chart
+        action_uiAddTimeChartSimpleCreatureData(),
 
         // add initial x-y data to geo chart
         action_uiAddGeoChartData(),
     );
 
-// start repeatedly updating our application at sim frequency
-setInterval(appUpdate, UPDATE_FREQ_SIM);
+// *** Time-based call-backs: because JavaScript is single-threaded, these
+//  call-backs should never execute at the "same time"
+setInterval(appUpdateSim, UPDATE_FREQ_SIM);
+setInterval(appUpdateTimeChart, UPDATE_FREQ_TIME_CHART);
+setInterval(appUpdateGeoChart, UPDATE_FREQ_GEO_CHART);
 
 // ***********************************************************************************
 
 
-// *** Time-based callback function
+// *** Time-based callback function for simulator
 // takes: 
 //  don't care
 // returns undefined
-function appUpdate(_) {
+function appUpdateSim(_) {
     // is simulator running?
     if (getSimRunning(appStore)) {
-        // yes: dispatch a series of actions
+        // yes: dispatch a series of actions 
         appStore = dispatchActions(appStore)
             (
                 // send an event into the system: update all physTypes
@@ -119,25 +115,41 @@ function appUpdate(_) {
 
                 // advance sim if running
                 action_advanceSimIfRunning(),
+
+                // save current clock
+                action_saveClockForSim(),
             );
+    }
+};
 
-        // has UPDATE_FREQ_NONSIM time passed since last non-sim update?
-        if (performance.now() > (getSimSavedClock(appStore) + UPDATE_FREQ_NONSIM)) {
-            // yes: dispatch a series of actions to the store to update the non-sim stuff
-            appStore = dispatchActions(appStore)
-                (
-                    // remember the current time
-                    action_saveClockForSim(performance.now()),
+// *** Time-based callback function for geo chart
+// takes: 
+//  don't care
+// returns undefined
+function appUpdateGeoChart(_) {
+    // is simulator running?
+    if (getSimRunning(appStore)) {
+        // yes: dispatch action to update geo chart
+        appStore = dispatchActions(appStore)
+            (
+                // add current physType store x-y data to geo chart
+                action_uiAddGeoChartData(),
+            );
+    }
+};
 
-                    // add all simple creature glucose data to time chart at index 0
-                    action_uiAddTimeChartSimpleCreatureData(0)('glucose'),
-
-                    // add all simple creature neuro data to time chart at index 1
-                    action_uiAddTimeChartSimpleCreatureData(1)('neuro'),
-
-                    // add all x-y data to geo chart
-                    action_uiAddGeoChartData(),
-                );
-        }
+// *** Time-based callback function for time data chart
+// takes: 
+//  don't care
+// returns undefined
+function appUpdateTimeChart(_) {
+    // is simulator running?
+    if (getSimRunning(appStore)) {
+        // yes: dispatch action to update time chart
+        appStore = dispatchActions(appStore)
+            (
+                // add current simple creature data to time chart
+                action_uiAddTimeChartSimpleCreatureData(),
+            );
     }
 };

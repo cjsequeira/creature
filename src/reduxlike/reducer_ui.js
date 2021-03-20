@@ -32,7 +32,6 @@ import {
     chartShiftData,
     concatSliceMap,
     fadeColors,
-    splice,
 } from '../utils.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
@@ -54,6 +53,12 @@ export const uiReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.ui,
 
+            changesList: [
+                ...getUIProp(storeType)('changesList'),
+                'chartDataBufferTime',
+                'chartDataBufferGeo',
+            ],
+
             chartDataBufferTime:
                 // is the given physType a simple creature?
                 (getPhysTypeAct(actionType.physType) === actAsSimpleCreature)
@@ -65,14 +70,17 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                             [
                                 ...getUIProp(storeType)('chartDataBufferTime').datasets,
 
+                                // glucose data
                                 {
                                     ...timeChartInitTemplate,
-                                    label: getPhysTypeName(actionType.physType) + 'set 0',
+                                    label: getPhysTypeName(actionType.physType) + ' glucose',
                                     id: id,
                                 },
+
+                                // neuro data
                                 {
                                     ...timeChartInitTemplate,
-                                    label: getPhysTypeName(actionType.physType) + 'set 1',
+                                    label: getPhysTypeName(actionType.physType) + ' neuro',
                                     id: id,
                                 },
                             ],
@@ -110,16 +118,20 @@ export const uiReducer = (inStoreType) => (inActionType) =>
         ({
             ...storeType.ui,
 
-            creature_time_chart:
-                ((chart) => {
-                    chart.data.datasets = chart.data.datasets.filter(
-                        (dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)
-                    );
+            changesList: [
+                ...getUIProp(storeType)('changesList'),
+                'chartDataBufferTime',
+                'chartDataBufferGeo',
+            ],
 
-                    return chart;
-                })
-                    // apply anonymous function to update the chart passed in below
-                    (getUIProp(storeType)('creature_time_chart')),
+            chartDataBufferTime: {
+                ...getUIProp(storeType)('chartDataBufferTime'),
+
+                datasets:
+                    // filter out the datasets associated with the given physType ID
+                    getUIProp(storeType)('chartDataBufferTime').datasets.filter
+                        ((dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)),
+            },
 
             chartDataBufferGeo: {
                 ...getUIProp(storeType)('chartDataBufferGeo'),
@@ -129,12 +141,16 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                     getUIProp(storeType)('chartDataBufferGeo').datasets.filter
                         ((dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)),
             },
-
         }),
 
         [ACTION_UI_ADD_GEO_CHART_DATA]: (storeType) => (_) =>
         ({
             ...storeType.ui,
+
+            changesList: [
+                ...getUIProp(storeType)('changesList'),
+                'chartDataBufferGeo',
+            ],
 
             chartDataBufferGeo:
             {
@@ -170,30 +186,15 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             },
         }),
 
-        [ACTION_UI_ADD_TIME_CHART_DATA]: (storeType) => (actionType) =>
+        [ACTION_UI_ADD_TIME_CHART_DATA]: (storeType) => (_) =>
         ({
             ...storeType.ui,
 
-            /*
-            creature_time_chart:
-                // update time chart data associated with all **simple creatures** in the store
-                getPhysTypeStore(storeType)
-                    .filter(
-                        (filterPhysType) => getPhysTypeAct(filterPhysType) === actAsSimpleCreature
-                    )
-                    .reduce((accumData, chartPhysType, i) =>
-                        mutable_updateTimeChartData(
-                            accumData,
-                            2 * i + actionType.offsetIntType,
-                            getPhysTypeName(chartPhysType) + ' ' + actionType.condStringType,
-                            ({
-                                time: getSimCurTime(storeType),
-                                value: getPhysTypeCond(chartPhysType)(actionType.condStringType),
-                            })
-                        ),
-                        getUIProp(storeType)('creature_time_chart'))
-            */
-
+            changesList: [
+                ...getUIProp(storeType)('changesList'),
+                'chartDataBufferTime',
+            ],
+            
             // REFACTOR to take more than two conditions, with arbitrary names!
             chartDataBufferTime:
             {
@@ -264,7 +265,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
         // if no key-val matches the entry key, return a func that echoes 
         //  the given storeType "ui" property object
     }[inActionType.type] || ((storeType) => (_) => ({ ...storeType.ui })))
-        // evaluate the function with the storeType "ui" property object 
+        // evaluate the function with the storeType "ui" property object
         //  and actionType to get a storeType "ui" property object
         (inStoreType)
         (inActionType);

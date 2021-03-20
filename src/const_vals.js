@@ -14,7 +14,7 @@ export const ACTION_DO_NOTHING = 'ACTION_DO_NOTHING';
 
 // journal: add entry
 export const ACTION_JOURNAL_ADD_ENTRY = 'ACTION_JOURNAL_ADD_ENTRY';
- 
+
 // physType store actions
 export const ACTION_PHYSTYPE_ADD_PHYSTYPE = 'ACTION_PHYSTYPE_ADD_PHYSTYPE';
 export const ACTION_PHYSTYPE_DELETE_PHYSTYPE = 'ACTION_PHYSTYPE_DELETE_PHYSTYPE';
@@ -57,14 +57,15 @@ export const CREATURE_STATUS_BOX = 'page_creature_status';
 
 
 // *** UI
-export const UI_NUM_TRAILS = 10;
+export const UI_NUM_TRAILS = 15;
 
 
 // *** Update frequencies
-// how often (ideally) to update the non-sim and the simulator in milliseconds
-// simulator frequency should be MORE FREQUENT than non-sim
-export const UPDATE_FREQ_NONSIM = 100.0;
-export const UPDATE_FREQ_SIM = 50;
+// how often (ideally) to update different application aspects
+// simulator frequency should be EQUAL TO OR MORE FREQUENT than non-sim stuff!
+export const UPDATE_FREQ_GEO_CHART = 30.0;
+export const UPDATE_FREQ_SIM = 30.0;
+export const UPDATE_FREQ_TIME_CHART = 1000.0;
 
 
 // *** Name for object property updated by watchProps

@@ -1,9 +1,16 @@
 'use strict'
 
-import { roundTo } from '../utils.js';
-import { getJournal, getUIProp } from './store_getters.js';
-
 // ****** App store rendering functions ******
+
+// *** Our imports
+import {
+    getJournal,
+    getUIProp,
+    isUIObjChanged,
+} from './store_getters.js';
+
+import { roundTo } from '../utils.js';
+
 
 // *** Function to be called when app store changes
 // MUTABLE: calls functions that mutate the application beyond the app store
@@ -11,19 +18,25 @@ import { getJournal, getUIProp } from './store_getters.js';
 //  storeType
 // returns undefined
 export function mutable_renderFunction(storeType) {
-    // MUTABLE: point time chart data to internal data buffer and proper x axis settings, then draw
-    let creatureTimeChartHandle = getUIProp(storeType)('creature_time_chart');
-    creatureTimeChartHandle.data = getUIProp(storeType)('chartDataBufferTime');
-    creatureTimeChartHandle.options.scales.xAxes[0] = getUIProp(storeType)('chartXAxisBuffer');
-    creatureTimeChartHandle.update();
+    // time chart data buffer just updated?
+    if (isUIObjChanged(storeType)('chartDataBufferTime')) {
+        // MUTABLE: point time chart data to internal data buffer and proper x axis settings, then draw
+        let creatureTimeChartHandle = getUIProp(storeType)('creature_time_chart');
+        creatureTimeChartHandle.data = getUIProp(storeType)('chartDataBufferTime');
+        creatureTimeChartHandle.options.scales.xAxes[0] = getUIProp(storeType)('chartXAxisBuffer');
+        creatureTimeChartHandle.update();
 
-    // MUTABLE: point geo chart data to internal data buffer, then draw
-    let creatureGeoChartHandle = getUIProp(storeType)('creature_geo_chart');
-    creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo');
-    creatureGeoChartHandle.update();
+        // MUTABLE: update status box at geo chart speed
+        mutable_updateStatusBox(storeType);
+    };
 
-    // MUTABLE: update status box
-    mutable_updateStatusBox(storeType);
+    // geo chart data buffer just updated?
+    if (isUIObjChanged(storeType)('chartDataBufferGeo')) {
+        // MUTABLE: point geo chart data to internal data buffer, then draw
+        let creatureGeoChartHandle = getUIProp(storeType)('creature_geo_chart');
+        creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo');
+        creatureGeoChartHandle.update();
+    };
 };
 
 // update simulator status box with given HTML message
@@ -52,7 +65,7 @@ function mutable_updateStatusBox(storeType) {
     statusBox.innerHTML = journalBufferHTMLType;
 
     // MUTABLE: adjust scroll bar position to auto-scroll if scroll bar is near the end
-    if (statusScrollTop > (statusScrollHeight - 1.1 * statusInnerHeight)) {
+    if (statusScrollTop > (statusScrollHeight - 1.4 * statusInnerHeight)) {
         statusBox.scrollTop = statusScrollHeight;
     }
 };

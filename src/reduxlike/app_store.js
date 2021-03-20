@@ -105,7 +105,10 @@ const initial_store = {
     },
 
     ui: {
-        // creature time chart  reference placeholder
+        // empty list of UI objects just changed
+        changesList: [],
+
+        // creature time chart reference placeholder
         creature_time_chart: null,
 
         // creature geospatial chart reference placeholder
@@ -114,7 +117,8 @@ const initial_store = {
         // status box reference placeholder
         status_box: null,
 
-        // creature time chart data buffer and x axis settings buffer
+        // creature time chart data buffer and x axis settings buffer,
+        //  and system clock time last updated
         chartDataBufferTime: null,
         chartXAxisBuffer: null,
 
@@ -360,13 +364,13 @@ export const storeInit = (creature_time_chart_context) => (creature_geo_chart_co
         ui: {
             ...initial_store.ui,
 
-            // time chart
+            // time chart HTML DOM object
             creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
 
-            // geo chart
+            // geo chart HTML DOM object
             creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
 
-            // status box
+            // status box HTML DOM object
             status_box: status_box_context,
 
             // time chart data buffer and x axis settings buffer

@@ -171,6 +171,19 @@ export const getJournal = (storeType) => storeType.remainder.journal;
 // get UI property val
 // takes:
 //  storeType: store, as storeType
-//  propStringType: string name for prop of store UI object to look at
+//  argStringType: string name for prop of store UI object to look at
 // returns value, as any
 export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStringType];
+
+// given object name found in UI changes list?
+// takes:
+//  storeType: store, as storeType
+//  argStringType: string name for object to investigate
+export const isUIObjChanged = (storeType) => (argStringType) =>
+    // is given object name **NOT** in the changes list?
+    (storeType.ui.changesList.find((objName) => objName === argStringType) === undefined)
+        // not in changes list: return false
+        ? false
+
+        // in changes list: return true
+        : true
