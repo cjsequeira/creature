@@ -79,22 +79,19 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 // no: return the physTypeStore unaltered
                 : getPhysTypeStore(storeType),
 
-        /*
-        // REFACTOR: FIX so objects don't switch array order when they meet or fail a filter!!!
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES]: (storeType) => (actionType) =>
-        // build an array out of two components
-        // REFACTOR for efficiency
-        ([
-            // first, the updated physTypes that pass the filter function
-            ...getPhysTypeStore(storeType)
-                .filter(actionType.filterFunc)
-                .map(actionType.updateFunc),
+            // for all physTypes in the physType store...
+            getPhysTypeStore(storeType).map((thisPt) =>
+                // ...does this physType pass the filter function?
+                // filter func signature: (physType) => bool
+                (actionType.filterFunc(thisPt))
+                    // yes: apply the update funcion
+                    // update func signature: (physType) => physType
+                    ? actionType.updateFunc(thisPt)
 
-            // second, the physTypes that fail the filter function - these are left AS IS
-            ...getPhysTypeStore(storeType)
-                .filter((thisPt) => !actionType.filterFunc(thisPt)),
-        ]),
-        */
+                    // no: keep the physType the same
+                    : thisPt
+            ),
 
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
             // NOTE: the simulator seed is updated in the SIM REDUCER!!!
