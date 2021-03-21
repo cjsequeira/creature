@@ -60,9 +60,9 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
             (getPhysTypeStore(storeType).findIndex
                 ((ptToFind) => ptToFind.id === actionType.physType.id)
                 > -1)
-                // yes: update it
+                // yes: create a new physTypeStore object by...
                 ? splice
-                    // delete one item...
+                    // ...deleting one item...
                     (1)
 
                     // ... at the array index (as found by matching physType IDs)...
@@ -74,7 +74,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                     // ... in the physTypeStore array...
                     (getPhysTypeStore(storeType))
 
-                    // ... and replace with the given physType
+                    // ... and replacing with the given physType
                     (actionType.physType)
 
                 // no: return the physTypeStore unaltered

@@ -96,8 +96,7 @@ const actAching = (storeType) => (physType) =>
                 ? { 'aching': (_) => 100.0 }
                 : {
                     // can only go to: idling
-                    'idling': (_) =>
-                        100.0,
+                    'idling': (_) => 100.0,
                 }
         );
 
@@ -123,10 +122,8 @@ const actEating = (storeType) => (physType) =>
                 ? { 'eating': (_) => 100.0 }
                 : {
                     // can only go to: eating or idling
-                    'eating': (_) =>
-                        (getPhysTypeCond(physType)('glucose') < 35.0) ? 70.0 : 0.1,
-                    'idling': (_) =>
-                        6.0,
+                    'eating': (_) => (getPhysTypeCond(physType)('glucose') < 35.0) ? 70.0 : 0.1,
+                    'idling': (_) => 6.0,
                 }
         );
 
@@ -152,12 +149,9 @@ const actIdling = (storeType) => (physType) =>
                 ? { 'idling': (_) => 100.0 }
                 : {
                     // can only go to: idling, wandering, sleeping
-                    'idling': (_) =>
-                        300.0,
-                    'wandering': (physType) =>
-                        (getPhysTypeCond(physType)('glucose') < 85.0) ? 15.0 : 0.1,
-                    'sleeping': (physType) =>
-                        (getPhysTypeCond(physType)('neuro') > 85.0) ? 100.0 : 0.1,
+                    'idling': (_) => 300.0,
+                    'wandering': (physType) => (getPhysTypeCond(physType)('glucose') < 85.0) ? 15.0 : 0.1,
+                    'sleeping': (physType) => (getPhysTypeCond(physType)('neuro') > 85.0) ? 100.0 : 0.1,
                 }
         );
 
@@ -183,10 +177,8 @@ const actSleeping = (storeType) => (physType) =>
                 ? { 'sleeping': (_) => 100.0 }
                 : {
                     // can only go to: sleeping or idling
-                    'sleeping': (_) =>
-                        200.0,
-                    'idling': (physType) =>
-                        (getPhysTypeCond(physType)('neuro') < 60.0) ? 9.0 : 0.1
+                    'sleeping': (_) => 200.0,
+                    'idling': (physType) => (getPhysTypeCond(physType)('neuro') < 60.0) ? 9.0 : 0.1,
                 }
         );
 
@@ -203,12 +195,9 @@ const actWandering = (_) => (physType) =>
         (
             {
                 // can only go to: wandering, eating, idling
-                'wandering': (_) =>
-                    40.0,
-                'eating': (_) =>
-                    (getPhysTypeCond(physType)('glucose') < 35.0) ? 60.0 : 0.1,
-                'idling': (_) =>
-                    // if going really fast, creature really wants to idle!
-                    (getPhysTypeCond(physType)('speed') > 40.0) ? 300.0 : 0.1,
+                // if speed really high, creature really wants to idle!
+                'wandering': (_) => 40.0,
+                'eating': (_) => (getPhysTypeCond(physType)('glucose') < 35.0) ? 60.0 : 0.1,
+                'idling': (_) => (getPhysTypeCond(physType)('speed') > 40.0) ? 300.0 : 0.1,
             }
         );

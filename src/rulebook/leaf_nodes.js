@@ -242,6 +242,7 @@ export const leafDoAndApproveWandering = {
                     ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
 
                     // conds to update
+                    // REFACTOR: Can this code be moved to simple_creature.js in some way?
                     (
                         // conds driven by randomized acceleration
                         (seed1) =>
