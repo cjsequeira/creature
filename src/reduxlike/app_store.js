@@ -6,9 +6,9 @@
 import Chart from 'chart.js';
 
 import {
+    SIM_TIME_STEP,
     UI_BORDER_WIDTH,
     UI_CREATURE_RADIUS,
-    UPDATE_FREQ_SIM,
     WORLD_SIZE_X,
     WORLD_SIZE_Y,
 } from '../const_vals.js';
@@ -29,12 +29,11 @@ const initial_store = {
 
         // internal sim time info
         curTime: 0.0,
-        timeStep: UPDATE_FREQ_SIM / 1000.0,
-        savedClock: 0.0,
+        timeStep: SIM_TIME_STEP,
 
         // random number generator seed
-        //seed: Date.now(),
-        seed: 0,
+        seed: Date.now(),
+        //seed: 0,
     },
 
     // initial physTypeStore
@@ -122,9 +121,10 @@ const initial_store = {
         status_box: null,
 
         // creature time chart data buffer and x axis settings buffer,
-        //  and system clock time last updated
+        //  and sim clock time of MOST-RECENT DATA ADDITION
         chartDataBufferTime: null,
         chartXAxisBuffer: null,
+        chartTimeLastClock: 0.0,
 
         // creature geo chart data buffer
         chartDataBufferGeo: null,

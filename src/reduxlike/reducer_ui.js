@@ -80,6 +80,8 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                 'chartDataBufferGeo',
             ],
 
+            chartTimeLastClock: getSimCurTime(storeType),
+
             chartDataBufferTime:
                 // is the given physType a simple creature?
                 (getPhysTypeAct(actionType.physType) === actAsSimpleCreature)
@@ -224,6 +226,8 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                 ...getChangesList(storeType)('ui'),
                 'chartDataBufferTime',
             ],
+
+            chartTimeLastClock: getSimCurTime(storeType),
 
             // REFACTOR to take more than two conditions, with arbitrary names!
             chartDataBufferTime:

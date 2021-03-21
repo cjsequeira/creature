@@ -32,8 +32,6 @@ export const ACTION_UI_ADD_STATUS_MESSAGE = 'ACTION_UI_ADD_STATUS_MESSAGE';
 
 // simulator control
 export const ACTION_SIM_ADVANCE = 'ACTION_SIM_ADVANCE';
-export const ACTION_SIM_INC_SEED = 'ACTION_SIM_INC_SEED';
-export const ACTION_SIM_SAVE_CLOCK = 'ACTION_SIM_SAVE_CLOCK';
 export const ACTION_SIM_SET_SEED = 'ACTION_SIM_SET_SEED';
 export const ACTION_SIM_START = 'ACTION_SIM_START';
 export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
@@ -41,9 +39,9 @@ export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
 // *** creatureType behavior
 // times below are in SECONDS
-export const BEHAVIOR_MIN_TIME = 500.0 / 1000.0;
-export const BEHAVIOR_ACHING_TIME = 1000.0 / 1000.0;
-export const BEHAVIOR_EATING_TIME = 1500.0 / 1000.0;
+export const BEHAVIOR_MIN_TIME = 0.5;
+export const BEHAVIOR_ACHING_TIME = 1.0;
+export const BEHAVIOR_EATING_TIME = 1.5;
 
 
 // *** Event names
@@ -95,15 +93,17 @@ export const UI_OTHER_RADIUS = 3;
 
 
 // *** Update frequencies
-// how often (ideally) to update different application aspects
-// times below are in MILLISECONDS
-// simulator frequency should be EQUAL TO OR MORE FREQUENT than non-sim stuff!
-export const UPDATE_FREQ_SIM = 20.0;
-export const UPDATE_FREQ_TIME_CHART = 1000.0;
+// how often to update the time chart, in SECONDS
+export const UPDATE_FREQ_TIME_CHART = 1.0;
 
 
 // *** Name for object property updated by watchProps
 export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
+
+
+// *** Sim constants
+// sim time step, in SECONDS
+export const SIM_TIME_STEP = 16.7 / 1000.0;
 
 
 // *** World constants

@@ -38,7 +38,7 @@ import {
 import { storeInit } from './reduxlike/app_store.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
-import { getSimRunning } from './reduxlike/store_getters.js';
+import { getSimCurTime, getSimRunning, getUIProp } from './reduxlike/store_getters.js';
 import { rand_seededRand } from './sim/seeded_rand';
 
 
@@ -87,28 +87,20 @@ appStore = dispatchActions(appStore)
         action_startSim(),
     );
 
-// *** Time-based call-backs 
-// Because JavaScript is single-threaded, these call-backs 
-//  should never execute at the "same time"
-
-// interval-driven callbacks
-setInterval(appUpdateSim, UPDATE_FREQ_SIM);
-setInterval(appUpdateTimeChart, UPDATE_FREQ_TIME_CHART);
-
-// animation-frame-driven callbacks
-requestAnimationFrame(appUpdateGeoChart);
+// Start updating application at animation-frame frequency
+requestAnimationFrame(appUpdate);
 
 // ***********************************************************************************
 
 
-// *** Interval-driven callback function for simulator
+// *** Animation-frame-driven callback function for application
 // takes: 
 //  don't care
 // returns undefined
-function appUpdateSim(_) {
+function appUpdate(_) {
     // is simulator running?
     if (getSimRunning(appStore)) {
-        // yes: dispatch a series of actions 
+        // yes: dispatch a series of actions to advance simulator
         appStore = dispatchActions(appStore)
             (
                 // send an event into the system: update all physTypes
@@ -122,33 +114,9 @@ function appUpdateSim(_) {
 
                 // advance sim if running
                 action_advanceSimIfRunning(),
-
-                // save current clock
-                action_saveClockForSim(),
             );
     }
-};
 
-
-// *** Interval-driven callback function for time data chart
-// takes: 
-//  don't care
-// returns undefined
-function appUpdateTimeChart(_) {
-    // dispatch action to update time chart
-    appStore = dispatchActions(appStore)
-        (
-            // add current simple creature data to time chart
-            action_uiAddTimeChartSimpleCreatureData(),
-        );
-};
-
-
-// *** Animation-frame-driven callback function for geo chart
-// takes: 
-//  don't care
-// returns undefined
-function appUpdateGeoChart(_) {
     // dispatch action to update geo chart
     appStore = dispatchActions(appStore)
         (
@@ -156,6 +124,16 @@ function appUpdateGeoChart(_) {
             action_uiAddGeoChartData(),
         );
 
-    // put self back in queue
-    requestAnimationFrame(appUpdateGeoChart);
+    // enough time elapsed since we last updated the time chart?
+    if (getSimCurTime(appStore) > (getUIProp(appStore)('chartTimeLastClock') + UPDATE_FREQ_TIME_CHART)) {
+        // dispatch action to update time chart
+        appStore = dispatchActions(appStore)
+            (
+                // add current simple creature data to time chart
+                action_uiAddTimeChartSimpleCreatureData(),
+            );
+    }
+
+    // put self back in animation queue
+    requestAnimationFrame(appUpdate);
 };

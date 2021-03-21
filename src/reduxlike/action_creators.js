@@ -17,8 +17,6 @@ import {
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
-    ACTION_SIM_INC_SEED,
-    ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_SET_SEED,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
@@ -189,16 +187,6 @@ export const action_advanceSimIfRunning = (_) =>
     type: ACTION_SIM_ADVANCE,
 });
 
-// increment system seed
-// takes:
-//  seedIncIntType: how many times to advance the system seed
-// returns actionType
-export const action_incSimSeed = (seedIncIntType) =>
-({
-    type: ACTION_SIM_INC_SEED,
-    seedIncIntType,
-});
-
 // set system seed
 // takes:
 //  seedIntType: the seed to set
@@ -207,15 +195,6 @@ export const action_setSimSeed = (seedIntType) =>
 ({
     type: ACTION_SIM_SET_SEED,
     seedIntType,
-});
-
-// save system clock
-// takes: 
-//  don't care
-// returns actionType
-export const action_saveClockForSim = (_) =>
-({
-    type: ACTION_SIM_SAVE_CLOCK,
 });
 
 // start sim
