@@ -9,8 +9,8 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2984688a-76b0-4643-83ee-39ee6b0fcf79/deploy-status)](https://app.netlify.com/sites/arrogantfool-draft-creature/deploys)
 
 ## POTENTIAL next features:
+* REFACTOR: Remove all use of performance.now() (eliminate side effects!!!) and refer only to app store
 * Implement creature food-finding functionality
-* Add creature collision bounce behavior
 
 ## Changelog:
 * **0.1.7**: Added creature collision functionality and "aching" behavior
