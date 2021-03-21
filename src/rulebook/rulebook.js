@@ -49,6 +49,7 @@ import {
     isBehaviorRequestIdling,
     isBehaviorRequestSleeping,
     isBehaviorRequestWandering,
+    isCreatureAching,
     isCreatureTouchingCreature,
     isCreatureTouchingFood,
     isEventReplaceCreatureType,
@@ -167,7 +168,11 @@ const ruleBook = {
                 yes: leafDoCreatureCollision,
                 no: {
                     testNode: isCreatureTouchingFood,
-                    yes: leafCreatureEatFood,
+                    yes: {
+                        testNode: isCreatureAching,
+                        yes: leafPreservePhysType,
+                        no: leafCreatureEatFood,
+                    },
                     no: {
                         testNode: isBehaviorRequestSleeping,
                         yes: leafApproveBehaviorStopMovement,

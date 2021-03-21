@@ -52,6 +52,13 @@ export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.
 // returns act (expected to be a function)
 export const getPhysTypeAct = (physType) => physType.act;
 
+// get milliseconds elapsed since behavior clock last touched
+// takes:
+//  physType: physType to use
+// returns float
+export const getPhysTypeBCElapsed = (physType) =>
+    performance.now() - getPhysTypeCond(physType)('behavior_clock');
+
 // get specific condition from physType
 // takes:
 //  physType: physType to use

@@ -4,6 +4,7 @@
 
 // *** Our imports
 import {
+    getChangesList,
     getPhysTypeStore,
     getPhysTypeCond,
     getSimCurTime,
@@ -15,6 +16,7 @@ import {
 
 import {
     ACTION_COMPARE_STOP_IF_FROZEN,
+    ACTION_FORCE_CHANGES_LIST_UPDATE,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
     ACTION_SIM_INC_SEED,
@@ -68,6 +70,23 @@ export const simReducer = (inStoreType) => (inActionType) =>
 
                     // no: leave "running" unchanged
                     : getSimRunning(storeType),
+        }),
+
+        [ACTION_FORCE_CHANGES_LIST_UPDATE]: (storeType) => (actionType) =>
+        ({
+            ...storeType.sim,
+
+            changesList:
+                // is the target substore this one?
+                (actionType.subStringType === 'sim')
+                    // yes: add the given object name to the changes list
+                    ? [
+                        ...getChangesList(storeType)('sim'),
+                        actionType.objStringType,
+                    ]
+
+                    // no: keep the changes list the same
+                    : getChangesList(storeType)('sim'),
         }),
 
         [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>

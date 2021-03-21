@@ -12,6 +12,9 @@ export const ACTION_COMPARE_STOP_IF_FROZEN = 'ACTION_COMPARE_STOP_IF_FROZEN';
 // do nothing
 export const ACTION_DO_NOTHING = 'ACTION_DO_NOTHING';
 
+// force changes list update
+export const ACTION_FORCE_CHANGES_LIST_UPDATE = 'ACTION_FORCE_CHANGES_LIST_UPDATE';
+
 // journal: add entry
 export const ACTION_JOURNAL_ADD_ENTRY = 'ACTION_JOURNAL_ADD_ENTRY';
 
@@ -34,6 +37,11 @@ export const ACTION_SIM_SAVE_CLOCK = 'ACTION_SIM_SAVE_CLOCK';
 export const ACTION_SIM_SET_SEED = 'ACTION_SIM_SET_SEED';
 export const ACTION_SIM_START = 'ACTION_SIM_START';
 export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
+
+
+// *** creatureType behavior
+export const BEHAVIOR_MIN_TIME = 500.0;
+export const BEHAVIOR_ACHING_TIME = 1000.0;
 
 
 // *** Event names
@@ -64,6 +72,7 @@ export const UI_BEHAVIOR_COLORS = {
     eating: '#ffdeadff',            // yellow-white
     sleeping: '#0565F9bb',          // deep blue
     wandering: '#0cc421dd',         // light green
+    aching: '#ff0000ff',            // hard red
     frozen: '#69beffff',            // ice blue
 };
 
@@ -73,10 +82,11 @@ export const UI_BEHAVIOR_STRINGS = {
     eating: "is eating!! Nom...",
     sleeping: "is sleeping! Zzzz...",
     wandering: "is wandering! Wiggity whack!",
+    aching: "is sore! Ooof!",
     frozen: "is frozen! Brrrr.....",
 };
 
-export const UI_BORDER_WIDTH = 4;
+export const UI_BORDER_WIDTH = 5;
 export const UI_CREATURE_RADIUS = 7;
 export const UI_NUM_TRAILS = 15;
 export const UI_OTHER_RADIUS = 3;
@@ -95,11 +105,11 @@ export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
 
 // *** World constants
 // initial number of food items
-export const WORLD_NUM_FOOD = 70;
+export const WORLD_NUM_FOOD = 100;
 
 // x and y sizes
 export const WORLD_SIZE_X = 20.0;
 export const WORLD_SIZE_Y = 20.0;
 
 // distance between physTypes that constitutes a touch
-export const WORLD_TOUCH_DISTANCE = 0.75;
+export const WORLD_TOUCH_DISTANCE = 0.80;

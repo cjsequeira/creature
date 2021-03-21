@@ -47,6 +47,12 @@ export const isSimpleCreature = {
         getPhysTypeAct(rand_val(rand_eventType).physType) === actAsSimpleCreature,
 };
 
+export const isCreatureAching = {
+    name: 'isCreatureAching',
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeCond(rand_val(rand_eventType).physType)('behavior') === 'aching',
+};
+
 export const isCreatureTouchingCreature = {
     name: 'isCreatureTouchingCreature',
     testFunc: (_) => (rand_eventType) =>

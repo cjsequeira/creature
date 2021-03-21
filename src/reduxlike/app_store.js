@@ -33,8 +33,8 @@ const initial_store = {
         savedClock: 0.0,
 
         // random number generator seed
-        //seed: Date.now(),
-        seed: 0,
+        seed: Date.now(),
+        //seed: 0,
     },
 
     // initial physTypeStore
@@ -53,6 +53,7 @@ const initial_store = {
                 // behavior
                 behavior: 'idling',
                 behavior_request: null,
+                behavior_clock: 0.0,
 
                 // location
                 x: WORLD_SIZE_X / 2.0,
@@ -79,6 +80,7 @@ const initial_store = {
                 // behavior
                 behavior: 'idling',
                 behavior_request: null,
+                behavior_clock: 0.0,
 
                 // location
                 x: WORLD_SIZE_X / 2.0,

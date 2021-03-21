@@ -9,6 +9,7 @@ import {
     ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
+    ACTION_FORCE_CHANGES_LIST_UPDATE,
     ACTION_JOURNAL_ADD_ENTRY,
     ACTION_PHYSTYPE_ADD_PHYSTYPE,
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
@@ -31,18 +32,6 @@ import { simReducer } from './reducer_sim.js';
 import { uiReducer } from './reducer_ui.js';
 import { combineReducers } from './reduxlike_utils.js';
 import { resolveRules } from '../rulebook/rulebook.js';
-
-
-// *** Add journal entry
-// takes:
-//  msgStringType: message, as string
-//  don't care: storeType
-// returns actionType
-export const action_addJournalEntry = (msgStringType) =>
-({
-    type: ACTION_JOURNAL_ADD_ENTRY,
-    msgStringType
-});
 
 
 // *** Comparing and testing physTypes
@@ -98,23 +87,27 @@ export const action_doNothing = (_) =>
 });
 
 
-// *** Update app store properties related to UI
-// add geo chart data
+// *** Force changes list update
 // takes:
-//  don't care
-// returns actionType
-export const action_uiAddGeoChartData = (_) =>
+//  subStringType: substore holding target changes list
+//  objStringType: object name to add to changes list
+export const action_forceChangesListUpdate = (subStringType) => (objStringType) =>
 ({
-    type: ACTION_UI_ADD_GEO_CHART_DATA,
+    type: ACTION_FORCE_CHANGES_LIST_UPDATE,
+    subStringType,
+    objStringType,
 });
 
-// add time chart data for simple creature
+
+// *** Journal: add journal entry
 // takes:
-//  don't care
+//  msgStringType: message, as string
+//  don't care: storeType
 // returns actionType
-export const action_uiAddTimeChartSimpleCreatureData = (_) =>
+export const action_addJournalEntry = (msgStringType) =>
 ({
-    type: ACTION_UI_ADD_TIME_CHART_DATA,
+    type: ACTION_JOURNAL_ADD_ENTRY,
+    msgStringType
 });
 
 
@@ -241,6 +234,25 @@ export const action_startSim = (_) =>
 export const action_stopSim = (_) =>
 ({
     type: ACTION_SIM_STOP,
+});
+
+// *** UI update actions
+// add geo chart data
+// takes:
+//  don't care
+// returns actionType
+export const action_uiAddGeoChartData = (_) =>
+({
+    type: ACTION_UI_ADD_GEO_CHART_DATA,
+});
+
+// add time chart data for simple creature
+// takes:
+//  don't care
+// returns actionType
+export const action_uiAddTimeChartSimpleCreatureData = (_) =>
+({
+    type: ACTION_UI_ADD_TIME_CHART_DATA,
 });
 
 

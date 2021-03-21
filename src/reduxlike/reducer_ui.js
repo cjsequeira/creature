@@ -9,17 +9,6 @@ import {
 } from './app_store.js';
 
 import {
-    ACTION_PHYSTYPE_ADD_PHYSTYPE,
-    ACTION_PHYSTYPE_DELETE_PHYSTYPE,
-    ACTION_UI_ADD_GEO_CHART_DATA,
-    ACTION_UI_ADD_TIME_CHART_DATA,
-    UI_BEHAVIOR_COLORS,
-    UI_CREATURE_RADIUS,
-    UI_NUM_TRAILS,
-    UI_OTHER_RADIUS,
-} from '../const_vals.js';
-
-import {
     getChangesList,
     getPhysTypeColor,
     getPhysTypeID,
@@ -31,6 +20,18 @@ import {
     getPhysTypeName,
     genPhysTypeAvailID
 } from './store_getters.js';
+
+import {
+    ACTION_PHYSTYPE_ADD_PHYSTYPE,
+    ACTION_PHYSTYPE_DELETE_PHYSTYPE,
+    ACTION_FORCE_CHANGES_LIST_UPDATE,
+    ACTION_UI_ADD_GEO_CHART_DATA,
+    ACTION_UI_ADD_TIME_CHART_DATA,
+    UI_BEHAVIOR_COLORS,
+    UI_CREATURE_RADIUS,
+    UI_NUM_TRAILS,
+    UI_OTHER_RADIUS,
+} from '../const_vals.js';
 
 import {
     chartShiftData,
@@ -51,6 +52,23 @@ export const uiReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
+        [ACTION_FORCE_CHANGES_LIST_UPDATE]: (storeType) => (actionType) =>
+        ({
+            ...storeType.ui,
+
+            changesList:
+                // is the target substore this one?
+                (actionType.subStringType === 'ui')
+                    // yes: add the given object name to the changes list
+                    ? [
+                        ...getChangesList(storeType)('ui'),
+                        actionType.objStringType,
+                    ]
+
+                    // no: keep the changes list the same
+                    : getChangesList(storeType)('ui'),
+        }),
+
         // adding a new physType? Allocate space for the data in the charts
         [ACTION_PHYSTYPE_ADD_PHYSTYPE]: (storeType) => (actionType) =>
         ({

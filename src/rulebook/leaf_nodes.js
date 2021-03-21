@@ -21,6 +21,7 @@ import {
     action_doNothing,
     action_deletePhysType,
     action_updateSelectPhysTypesRand,
+    action_forceChangesListUpdate,
 } from '../reduxlike/action_creators.js';
 
 import {
@@ -55,6 +56,14 @@ export const leafApproveBehavior = {
                 compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
                     ({
                         behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+
+                        // update behavior clock time IF behavior has just changed,
+                        //  else keep the same
+                        behavior_clock:
+                            (getPhysTypeCond(eventType.physType)('behavior') !==
+                                getPhysTypeCond(eventType.physType)('behavior_request'))
+                                ? performance.now()
+                                : getPhysTypeCond(eventType.physType)('behavior_clock'),
                     }),
 
                 // announce behavior IF behavior has just changed
@@ -79,8 +88,16 @@ export const leafApproveBehaviorStopMovement = {
                     ({
                         behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
+                        // update behavior clock time IF behavior has just changed,
+                        //  else keep the same
+                        behavior_clock:
+                            (getPhysTypeCond(eventType.physType)('behavior') !==
+                                getPhysTypeCond(eventType.physType)('behavior_request'))
+                                ? performance.now()
+                                : getPhysTypeCond(eventType.physType)('behavior_clock'),
+
                         speed: 0.0,
-                        accel: 0.0
+                        accel: 0.0,
                     }),
 
                 // announce behavior IF behavior has just changed
@@ -110,12 +127,22 @@ export const leafCondsOOL = {
                 compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
                     ({
                         behavior: 'frozen',
+
+                        // update behavior clock time IF behavior has just changed,
+                        //  else keep the same
+                        behavior_clock:
+                            (getPhysTypeCond(eventType.physType)('behavior') !== 'frozen')
+                                ? performance.now()
+                                : getPhysTypeCond(eventType.physType)('behavior_clock'),
                     }),
 
                 // let the creature speak
                 action_addJournalEntry(
                     getPhysTypeName(eventType.physType) + ' ' + UI_BEHAVIOR_STRINGS['frozen']
                 ),
+
+                // force a redraw of the time chart to capture full conditions
+                action_forceChangesListUpdate('ui')('chartDataBufferTime'),
             ])
             (rand_eventType),
 };
@@ -138,12 +165,22 @@ export const leafCreatureEatFood = {
                 compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
                     ({
                         behavior: 'eating',
+
+                        // update behavior clock time IF behavior has just changed,
+                        //  else keep the same
+                        behavior_clock:
+                            (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
+                                ? performance.now()
+                                : getPhysTypeCond(eventType.physType)('behavior_clock'),
                     }),
 
                 // remove food that is being touched
                 eventType[EVENT_INSERT_FOODTYPES].map((thisFoodType) =>
                     action_deletePhysType(thisFoodType)
                 ),
+
+                // force a redraw of the geo chart to update creature color
+                action_forceChangesListUpdate('ui')('chartDataBufferGeo'),
             ])
             (rand_eventType),
 };
@@ -167,7 +204,16 @@ export const leafDoAndApproveWandering = {
                             ((randNum) => ({
                                 // be sure to include conds that will not be randomized
                                 ...getPhysTypeCondsObj(eventType.physType),
+
                                 behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType)('behavior') !==
+                                        getPhysTypeCond(eventType.physType)('behavior_request'))
+                                        ? performance.now()
+                                        : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
                                 // glucose and neuro impacts are more severe 
                                 //  with higher accceleration magnitude
@@ -228,8 +274,16 @@ export const leafDoCreatureCollision = {
                         )
                 ),
 
+                // handle collision by changing direction and possibly speed, and
+                //  setting behavior to 'aching'
                 compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
                     ({
+                        // behavior: aching!
+                        behavior: 'aching',
+
+                        // update behavior clock time even if already aching!
+                        behavior_clock: performance.now(),
+
                         // spin heading around a bit (in radians)
                         heading: getPhysTypeCond(eventType.physType)('heading') + 1.8,
 
@@ -240,6 +294,11 @@ export const leafDoCreatureCollision = {
                                 : 10.0,
                     }),
 
+                // announce behavior IF behavior has just changed
+                (getPhysTypeCond(eventType.physType)('behavior') != 'aching')
+                    ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                        ' ' + UI_BEHAVIOR_STRINGS['aching'])
+                    : action_doNothing(),
             ])
             (rand_eventType),
 };
