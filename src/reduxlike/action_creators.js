@@ -78,7 +78,7 @@ export const action_saveAllPhysTypes = (_) =>
     type: ACTION_COMPARE_SAVE_PHYSTYPE,
 });
 
-// stop if frozen
+// stop if all creatures frozen
 // takes: 
 //  don't care
 // returns actionType
@@ -244,14 +244,41 @@ export const action_stopSim = (_) =>
 });
 
 
-// *** storeType template with reducers for specific properties
-export const storeTypeTemplate = {
+// *** storeType template info/funcs
+// the storeType reducer template
+const storeTypeReducerTemplate =
+{
     physTypeStore: physTypeStoreReducer,
     sim: simReducer,
     ui: uiReducer,
 
     remainder: remainderReducer,
 };
+
+// the storeType substores that have changes lists
+const substoreChangesLists = ['ui', 'sim', 'remainder'];
+
+// function to clear changes list for each substore
+const clearChangesList = (...substores) => (storeType) =>
+    // accumulate each cleared changes list into a new storeType obj
+    substores.flat(Infinity).reduce(
+        (accumStoreType, thisSub) =>
+        ({
+            // obj accumulated so far
+            ...accumStoreType,
+
+            // substore key
+            [thisSub]: {
+                // existing substore content
+                ...accumStoreType[thisSub],
+
+                // clear changes list
+                changesList: [],
+            }
+        }),
+
+        // start with the given storeType obj
+        storeType);
 
 
 // *** Dispatch a list of actions, then call subscribedFunc
@@ -262,19 +289,11 @@ export const storeTypeTemplate = {
 // returns undefined
 export const dispatchActions = (inStoreType) => (...actions) => {
     // build an initial object that will become the next app store
-    let outStoreType = {
-        ...inStoreType,
-
-        // reset list of UI changes before we begin
-        ui: {
-            ...inStoreType.ui,
-            changesList: [],
-        }
-    };
+    let outStoreType = clearChangesList(substoreChangesLists)(inStoreType);
 
     // process each action atomically
     actions.flat(Infinity).forEach((action) =>
-        outStoreType = combineReducers(storeTypeTemplate)(outStoreType)(action)
+        outStoreType = combineReducers(storeTypeReducerTemplate)(outStoreType)(action)
     );
 
     // call subscribed func (typically used for rendering UI)

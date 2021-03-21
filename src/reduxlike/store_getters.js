@@ -162,6 +162,13 @@ export const getSimTimeStep = (storeType) => storeType.sim.timeStep;
 
 
 // *** Unsorted getters
+// get changes list
+// takes:
+//  storeType: store, as storeType
+//  subStringType: string name for substore to get changes list of, e.g. 'ui'
+export const getChangesList = (storeType) => (subStringType) =>
+    storeType[subStringType].changesList;
+
 // get journal
 // takes: 
 //  storeType: store, as storeType
@@ -178,10 +185,12 @@ export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStrin
 // given object name found in UI changes list?
 // takes:
 //  storeType: store, as storeType
+//  subStringType: string name for substore to investigate, e.g. 'ui'
 //  argStringType: string name for object to investigate
-export const isUIObjChanged = (storeType) => (argStringType) =>
+export const isObjChanged = (storeType) => (subStringType) => (argStringType) =>
     // is given object name **NOT** in the changes list?
-    (storeType.ui.changesList.find((objName) => objName === argStringType) === undefined)
+    (storeType[subStringType].changesList.find((objName) => objName === argStringType)
+        === undefined)
         // not in changes list: return false
         ? false
 

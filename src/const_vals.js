@@ -36,11 +36,6 @@ export const ACTION_SIM_START = 'ACTION_SIM_START';
 export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
 
-// *** Special datatype names
-export const TYPE_RANDM = 'TYPE_RANDM';
-export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
-
-
 // *** Event names
 export const EVENT_REPLACE_CREATURETYPE = 'EVENT_REPLACE_CREATURETYPE';
 export const EVENT_REPLACE_PHYSTYPE = 'EVENT_REPLACE_PHYSTYPE';
@@ -56,14 +51,39 @@ export const CREATURE_TIME_CHART = 'page_time_chart';
 export const CREATURE_STATUS_BOX = 'page_creature_status';
 
 
-// *** UI
+// *** Special datatype names
+export const TYPE_RANDM = 'TYPE_RANDM';
+export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
+
+
+// *** UI: Creature display info
+// behavior colors
+export const UI_BEHAVIOR_COLORS = {
+    idling: '#bbbbbbdd',            // gray
+    eating: '#ffdeadff',            // yellow-white
+    sleeping: '#0565F9bb',          // deep blue
+    wandering: '#0cc421dd',         // light green
+    frozen: '#69beffff',            // ice blue
+};
+
+// behavior strings
+export const UI_BEHAVIOR_STRINGS = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr.....",
+};
+
+export const UI_BORDER_WIDTH = 4;
+export const UI_CREATURE_RADIUS = 7;
 export const UI_NUM_TRAILS = 15;
+export const UI_OTHER_RADIUS = 3;
 
 
 // *** Update frequencies
 // how often (ideally) to update different application aspects
 // simulator frequency should be EQUAL TO OR MORE FREQUENT than non-sim stuff!
-export const UPDATE_FREQ_GEO_CHART = 30.0;
 export const UPDATE_FREQ_SIM = 30.0;
 export const UPDATE_FREQ_TIME_CHART = 1000.0;
 

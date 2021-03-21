@@ -7,34 +7,21 @@ import {
     ACTION_COMPARE_COMPARE_PHYSTYPE,
     ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
     ACTION_COMPARE_SAVE_PHYSTYPE,
-    ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
+    UI_BEHAVIOR_STRINGS,
 } from '../const_vals.js';
 
 import {
+    getChangesList,
     getJournal,
-    getPhysTypeStore,
     getPassedComparePhysTypeStore,
-    getSavedPhysTypeStore,
     getPhysTypeCond,
-    getSimCurTime,
     getPhysTypeName,
-    getPhysTypeAct,
+    getPhysTypeStore,
+    getSavedPhysTypeStore,
+    getSimCurTime,
 } from './store_getters.js';
-
-import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
-
-
-// *** Creature behavior strings
-// REFACTOR
-const behaviorStrings = {
-    idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
-    sleeping: "is sleeping! Zzzz...",
-    wandering: "is wandering! Wiggity whack!",
-    frozen: "is frozen! Brrrr....."
-};
 
 
 // *** Remainder reducer 
@@ -50,6 +37,11 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_COMPARE_PHYSTYPE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'passedComparePhysTypeStore',
+            ],
 
             // use current physTypeStore as the master list for comparing against
             //  saved physTypeStore, using the given comparison function
@@ -81,6 +73,12 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_LOG_CHANGED_BEHAVIORS]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'journal',
+            ],
+
             journal: [
                 ...getJournal(storeType),
 
@@ -88,7 +86,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                     (physType) => ({
                         timeFloatType: getSimCurTime(storeType),
                         msgStringType: getPhysTypeName(physType) +
-                            ' ' + behaviorStrings[getPhysTypeCond(physType)('behavior')],
+                            ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(physType)('behavior')],
                     })
                 ),
             ]
@@ -97,30 +95,13 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'savedPhysTypeStore',
+            ],
+
             savedPhysTypeStore: getPhysTypeStore(storeType),
-        }),
-
-        [ACTION_COMPARE_STOP_IF_FROZEN]: (storeType) => (_) =>
-        ({
-            ...storeType.remainder,
-            journal: [
-                ...getJournal(storeType),
-
-                ...getPhysTypeStore(storeType)
-                    // filter physType store to find simple creatures
-                    .filter((ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature)
-
-                    // filter to find simple creatures with behavior of 'frozen'
-                    .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')
-
-                    // map filter results to journal entries
-                    .map(
-                        (ptToMap) => ({
-                            timeFloatType: getSimCurTime(storeType),
-                            msgStringType: getPhysTypeName(ptToMap) + ' is frozen; stopping sim',
-                        })
-                    )
-            ]
         }),
 
         [ACTION_DO_NOTHING]: (storeType) => (_) => ({ ...storeType.remainder }),
@@ -128,6 +109,12 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_JOURNAL_ADD_ENTRY]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'journal',
+            ],
+
             journal: [
                 ...getJournal(storeType),
                 {
