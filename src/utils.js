@@ -1,7 +1,5 @@
 'use strict'
 
-import { getPhysTypeName } from "./reduxlike/store_getters";
-
 // ****** Code utilities ******
 
 // *** Functional programming utilities
@@ -51,18 +49,9 @@ export const pipeArgs = (func) => (targetAnyType) =>
     (...argsAnyType) => argsAnyType.flat(Infinity).reduce(
         (accum, cur) => func(accum || targetAnyType)(cur), null);
 
-// given an array of functions and one argument, apply each function to the argument
-// assumes function is of signature (any) => any
-// takes:
-//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
-// returns function of signature: (any) => [any]
-export const applyFuncArray = (...funcs) =>
-    (argAnyType) => funcs.flat(Infinity).map((f) => f(argAnyType));
-
 // given a target and an array of ONE-ARGUMENT functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all functions are applied
-// this is essentially a more-than-two-functions "compose"
 // the array of functions will be completely flattened
 // first function must be of signature (any) => typeA
 // all remaining functions must be of signature (typeA) => typeA
@@ -78,7 +67,6 @@ export const pipe = (...funcs) =>
 // given a target and an array of TWO-ARGUMENT functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all functions are applied
-// this is essentially a more-than-two-functions "compose2"
 // the array of functions will be completely flattened
 // first function must be of signature (typeB) => (any) => typeA
 // all remaining functions must be of signature (typeB) => (typeA) => typeA
@@ -90,6 +78,18 @@ export const pipe2 = (...funcs) =>
     (typeB) => (targetAnyType) => funcs.flat(Infinity).reduce(
         (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
         null);
+
+// given a target, an array of ONE-ARGUMENT functions, and an input argument of typeA,
+//  apply the first function to the input argument, then apply the next function to
+//  the result of the first function, and so on until all functions are applied
+// the array of functions will be completely flattened
+// ALL functions must be of signature (typeA) => typeA
+// takes:
+//  inputAnyType: input argument that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns RESULT of signature typeA
+export const pipeDirect = (inputAnyType, ...funcs) =>
+    funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
 
 // get the value at a nested property of an object
 // takes:
