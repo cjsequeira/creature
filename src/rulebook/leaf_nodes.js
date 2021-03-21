@@ -45,7 +45,7 @@ import {
 // signature of leaf func: (storeType) => (rand_eventType) => rand_actionType
 export const leafApproveBehavior = {
     name: 'leafApproveBehavior',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // action creator is nominally (any) => actionType
         // lift action creator to give a rand_actionType: (any) => rand_actionType
         // then bind the lifted function to take a rand_eventType
@@ -80,7 +80,7 @@ export const leafApproveBehavior = {
 
 export const leafApproveBehaviorStopAccel = {
     name: 'leafApproveBehaviorStopAccel',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -114,7 +114,7 @@ export const leafApproveBehaviorStopAccel = {
 
 export const leafApproveBehaviorStopMovement = {
     name: 'leafApproveBehaviorStopMovement',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -149,7 +149,7 @@ export const leafApproveBehaviorStopMovement = {
 
 export const leafCondsOOL = {
     name: 'leafCondsOOL',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -185,7 +185,7 @@ export const leafCondsOOL = {
 
 export const leafCreatureEatFood = {
     name: 'leafCreatureEatFood',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -232,7 +232,7 @@ export const leafCreatureEatFood = {
 
 export const leafDoAndApproveWandering = {
     name: 'leafDoAndApproveWandering',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -306,7 +306,7 @@ export const leafDoAndApproveWandering = {
 
 export const leafDoCreatureCollision = {
     name: 'leafDoCreatureCollision',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -352,7 +352,7 @@ export const leafDoCreatureCollision = {
 
 export const leafPreservePhysType = {
     name: 'leafPreservePhysType',
-    func: (_) => (rand_eventType) =>
+    func: (_, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // replace the physType with the given physType
@@ -363,7 +363,7 @@ export const leafPreservePhysType = {
 
 export const leafUnknownEvent = {
     name: 'leafUnknownEvent',
-    func: (_) => (rand_eventType) =>
+    func: (_, rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (_) => actionType or [actionType]

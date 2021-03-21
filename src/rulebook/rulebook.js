@@ -87,7 +87,7 @@ import {
 // signature of leaf func: (storeType) => (rand_eventType) => rand_actionType
 export const recursive_leafUpdateAllPhysTypes = {
     name: 'recursive_leafUpdateAllPhysTypes',
-    func: (storeType) => (rand_eventType) =>
+    func: (storeType, rand_eventType) =>
         // reduce the entire physType store to a single rand_actionType
         getPhysTypeStore(storeType).reduce((accum_rand_actionType, thisPt) =>
             // concatenate randMs
@@ -270,8 +270,8 @@ function rand_findRule(storeType, rand_eventType, node) {
     return (node.testNode === undefined)
         // yes: we assume the given node is a leaf node with a function to apply
         // we apply the function "func" to return a rand_actionType
-        // expected func signature: (storeType) => (rand_eventType) => rand_actionType
-        ? node.func(storeType)(rand_eventType_to_use)
+        // expected func signature: (storeType, rand_eventType) => rand_actionType
+        ? node.func(storeType, rand_eventType_to_use)
 
         // no: we assume the given node is a test node with a test function
         // so, apply the given node's test function "testFunc" to the eventType
