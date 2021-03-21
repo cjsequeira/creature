@@ -4,15 +4,6 @@
 
 // *** Our imports
 import {
-    ACTION_COMPARE_COMPARE_PHYSTYPE,
-    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
-    ACTION_COMPARE_SAVE_PHYSTYPE,
-    ACTION_DO_NOTHING,
-    ACTION_JOURNAL_ADD_ENTRY,
-    UI_BEHAVIOR_STRINGS,
-} from '../const_vals.js';
-
-import {
     getChangesList,
     getJournal,
     getPassedComparePhysTypeStore,
@@ -22,6 +13,16 @@ import {
     getSavedPhysTypeStore,
     getSimCurTime,
 } from './store_getters.js';
+
+import {
+    ACTION_COMPARE_COMPARE_PHYSTYPE,
+    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
+    ACTION_COMPARE_SAVE_PHYSTYPE,
+    ACTION_DO_NOTHING,
+    ACTION_FORCE_CHANGES_LIST_UPDATE,
+    ACTION_JOURNAL_ADD_ENTRY,
+    UI_BEHAVIOR_STRINGS,
+} from '../const_vals.js';
 
 
 // *** Remainder reducer 
@@ -89,7 +90,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                             ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(physType)('behavior')],
                     })
                 ),
-            ]
+            ],
         }),
 
         [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (_) =>
@@ -105,6 +106,23 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         }),
 
         [ACTION_DO_NOTHING]: (storeType) => (_) => ({ ...storeType.remainder }),
+
+        [ACTION_FORCE_CHANGES_LIST_UPDATE]: (storeType) => (actionType) =>
+        ({
+            ...storeType.remainder,
+
+            changesList:
+                // is the target substore this one?
+                (actionType.subStringType === 'remainder')
+                    // yes: add the given object name to the changes list
+                    ? [
+                        ...getChangesList(storeType)('remainder'),
+                        actionType.objStringType,
+                    ]
+
+                    // no: keep the changes list the same
+                    : getChangesList(storeType)('remainder'),
+        }),
 
         [ACTION_JOURNAL_ADD_ENTRY]: (storeType) => (actionType) =>
         ({

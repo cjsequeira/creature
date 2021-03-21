@@ -47,7 +47,7 @@ export const geThan = (xFloatType) => (yFloatType) => (yFloatType >= xFloatType)
 //  func: function to apply, of signature (typeA) => typeA
 //  targetAnyType: target that function applies to, as any
 // returns function of signature: ([typeA]) => typeA
-export const applyArgChain = (func) => (targetAnyType) =>
+export const pipeArgs = (func) => (targetAnyType) =>
     (...argsAnyType) => argsAnyType.flat(Infinity).reduce(
         (accum, cur) => func(accum || targetAnyType)(cur), null);
 
@@ -70,7 +70,7 @@ export const applyFuncArray = (...funcs) =>
 //  targetAnyType: target that functions apply to, as any
 //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
 // returns function of signature (any) => typeA
-export const applyFuncChain = (...funcs) =>
+export const pipe = (...funcs) =>
     (targetAnyType) => funcs.flat(Infinity).reduce(
         (funcAccum, thisFunc) => thisFunc(funcAccum || targetAnyType),
         null);
@@ -86,7 +86,7 @@ export const applyFuncChain = (...funcs) =>
 //  targetAnyType: target that functions apply to, as any
 //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
 // returns function of signature (typeB) => (any) => typeA
-export const applyFuncChain2 = (...funcs) =>
+export const pipe2 = (...funcs) =>
     (typeB) => (targetAnyType) => funcs.flat(Infinity).reduce(
         (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
         null);

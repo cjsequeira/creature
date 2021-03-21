@@ -52,6 +52,13 @@ export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.
 // returns act (expected to be a function)
 export const getPhysTypeAct = (physType) => physType.act;
 
+// get milliseconds elapsed since behavior clock last touched
+// takes:
+//  physType: physType to use
+// returns float
+export const getPhysTypeBCElapsed = (physType) =>
+    performance.now() - getPhysTypeCond(physType)('behavior_clock');
+
 // get specific condition from physType
 // takes:
 //  physType: physType to use
@@ -188,11 +195,11 @@ export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStrin
 //  subStringType: string name for substore to investigate, e.g. 'ui'
 //  argStringType: string name for object to investigate
 export const isObjChanged = (storeType) => (subStringType) => (argStringType) =>
-    // is given object name **NOT** in the changes list?
+    // is given object name in the changes list?
     (storeType[subStringType].changesList.find((objName) => objName === argStringType)
-        === undefined)
-        // not in changes list: return false
-        ? false
-
+        !== undefined)
         // in changes list: return true
-        : true
+        ? true
+
+        // not in changes list: return false
+        : false

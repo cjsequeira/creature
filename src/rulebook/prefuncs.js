@@ -6,7 +6,7 @@
 // *** Our imports
 import { eventInsert_insertData, event_replacePhysType } from './event_creators.js';
 import { compose } from '../utils.js';
-import { getPhysTypeAct, getPhysTypeCond, getPhysTypeStore, usePhysTypeConds } from '../reduxlike/store_getters.js';
+import { getPhysTypeAct, getPhysTypeCond, getPhysTypeID, getPhysTypeStore, usePhysTypeConds } from '../reduxlike/store_getters.js';
 import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
@@ -17,7 +17,7 @@ import {
     rand_nextSeed,
     rand_val,
 } from '../sim/seeded_rand.js';
-import { EVENT_INSERT_FOODTYPES, WORLD_TOUCH_DISTANCE } from '../const_vals.js';
+import { EVENT_INSERT_CREATURETYPES, EVENT_INSERT_FOODTYPES, WORLD_TOUCH_DISTANCE } from '../const_vals.js';
 import { actAsFood } from '../phystypes/food_type.js';
 
 
@@ -85,6 +85,47 @@ export const preFuncGenBehaviorRequest = (_) => (rand_eventType) =>
         // since we just used a system seed for rand_chooseWeight, 
         //  we must point to the next seed when assembling an updated rand_eventType
         (rand_getNextSeed(rand_nextSeed(rand_eventType))(0));
+
+// tag simple creatures touched by creature by bundling them into the given rand_eventType
+export const preFuncTagTouchedCreatures = (storeType) => (rand_eventType) =>
+    // total signature: (rand_eventType) => rand_eventType
+    rand_liftBind
+        // signature of this function: (eventType) => eventType
+        // rand_liftBind lifts the function to signature (eventType) => rand_eventType
+        //  then binds it to signature (rand_eventType) => rand_eventType
+        ((eventType) =>
+            // insert data into the given eventType
+            eventInsert_insertData(eventType)
+                // type of data to insert: creatureType
+                (EVENT_INSERT_CREATURETYPES)
+
+                // data to insert: creatureTypes closer than a given distance from this creatureType
+                (
+                    // get physType store
+                    getPhysTypeStore(storeType)
+                        // keep only objects other than the self!
+                        .filter(
+                            (ptToTest1) => getPhysTypeID(ptToTest1) !== getPhysTypeID(eventType.physType)
+                        )
+
+                        // keep only creatureTypes...
+                        .filter(
+                            (ptToTest1) => getPhysTypeCond(ptToTest1)('behavior') !== undefined
+                        )
+
+                        // ...closer than a given distance from this creatureType
+                        .filter((ptToTest2) => Math.sqrt(
+                            Math.pow(getPhysTypeCond(ptToTest2)('x') -
+                                getPhysTypeCond(eventType.physType)('x'), 2.0) +
+                            Math.pow(getPhysTypeCond(ptToTest2)('y') -
+                                getPhysTypeCond(eventType.physType)('y'), 2.0)
+                        ) < WORLD_TOUCH_DISTANCE)
+                )
+        )
+        // apply rand_liftBind to the given rand_eventType to unwrap the contained eventType
+        //  for use in the function above
+        // the rand_liftBind function then returns a rand_eventType
+        (rand_eventType);
 
 // tag food touched by creature by bundling it into the given rand_eventType
 export const preFuncTagTouchedFood = (storeType) => (rand_eventType) =>
