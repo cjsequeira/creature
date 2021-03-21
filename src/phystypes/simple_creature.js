@@ -85,8 +85,8 @@ const actAching = (storeType) => (physType) =>
         (usePhysTypeConds
             (physType)
             ({
-                glucose: getPhysTypeCond(physType)('glucose') - 6.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 3.0 * getSimTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') - 8.0 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 4.0 * getSimTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
