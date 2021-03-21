@@ -63,10 +63,10 @@ const physTypeDoMovements = (storeType) => (physType) => {
 
 // return physType with parameters updated if wall collisions
 // takes: 
-//  storeType
+//  don't care
 //  physType
 // returns physType
-const physTypeCheckWallCollisions = (storeType) => (physType) => {
+const physTypeCheckWallCollisions = (_) => (physType) => {
     // define shorthand func to get cond from given physType
     const inGetCond = getPhysTypeCond(physType);
 

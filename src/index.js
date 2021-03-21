@@ -12,7 +12,6 @@ import {
     CREATURE_GEO_CHART,
     CREATURE_STATUS_BOX,
     CREATURE_TIME_CHART,
-    UPDATE_FREQ_SIM,
     UPDATE_FREQ_TIME_CHART,
     WORLD_NUM_FOOD,
     WORLD_SIZE_X,
@@ -25,7 +24,6 @@ import {
     action_addPhysType,
     action_advanceSimIfRunning,
     action_forceChangesListUpdate,
-    action_saveClockForSim,
     action_startSim,
     action_stopIfFrozen,
     action_uiAddGeoChartData,
@@ -35,7 +33,7 @@ import {
     mapEventsToActions,
 } from './reduxlike/action_creators.js';
 
-import { storeInit } from './reduxlike/app_store.js';
+import { sideEffect_storeInit } from './reduxlike/app_store.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 import { getSimCurTime, getSimRunning, getUIProp } from './reduxlike/store_getters.js';
@@ -46,7 +44,8 @@ import { rand_seededRand } from './sim/seeded_rand';
 // *** Code that actually does stuff
 
 // init our global app store object using some pointers to web page elements
-var appStore = storeInit
+// SIDE EFFECT: creates new ChartJS objects
+var appStore = sideEffect_storeInit
     (document.getElementById(CREATURE_TIME_CHART).getContext('2d'))
     (document.getElementById(CREATURE_GEO_CHART).getContext('2d'))
     (document.getElementById(CREATURE_STATUS_BOX))

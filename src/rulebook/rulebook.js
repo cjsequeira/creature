@@ -28,7 +28,6 @@
 
 // *** Our imports
 import {
-    leafApproveBehavior,
     leafApproveBehaviorStopAccel,
     leafApproveBehaviorStopMovement,
     leafCondsOOL,
@@ -64,7 +63,6 @@ import {
 import {
     pipe2,
     compose,
-    compose2,
     orTests,
 } from '../utils.js';
 
@@ -172,11 +170,12 @@ const ruleBook = {
                 no: {
                     testNode: isBehaviorRequestEating,
                     yes: {
-                        testNode: isCreatureTouchingFood,
-                        yes: {
-                            testNode: isCreatureAching,
-                            yes: leafPreservePhysType,
-                            no: {
+                        // no eating if aching!
+                        testNode: isCreatureAching,
+                        yes: leafPreservePhysType,
+                        no: {
+                            testNode: isCreatureTouchingFood,
+                            yes: {
                                 testNode: isCreatureEating,
 
                                 // can't switch to eating if already eating! this prevents
@@ -186,8 +185,8 @@ const ruleBook = {
                                 // if not already eating, eat the touched food
                                 no: leafCreatureEatFood,
                             },
+                            no: leafPreservePhysType,
                         },
-                        no: leafPreservePhysType,
                     },
                     no: {
                         testNode: isBehaviorRequestSleeping,

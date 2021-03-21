@@ -4,9 +4,27 @@
 // Inspired by: https://ericlippert.com/2015/05/11/wizards-and-warriors-part-five/
 
 // *** Our imports
-import { eventInsert_insertData, event_replacePhysType } from './event_creators.js';
+import {
+    eventInsert_insertData,
+    event_replacePhysType,
+} from './event_creators.js';
+
+import {
+    EVENT_INSERT_CREATURETYPES,
+    EVENT_INSERT_FOODTYPES,
+    WORLD_TOUCH_DISTANCE,
+} from '../const_vals.js';
+
 import { compose } from '../utils.js';
-import { getPhysTypeAct, getPhysTypeCond, getPhysTypeID, getPhysTypeStore, usePhysTypeConds } from '../reduxlike/store_getters.js';
+
+import {
+    getPhysTypeAct,
+    getPhysTypeCond,
+    getPhysTypeID,
+    getPhysTypeStore,
+    usePhysTypeConds,
+} from '../reduxlike/store_getters.js';
+
 import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
@@ -17,7 +35,7 @@ import {
     rand_nextSeed,
     rand_val,
 } from '../sim/seeded_rand.js';
-import { EVENT_INSERT_CREATURETYPES, EVENT_INSERT_FOODTYPES, WORLD_TOUCH_DISTANCE } from '../const_vals.js';
+
 import { actAsFood } from '../phystypes/food_type.js';
 
 
@@ -26,9 +44,9 @@ import { actAsFood } from '../phystypes/food_type.js';
 // the function application below INCLUDES wall collision testing!
 // preFunc signature is (storeType) => (rand_eventType) => rand_eventType
 export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
-    rand_genRandM
-        // rand_genRandM value
-        (
+    // total signature: (rand_eventType) => rand_eventType
+    rand_liftBind
+        ((eventType) =>
             compose
                 // create a new event using...
                 (event_replacePhysType)
@@ -37,10 +55,12 @@ export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
                 (physTypeDoPhysics(storeType))
 
                 // the physType to apply physics to
-                (rand_val(rand_eventType).physType)
+                (eventType.physType)
         )
-        // rand_genRandM seed
-        (rand_nextSeed(rand_eventType));
+        // apply rand_liftBind to the given rand_eventType to unwrap the contained eventType
+        //  for use in the function above
+        // the rand_liftBind function then returns a rand_eventType
+        (rand_eventType);
 
 // build an event to update the creatureType per the behavior request below
 //  which comes from weighted random draw using given desire functions

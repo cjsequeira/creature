@@ -68,7 +68,7 @@ function mutable_updateStatusBox(storeType) {
     statusBox.innerHTML = journalBufferHTMLType;
 
     // MUTABLE: adjust scroll bar position to auto-scroll if scroll bar is near the end
-    if (statusScrollTop > (statusScrollHeight - 1.4 * statusInnerHeight)) {
+    if (statusScrollTop > (statusScrollHeight - 1.2 * statusInnerHeight)) {
         statusBox.scrollTop = statusScrollHeight;
     }
 };

@@ -95,10 +95,11 @@ const initial_store = {
 
     remainder: {
         // initial journal
-        journal: [{
-            timeFloatType: 0.0,
-            msgStringType: 'Simulator init'
-        }],
+        journal:
+            [{
+                timeFloatType: 0.0,
+                msgStringType: 'Simulator init'
+            }],
 
         // initial "saved physType" store
         savedPhysTypeStore: [{}],
@@ -361,7 +362,8 @@ export const geoChartInitTemplate =
 
 
 // *** Store initializer function
-export const storeInit = (creature_time_chart_context) => (creature_geo_chart_context) =>
+// SIDE EFFECT: creates new ChartJS objects
+export const sideEffect_storeInit = (creature_time_chart_context) => (creature_geo_chart_context) =>
     (status_box_context) => (renderFunc) =>
     ({
         ...initial_store,
@@ -370,9 +372,11 @@ export const storeInit = (creature_time_chart_context) => (creature_geo_chart_co
         ui: {
             ...initial_store.ui,
 
+            // SIDE EFFECT
             // time chart HTML DOM object
             creature_time_chart: new Chart(creature_time_chart_context, creature_time_chart_params_init),
 
+            // SIDE EFFECT
             // geo chart HTML DOM object
             creature_geo_chart: new Chart(creature_geo_chart_context, creature_geo_chart_params_init),
 

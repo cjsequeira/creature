@@ -294,7 +294,7 @@ export const dispatchActions = (inStoreType) => (...actions) => {
     return outStoreType;
 };
 
-// *** Map a list of events to a list of associated actions
+// *** Map a list of events to a list of associated actions by using our system rulebook
 // takes:
 //  storeType
 //  ...events: list of events to map, as eventType
