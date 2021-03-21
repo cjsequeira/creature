@@ -40,9 +40,10 @@ export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
 
 // *** creatureType behavior
-export const BEHAVIOR_MIN_TIME = 500.0;
-export const BEHAVIOR_ACHING_TIME = 1000.0;
-export const BEHAVIOR_EATING_TIME = 1500.0;
+// times below are in SECONDS
+export const BEHAVIOR_MIN_TIME = 500.0 / 1000.0;
+export const BEHAVIOR_ACHING_TIME = 1000.0 / 1000.0;
+export const BEHAVIOR_EATING_TIME = 1500.0 / 1000.0;
 
 
 // *** Event names
@@ -95,6 +96,7 @@ export const UI_OTHER_RADIUS = 3;
 
 // *** Update frequencies
 // how often (ideally) to update different application aspects
+// times below are in MILLISECONDS
 // simulator frequency should be EQUAL TO OR MORE FREQUENT than non-sim stuff!
 export const UPDATE_FREQ_SIM = 20.0;
 export const UPDATE_FREQ_TIME_CHART = 1000.0;

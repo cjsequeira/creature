@@ -138,7 +138,7 @@ export const simReducer = (inStoreType) => (inActionType) =>
         [ACTION_SIM_SAVE_CLOCK]: (storeType) => (_) =>
         ({
             ...storeType.sim,
-            savedClock: performance.now(),
+            savedClock: getSimCurTime(storeType),
         }),
 
         [ACTION_SIM_SET_SEED]: (storeType) => (actionType) =>
