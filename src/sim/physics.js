@@ -9,9 +9,8 @@ import {
 } from '../const_vals.js';
 
 import {
-    applyFuncChain,
+    pipe,
     boundToRange,
-    compose,
     withinRange,
 } from '../utils.js';
 
@@ -30,7 +29,7 @@ import {
 export const physTypeDoPhysics = (storeType) => (physType) =>
     // function chain: 
     //  get physType with new location -> get physType with wall collisions checked
-    applyFuncChain
+    pipe
         (
             physTypeDoMovements(storeType),
             physTypeCheckWallCollisions(storeType)

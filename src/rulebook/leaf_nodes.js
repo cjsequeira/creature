@@ -5,6 +5,7 @@
 
 // *** Our imports
 import {
+    EVENT_INSERT_CREATURETYPES,
     EVENT_INSERT_FOODTYPES,
     UI_BEHAVIOR_STRINGS,
 } from '../const_vals.js';
@@ -102,8 +103,7 @@ export const leafCondsOOL = {
             ((eventType) => [
                 // make an announcement
                 action_addJournalEntry(
-                    getPhysTypeName(eventType.physType) +
-                    ' conditions out of limits!!'
+                    getPhysTypeName(eventType.physType) + ' conditions out of limits!!'
                 ),
 
                 // change behavior to frozen
@@ -113,8 +113,9 @@ export const leafCondsOOL = {
                     }),
 
                 // let the creature speak
-                action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + UI_BEHAVIOR_STRINGS['frozen']),
+                action_addJournalEntry(
+                    getPhysTypeName(eventType.physType) + ' ' + UI_BEHAVIOR_STRINGS['frozen']
+                ),
             ])
             (rand_eventType),
 };
@@ -129,8 +130,8 @@ export const leafCreatureEatFood = {
                 // announce glorious news in journal IF not already eating
                 (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
                     ? action_addJournalEntry(
-                        getPhysTypeName(eventType.physType) +
-                        ' FOUND FOOD!!')
+                        getPhysTypeName(eventType.physType) + ' FOUND FOOD!!'
+                    )
                     : action_doNothing(),
 
                 // switch creatureType behavior to 'eating'
@@ -202,9 +203,43 @@ export const leafDoAndApproveWandering = {
                 (getPhysTypeCond(eventType.physType)('behavior') !==
                     getPhysTypeCond(eventType.physType)('behavior_request'))
 
-                    ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                        ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                    ? action_addJournalEntry(
+                        getPhysTypeName(eventType.physType) +
+                        ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')]
+                    )
                     : action_doNothing(),
+            ])
+            (rand_eventType),
+};
+
+export const leafDoCreatureCollision = {
+    name: 'leafDoCreatureCollision',
+    func: (_) => (rand_eventType) =>
+        // total signature: (rand_eventType) => rand_actionType
+        rand_liftBind
+            // signature of this func: (eventType) => actionType or [actionType]
+            ((eventType) => [
+                // announce news in journal for each touched creatureType
+                eventType[EVENT_INSERT_CREATURETYPES].map((thisCt) =>
+                    action_addJournalEntry
+                        (
+                            getPhysTypeName(eventType.physType) + ' crashed into ' +
+                            getPhysTypeName(thisCt) + '!!!'
+                        )
+                ),
+
+                compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
+                    ({
+                        // spin heading around a bit (in radians)
+                        heading: getPhysTypeCond(eventType.physType)('heading') + 1.8,
+
+                        // establish a minimum speed
+                        speed:
+                            (getPhysTypeCond(eventType.physType)('speed') > 10.0)
+                                ? getPhysTypeCond(eventType.physType)('speed')
+                                : 10.0,
+                    }),
+
             ])
             (rand_eventType),
 };

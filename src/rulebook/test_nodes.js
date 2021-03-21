@@ -9,6 +9,7 @@ import {
     EVENT_UPDATE_ALL_PHYSTYPES,
     EVENT_REPLACE_CREATURETYPE,
     EVENT_INSERT_FOODTYPES,
+    EVENT_INSERT_CREATURETYPES,
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
@@ -44,6 +45,12 @@ export const isSimpleCreature = {
     name: 'isSimpleCreature',
     testFunc: (_) => (rand_eventType) =>
         getPhysTypeAct(rand_val(rand_eventType).physType) === actAsSimpleCreature,
+};
+
+export const isCreatureTouchingCreature = {
+    name: 'isCreatureTouchingCreature',
+    testFunc: (_) => (rand_eventType) =>
+        rand_val(rand_eventType)[EVENT_INSERT_CREATURETYPES].length > 0,
 };
 
 export const isCreatureTouchingFood = {

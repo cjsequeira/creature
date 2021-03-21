@@ -188,11 +188,11 @@ export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStrin
 //  subStringType: string name for substore to investigate, e.g. 'ui'
 //  argStringType: string name for object to investigate
 export const isObjChanged = (storeType) => (subStringType) => (argStringType) =>
-    // is given object name **NOT** in the changes list?
+    // is given object name in the changes list?
     (storeType[subStringType].changesList.find((objName) => objName === argStringType)
-        === undefined)
-        // not in changes list: return false
-        ? false
-
+        !== undefined)
         // in changes list: return true
-        : true
+        ? true
+
+        // not in changes list: return false
+        : false

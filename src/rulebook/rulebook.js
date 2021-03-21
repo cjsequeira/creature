@@ -33,6 +33,7 @@ import {
     leafCondsOOL,
     leafCreatureEatFood,
     leafDoAndApproveWandering,
+    leafDoCreatureCollision,
     leafPreservePhysType,
     leafUnknownEvent,
 } from './leaf_nodes.js';
@@ -40,6 +41,7 @@ import {
 import {
     preFuncApplyPhysics,
     preFuncGenBehaviorRequest,
+    preFuncTagTouchedCreatures,
     preFuncTagTouchedFood,
 } from './prefuncs.js';
 
@@ -47,6 +49,7 @@ import {
     isBehaviorRequestIdling,
     isBehaviorRequestSleeping,
     isBehaviorRequestWandering,
+    isCreatureTouchingCreature,
     isCreatureTouchingFood,
     isEventReplaceCreatureType,
     isEventUpdateAllPhysTypes,
@@ -55,7 +58,7 @@ import {
 } from './test_nodes.js';
 
 import {
-    applyFuncChain2,
+    pipe2,
     compose,
     compose2,
     orTests,
@@ -148,30 +151,35 @@ const ruleBook = {
     testNode: isEventReplaceCreatureType,
     yes:
     {
-        preFunc: preFuncGenBehaviorRequest,
+        preFunc: preFuncGenBehaviorRequest, // use desires to generate creature behavior request
         testNode: isSimpleCreature,
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
-                preFunc: applyFuncChain2
+                preFunc: pipe2
                     (
                         preFuncApplyPhysics,
-                        preFuncTagTouchedFood
+                        preFuncTagTouchedCreatures,
+                        preFuncTagTouchedFood,
                     ),
 
-                testNode: isCreatureTouchingFood,
-                yes: leafCreatureEatFood,
+                testNode: isCreatureTouchingCreature,
+                yes: leafDoCreatureCollision,
                 no: {
-                    testNode: isBehaviorRequestSleeping,
-                    yes: leafApproveBehaviorStopMovement,
+                    testNode: isCreatureTouchingFood,
+                    yes: leafCreatureEatFood,
                     no: {
-                        testNode: isBehaviorRequestWandering,
-                        yes: leafDoAndApproveWandering,
+                        testNode: isBehaviorRequestSleeping,
+                        yes: leafApproveBehaviorStopMovement,
                         no: {
-                            testNode: isBehaviorRequestIdling,
-                            yes: leafApproveBehavior,
-                            no: leafPreservePhysType
-                        }
+                            testNode: isBehaviorRequestWandering,
+                            yes: leafDoAndApproveWandering,
+                            no: {
+                                testNode: isBehaviorRequestIdling,
+                                yes: leafApproveBehavior,
+                                no: leafPreservePhysType
+                            }
+                        },
                     },
                 },
             },
