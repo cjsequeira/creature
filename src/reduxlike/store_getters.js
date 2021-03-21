@@ -150,12 +150,6 @@ export const getSimCurTime = (storeType) => storeType.sim.curTime;
 // returns bool
 export const getSimRunning = (storeType) => storeType.sim.running;
 
-// return last stored system clock time
-// takes: 
-//  storeType: store, as storeType
-// returns number
-export const getSimSavedClock = (storeType) => storeType.sim.savedClock;
-
 // return simulator seed
 // takes: 
 //  storeType: store, as storeType

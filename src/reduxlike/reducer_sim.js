@@ -19,8 +19,6 @@ import {
     ACTION_FORCE_CHANGES_LIST_UPDATE,
     ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     ACTION_SIM_ADVANCE,
-    ACTION_SIM_INC_SEED,
-    ACTION_SIM_SAVE_CLOCK,
     ACTION_SIM_SET_SEED,
     ACTION_SIM_START,
     ACTION_SIM_STOP,
@@ -124,21 +122,6 @@ export const simReducer = (inStoreType) => (inActionType) =>
 
                     // no: keep the time the same as it currently is
                     : getSimCurTime(storeType),
-        }),
-
-        [ACTION_SIM_INC_SEED]: (storeType) => (actionType) =>
-        ({
-            ...storeType.sim,
-            seed:
-                (actionType.seedIncIntType > 0)
-                    ? rand_getNextSeed(getSimSeed(storeType))(actionType.seedIncIntType - 1)
-                    : getSimSeed(storeType)
-        }),
-
-        [ACTION_SIM_SAVE_CLOCK]: (storeType) => (_) =>
-        ({
-            ...storeType.sim,
-            savedClock: getSimCurTime(storeType),
         }),
 
         [ACTION_SIM_SET_SEED]: (storeType) => (actionType) =>
