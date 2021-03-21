@@ -55,6 +55,7 @@ import {
 } from './test_nodes.js';
 
 import {
+    applyFuncChain2,
     compose,
     compose2,
     orTests,
@@ -152,7 +153,12 @@ const ruleBook = {
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
-                preFunc: compose2(preFuncTagTouchedFood)(preFuncApplyPhysics),
+                preFunc: applyFuncChain2
+                    (
+                        preFuncApplyPhysics,
+                        preFuncTagTouchedFood
+                    ),
+
                 testNode: isCreatureTouchingFood,
                 yes: leafCreatureEatFood,
                 no: {

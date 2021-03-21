@@ -13,31 +13,31 @@
   <div class="container-fluid">
 
     <div class="row top-box rounded-lg">
-      <div class="col-12 text-center">
-        <h1 class="display-2">Creature!! Version 0.1.5</h1>
+      <div class="col-8 d-flex">
+        <h1 class="display-2 d-flex align-self-center">Creature!! Version 0.1.5</h1>
+      </div>
+      <div class="col-4 text-end">
+        <!-- Image from: https://www.deviantart.com/lethargiceye/art/Cute-Creature-75055699 -->
+        <img src="./assets/cute_creature.png" class="rounded rounded-lg border border-secondary shadow-sm"
+          style="min-width: 50px; max-width: 100px;" />
       </div>
     </div>
     <div class="row align-items-end">
       <div class="col-12 col-sm-8 p-2 text-center text-sm-start">
-        <h2>Eats, sleeps, and wanders!</h2>
-      </div>
-      <div class="col-12 col-sm-4 p-2 d-flex justify-content-center justify-content-sm-end">
-        <!-- Image from: https://www.deviantart.com/lethargiceye/art/Cute-Creature-75055699 -->
-        <img src="./assets/cute_creature.png" class="rounded rounded-lg border border-secondary shadow-sm"
-          style="min-width: 50px; max-width: 100px; align-self: center;" />
+        <h3>Eats, sleeps, and wanders!</h3>
       </div>
     </div>
 
     <div class="row align-items-start justify-content-sm-center d-flex align-items-stretch">
-      <div class="col-xl-3 col-md-5 col-11 border border-secondary rounded rounded-lg m-3 bg-white shadow">
+      <div class="col-xl-4 col-md-5 col-11 border border-secondary rounded rounded-lg m-1 bg-white shadow">
         <canvas id="page_time_chart" width="400" height="300"></canvas>
       </div>
 
-      <div class="col-xl-3 col-md-5 col-11 border border-secondary rounded rounded-lg m-3 bg-white shadow">
+      <div class="col-xl-4 col-md-5 col-11 border border-secondary rounded rounded-lg m-1 bg-white shadow">
         <canvas id="page_geo_chart" width="400" height="300"></canvas>
       </div>
 
-      <div class="col-xl-5 col-md-7 col-11 overflow-auto border border-secondary rounded rounded-lg m-3 bg-white shadow"
+      <div class="col-md-5 col-11 overflow-auto border border-secondary rounded rounded-lg m-1 bg-white shadow"
         style="height: 15em;" id="page_creature_status">
       </div>
     </div>
