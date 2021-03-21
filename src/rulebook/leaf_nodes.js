@@ -29,6 +29,7 @@ import {
     getPhysTypeCondsObj,
     getPhysTypeID,
     getPhysTypeName,
+    getSimCurTime,
     getSimTimeStep,
     usePhysTypeConds,
 } from '../reduxlike/store_getters.js';
@@ -44,7 +45,7 @@ import {
 // signature of leaf func: (storeType) => (rand_eventType) => rand_actionType
 export const leafApproveBehavior = {
     name: 'leafApproveBehavior',
-    func: (_) => (rand_eventType) =>
+    func: (storeType) => (rand_eventType) =>
         // action creator is nominally (any) => actionType
         // lift action creator to give a rand_actionType: (any) => rand_actionType
         // then bind the lifted function to take a rand_eventType
@@ -62,7 +63,7 @@ export const leafApproveBehavior = {
                         behavior_clock:
                             (getPhysTypeCond(eventType.physType)('behavior') !==
                                 getPhysTypeCond(eventType.physType)('behavior_request'))
-                                ? performance.now()
+                                ? getSimCurTime(storeType)
                                 : getPhysTypeCond(eventType.physType)('behavior_clock'),
                     }),
 
@@ -79,7 +80,7 @@ export const leafApproveBehavior = {
 
 export const leafApproveBehaviorStopAccel = {
     name: 'leafApproveBehaviorStopAccel',
-    func: (_) => (rand_eventType) =>
+    func: (storeType) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -93,7 +94,7 @@ export const leafApproveBehaviorStopAccel = {
                         behavior_clock:
                             (getPhysTypeCond(eventType.physType)('behavior') !==
                                 getPhysTypeCond(eventType.physType)('behavior_request'))
-                                ? performance.now()
+                                ? getSimCurTime(storeType)
                                 : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
                         // stop accel, but leave speed alone
@@ -113,7 +114,7 @@ export const leafApproveBehaviorStopAccel = {
 
 export const leafApproveBehaviorStopMovement = {
     name: 'leafApproveBehaviorStopMovement',
-    func: (_) => (rand_eventType) =>
+    func: (storeType) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -127,7 +128,7 @@ export const leafApproveBehaviorStopMovement = {
                         behavior_clock:
                             (getPhysTypeCond(eventType.physType)('behavior') !==
                                 getPhysTypeCond(eventType.physType)('behavior_request'))
-                                ? performance.now()
+                                ? getSimCurTime(storeType)
                                 : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
                         // stop speed AND accel
@@ -148,7 +149,7 @@ export const leafApproveBehaviorStopMovement = {
 
 export const leafCondsOOL = {
     name: 'leafCondsOOL',
-    func: (_) => (rand_eventType) =>
+    func: (storeType) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -167,7 +168,7 @@ export const leafCondsOOL = {
                         //  else keep the same
                         behavior_clock:
                             (getPhysTypeCond(eventType.physType)('behavior') !== 'frozen')
-                                ? performance.now()
+                                ? getSimCurTime(storeType)
                                 : getPhysTypeCond(eventType.physType)('behavior_clock'),
                     }),
 
@@ -184,7 +185,7 @@ export const leafCondsOOL = {
 
 export const leafCreatureEatFood = {
     name: 'leafCreatureEatFood',
-    func: (_) => (rand_eventType) =>
+    func: (storeType) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -211,7 +212,7 @@ export const leafCreatureEatFood = {
                         //  else keep the same
                         behavior_clock:
                             (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
-                                ? performance.now()
+                                ? getSimCurTime(storeType)
                                 : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
                         // stop accelerating!
@@ -256,7 +257,7 @@ export const leafDoAndApproveWandering = {
                                 behavior_clock:
                                     (getPhysTypeCond(eventType.physType)('behavior') !==
                                         getPhysTypeCond(eventType.physType)('behavior_request'))
-                                        ? performance.now()
+                                        ? getSimCurTime(storeType)
                                         : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
                                 // glucose and neuro impacts are more severe 
@@ -304,7 +305,7 @@ export const leafDoAndApproveWandering = {
 
 export const leafDoCreatureCollision = {
     name: 'leafDoCreatureCollision',
-    func: (_) => (rand_eventType) =>
+    func: (storeType) => (rand_eventType) =>
         // total signature: (rand_eventType) => rand_actionType
         rand_liftBind
             // signature of this func: (eventType) => actionType or [actionType]
@@ -326,7 +327,8 @@ export const leafDoCreatureCollision = {
                         behavior: 'aching',
 
                         // update behavior clock time even if already aching!
-                        behavior_clock: performance.now(),
+                        // extend the pain!
+                        behavior_clock: getSimCurTime(storeType),
 
                         // spin heading around a bit (in radians)
                         heading: getPhysTypeCond(eventType.physType)('heading') + 0.8,

@@ -92,7 +92,7 @@ const actAching = (storeType) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         (
             // stay in this behavior for a minimum amount of time!
-            (getPhysTypeBCElapsed(physType) < BEHAVIOR_ACHING_TIME)
+            (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_ACHING_TIME)
                 ? { 'aching': (_) => 100.0 }
                 : {
                     // can only go to: idling
@@ -119,7 +119,7 @@ const actEating = (storeType) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         (
             // stay in this behavior for a minimum amount of time!
-            (getPhysTypeBCElapsed(physType) < BEHAVIOR_EATING_TIME)
+            (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_EATING_TIME)
                 ? { 'eating': (_) => 100.0 }
                 : {
                     // can only go to: eating or idling
@@ -148,7 +148,7 @@ const actIdling = (storeType) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         (
             // stay in this behavior for a minimum amount of time!
-            (getPhysTypeBCElapsed(physType) < BEHAVIOR_MIN_TIME)
+            (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_MIN_TIME)
                 ? { 'idling': (_) => 100.0 }
                 : {
                     // can only go to: idling, wandering, sleeping
@@ -179,7 +179,7 @@ const actSleeping = (storeType) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         (
             // stay in this behavior for a minimum amount of time!
-            (getPhysTypeBCElapsed(physType) < BEHAVIOR_MIN_TIME)
+            (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_MIN_TIME)
                 ? { 'sleeping': (_) => 100.0 }
                 : {
                     // can only go to: sleeping or idling
