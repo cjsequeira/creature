@@ -36,17 +36,6 @@ export const ACTION_SIM_START = 'ACTION_SIM_START';
 export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
 
-// *** Creature behavior strings
-// REFACTOR
-export const BEHAVIOR_STRINGS = {
-    idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
-    sleeping: "is sleeping! Zzzz...",
-    wandering: "is wandering! Wiggity whack!",
-    frozen: "is frozen! Brrrr....."
-};
-
-
 // *** Event names
 export const EVENT_REPLACE_CREATURETYPE = 'EVENT_REPLACE_CREATURETYPE';
 export const EVENT_REPLACE_PHYSTYPE = 'EVENT_REPLACE_PHYSTYPE';
@@ -67,8 +56,29 @@ export const TYPE_RANDM = 'TYPE_RANDM';
 export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 
 
-// *** UI
+// *** UI: Creature display info
+// behavior colors
+export const UI_BEHAVIOR_COLORS = {
+    idling: '#bbbbbbdd',            // gray
+    eating: '#ffdeadff',            // yellow-white
+    sleeping: '#0565F9bb',          // deep blue
+    wandering: '#0cc421dd',         // light green
+    frozen: '#69beffff',            // ice blue
+};
+
+// behavior strings
+export const UI_BEHAVIOR_STRINGS = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr.....",
+};
+
+export const UI_BORDER_WIDTH = 4;
+export const UI_CREATURE_RADIUS = 7;
 export const UI_NUM_TRAILS = 15;
+export const UI_OTHER_RADIUS = 3;
 
 
 // *** Update frequencies

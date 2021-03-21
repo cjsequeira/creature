@@ -6,6 +6,8 @@
 import Chart from 'chart.js';
 
 import {
+    UI_BORDER_WIDTH,
+    UI_CREATURE_RADIUS,
     UPDATE_FREQ_SIM,
     WORLD_SIZE_X,
     WORLD_SIZE_Y,
@@ -248,13 +250,13 @@ const creature_geo_chart_params_init = {
                 showLine: false,
                 fill: false,
                 tension: 0.2,
-                pointRadius: 6,
+                pointRadius: UI_CREATURE_RADIUS,
                 data: [],
                 backgroundColor: [],
                 borderColor: [],
                 pointBackgroundColor: [],
                 pointBorderColor: [],
-                pointBorderWidth: 3,
+                pointBorderWidth: UI_BORDER_WIDTH,
             },
 
             {
@@ -265,13 +267,13 @@ const creature_geo_chart_params_init = {
                 showLine: false,
                 fill: false,
                 tension: 0.2,
-                pointRadius: 6,
+                pointRadius: UI_CREATURE_RADIUS,
                 data: [],
                 backgroundColor: [],
                 borderColor: [],
                 pointBackgroundColor: [],
                 pointBorderColor: [],
-                pointBorderWidth: 3,
+                pointBorderWidth: UI_BORDER_WIDTH,
             },
         ]
     },

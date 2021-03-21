@@ -6,7 +6,7 @@
 // *** Our imports
 import {
     EVENT_INSERT_FOODTYPES,
-    BEHAVIOR_STRINGS,
+    UI_BEHAVIOR_STRINGS,
 } from '../const_vals.js';
 
 import {
@@ -61,7 +61,7 @@ export const leafApproveBehavior = {
                     getPhysTypeCond(eventType.physType)('behavior_request'))
 
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                        ' ' + BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                        ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
             ])
             (rand_eventType)
@@ -87,7 +87,7 @@ export const leafApproveBehaviorStopMovement = {
                     getPhysTypeCond(eventType.physType)('behavior_request'))
 
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                        ' ' + BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                        ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
             ])
             (rand_eventType)
@@ -114,7 +114,7 @@ export const leafCondsOOL = {
 
                 // let the creature speak
                 action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + BEHAVIOR_STRINGS['frozen']),
+                    ' ' + UI_BEHAVIOR_STRINGS['frozen']),
             ])
             (rand_eventType),
 };
@@ -203,7 +203,7 @@ export const leafDoAndApproveWandering = {
                     getPhysTypeCond(eventType.physType)('behavior_request'))
 
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                        ' ' + BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                        ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
             ])
             (rand_eventType),

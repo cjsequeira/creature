@@ -9,7 +9,7 @@ import {
     ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_DO_NOTHING,
     ACTION_JOURNAL_ADD_ENTRY,
-    BEHAVIOR_STRINGS,
+    UI_BEHAVIOR_STRINGS,
 } from '../const_vals.js';
 
 import {
@@ -86,7 +86,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                     (physType) => ({
                         timeFloatType: getSimCurTime(storeType),
                         msgStringType: getPhysTypeName(physType) +
-                            ' ' + BEHAVIOR_STRINGS[getPhysTypeCond(physType)('behavior')],
+                            ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(physType)('behavior')],
                     })
                 ),
             ]

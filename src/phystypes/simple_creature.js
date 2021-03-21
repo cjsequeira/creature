@@ -87,11 +87,11 @@ const actIdling = (storeType) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         ({
             'idling': (_) =>
-                4.0,
+                30.0,
             'wandering': (physType) =>
-                (getPhysTypeCond(physType)('glucose') < 60.0) ? 7.0 : 0.1,
+                (getPhysTypeCond(physType)('glucose') < 85.0) ? 3.0 : 0.1,
             'sleeping': (physType) =>
-                (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
+                (getPhysTypeCond(physType)('neuro') > 85.0) ? 9.0 : 0.1,
         });
 
 // wandering behavior function
@@ -106,11 +106,11 @@ const actWandering = (_) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         ({
             'wandering': (_) =>
-                7.0,
+                20.0,
             'idling': (_) =>
-                0.1,
+                (getPhysTypeCond(physType)('speed') > 30.0) ? 100.0 : 0.1,
             'sleeping': (physType) =>
-                (getPhysTypeCond(physType)('neuro') > 85.0) ? 7.0 : 0.1,
+                (getPhysTypeCond(physType)('neuro') > 85.0) ? 10.0 : 0.1,
         });
 
 
@@ -133,9 +133,9 @@ const actEating = (storeType) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         ({
             'idling': (_) =>
-                4.0,
+                30.0,
             'wandering': (physType) =>
-                (getPhysTypeCond(physType)('glucose') < 60.0) ? 7.0 : 0.1,
+                (getPhysTypeCond(physType)('glucose') < 85.0) ? 6.0 : 0.1,
             'sleeping': (physType) =>
                 (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
         });
@@ -158,7 +158,7 @@ const actSleeping = (storeType) => (physType) =>
         // pass in behavior change desires specific to this behavior function
         ({
             'sleeping': (_) =>
-                5.0,
+                8.0,
             'idling': (physType) =>
-                (getPhysTypeCond(physType)('neuro') < 70.0) ? 5.0 : 0.1
+                (getPhysTypeCond(physType)('neuro') < 60.0) ? 9.0 : 0.1
         });

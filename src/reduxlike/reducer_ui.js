@@ -13,7 +13,10 @@ import {
     ACTION_PHYSTYPE_DELETE_PHYSTYPE,
     ACTION_UI_ADD_GEO_CHART_DATA,
     ACTION_UI_ADD_TIME_CHART_DATA,
+    UI_BEHAVIOR_COLORS,
+    UI_CREATURE_RADIUS,
     UI_NUM_TRAILS,
+    UI_OTHER_RADIUS,
 } from '../const_vals.js';
 
 import {
@@ -36,7 +39,6 @@ import {
 } from '../utils.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
-import { actAsFood } from '../phystypes/food_type.js';
 
 
 // *** UI reducer 
@@ -105,11 +107,11 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                         label: getPhysTypeName(actionType.physType),
                         id: genPhysTypeAvailID(storeType)(0),
 
-                        // point radius: foodType is small dot; otherwise make big dot
+                        // point radius: select based on act
                         pointRadius:
-                            (getPhysTypeAct(actionType.physType) === actAsFood)
-                                ? 3
-                                : 6,
+                            (getPhysTypeAct(actionType.physType) === actAsSimpleCreature)
+                                ? UI_CREATURE_RADIUS
+                                : UI_OTHER_RADIUS,
                     },
                 ]
             },
@@ -165,8 +167,16 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                             // dataset to update: ASSUMED TO EXIST!
                             (getUIProp(storeType)('chartDataBufferGeo').datasets[i]),
 
-                            // color to use
+                            // fill color to use
                             getPhysTypeColor(thisPhysType),
+
+                            // border color to use
+                            // is this physType a simple creature?
+                            (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
+                                // yes: pick border color based on behavior
+                                ? UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType)('behavior')]
+                                // no: use same color as fill color
+                                : getPhysTypeColor(thisPhysType),
 
                             // data to add
                             ({
@@ -336,18 +346,20 @@ function updateTimeChartXAxis(inXAxis, timeFloat) {
 // update specific geospatial chart dataset
 // takes: 
 //  inDataSet: geo chart ChartJS dataset to use
-//  colorStringType: color for data, as string
+//  fillColorStringType: fill color for data, as string
+//  borderColorStringType: border color for data, as string
 //  xyFloatTuple: floating-point datapoint to add, as {x, y}
 //  numTrailsIntType: number of trailing dots to draw
 // returns ChartJS dataset type
-function updateGeoChartDataset(inDataSet, colorStringType, xyFloatTuple, numTrailsIntType) {
+function updateGeoChartDataset
+    (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) {
     // all of our slice limits are -numTrailsIntType, so define a shorthand 
     //  function with that limit built in 
     const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
 
     // define a shorthand function specific to concatenating a color 
     //  and mapping color list to a fade
-    const concatAndFade = concatSliceTrailsMap(fadeColors)(colorStringType);
+    const concatAndFade = concatSliceTrailsMap(fadeColors);
 
     // return a ChartJS dataset object with data and colors added, 
     //  then sliced to max length, then color-faded
@@ -363,15 +375,15 @@ function updateGeoChartDataset(inDataSet, colorStringType, xyFloatTuple, numTrai
             ([inDataSet.data]),                 // array: current chart xy data
 
         backgroundColor:
-            concatAndFade([inDataSet.backgroundColor]),
+            concatAndFade(fillColorStringType)([inDataSet.backgroundColor]),
 
         borderColor:
-            concatAndFade([inDataSet.borderColor]),
+            concatAndFade(fillColorStringType)([inDataSet.borderColor]),
 
         pointBackgroundColor:
-            concatAndFade([inDataSet.pointBackgroundColor]),
+            concatAndFade(fillColorStringType)([inDataSet.pointBackgroundColor]),
 
         pointBorderColor:
-            concatAndFade([inDataSet.pointBorderColor]),
+            concatAndFade(borderColorStringType)([inDataSet.pointBorderColor]),
     };
 }
