@@ -17,7 +17,7 @@ export const compose = f => g =>
 // takes:
 //  f: function of signature (typeB) => (typeA) => typeA
 //  g: function of signature (typeB) => (any) => typeA
-// returns: composed function of signature (typeA) => typeA
+// returns: composed function of signature (typeB) => (any) => typeA
 export const compose2 = f => g =>
     (typeB) => (anyType) => f(typeB)(g(typeB)(anyType))
 
@@ -42,32 +42,54 @@ export const geThan = (xFloatType) => (yFloatType) => (yFloatType >= xFloatType)
 //  and first argument, then apply the same function to the result along with the next argument
 //  and so on until all arguments are exhausted
 // the array of arguments will be completely flattened
-// assumes function is of signature (argAnyType) => targetAnyType
+// assumes function is of signature (typeA) => typeA
 // takes:
-//  func: function to apply
+//  func: function to apply, of signature (typeA) => typeA
 //  targetAnyType: target that function applies to, as any
-//  argsAnyType: the array of arguments to use in function application, as any
-// returns type of target
-export const applyArgChain = (func) => (targetAnyType) => (...argsAnyType) =>
-    argsAnyType.flat(Infinity).reduce((accum, cur) => func(accum || targetAnyType)(cur), null);
+// returns function of signature: ([typeA]) => typeA
+export const applyArgChain = (func) => (targetAnyType) =>
+    (...argsAnyType) => argsAnyType.flat(Infinity).reduce(
+        (accum, cur) => func(accum || targetAnyType)(cur), null);
 
 // given an array of functions and one argument, apply each function to the argument
-// assumes function is of signature (argAnyType) => any
-// returns array of function application results
-export const applyFuncArray = (...funcs) => (argAnyType) =>
-    funcs.flat(Infinity).map((f) => f(argAnyType));
+// assumes function is of signature (any) => any
+// takes:
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns function of signature: (any) => [any]
+export const applyFuncArray = (...funcs) =>
+    (argAnyType) => funcs.flat(Infinity).map((f) => f(argAnyType));
 
-// given a target and an array of functions, apply the first function to the target,
+// given a target and an array of ONE-ARGUMENT functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
-//  all arguments are exhausted
+//  all functions are applied
+// this is essentially a more-than-two-functions "compose"
 // the array of functions will be completely flattened
-// assumes function is of signature (argAnyType) => targetAnyType
+// first function must be of signature (any) => typeA
+// all remaining functions must be of signature (typeA) => typeA
 // takes:
 //  targetAnyType: target that functions apply to, as any
-//  funcs: array of functions to apply
-// returns type of target
-export const applyFuncChain = (targetAnyType) => (...funcs) =>
-    funcs.flat(Infinity).reduce((funcAccum, thisFunc) => thisFunc(funcAccum || targetAnyType), null);
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns function of signature (any) => typeA
+export const applyFuncChain = (...funcs) =>
+    (targetAnyType) => funcs.flat(Infinity).reduce(
+        (funcAccum, thisFunc) => thisFunc(funcAccum || targetAnyType),
+        null);
+
+// given a target and an array of TWO-ARGUMENT functions, apply the first function to the target,
+//  then apply the next function to the result of the first function, and so on until 
+//  all functions are applied
+// this is essentially a more-than-two-functions "compose2"
+// the array of functions will be completely flattened
+// first function must be of signature (typeB) => (any) => typeA
+// all remaining functions must be of signature (typeB) => (typeA) => typeA
+// takes:
+//  targetAnyType: target that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns function of signature (typeB) => (any) => typeA
+export const applyFuncChain2 = (...funcs) =>
+    (typeB) => (targetAnyType) => funcs.flat(Infinity).reduce(
+        (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
+        null);
 
 // get the value at a nested property of an object
 // takes:

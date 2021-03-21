@@ -56,8 +56,8 @@ var appStore = storeInit
 appStore = dispatchActions(appStore)
     (
         // add a bunch of food
-        Array(2)
-            //Array(WORLD_NUM_FOOD)
+        //Array(2)
+        Array(WORLD_NUM_FOOD)
             .fill(getDefaultFoodType())
             .map(
                 (thisFood) => action_addPhysType(thisFood)

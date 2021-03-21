@@ -11,6 +11,7 @@ import {
 import {
     applyFuncChain,
     boundToRange,
+    compose,
     withinRange,
 } from '../utils.js';
 
@@ -29,11 +30,12 @@ import {
 export const physTypeDoPhysics = (storeType) => (physType) =>
     // function chain: 
     //  get physType with new location -> get physType with wall collisions checked
-    applyFuncChain(physType)
+    applyFuncChain
         (
             physTypeDoMovements(storeType),
             physTypeCheckWallCollisions(storeType)
-        );
+        )
+        (physType);
 
 
 // *** Internal physics functions
