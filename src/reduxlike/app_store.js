@@ -32,8 +32,8 @@ const initial_store = {
         timeStep: SIM_TIME_STEP,
 
         // random number generator seed
-        //seed: Date.now(),
-        seed: 0,
+        seed: Date.now(),
+        //seed: 0,
     },
 
     // initial physTypeStore
