@@ -84,16 +84,21 @@ appStore = dispatchActions(appStore)
         action_uiAddGeoChartData(),
     );
 
-// *** Time-based call-backs: because JavaScript is single-threaded, these
-//  call-backs should never execute at the "same time"
+// *** Time-based call-backs 
+// Because JavaScript is single-threaded, these call-backs 
+//  should never execute at the "same time"
+
+// interval-driven callbacks
 setInterval(appUpdateSim, UPDATE_FREQ_SIM);
 setInterval(appUpdateTimeChart, UPDATE_FREQ_TIME_CHART);
-setInterval(appUpdateGeoChart, UPDATE_FREQ_GEO_CHART);
+
+// animation-frame-driven callbacks
+requestAnimationFrame(appUpdateGeoChart);
 
 // ***********************************************************************************
 
 
-// *** Time-based callback function for simulator
+// *** Interval-driven callback function for simulator
 // takes: 
 //  don't care
 // returns undefined
@@ -122,20 +127,8 @@ function appUpdateSim(_) {
     }
 };
 
-// *** Time-based callback function for geo chart
-// takes: 
-//  don't care
-// returns undefined
-function appUpdateGeoChart(_) {
-    // dispatch action to update geo chart
-    appStore = dispatchActions(appStore)
-        (
-            // add current physType store x-y data to geo chart
-            action_uiAddGeoChartData(),
-        );
-};
 
-// *** Time-based callback function for time data chart
+// *** Interval-driven callback function for time data chart
 // takes: 
 //  don't care
 // returns undefined
@@ -146,4 +139,21 @@ function appUpdateTimeChart(_) {
             // add current simple creature data to time chart
             action_uiAddTimeChartSimpleCreatureData(),
         );
+};
+
+
+// *** Animation-frame-driven callback function for geo chart
+// takes: 
+//  don't care
+// returns undefined
+function appUpdateGeoChart(_) {
+    // dispatch action to update geo chart
+    appStore = dispatchActions(appStore)
+        (
+            // add current physType store x-y data to geo chart
+            action_uiAddGeoChartData(),
+        );
+
+    // put self back in queue
+    requestAnimationFrame(appUpdateGeoChart);
 };

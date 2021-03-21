@@ -63,7 +63,6 @@ export const UI_NUM_TRAILS = 15;
 // *** Update frequencies
 // how often (ideally) to update different application aspects
 // simulator frequency should be EQUAL TO OR MORE FREQUENT than non-sim stuff!
-export const UPDATE_FREQ_GEO_CHART = 30.0;
 export const UPDATE_FREQ_SIM = 30.0;
 export const UPDATE_FREQ_TIME_CHART = 1000.0;
 
