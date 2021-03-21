@@ -29,6 +29,12 @@ export const isBehaviorRequestIdling = {
         getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'idling',
 };
 
+export const isBehaviorRequestEating = {
+    name: 'isBehaviorRequestSleeping',
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeCond(rand_val(rand_eventType).physType)('behavior_request') === 'eating',
+}; 
+
 export const isBehaviorRequestSleeping = {
     name: 'isBehaviorRequestSleeping',
     testFunc: (_) => (rand_eventType) =>
@@ -51,6 +57,12 @@ export const isCreatureAching = {
     name: 'isCreatureAching',
     testFunc: (_) => (rand_eventType) =>
         getPhysTypeCond(rand_val(rand_eventType).physType)('behavior') === 'aching',
+};
+
+export const isCreatureEating = {
+    name: 'isCreatureEating',
+    testFunc: (_) => (rand_eventType) =>
+        getPhysTypeCond(rand_val(rand_eventType).physType)('behavior') === 'eating',
 };
 
 export const isCreatureTouchingCreature = {

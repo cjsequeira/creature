@@ -77,6 +77,40 @@ export const leafApproveBehavior = {
             (rand_eventType)
 };
 
+export const leafApproveBehaviorStopAccel = {
+    name: 'leafApproveBehaviorStopAccel',
+    func: (_) => (rand_eventType) =>
+        // total signature: (rand_eventType) => rand_actionType
+        rand_liftBind
+            // signature of this func: (eventType) => actionType or [actionType]
+            ((eventType) => [
+                compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
+                    ({
+                        behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+
+                        // update behavior clock time IF behavior has just changed,
+                        //  else keep the same
+                        behavior_clock:
+                            (getPhysTypeCond(eventType.physType)('behavior') !==
+                                getPhysTypeCond(eventType.physType)('behavior_request'))
+                                ? performance.now()
+                                : getPhysTypeCond(eventType.physType)('behavior_clock'),
+
+                        // stop accel, but leave speed alone
+                        accel: 0.0,
+                    }),
+
+                // announce behavior IF behavior has just changed
+                (getPhysTypeCond(eventType.physType)('behavior') !==
+                    getPhysTypeCond(eventType.physType)('behavior_request'))
+
+                    ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                        ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                    : action_doNothing(),
+            ])
+            (rand_eventType)
+};
+
 export const leafApproveBehaviorStopMovement = {
     name: 'leafApproveBehaviorStopMovement',
     func: (_) => (rand_eventType) =>
@@ -96,6 +130,7 @@ export const leafApproveBehaviorStopMovement = {
                                 ? performance.now()
                                 : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
+                        // stop speed AND accel
                         speed: 0.0,
                         accel: 0.0,
                     }),
@@ -156,9 +191,15 @@ export const leafCreatureEatFood = {
             ((eventType) => [
                 // announce glorious news in journal IF not already eating
                 (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
-                    ? action_addJournalEntry(
-                        getPhysTypeName(eventType.physType) + ' FOUND FOOD!!'
-                    )
+                    ? [
+                        action_addJournalEntry(
+                            getPhysTypeName(eventType.physType) + ' found FOOD!'
+                        ),
+
+                        action_addJournalEntry(
+                            getPhysTypeName(eventType.physType) + ' ' + UI_BEHAVIOR_STRINGS['eating']
+                        ),
+                    ]
                     : action_doNothing(),
 
                 // switch creatureType behavior to 'eating'
@@ -172,6 +213,9 @@ export const leafCreatureEatFood = {
                             (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
                                 ? performance.now()
                                 : getPhysTypeCond(eventType.physType)('behavior_clock'),
+
+                        // stop accelerating!
+                        accel: 0.0,
                     }),
 
                 // remove food that is being touched
@@ -219,22 +263,22 @@ export const leafDoAndApproveWandering = {
                                 //  with higher accceleration magnitude
                                 glucose:
                                     getPhysTypeCond(eventType.physType)('glucose') -
-                                    0.2 * Math.abs(randNum) *
+                                    0.004 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
                                 neuro:
                                     getPhysTypeCond(eventType.physType)('neuro') +
-                                    0.1 * Math.abs(randNum) *
+                                    0.002 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
-                                accel: randNum,
+                                accel: randNum * getSimTimeStep(storeType),
                             }))
                                 // anonymous function argument: random accel that's at least 
                                 //  a minimum magnitude
                                 (
                                     excludeRange
-                                        (2.0)
-                                        (rand_val(rand_seededRand(-3.0)(15.0)(seed1)))
+                                        (100.0)
+                                        (rand_val(rand_seededRand(-150.0)(750.0)(seed1)))
                                 ),
 
                         // conds driven by randomized heading nudge
@@ -285,7 +329,7 @@ export const leafDoCreatureCollision = {
                         behavior_clock: performance.now(),
 
                         // spin heading around a bit (in radians)
-                        heading: getPhysTypeCond(eventType.physType)('heading') + 1.8,
+                        heading: getPhysTypeCond(eventType.physType)('heading') + 0.8,
 
                         // establish a minimum speed
                         speed:

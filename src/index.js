@@ -24,6 +24,7 @@ import { getDefaultFoodType } from './phystypes/food_type';
 import {
     action_addPhysType,
     action_advanceSimIfRunning,
+    action_forceChangesListUpdate,
     action_saveClockForSim,
     action_startSim,
     action_stopIfFrozen,
@@ -73,14 +74,17 @@ appStore = dispatchActions(appStore)
                 (seed2) => ({ y: rand_seededRand(0.1)(WORLD_SIZE_Y - 0.1)(seed2) }),
             ),
 
-        // change the sim status to running
-        action_startSim(),
-
         // add all initial simple creature data to time chart
         action_uiAddTimeChartSimpleCreatureData(),
 
         // add initial x-y data to geo chart
         action_uiAddGeoChartData(),
+
+        // force the journal to render to the status box
+        action_forceChangesListUpdate('remainder')('journal'),
+
+        // change the sim status to running
+        action_startSim(),
     );
 
 // *** Time-based call-backs 

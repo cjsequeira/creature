@@ -14,6 +14,7 @@ import { event_replaceCreatureType } from '../rulebook/event_creators.js';
 
 import {
     BEHAVIOR_ACHING_TIME,
+    BEHAVIOR_EATING_TIME,
     BEHAVIOR_MIN_TIME,
     WORLD_SIZE_X,
     WORLD_SIZE_Y,
@@ -65,96 +66,13 @@ export const getDefaultSimpleCreature = (_) =>
 export const actAsSimpleCreature = (storeType) => (physType) =>
     (
         {
-            'idling': actIdling,
-            'eating': actEating,
-            'sleeping': actSleeping,
             'aching': actAching,
+            'eating': actEating,
+            'idling': actIdling,
+            'sleeping': actSleeping,
             'wandering': actWandering,
         }[getPhysTypeCond(physType)('behavior')] || (_ => x => x)
     )(storeType)(physType);
-
-// idling behavior function
-// takes: 
-//  storeType
-//  physType
-// returns physType
-const actIdling = (storeType) => (physType) =>
-    event_replaceCreatureType
-        // pass in physType object with specific glucose, neuro, accel
-        (usePhysTypeConds
-            (physType)
-            ({
-                glucose: getPhysTypeCond(physType)('glucose') - 3.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 2.0 * getSimTimeStep(storeType),
-                accel: 0.0
-            })
-        )
-        // pass in behavior change desires specific to this behavior function
-        (
-            // stay in this behavior for a minimum amount of time!
-            (getPhysTypeBCElapsed(physType) < BEHAVIOR_MIN_TIME)
-                ? { 'idling': (_) => 100.0 }
-                : {
-                    'idling': (_) =>
-                        30.0,
-                    'wandering': (physType) =>
-                        (getPhysTypeCond(physType)('glucose') < 85.0) ? 3.0 : 0.1,
-                    'sleeping': (physType) =>
-                        (getPhysTypeCond(physType)('neuro') > 85.0) ? 9.0 : 0.1,
-                }
-        );
-
-// wandering behavior function
-// takes: 
-//  storeType
-//  physType
-// returns physType
-const actWandering = (_) => (physType) =>
-    event_replaceCreatureType
-        // for 'wandering', the rulebook will assign conditions
-        (physType)
-        // pass in behavior change desires specific to this behavior function
-        (
-            // stay in this behavior for a minimum amount of time!
-            (getPhysTypeBCElapsed(physType) < BEHAVIOR_MIN_TIME)
-                ? { 'wandering': (_) => 100.0 }
-                : {
-                    'wandering': (_) =>
-                        40.0,
-                    'idling': (_) =>
-                        // if going really fast, creature really wants to idle!
-                        (getPhysTypeCond(physType)('speed') > 40.0) ? 300.0 : 0.1,
-                    'sleeping': (physType) =>
-                        (getPhysTypeCond(physType)('neuro') > 85.0) ? 10.0 : 0.1,
-                }
-        );
-
-
-// eating behavior function
-// THE ONLY WAY TO GET HERE IS BY RULEBOOK BEHAVIOR ASSIGNMENT!
-// takes: 
-//  storeType
-//  physType
-// returns physType
-const actEating = (storeType) => (physType) =>
-    event_replaceCreatureType
-        // pass in physType object with specific glucose and neuro
-        (usePhysTypeConds
-            (physType)
-            ({
-                glucose: getPhysTypeCond(physType)('glucose') + 30.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 20.0 * getSimTimeStep(storeType),
-            })
-        )
-        // pass in behavior change desires specific to this behavior function
-        ({
-            'idling': (_) =>
-                6.0,
-            'wandering': (physType) =>
-                (getPhysTypeCond(physType)('glucose') < 85.0) ? 6.0 : 0.1,
-            'sleeping': (physType) =>
-                (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
-        });
 
 // aching behavior function
 // takes: 
@@ -167,8 +85,8 @@ const actAching = (storeType) => (physType) =>
         (usePhysTypeConds
             (physType)
             ({
-                glucose: getPhysTypeCond(physType)('glucose') - 12.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 1.0 * getSimTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') - 6.0 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 3.0 * getSimTimeStep(storeType),
             })
         )
         // pass in behavior change desires specific to this behavior function
@@ -177,12 +95,69 @@ const actAching = (storeType) => (physType) =>
             (getPhysTypeBCElapsed(physType) < BEHAVIOR_ACHING_TIME)
                 ? { 'aching': (_) => 100.0 }
                 : {
+                    // can only go to: idling
                     'idling': (_) =>
-                        60.0,
+                        100.0,
+                }
+        );
+
+// eating behavior function
+// takes: 
+//  storeType
+//  physType
+// returns physType
+const actEating = (storeType) => (physType) =>
+    event_replaceCreatureType
+        // pass in physType object with specific glucose and neuro
+        (usePhysTypeConds
+            (physType)
+            ({
+                glucose: getPhysTypeCond(physType)('glucose') + 9.0 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 1.4 * getSimTimeStep(storeType),
+            })
+        )
+        // pass in behavior change desires specific to this behavior function
+        (
+            // stay in this behavior for a minimum amount of time!
+            (getPhysTypeBCElapsed(physType) < BEHAVIOR_EATING_TIME)
+                ? { 'eating': (_) => 100.0 }
+                : {
+                    // can only go to: eating or idling
+                    'eating': (_) =>
+                        (getPhysTypeCond(physType)('glucose') < 35.0) ? 70.0 : 0.1,
+                    'idling': (_) =>
+                        6.0,
+                }
+        );
+
+// idling behavior function
+// takes: 
+//  storeType
+//  physType
+// returns physType
+const actIdling = (storeType) => (physType) =>
+    event_replaceCreatureType
+        // pass in physType object with specific glucose and neuro
+        (usePhysTypeConds
+            (physType)
+            ({
+                glucose: getPhysTypeCond(physType)('glucose') - 1.3 * getSimTimeStep(storeType),
+                neuro: getPhysTypeCond(physType)('neuro') + 1.0 * getSimTimeStep(storeType),
+            })
+        )
+        // pass in behavior change desires specific to this behavior function
+        (
+            // stay in this behavior for a minimum amount of time!
+            (getPhysTypeBCElapsed(physType) < BEHAVIOR_MIN_TIME)
+                ? { 'idling': (_) => 100.0 }
+                : {
+                    // can only go to: idling, wandering, sleeping
+                    'idling': (_) =>
+                        300.0,
                     'wandering': (physType) =>
-                        (getPhysTypeCond(physType)('glucose') < 85.0) ? 6.0 : 0.1,
+                        (getPhysTypeCond(physType)('glucose') < 85.0) ? 15.0 : 0.1,
                     'sleeping': (physType) =>
-                        (getPhysTypeCond(physType)('neuro') > 85.0) ? 4.0 : 0.1,
+                        (getPhysTypeCond(physType)('neuro') > 85.0) ? 100.0 : 0.1,
                 }
         );
 
@@ -197,7 +172,7 @@ const actSleeping = (storeType) => (physType) =>
         (usePhysTypeConds
             (physType)
             ({
-                glucose: getPhysTypeCond(physType)('glucose') - 1.4 * getSimTimeStep(storeType),
+                glucose: getPhysTypeCond(physType)('glucose') - 0.6 * getSimTimeStep(storeType),
                 neuro: getPhysTypeCond(physType)('neuro') - 6.2 * getSimTimeStep(storeType),
             })
         )
@@ -207,9 +182,33 @@ const actSleeping = (storeType) => (physType) =>
             (getPhysTypeBCElapsed(physType) < BEHAVIOR_MIN_TIME)
                 ? { 'sleeping': (_) => 100.0 }
                 : {
+                    // can only go to: sleeping or idling
                     'sleeping': (_) =>
-                        30.0,
+                        200.0,
                     'idling': (physType) =>
                         (getPhysTypeCond(physType)('neuro') < 60.0) ? 9.0 : 0.1
                 }
+        );
+
+// wandering behavior function
+// takes: 
+//  storeType
+//  physType
+// returns physType
+const actWandering = (_) => (physType) =>
+    event_replaceCreatureType
+        // for 'wandering', the rulebook will assign conditions
+        (physType)
+        // pass in behavior change desires specific to this behavior function
+        (
+            {
+                // can only go to: wandering, eating, idling
+                'wandering': (_) =>
+                    40.0,
+                'eating': (_) =>
+                    (getPhysTypeCond(physType)('glucose') < 35.0) ? 60.0 : 0.1,
+                'idling': (_) =>
+                    // if going really fast, creature really wants to idle!
+                    (getPhysTypeCond(physType)('speed') > 40.0) ? 300.0 : 0.1,
+            }
         );

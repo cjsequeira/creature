@@ -42,6 +42,7 @@ export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 // *** creatureType behavior
 export const BEHAVIOR_MIN_TIME = 500.0;
 export const BEHAVIOR_ACHING_TIME = 1000.0;
+export const BEHAVIOR_EATING_TIME = 1500.0;
 
 
 // *** Event names
@@ -68,22 +69,22 @@ export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 // *** UI: Creature display info
 // behavior colors
 export const UI_BEHAVIOR_COLORS = {
-    idling: '#bbbbbbdd',            // gray
+    aching: '#ff0000ff',            // hard red
     eating: '#ffdeadff',            // yellow-white
+    frozen: '#69beffff',            // ice blue
+    idling: '#bbbbbbdd',            // gray
     sleeping: '#0565F9bb',          // deep blue
     wandering: '#0cc421dd',         // light green
-    aching: '#ff0000ff',            // hard red
-    frozen: '#69beffff',            // ice blue
 };
 
 // behavior strings
 export const UI_BEHAVIOR_STRINGS = {
+    aching: "is sore! Ooof!",
+    eating: "is chewing and eating! Nom nom nom...",
+    frozen: "is frozen! Brrrr.....",
     idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
     sleeping: "is sleeping! Zzzz...",
     wandering: "is wandering! Wiggity whack!",
-    aching: "is sore! Ooof!",
-    frozen: "is frozen! Brrrr.....",
 };
 
 export const UI_BORDER_WIDTH = 5;
@@ -95,7 +96,7 @@ export const UI_OTHER_RADIUS = 3;
 // *** Update frequencies
 // how often (ideally) to update different application aspects
 // simulator frequency should be EQUAL TO OR MORE FREQUENT than non-sim stuff!
-export const UPDATE_FREQ_SIM = 30.0;
+export const UPDATE_FREQ_SIM = 20.0;
 export const UPDATE_FREQ_TIME_CHART = 1000.0;
 
 

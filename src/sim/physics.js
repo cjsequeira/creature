@@ -27,12 +27,12 @@ import {
 //  physType
 // returns physType
 export const physTypeDoPhysics = (storeType) => (physType) =>
-    // function chain: 
-    //  get physType with new location -> get physType with wall collisions checked
+    // function chain: must check wall collisions FIRST, because the check could
+    //  adjust the acceleration/speed/heading used for movements
     pipe
         (
+            physTypeCheckWallCollisions(storeType),
             physTypeDoMovements(storeType),
-            physTypeCheckWallCollisions(storeType)
         )
         (physType);
 
@@ -66,7 +66,7 @@ const physTypeDoMovements = (storeType) => (physType) => {
 //  storeType
 //  physType
 // returns physType
-const physTypeCheckWallCollisions = (_) => (physType) => {
+const physTypeCheckWallCollisions = (storeType) => (physType) => {
     // define shorthand func to get cond from given physType
     const inGetCond = getPhysTypeCond(physType);
 
@@ -91,10 +91,10 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
                 // spin heading around a bit (in radians)
                 heading: inGetCond('heading') + 2.35,
 
-                // establish a minimum speed
+                // dissipate some speed - or establish a minimum speed if creature is going slowly
                 speed:
-                    (inGetCond('speed') > 1.0)
-                        ? inGetCond('speed')
-                        : 1.0,
+                    (inGetCond('speed') > 3.0)
+                        ? 0.9 * inGetCond('speed')
+                        : 3.0,
             });
 };

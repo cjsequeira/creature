@@ -87,6 +87,8 @@ export const preFuncGenBehaviorRequest = (_) => (rand_eventType) =>
         (rand_getNextSeed(rand_nextSeed(rand_eventType))(0));
 
 // tag simple creatures touched by creature by bundling them into the given rand_eventType
+// REFACTOR: to tag in creatures that a creature will "pass through" between this timestep and the next!
+// That would enable tagging of creatures even when a creature is moving very quickly
 export const preFuncTagTouchedCreatures = (storeType) => (rand_eventType) =>
     // total signature: (rand_eventType) => rand_eventType
     rand_liftBind
@@ -128,6 +130,8 @@ export const preFuncTagTouchedCreatures = (storeType) => (rand_eventType) =>
         (rand_eventType);
 
 // tag food touched by creature by bundling it into the given rand_eventType
+// REFACTOR: to tag in food that a creature will "pass through" between this timestep and the next!
+// That would enable tagging of food even when a creature is moving very quickly
 export const preFuncTagTouchedFood = (storeType) => (rand_eventType) =>
     // total signature: (rand_eventType) => rand_eventType
     rand_liftBind

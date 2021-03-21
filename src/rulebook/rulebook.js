@@ -29,6 +29,7 @@
 // *** Our imports
 import {
     leafApproveBehavior,
+    leafApproveBehaviorStopAccel,
     leafApproveBehaviorStopMovement,
     leafCondsOOL,
     leafCreatureEatFood,
@@ -46,10 +47,12 @@ import {
 } from './prefuncs.js';
 
 import {
+    isBehaviorRequestEating,
     isBehaviorRequestIdling,
     isBehaviorRequestSleeping,
     isBehaviorRequestWandering,
     isCreatureAching,
+    isCreatureEating,
     isCreatureTouchingCreature,
     isCreatureTouchingFood,
     isEventReplaceCreatureType,
@@ -167,11 +170,24 @@ const ruleBook = {
                 testNode: isCreatureTouchingCreature,
                 yes: leafDoCreatureCollision,
                 no: {
-                    testNode: isCreatureTouchingFood,
+                    testNode: isBehaviorRequestEating,
                     yes: {
-                        testNode: isCreatureAching,
-                        yes: leafPreservePhysType,
-                        no: leafCreatureEatFood,
+                        testNode: isCreatureTouchingFood,
+                        yes: {
+                            testNode: isCreatureAching,
+                            yes: leafPreservePhysType,
+                            no: {
+                                testNode: isCreatureEating,
+
+                                // can't switch to eating if already eating! this prevents
+                                //  picking up more food when already in "eating" behavior
+                                yes: leafPreservePhysType,
+
+                                // if not already eating, eat the touched food
+                                no: leafCreatureEatFood,
+                            },
+                        },
+                        no: leafPreservePhysType,
                     },
                     no: {
                         testNode: isBehaviorRequestSleeping,
@@ -181,7 +197,7 @@ const ruleBook = {
                             yes: leafDoAndApproveWandering,
                             no: {
                                 testNode: isBehaviorRequestIdling,
-                                yes: leafApproveBehavior,
+                                yes: leafApproveBehaviorStopAccel,
                                 no: leafPreservePhysType
                             }
                         },
