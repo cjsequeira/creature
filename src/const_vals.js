@@ -40,8 +40,8 @@ export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 // *** creatureType behavior
 // times below are in SECONDS
 export const BEHAVIOR_MIN_TIME = 0.5;
-export const BEHAVIOR_ACHING_TIME = 1.0;
-export const BEHAVIOR_EATING_TIME = 1.5;
+export const BEHAVIOR_ACHING_TIME = 2.0;
+export const BEHAVIOR_EATING_TIME = 1.2;
 
 
 // *** Event names
@@ -68,12 +68,12 @@ export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 // *** UI: Creature display info
 // behavior colors
 export const UI_BEHAVIOR_COLORS = {
-    aching: '#ff0000ff',            // hard red
-    eating: '#ffdeadff',            // yellow-white
-    frozen: '#69beffff',            // ice blue
-    idling: '#bbbbbbdd',            // gray
-    sleeping: '#0565F9bb',          // deep blue
-    wandering: '#0cc421dd',         // light green
+    aching: '#ff0000ff',        // hard red
+    eating: '#0cc421dd',        // light green
+    frozen: '#69beffff',        // ice blue
+    idling: '#bbbbbbdd',        // gray
+    sleeping: '#0565F9bb',      // deep blue
+    wandering: '#ffdeadff',     // yellow-white
 };
 
 // behavior strings

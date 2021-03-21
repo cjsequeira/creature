@@ -265,12 +265,12 @@ export const leafDoAndApproveWandering = {
                                 //  with higher accceleration magnitude
                                 glucose:
                                     getPhysTypeCond(eventType.physType)('glucose') -
-                                    0.004 * Math.abs(randNum) *
+                                    0.01 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
                                 neuro:
                                     getPhysTypeCond(eventType.physType)('neuro') +
-                                    0.002 * Math.abs(randNum) *
+                                    0.007 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
                                 accel: randNum * getSimTimeStep(storeType),
