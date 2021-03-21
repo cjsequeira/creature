@@ -1,4 +1,4 @@
-# Creature version 0.1.6
+# Creature version 0.1.7
 
 Eats, sleeps, and wanders - like a proper pet should!
 
@@ -13,6 +13,7 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 * Add creature collision bounce behavior
 
 ## Changelog:
+* **0.1.7**: Added creature collision functionality and "aching" behavior
 * **0.1.6**: Added creature border color changes with behavior; trimmed behavior; adjusted layout
 * **0.1.5**: Implementation of UI element update frequency control for efficiency
 * **0.1.4**: ChartJS and food-eating efficiencies

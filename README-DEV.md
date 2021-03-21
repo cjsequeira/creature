@@ -1,4 +1,4 @@
-# Creature version 0.1.6 - README for developers
+# Creature version 0.1.7 - README for developers
 
 ## System architecture
 
