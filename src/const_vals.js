@@ -36,9 +36,15 @@ export const ACTION_SIM_START = 'ACTION_SIM_START';
 export const ACTION_SIM_STOP = 'ACTION_SIM_STOP';
 
 
-// *** Special datatype names
-export const TYPE_RANDM = 'TYPE_RANDM';
-export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
+// *** Creature behavior strings
+// REFACTOR
+export const BEHAVIOR_STRINGS = {
+    idling: "is chillin'! Yeeeah...",
+    eating: "is eating!! Nom...",
+    sleeping: "is sleeping! Zzzz...",
+    wandering: "is wandering! Wiggity whack!",
+    frozen: "is frozen! Brrrr....."
+};
 
 
 // *** Event names
@@ -54,6 +60,11 @@ export const EVENT_INSERT_FOODTYPES = 'EVENT_INSERT_FOODTYPES';
 export const CREATURE_GEO_CHART = 'page_geo_chart';
 export const CREATURE_TIME_CHART = 'page_time_chart';
 export const CREATURE_STATUS_BOX = 'page_creature_status';
+
+
+// *** Special datatype names
+export const TYPE_RANDM = 'TYPE_RANDM';
+export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 
 
 // *** UI

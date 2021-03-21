@@ -86,7 +86,8 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                                 },
                             ],
                     }
-                    // no: keep the time chart data buffer the same
+
+                    // no, not a simple creature: keep the time chart data buffer the same
                     : getUIProp(storeType)('chartDataBufferTime'),
 
             // add new dataset into the geo chart data buffer
@@ -195,7 +196,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                 ...getChangesList(storeType)('ui'),
                 'chartDataBufferTime',
             ],
-            
+
             // REFACTOR to take more than two conditions, with arbitrary names!
             chartDataBufferTime:
             {
@@ -203,7 +204,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
 
                 // update time chart data associated with all **simple creatures** in the store
                 datasets: getPhysTypeStore(storeType)
-                    .filter((filterPhysType) => getPhysTypeAct(filterPhysType) === actAsSimpleCreature)
+                    .filter((filterPt1) => getPhysTypeAct(filterPt1) === actAsSimpleCreature)
                     .map((thisPhysType, i) =>
                         [
                             // chart the glucose condition for this physType
@@ -249,6 +250,8 @@ export const uiReducer = (inStoreType) => (inActionType) =>
                                 })
                             ),
                         ]
+
+                        // flatten by one level
                     ).flat(1),
             },
 

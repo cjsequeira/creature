@@ -78,7 +78,7 @@ export const action_saveAllPhysTypes = (_) =>
     type: ACTION_COMPARE_SAVE_PHYSTYPE,
 });
 
-// stop if frozen
+// stop if all creatures frozen
 // takes: 
 //  don't care
 // returns actionType

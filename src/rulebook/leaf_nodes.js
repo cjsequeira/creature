@@ -5,6 +5,11 @@
 
 // *** Our imports
 import {
+    EVENT_INSERT_FOODTYPES,
+    BEHAVIOR_STRINGS,
+} from '../const_vals.js';
+
+import {
     compose,
     excludeRange,
 } from '../utils.js';
@@ -31,18 +36,6 @@ import {
     rand_seededRand,
     rand_val,
 } from '../sim/seeded_rand.js';
-import { EVENT_INSERT_FOODTYPES } from '../const_vals.js';
-
-
-// *** Creature behavior strings
-// REFACTOR
-const behaviorStrings = {
-    idling: "is chillin'! Yeeeah...",
-    eating: "is eating!! Nom...",
-    sleeping: "is sleeping! Zzzz...",
-    wandering: "is wandering! Wiggity whack!",
-    frozen: "is frozen! Brrrr....."
-};
 
 
 // *** Rulebook leaf nodes
@@ -68,7 +61,7 @@ export const leafApproveBehavior = {
                     getPhysTypeCond(eventType.physType)('behavior_request'))
 
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                        ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
+                        ' ' + BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
             ])
             (rand_eventType)
@@ -94,7 +87,7 @@ export const leafApproveBehaviorStopMovement = {
                     getPhysTypeCond(eventType.physType)('behavior_request'))
 
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                        ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
+                        ' ' + BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
             ])
             (rand_eventType)
@@ -118,6 +111,10 @@ export const leafCondsOOL = {
                     ({
                         behavior: 'frozen',
                     }),
+
+                // let the creature speak
+                action_addJournalEntry(getPhysTypeName(eventType.physType) +
+                    ' ' + BEHAVIOR_STRINGS['frozen']),
             ])
             (rand_eventType),
 };
@@ -206,7 +203,7 @@ export const leafDoAndApproveWandering = {
                     getPhysTypeCond(eventType.physType)('behavior_request'))
 
                     ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                        ' ' + behaviorStrings[getPhysTypeCond(eventType.physType)('behavior_request')])
+                        ' ' + BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                     : action_doNothing(),
             ])
             (rand_eventType),

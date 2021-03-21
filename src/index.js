@@ -12,7 +12,6 @@ import {
     CREATURE_GEO_CHART,
     CREATURE_STATUS_BOX,
     CREATURE_TIME_CHART,
-    UPDATE_FREQ_GEO_CHART,
     UPDATE_FREQ_SIM,
     UPDATE_FREQ_TIME_CHART,
     WORLD_NUM_FOOD,
@@ -114,8 +113,7 @@ function appUpdateSim(_) {
                     (appStore)
                     (event_updateAllPhysTypes()),
 
-                // if any creatureType now has a behavior of 'frozen', update the journal
-                //  and stop the sim
+                // if ALL creatures are now frozen, stop the sim
                 action_stopIfFrozen(),
 
                 // advance sim if running

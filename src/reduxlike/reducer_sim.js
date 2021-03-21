@@ -41,8 +41,9 @@ export const simReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_STOP_IF_FROZEN]: (storeType) => (_) =>
         ({
             ...storeType.sim,
+
             running:
-                // do we have more than zero frozen simple creatures?
+                // are ALL simple creatures frozen?
                 (
                     getPhysTypeStore(storeType)
                         // filter physType store to find simple creatures
@@ -51,8 +52,16 @@ export const simReducer = (inStoreType) => (inActionType) =>
                         // filter to find those with behavior of 'frozen'
                         .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')
 
-                        // do we have more than zero frozen simple creatures?
-                        .length > 0
+                        // is number of frozen simple creatures equal to 
+                        //  total number of simple creatures?
+                        .length ===
+
+                    getPhysTypeStore(storeType)
+                        // filter physType store to find simple creatures
+                        .filter((ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature)
+
+                        // total number of simple creatures
+                        .length
                 )
                     // yes: set "running" to false
                     ? false

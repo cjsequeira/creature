@@ -253,7 +253,8 @@ const creature_geo_chart_params_init = {
                 backgroundColor: [],
                 borderColor: [],
                 pointBackgroundColor: [],
-                pointBorderColor: []
+                pointBorderColor: [],
+                pointBorderWidth: 3,
             },
 
             {
@@ -269,7 +270,8 @@ const creature_geo_chart_params_init = {
                 backgroundColor: [],
                 borderColor: [],
                 pointBackgroundColor: [],
-                pointBorderColor: []
+                pointBorderColor: [],
+                pointBorderWidth: 3,
             },
         ]
     },
