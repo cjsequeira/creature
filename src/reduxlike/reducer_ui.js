@@ -17,6 +17,7 @@ import {
 } from '../const_vals.js';
 
 import {
+    getChangesList,
     getPhysTypeColor,
     getPhysTypeID,
     getPhysTypeStore,
@@ -54,7 +55,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             ...storeType.ui,
 
             changesList: [
-                ...getUIProp(storeType)('changesList'),
+                ...getChangesList(storeType)('ui'),
                 'chartDataBufferTime',
                 'chartDataBufferGeo',
             ],
@@ -119,7 +120,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             ...storeType.ui,
 
             changesList: [
-                ...getUIProp(storeType)('changesList'),
+                ...getChangesList(storeType)('ui'),
                 'chartDataBufferTime',
                 'chartDataBufferGeo',
             ],
@@ -148,7 +149,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             ...storeType.ui,
 
             changesList: [
-                ...getUIProp(storeType)('changesList'),
+                ...getChangesList(storeType)('ui'),
                 'chartDataBufferGeo',
             ],
 
@@ -191,7 +192,7 @@ export const uiReducer = (inStoreType) => (inActionType) =>
             ...storeType.ui,
 
             changesList: [
-                ...getUIProp(storeType)('changesList'),
+                ...getChangesList(storeType)('ui'),
                 'chartDataBufferTime',
             ],
             

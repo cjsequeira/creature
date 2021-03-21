@@ -21,6 +21,7 @@ import {
     getSimCurTime,
     getPhysTypeName,
     getPhysTypeAct,
+    getChangesList,
 } from './store_getters.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
@@ -50,6 +51,11 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_COMPARE_PHYSTYPE]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'passedComparePhysTypeStore',
+            ],
 
             // use current physTypeStore as the master list for comparing against
             //  saved physTypeStore, using the given comparison function
@@ -81,6 +87,12 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_LOG_CHANGED_BEHAVIORS]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'journal',
+            ],
+
             journal: [
                 ...getJournal(storeType),
 
@@ -97,12 +109,24 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_COMPARE_SAVE_PHYSTYPE]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'savedPhysTypeStore',
+            ],
+
             savedPhysTypeStore: getPhysTypeStore(storeType),
         }),
 
         [ACTION_COMPARE_STOP_IF_FROZEN]: (storeType) => (_) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'journal',
+            ],
+
             journal: [
                 ...getJournal(storeType),
 
@@ -117,7 +141,7 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                     .map(
                         (ptToMap) => ({
                             timeFloatType: getSimCurTime(storeType),
-                            msgStringType: getPhysTypeName(ptToMap) + ' is frozen; stopping sim',
+                            msgStringType: getPhysTypeName(ptToMap) + ' is frozen!',
                         })
                     )
             ]
@@ -128,6 +152,12 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
         [ACTION_JOURNAL_ADD_ENTRY]: (storeType) => (actionType) =>
         ({
             ...storeType.remainder,
+
+            changesList: [
+                ...getChangesList(storeType)('remainder'),
+                'journal',
+            ],
+
             journal: [
                 ...getJournal(storeType),
                 {

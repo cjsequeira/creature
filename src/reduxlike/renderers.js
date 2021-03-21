@@ -6,7 +6,7 @@
 import {
     getJournal,
     getUIProp,
-    isUIObjChanged,
+    isObjChanged,
 } from './store_getters.js';
 
 import { roundTo } from '../utils.js';
@@ -19,24 +19,27 @@ import { roundTo } from '../utils.js';
 // returns undefined
 export function mutable_renderFunction(storeType) {
     // time chart data buffer just updated?
-    if (isUIObjChanged(storeType)('chartDataBufferTime')) {
+    if (isObjChanged(storeType)('ui')('chartDataBufferTime')) {
         // MUTABLE: point time chart data to internal data buffer and proper x axis settings, then draw
         let creatureTimeChartHandle = getUIProp(storeType)('creature_time_chart');
         creatureTimeChartHandle.data = getUIProp(storeType)('chartDataBufferTime');
         creatureTimeChartHandle.options.scales.xAxes[0] = getUIProp(storeType)('chartXAxisBuffer');
         creatureTimeChartHandle.update();
-
-        // MUTABLE: update status box at geo chart speed
-        mutable_updateStatusBox(storeType);
-    };
+    }
 
     // geo chart data buffer just updated?
-    if (isUIObjChanged(storeType)('chartDataBufferGeo')) {
+    if (isObjChanged(storeType)('ui')('chartDataBufferGeo')) {
         // MUTABLE: point geo chart data to internal data buffer, then draw
         let creatureGeoChartHandle = getUIProp(storeType)('creature_geo_chart');
         creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo');
         creatureGeoChartHandle.update();
-    };
+    }
+
+    // journal just updated?
+    if (isObjChanged(storeType)('remainder')('journal')) {
+        // MUTABLE: update status box
+        mutable_updateStatusBox(storeType);
+    }
 };
 
 // update simulator status box with given HTML message
