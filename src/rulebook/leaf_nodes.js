@@ -183,7 +183,7 @@ const leafCondsOOL_func = (storeType, rand_eventType) =>
             ),
 
             // force a redraw of the time chart to capture full conditions
-            action_forceChangesListUpdate('ui')('chartDataBufferTime'),
+            action_forceChangesListUpdate('ui', 'chartDataBufferTime'),
         ])
         (rand_eventType);
 
@@ -232,7 +232,7 @@ const leafCreatureEatFood_func = (storeType, rand_eventType) =>
             ),
 
             // force a redraw of the geo chart to update creature color
-            action_forceChangesListUpdate('ui')('chartDataBufferGeo'),
+            action_forceChangesListUpdate('ui', 'chartDataBufferGeo'),
         ])
         (rand_eventType);
 

@@ -80,7 +80,7 @@ appStore = dispatchActions(appStore)
         action_uiAddGeoChartData(),
 
         // force the journal to render to the status box
-        action_forceChangesListUpdate('remainder')('journal'),
+        action_forceChangesListUpdate('remainder', 'journal'),
 
         // change the sim status to running
         action_startSim(),

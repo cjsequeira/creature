@@ -40,9 +40,9 @@ import { resolveRules } from '../rulebook/rulebook.js';
 //  selectFunc: test function for selecting physTypes from saved and current physType store
 //      signature: (physType) => boolean
 //  compareFunc: function for comparing selected physTypes 
-//      signature: (old physType) => (new physType) => bool
+//      signature: (old physType, new physType) => bool
 // returns actionType
-export const action_comparePhysTypes = (selectFunc) => (compareFunc) =>
+export const action_comparePhysTypes = (selectFunc, compareFunc) =>
 ({
     type: ACTION_COMPARE_COMPARE_PHYSTYPE,
     selectFunc,
@@ -91,7 +91,8 @@ export const action_doNothing = (_) =>
 // takes:
 //  subStringType: substore holding target changes list
 //  objStringType: object name to add to changes list
-export const action_forceChangesListUpdate = (subStringType) => (objStringType) =>
+// returns actionType
+export const action_forceChangesListUpdate = (subStringType, objStringType) =>
 ({
     type: ACTION_FORCE_CHANGES_LIST_UPDATE,
     subStringType,

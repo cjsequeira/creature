@@ -57,17 +57,18 @@ export const remainderReducer = (inStoreType) => (inActionType) =>
                 //  against the saved physTypes,
                 //  as compared on an ID by ID basis!
                 .filter((ptToCompare) =>
-                    // compareFunc signature is (old physType) => (new physType) => bool 
+                    // compareFunc signature is (old physType, new physType) => bool 
                     actionType.compareFunc
-                        // saved physType to compare against current
                         (
+                            // saved physType to compare against current
                             getSavedPhysTypeStore(storeType)
                                 // find the saved physType with the same ID as the physType
                                 // currently under comparison
-                                .find((ptToFind) => ptToFind.id === ptToCompare.id)
+                                .find((ptToFind) => ptToFind.id === ptToCompare.id),
+
+                            // current physType to compare against saved
+                            ptToCompare
                         )
-                        // current physType to compare against saved
-                        (ptToCompare)
                 ),
         }),
 
