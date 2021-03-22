@@ -46,10 +46,12 @@ import { rand_seededRand } from './sim/seeded_rand';
 // init our global app store object using some pointers to web page elements
 // SIDE EFFECT: creates new ChartJS objects
 var appStore = sideEffect_storeInit
-    (document.getElementById(CREATURE_TIME_CHART).getContext('2d'))
-    (document.getElementById(CREATURE_GEO_CHART).getContext('2d'))
-    (document.getElementById(CREATURE_STATUS_BOX))
-    (mutable_renderFunction);
+    (
+        document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
+        document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
+        document.getElementById(CREATURE_STATUS_BOX),
+        mutable_renderFunction
+    );
 
 // dispatch an initial series of actions
 appStore = dispatchActions

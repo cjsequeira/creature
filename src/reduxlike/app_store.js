@@ -363,9 +363,8 @@ export const geoChartInitTemplate =
 
 // *** Store initializer function
 // SIDE EFFECT: creates new ChartJS objects
-// REFACTOR: to traditional func form (not arrows)
-export const sideEffect_storeInit = (creature_time_chart_context) => (creature_geo_chart_context) =>
-    (status_box_context) => (renderFunc) =>
+export const sideEffect_storeInit =
+    (creature_time_chart_context, creature_geo_chart_context, status_box_context, renderFunc) =>
     ({
         ...initial_store,
 
