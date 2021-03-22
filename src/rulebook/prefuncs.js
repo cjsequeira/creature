@@ -42,8 +42,8 @@ import { actAsFood } from '../phystypes/food_type.js';
 // *** Rulebook pre-functions
 // produce event containing physType with laws of physics applied
 // the function application below INCLUDES wall collision testing!
-// preFunc signature is (storeType) => (rand_eventType) => rand_eventType
-export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
+// preFunc signature is (storeType, rand_eventType) => rand_eventType
+export const preFuncApplyPhysics = (storeType, rand_eventType) =>
     // total signature: (rand_eventType) => rand_eventType
     rand_liftBind
         ((eventType) =>
@@ -69,8 +69,8 @@ export const preFuncApplyPhysics = (storeType) => (rand_eventType) =>
 // the rulebook may assign the requested behavior, 
 //  or may reject the requested behavior and assign a different behavior,
 //  or may return an action totally unrelated to the creatureType object below!
-// preFunc signature is (storeType) => (rand_eventType) => rand_eventType
-export const preFuncGenBehaviorRequest = (_) => (rand_eventType) =>
+// preFunc signature is (storeType, rand_eventType) => rand_eventType
+export const preFuncGenBehaviorRequest = (_, rand_eventType) =>
     // generate an updated rand_eventType
     rand_genRandM
         // rand_genRandM value
@@ -109,20 +109,23 @@ export const preFuncGenBehaviorRequest = (_) => (rand_eventType) =>
 // tag simple creatures touched by creature by bundling them into the given rand_eventType
 // REFACTOR: to tag in creatures that a creature will "pass through" between this timestep and the next!
 // That would enable tagging of creatures even when a creature is moving very quickly
-export const preFuncTagTouchedCreatures = (storeType) => (rand_eventType) =>
+// preFunc signature is (storeType, rand_eventType) => rand_eventType
+export const preFuncTagTouchedCreatures = (storeType, rand_eventType) =>
     // total signature: (rand_eventType) => rand_eventType
     rand_liftBind
         // signature of this function: (eventType) => eventType
         // rand_liftBind lifts the function to signature (eventType) => rand_eventType
         //  then binds it to signature (rand_eventType) => rand_eventType
         ((eventType) =>
-            // insert data into the given eventType
-            eventInsert_insertData(eventType)
-                // type of data to insert: creatureType
-                (EVENT_INSERT_CREATURETYPES)
-
-                // data to insert: creatureTypes closer than a given distance from this creatureType
+            eventInsert_insertData
                 (
+                    // insert data into the given eventType
+                    eventType,
+
+                    // type of data to insert: creatureType
+                    EVENT_INSERT_CREATURETYPES,
+
+                    // data to insert: creatureTypes closer than a given distance from this creatureType
                     // get physType store
                     getPhysTypeStore(storeType)
                         // keep only objects other than the self!
@@ -152,20 +155,23 @@ export const preFuncTagTouchedCreatures = (storeType) => (rand_eventType) =>
 // tag food touched by creature by bundling it into the given rand_eventType
 // REFACTOR: to tag in food that a creature will "pass through" between this timestep and the next!
 // That would enable tagging of food even when a creature is moving very quickly
-export const preFuncTagTouchedFood = (storeType) => (rand_eventType) =>
+// preFunc signature is (storeType, rand_eventType) => rand_eventType
+export const preFuncTagTouchedFood = (storeType, rand_eventType) =>
     // total signature: (rand_eventType) => rand_eventType
     rand_liftBind
         // signature of this function: (eventType) => eventType
         // rand_liftBind lifts the function to signature (eventType) => rand_eventType
         //  then binds it to signature (rand_eventType) => rand_eventType
         ((eventType) =>
-            // insert data into the given eventType
-            eventInsert_insertData(eventType)
-                // type of data to insert: foodType
-                (EVENT_INSERT_FOODTYPES)
-
-                // data to insert: foodTypes closer than a given distance from this creatureType
+            eventInsert_insertData
                 (
+                    // insert data into the given eventType
+                    eventType,
+
+                    // type of data to insert: foodType
+                    EVENT_INSERT_FOODTYPES,
+
+                    // data to insert: foodTypes closer than a given distance from this creatureType
                     // get physType store
                     getPhysTypeStore(storeType)
                         // keep only food

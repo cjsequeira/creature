@@ -25,7 +25,7 @@ export const event_updateAllPhysTypes = (_) =>
 //  physType
 //  desireFuncType: behaviors with associated desire weights
 // returns eventType
-export const event_replaceCreatureType = (physType) => (desireFuncType) =>
+export const event_replaceCreatureType = (physType, desireFuncType) =>
 ({
     type: EVENT_REPLACE_CREATURETYPE,
     physType,
@@ -49,7 +49,7 @@ export const event_replacePhysType = (physType) =>
 //  insertType: the data type of the data being inserted
 //  insertData: the data to insert
 // returns eventType
-export const eventInsert_insertData = (eventType) => (insertType) => (insertData) =>
+export const eventInsert_insertData = (eventType, insertType, insertData) =>
 ({
     ...eventType,
     [insertType]: insertData,

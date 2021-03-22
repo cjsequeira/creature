@@ -79,6 +79,21 @@ export const pipe2 = (...funcs) =>
         (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
         null);
 
+// given a target and an array of TWO-ARGUMENT functions, apply the first function to the target,
+//  then apply the next function to the result of the first function, and so on until 
+//  all functions are applied
+// the array of functions will be completely flattened
+// first function must be of signature (typeB, any) => typeA
+// all remaining functions must be of signature (typeB, typeA) => typeA
+// takes:
+//  targetAnyType: target that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns function of signature (typeB, any) => typeA
+export const pipe2Comma = (...funcs) =>
+    (typeB, targetAnyType) => funcs.flat(Infinity).reduce(
+        (funcAccum, thisFunc) => thisFunc(typeB, funcAccum || targetAnyType),
+        null);
+
 // given a target, an array of ONE-ARGUMENT functions, and an input argument of typeA,
 //  apply the first function to the input argument, then apply the next function to
 //  the result of the first function, and so on until all functions are applied
@@ -90,6 +105,22 @@ export const pipe2 = (...funcs) =>
 // returns RESULT of signature typeA
 export const pipeDirect = (inputAnyType, ...funcs) =>
     funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
+
+/*
+// given a target, an array of TWO-ARGUMENT functions, and input arguments of (typeA, typeB),
+//  apply the first function to the input arguments, then apply the next function to
+//  the result of the first function, and so on until all functions are applied
+// the array of functions will be completely flattened
+// ALL functions must be of signature (typeA, typeB) => typeB
+// takes:
+//  inputAnyType: input argument that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns RESULT of signature typeB
+export const pipeDirect2 = (inputTypeA, inputTypeB, ...funcs) =>
+funcs.flat(Infinity).reduce(
+    (accumTypeB, thisFunc) => thisFunc(inputTypeA, accumTypeB),
+    inputTypeB);
+    */
 
 // get the value at a nested property of an object
 // takes:
@@ -170,6 +201,23 @@ export const andTests = (...testFuncs) =>
     (arg) => testFuncs.flat(Infinity).reduce(
         (accum, curTest) => accum && curTest(arg), testFuncs.flat(Infinity)[0](arg))
 
+// given an array of test functions that take TWO COMMA-SEPARATED arguments and return boolean, 
+//  construct a single function to "or" all function results together
+// takes:
+//  ...testFuncs: array of test functions of signature (typeA, typeB) => boolean
+// returns function that takes two comma-separated arguments and returns boolean
+export const orTests2Comma = (...testFuncs) =>
+    (typeA, typeB) => testFuncs.flat(Infinity).reduce(
+        (accum, curTest) => accum || curTest(typeA, typeB), testFuncs.flat(Infinity)[0](arg))
+
+// given an array of test functions that take TWO COMMA-SEPARATED arguments and return boolean, 
+//  construct a single function to "and" all function results together
+// takes:
+//  ...testFuncs: array of test functions of signature (typeA, typeB) => boolean
+// returns function that takes two comma-separated arguments and returns boolean
+export const andTests2Comma = (...testFuncs) =>
+    (typeA, typeB) => testFuncs.flat(Infinity).reduce(
+        (accum, curTest) => accum && curTest(typeA, typeB), testFuncs.flat(Infinity)[0](arg))
 
 // *** Numerical utilities
 // bound num to [minFloatType, maxFloatType]

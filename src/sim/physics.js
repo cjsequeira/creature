@@ -22,6 +22,7 @@ import {
 
 
 // *** Public consolidator for physType physics functions
+// nested arrow function to support easy composition
 // takes: 
 //  storeType
 //  physType
@@ -39,6 +40,7 @@ export const physTypeDoPhysics = (storeType) => (physType) =>
 
 // *** Internal physics functions
 // return physType with location updated based on speed and heading
+// nested arrow function to support easy composition
 // takes: 
 //  storeType
 //  physType
@@ -62,6 +64,7 @@ const physTypeDoMovements = (storeType) => (physType) => {
 };
 
 // return physType with parameters updated if wall collisions
+// nested arrow function to support easy composition
 // takes: 
 //  don't care
 //  physType

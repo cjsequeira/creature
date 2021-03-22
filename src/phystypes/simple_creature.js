@@ -81,16 +81,16 @@ export const actAsSimpleCreature = (storeType) => (physType) =>
 // returns physType
 const actAching = (storeType) => (physType) =>
     event_replaceCreatureType
-        // pass in physType object with specific glucose and neuro
-        (usePhysTypeConds
-            (physType)
-            ({
-                glucose: getPhysTypeCond(physType)('glucose') - 8.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 4.0 * getSimTimeStep(storeType),
-            })
-        )
-        // pass in behavior change desires specific to this behavior function
         (
+            // pass in physType object with specific glucose and neuro
+            usePhysTypeConds
+                (physType)
+                ({
+                    glucose: getPhysTypeCond(physType)('glucose') - 8.0 * getSimTimeStep(storeType),
+                    neuro: getPhysTypeCond(physType)('neuro') + 4.0 * getSimTimeStep(storeType),
+                }),
+
+            // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!
             (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_ACHING_TIME)
                 ? { 'aching': (_) => 100.0 }
@@ -107,16 +107,16 @@ const actAching = (storeType) => (physType) =>
 // returns physType
 const actEating = (storeType) => (physType) =>
     event_replaceCreatureType
-        // pass in physType object with specific glucose and neuro
-        (usePhysTypeConds
-            (physType)
-            ({
-                glucose: getPhysTypeCond(physType)('glucose') + 9.0 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 1.4 * getSimTimeStep(storeType),
-            })
-        )
-        // pass in behavior change desires specific to this behavior function
         (
+            // pass in physType object with specific glucose and neuro
+            usePhysTypeConds
+                (physType)
+                ({
+                    glucose: getPhysTypeCond(physType)('glucose') + 9.0 * getSimTimeStep(storeType),
+                    neuro: getPhysTypeCond(physType)('neuro') + 1.4 * getSimTimeStep(storeType),
+                }),
+
+            // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!
             (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_EATING_TIME)
                 ? { 'eating': (_) => 100.0 }
@@ -134,16 +134,16 @@ const actEating = (storeType) => (physType) =>
 // returns physType
 const actIdling = (storeType) => (physType) =>
     event_replaceCreatureType
-        // pass in physType object with specific glucose and neuro
-        (usePhysTypeConds
-            (physType)
-            ({
-                glucose: getPhysTypeCond(physType)('glucose') - 1.3 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') + 1.0 * getSimTimeStep(storeType),
-            })
-        )
-        // pass in behavior change desires specific to this behavior function
         (
+            // pass in physType object with specific glucose and neuro
+            usePhysTypeConds
+                (physType)
+                ({
+                    glucose: getPhysTypeCond(physType)('glucose') - 1.3 * getSimTimeStep(storeType),
+                    neuro: getPhysTypeCond(physType)('neuro') + 1.0 * getSimTimeStep(storeType),
+                }),
+
+            // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!
             (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_MIN_TIME)
                 ? { 'idling': (_) => 100.0 }
@@ -162,16 +162,16 @@ const actIdling = (storeType) => (physType) =>
 // returns physType
 const actSleeping = (storeType) => (physType) =>
     event_replaceCreatureType
-        // pass in physType object with specific glucose and neuro
-        (usePhysTypeConds
-            (physType)
-            ({
-                glucose: getPhysTypeCond(physType)('glucose') - 0.6 * getSimTimeStep(storeType),
-                neuro: getPhysTypeCond(physType)('neuro') - 6.2 * getSimTimeStep(storeType),
-            })
-        )
-        // pass in behavior change desires specific to this behavior function
         (
+            // pass in physType object with specific glucose and neuro
+            usePhysTypeConds
+                (physType)
+                ({
+                    glucose: getPhysTypeCond(physType)('glucose') - 0.6 * getSimTimeStep(storeType),
+                    neuro: getPhysTypeCond(physType)('neuro') - 6.2 * getSimTimeStep(storeType),
+                }),
+
+            // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!
             (getPhysTypeBCElapsed(storeType)(physType) < BEHAVIOR_MIN_TIME)
                 ? { 'sleeping': (_) => 100.0 }
@@ -189,10 +189,11 @@ const actSleeping = (storeType) => (physType) =>
 // returns physType
 const actWandering = (_) => (physType) =>
     event_replaceCreatureType
-        // for 'wandering', the rulebook will assign conditions
-        (physType)
-        // pass in behavior change desires specific to this behavior function
         (
+            // for 'wandering', the rulebook will assign conditions
+            physType,
+
+            // pass in behavior change desires specific to this behavior function
             {
                 // can only go to: wandering, eating, idling
                 // if speed really high, creature really wants to idle!

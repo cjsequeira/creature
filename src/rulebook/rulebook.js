@@ -61,10 +61,9 @@ import {
 } from './test_nodes.js';
 
 import {
-    pipe2,
-    compose,
-    orTests,
+    pipe2Comma,
     pipeDirect,
+    orTests2Comma,
 } from '../utils.js';
 
 import { action_setSimSeed } from '../reduxlike/action_creators.js';
@@ -126,24 +125,37 @@ const recursive_leafUpdateAllPhysTypes = {
 };
 
 
+// *** Pre-func named combinations
+const preFuncDoPhysicsAndTag = (storeType, rand_eventType) =>
+    pipe2Comma
+        (
+            preFuncApplyPhysics,
+            preFuncTagTouchedCreatures,
+            preFuncTagTouchedFood,
+        )
+        (storeType, rand_eventType);
+
+
 // *** Functional programming helper functions
 // link together rulebook test nodes with logical "or"
 // takes:
 //  ...testRules: array of rulebook test nodes
 // returns object with testFunc property as: function combining test nodes with logical "or"
-// the expected testFunc signature is (storeType) => (rand_eventType) => bool
-const orTestRules = (...testRules) => ({
+// the expected testFunc signature is (storeType, rand_eventType) => bool
+// REFACTOR: Not yet tested!
+const orTestRules = (...testRules) =>
+({
     name: 'orTestRules',
-    testFunc: (storeType) => orTests(
+    testFunc: (storeType) => orTests2Comma(
         testRules.map(
-            rule => rule.testFunc(storeType)
+            rule => rule.testFunc(storeType, rand_eventType)
         )
     )
 });
 
 // unwrap a rand_actionType into an actionType plus an action to update the simulation seed
 // takes:
-//  rand_actionType: an actionType wrapped in a randM
+//  rand_actionType: an actionType wrapped in a randM monad
 // returns [actionType]
 const rand_actionTypeVal = (rand_actionType) =>
 ([
@@ -162,13 +174,7 @@ const ruleBook = {
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
-                preFunc: pipe2
-                    (
-                        preFuncApplyPhysics,
-                        preFuncTagTouchedCreatures,
-                        preFuncTagTouchedFood,
-                    ),
-
+                preFunc: preFuncDoPhysicsAndTag,
                 testNode: isCreatureTouchingCreature,
                 yes: leafDoCreatureCollision,
                 no: {
@@ -263,10 +269,10 @@ export const resolveRules = (storeType, eventType) =>
 // returns rand_actionType: an actionType wrapped in a randM
 function rand_findRule(storeType, rand_eventType, node) {
     // is pre-function undefined? 
-    //  if yes, apply (_ => x => x) to rand_eventType
+    //  if yes, apply ((_, x) => x) to rand_eventType
     //  if no, apply pre-function to rand_eventType
-    // expected pre-function signature: (storeType) => (rand_eventType) => rand_eventType
-    const rand_eventType_to_use = (node.preFunc || (_ => x => x))(storeType)(rand_eventType)
+    // expected pre-function signature: (storeType, rand_eventType) => rand_eventType
+    const rand_eventType_to_use = (node.preFunc || ((_, x) => x))(storeType, rand_eventType)
 
     // is test node undefined?
     return (node.testNode === undefined)
@@ -277,8 +283,8 @@ function rand_findRule(storeType, rand_eventType, node) {
 
         // no: we assume the given node is a test node with a test function
         // so, apply the given node's test function "testFunc" to the eventType
-        // expected testFunc signature: (storeType) => (rand_eventType) => bool
-        : (node.testNode.testFunc(storeType)(rand_eventType_to_use))
+        // expected testFunc signature: (storeType, rand_eventType) => bool
+        : (node.testNode.testFunc(storeType, rand_eventType_to_use))
             // test func returned true? follow node.yes
             ? rand_findRule(storeType, rand_eventType_to_use, node.yes)
 
