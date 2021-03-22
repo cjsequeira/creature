@@ -69,9 +69,9 @@ export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 // behavior colors
 export const UI_BEHAVIOR_COLORS = {
     aching: '#ff0000ff',        // hard red
-    eating: '#0cc421dd',        // light green
-    frozen: '#69beffff',        // ice blue
-    idling: '#bbbbbbdd',        // gray
+    eating: '#0cc421ff',        // light green
+    frozen: '#69beffcc',        // ice blue
+    idling: '#bbbbbbcc',        // gray
     sleeping: '#0565F9bb',      // deep blue
     wandering: '#ffdeadff',     // yellow-white
 };
@@ -86,8 +86,8 @@ export const UI_BEHAVIOR_STRINGS = {
     wandering: "is wandering! Wiggity whack!",
 };
 
-export const UI_BORDER_WIDTH = 5;
-export const UI_CREATURE_RADIUS = 7;
+export const UI_BORDER_WIDTH = 6;
+export const UI_CREATURE_RADIUS = 9;
 export const UI_NUM_TRAILS = 15;
 export const UI_OTHER_RADIUS = 3;
 
@@ -115,4 +115,4 @@ export const WORLD_SIZE_X = 20.0;
 export const WORLD_SIZE_Y = 20.0;
 
 // distance between physTypes that constitutes a touch
-export const WORLD_TOUCH_DISTANCE = 0.80;
+export const WORLD_TOUCH_DISTANCE = 0.97;

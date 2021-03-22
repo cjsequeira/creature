@@ -60,7 +60,7 @@ const initial_store = {
 
                 // heading, speed, acceleration
                 heading: Math.PI,
-                speed: 1.0,
+                speed: 0.0,
                 accel: 0.0,
             },
         },
@@ -87,7 +87,7 @@ const initial_store = {
 
                 // heading, speed, acceleration
                 heading: 0.0,
-                speed: 1.0,
+                speed: 0.0,
                 accel: 0.0,
             },
         },

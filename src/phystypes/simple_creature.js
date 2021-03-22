@@ -48,7 +48,7 @@ export const getDefaultSimpleCreature = (_) =>
 
         // heading, speed, acceleration
         heading: 0.0,
-        speed: 1.0,
+        speed: 0.0,
         accel: 0.0,
     },
 });
@@ -201,6 +201,6 @@ const actWandering = (_) => (physType) =>
                 // if speed really high, creature really wants to idle!
                 'wandering': (_) => 40.0,
                 'eating': (_) => (getPhysTypeCond(physType)('glucose') < 35.0) ? 60.0 : 0.1,
-                'idling': (_) => (getPhysTypeCond(physType)('speed') > 40.0) ? 300.0 : 0.1,
+                'idling': (_) => (getPhysTypeCond(physType)('speed') > 50.0) ? 300.0 : 0.1,
             }
         );

@@ -289,7 +289,7 @@ const leafDoAndApproveWandering_func = (storeType, rand_eventType) =>
                             (
                                 excludeRange
                                     (100.0)
-                                    (rand_val(rand_seededRand(-150.0)(750.0)(seed1)))
+                                    (rand_val(rand_seededRand(-150.0)(1000.0)(seed1)))
                             ),
 
                     // conds driven by randomized heading nudge

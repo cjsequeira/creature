@@ -97,7 +97,7 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
                 // dissipate some speed - or establish a minimum speed if creature is going slowly
                 speed:
                     (inGetCond('speed') > 3.0)
-                        ? 0.9 * inGetCond('speed')
+                        ? 0.96 * inGetCond('speed')
                         : 3.0,
             });
 };
