@@ -247,57 +247,59 @@ const leafDoAndApproveWandering_func = (storeType, rand_eventType) =>
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             action_updateSelectPhysTypesRand
-                // find the given physType in the store
-                ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
-
-                // conds to update
-                // REFACTOR: Can this code be moved to simple_creature.js in some way?
                 (
-                    // conds driven by randomized acceleration
-                    (seed1) =>
-                        // anonymous function to produce randomized conds
-                        ((randNum) => ({
-                            // be sure to include conds that will not be randomized
-                            ...getPhysTypeCondsObj(eventType.physType),
+                    // find the given physType in the store
+                    (filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType),
 
-                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                    // conds to update
+                    // REFACTOR: Can this code be moved to simple_creature.js in some way?
+                    [
+                        // conds driven by randomized acceleration
+                        (seed1) =>
+                            // anonymous function to produce randomized conds
+                            ((randNum) => ({
+                                // be sure to include conds that will not be randomized
+                                ...getPhysTypeCondsObj(eventType.physType),
 
-                            // update behavior clock time IF behavior has just changed,
-                            //  else keep the same
-                            behavior_clock:
-                                (getPhysTypeCond(eventType.physType)('behavior') !==
-                                    getPhysTypeCond(eventType.physType)('behavior_request'))
-                                    ? getSimCurTime(storeType)
-                                    : getPhysTypeCond(eventType.physType)('behavior_clock'),
+                                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
-                            // glucose and neuro impacts are more severe 
-                            //  with higher accceleration magnitude
-                            glucose:
-                                getPhysTypeCond(eventType.physType)('glucose') -
-                                0.01 * Math.abs(randNum) *
-                                getSimTimeStep(storeType),
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType)('behavior') !==
+                                        getPhysTypeCond(eventType.physType)('behavior_request'))
+                                        ? getSimCurTime(storeType)
+                                        : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
-                            neuro:
-                                getPhysTypeCond(eventType.physType)('neuro') +
-                                0.007 * Math.abs(randNum) *
-                                getSimTimeStep(storeType),
+                                // glucose and neuro impacts are more severe 
+                                //  with higher accceleration magnitude
+                                glucose:
+                                    getPhysTypeCond(eventType.physType)('glucose') -
+                                    0.01 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
 
-                            accel: randNum * getSimTimeStep(storeType),
-                        }))
-                            // anonymous function argument: random accel that's at least 
-                            //  a minimum magnitude
-                            (
-                                excludeRange
-                                    (100.0)
-                                    (rand_val(rand_seededRand(-150.0)(1000.0)(seed1)))
-                            ),
+                                neuro:
+                                    getPhysTypeCond(eventType.physType)('neuro') +
+                                    0.007 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
 
-                    // conds driven by randomized heading nudge
-                    (seed2) => ({
-                        heading:
-                            getPhysTypeCond(eventType.physType)('heading') +
-                            rand_val(rand_seededRand(-0.3)(0.3)(seed2)),
-                    })
+                                accel: randNum * getSimTimeStep(storeType),
+                            }))
+                                // anonymous function argument: random accel that's at least 
+                                //  a minimum magnitude
+                                (
+                                    excludeRange
+                                        (100.0)
+                                        (rand_val(rand_seededRand(-150.0)(1000.0)(seed1)))
+                                ),
+
+                        // conds driven by randomized heading nudge
+                        (seed2) => ({
+                            heading:
+                                getPhysTypeCond(eventType.physType)('heading') +
+                                rand_val(rand_seededRand(-0.3)(0.3)(seed2)),
+                        })
+                    ]
                 ),
 
             // announce behavior IF behavior has just changed

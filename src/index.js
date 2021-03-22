@@ -64,11 +64,11 @@ appStore = dispatchActions(appStore)
 
         // atomically randomize locations of all physTypes
         action_updateSelectPhysTypesRand
-            // filter function: include all physTypes
-            ((_) => true)
-
-            // randomize conds: x and y
             (
+                // filter function: include all physTypes
+                (_) => true,
+
+                // randomize conds: x and y
                 (seed1) => ({ x: rand_seededRand(0.1)(WORLD_SIZE_X - 0.1)(seed1) }),
                 (seed2) => ({ y: rand_seededRand(0.1)(WORLD_SIZE_Y - 0.1)(seed2) }),
             ),
