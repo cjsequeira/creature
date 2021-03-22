@@ -300,4 +300,4 @@ export const dispatchActions = (inStoreType) => (...actions) => {
 //  ...events: list of events to map, as eventType
 // returns array of actionType
 export const mapEventsToActions = (storeType) => (...events) =>
-    events.flat(Infinity).map((thisEvent) => resolveRules(storeType)(thisEvent));
+    events.flat(Infinity).map((thisEvent) => resolveRules(storeType, thisEvent));

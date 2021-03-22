@@ -18,7 +18,7 @@
 // RANDM MONAD: The rulebook's rand_findRule function operates within the randM monad!!!
 // This allows code within the rulebook to use immutable random numbers at will.
 //
-// rand_findRule takes a rand_eventType and returns a rand_actionType
+// rand_findRule takes a rand_eventType (among other args) and returns a rand_actionType
 //
 //      rand_eventType: an eventType wrapped within a randM monad
 //      rand_actionType: an actionType wrapped within a randM monad
@@ -61,9 +61,9 @@ import {
 } from './test_nodes.js';
 
 import {
-    pipe2,
-    compose,
-    orTests,
+    pipe2Comma,
+    pipeDirect,
+    orTests2Comma,
 } from '../utils.js';
 
 import { action_setSimSeed } from '../reduxlike/action_creators.js';
@@ -83,25 +83,24 @@ import {
 
 
 // *** Recursive leaf nodes
-// signature of leaf func: (storeType) => (rand_eventType) => rand_actionType
-export const recursive_leafUpdateAllPhysTypes = {
-    name: 'recursive_leafUpdateAllPhysTypes',
-    func: (storeType) => (rand_eventType) =>
-        // reduce the entire physType store to a single rand_actionType
-        getPhysTypeStore(storeType).reduce((accum_rand_actionType, thisPt) =>
-            // concatenate randMs
-            rand_concat
-                // left-hand side: accumulated rand_actionType so far
-                (accum_rand_actionType)
+// signature of leaf func: (storeType, rand_eventType) => rand_actionType
+const recursive_leafUpdateAllPhysTypes_func = (storeType, rand_eventType) =>
+    // reduce the entire physType store to a single rand_actionType
+    getPhysTypeStore(storeType).reduce((accum_rand_actionType, thisPt) =>
+        // concatenate randMs
+        rand_concat
+            // left-hand side: accumulated rand_actionType so far
+            (accum_rand_actionType)
 
-                // right-hand side: 
-                // apply rulebook to this physType to get a rand_actionType...
-                (rand_findRule
+            // right-hand side: 
+            // apply rulebook to this physType to get a rand_actionType...
+            (rand_findRule
+                (
                     // ... using the given store...
-                    (storeType)
+                    storeType,
 
                     // ... and a rand_eventType...
-                    (rand_genRandM
+                    rand_genRandM
                         // ... built from the eventType produced by physType "act"...
                         (thisPt.act(storeType)(thisPt))
 
@@ -111,15 +110,30 @@ export const recursive_leafUpdateAllPhysTypes = {
                             (rand_val(accum_rand_actionType).length > 0)
                                 ? rand_nextSeed(accum_rand_actionType)
                                 : rand_nextSeed(rand_eventType)
-                        )
-                    )
+                        ),
 
                     // use our rulebook
-                    (ruleBook)
+                    ruleBook
+                )
 
-                    // start reduction with a unit randM with a value of an empty array
-                ), rand_unit([])),
+                // start reduction with a unit randM with a value of an empty array
+            ), rand_unit([]));
+
+const recursive_leafUpdateAllPhysTypes = {
+    name: 'recursive_leafUpdateAllPhysTypes',
+    func: recursive_leafUpdateAllPhysTypes_func,
 };
+
+
+// *** Pre-func named combinations
+const preFuncDoPhysicsAndTag = (storeType, rand_eventType) =>
+    pipe2Comma
+        (
+            preFuncApplyPhysics,
+            preFuncTagTouchedCreatures,
+            preFuncTagTouchedFood,
+        )
+        (storeType, rand_eventType);
 
 
 // *** Functional programming helper functions
@@ -127,19 +141,21 @@ export const recursive_leafUpdateAllPhysTypes = {
 // takes:
 //  ...testRules: array of rulebook test nodes
 // returns object with testFunc property as: function combining test nodes with logical "or"
-// the expected testFunc signature is (storeType) => (rand_eventType) => bool
-const orTestRules = (...testRules) => ({
+// the expected testFunc signature is (storeType, rand_eventType) => bool
+// REFACTOR: Not yet tested!
+const orTestRules = (...testRules) =>
+({
     name: 'orTestRules',
-    testFunc: (storeType) => orTests(
+    testFunc: (storeType) => orTests2Comma(
         testRules.map(
-            rule => rule.testFunc(storeType)
+            rule => rule.testFunc(storeType, rand_eventType)
         )
     )
 });
 
 // unwrap a rand_actionType into an actionType plus an action to update the simulation seed
 // takes:
-//  rand_actionType: an actionType wrapped in a randM
+//  rand_actionType: an actionType wrapped in a randM monad
 // returns [actionType]
 const rand_actionTypeVal = (rand_actionType) =>
 ([
@@ -158,13 +174,7 @@ const ruleBook = {
         yes: {
             testNode: isGlucoseNeuroInRange,
             yes: {
-                preFunc: pipe2
-                    (
-                        preFuncApplyPhysics,
-                        preFuncTagTouchedCreatures,
-                        preFuncTagTouchedFood,
-                    ),
-
+                preFunc: preFuncDoPhysicsAndTag,
                 testNode: isCreatureTouchingCreature,
                 yes: leafDoCreatureCollision,
                 no: {
@@ -223,28 +233,32 @@ const ruleBook = {
 //  storeType
 //  eventType
 // returns [actionType]
-export const resolveRules = (storeType) => (eventType) =>
-    compose
-        // unwrap the rand_actionType produced by rand_findRule below
-        // when unwrapped, we get an [actionType] that consists of a combination of:
-        //  actionType or [actionType], plus an action to update the seed!!
-        (rand_actionTypeVal)
-
-        // get a rand_actionType through application of rand_findRule
+export const resolveRules = (storeType, eventType) =>
+    // pipe rand_findRule() --> rand_actionTypeVal()
+    pipeDirect
         (
+            // get a rand_actionType through application of rand_findRule
             // wrap the given eventType in a randM to create a rand_eventType
             // then jump into the randM monad
             rand_findRule
-                // store to use
-                (storeType)
+                (
+                    // store to use
+                    storeType,
 
-                // eventType to use, wrapped into a randM to make "rand_eventType"
-                // function signature: (eventType) => rand_eventType
-                (rand_genRandM(eventType)(getSimSeed(storeType)))
-        )
+                    // eventType to use, wrapped into a randM to make "rand_eventType"
+                    // function signature: (eventType) => rand_eventType
+                    rand_genRandM(eventType)(getSimSeed(storeType)),
 
-        // use our rulebook as the starting rule node for rand_findRule
-        (ruleBook);
+                    // use our rulebook as the starting rule node for rand_findRule
+                    ruleBook
+                ),
+
+            // unwrap the rand_actionType produced by rand_findRule above
+            // when unwrapped, we get an [actionType] that consists of a combination of:
+            //  actionType or [actionType], plus an action to update the seed!!
+            rand_actionTypeVal
+        );
+
 
 // recursive rulebook node finder
 // MONAD: operates within the randM monad
@@ -253,27 +267,27 @@ export const resolveRules = (storeType) => (eventType) =>
 //  rand_eventType: an eventType wrapped in a randM
 //  node: the rule node to use
 // returns rand_actionType: an actionType wrapped in a randM
-const rand_findRule = (storeType) => (rand_eventType) => (node) => {
+function rand_findRule(storeType, rand_eventType, node) {
     // is pre-function undefined? 
-    //  if yes, apply (_ => x => x) to rand_eventType
+    //  if yes, apply ((_, x) => x) to rand_eventType
     //  if no, apply pre-function to rand_eventType
-    // expected pre-function signature: (storeType) => (rand_eventType) => rand_eventType
-    const rand_eventType_to_use = (node.preFunc || (_ => x => x))(storeType)(rand_eventType)
+    // expected pre-function signature: (storeType, rand_eventType) => rand_eventType
+    const rand_eventType_to_use = (node.preFunc || ((_, x) => x))(storeType, rand_eventType)
 
     // is test node undefined?
     return (node.testNode === undefined)
         // yes: we assume the given node is a leaf node with a function to apply
         // we apply the function "func" to return a rand_actionType
-        // expected func signature: (storeType) => (rand_eventType) => rand_actionType
-        ? node.func(storeType)(rand_eventType_to_use)
+        // expected func signature: (storeType, rand_eventType) => rand_actionType
+        ? node.func(storeType, rand_eventType_to_use)
 
         // no: we assume the given node is a test node with a test function
         // so, apply the given node's test function "testFunc" to the eventType
-        // expected testFunc signature: (storeType) => (rand_eventType) => bool
-        : (node.testNode.testFunc(storeType)(rand_eventType_to_use))
+        // expected testFunc signature: (storeType, rand_eventType) => bool
+        : (node.testNode.testFunc(storeType, rand_eventType_to_use))
             // test func returned true? follow node.yes
-            ? rand_findRule(storeType)(rand_eventType_to_use)(node.yes)
+            ? rand_findRule(storeType, rand_eventType_to_use, node.yes)
 
             // test func returned false? follow node.no
-            : rand_findRule(storeType)(rand_eventType_to_use)(node.no)
+            : rand_findRule(storeType, rand_eventType_to_use, node.no)
 };
