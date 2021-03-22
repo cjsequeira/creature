@@ -39,7 +39,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
-        [ACTION_PHYSTYPE_ADD_PHYSTYPE]: (storeType) => (actionType) =>
+        [ACTION_PHYSTYPE_ADD_PHYSTYPE]: (storeType, actionType) =>
         ([
             ...getPhysTypeStore(storeType),
 
@@ -49,13 +49,13 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
             },
         ]),
 
-        [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType) => (actionType) =>
+        [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: (storeType, actionType) =>
             // keep only physTypes with IDs *not* matching the given ID
             getPhysTypeStore(storeType).filter(
                 (ptToTest) => getPhysTypeID(ptToTest) !== getPhysTypeID(actionType.physType)
             ),
 
-        [ACTION_PHYSTYPE_REPLACE_PHYSTYPE]: (storeType) => (actionType) =>
+        [ACTION_PHYSTYPE_REPLACE_PHYSTYPE]: (storeType, actionType) =>
             // is the given physType located in the physTypeStore?  
             (getPhysTypeStore(storeType).findIndex
                 ((ptToFind) => ptToFind.id === actionType.physType.id)
@@ -80,7 +80,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                 // no: return the physTypeStore unaltered
                 : getPhysTypeStore(storeType),
 
-        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES]: (storeType) => (actionType) =>
+        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES]: (storeType, actionType) =>
             // for all physTypes in the physType store...
             getPhysTypeStore(storeType).map((thisPt) =>
                 // ...does this physType pass the filter function?
@@ -94,7 +94,7 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
                     : thisPt
             ),
 
-        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType) => (actionType) =>
+        [ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND]: (storeType, actionType) =>
             // NOTE: the simulator seed is updated in the SIM REDUCER!!!
 
             // generate a randMObj version of the physTypeStore
@@ -143,11 +143,10 @@ export const physTypeStoreReducer = (inStoreType) => (inActionType) =>
         //  and actionType and returns a storeType "physTypeStore" prop obj
         // if no key-val matches the entry key, return a func that echoes 
         //  the given storeType "physTypeStore" property array
-    }[inActionType.type] || ((storeType) => (_) => ([...storeType.physTypeStore])))
+    }[inActionType.type] || ((storeType, _) => ([...storeType.physTypeStore])))
         // evaluate the function with the storeType "physTypeStore" property array 
         //  and actionType to get a storeType "physTypeStore" property array
-        (inStoreType)
-        (inActionType);
+        (inStoreType, inActionType);
 
 
 
