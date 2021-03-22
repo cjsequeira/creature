@@ -253,23 +253,22 @@ const storeTypeReducerTemplate =
 const substoreChangesLists = ['ui', 'sim', 'remainder'];
 
 // function to clear changes list for each substore
-const clearChangesList = (...substores) => (storeType) =>
+const clearChangesList = (storeType, ...substores) =>
     // accumulate each cleared changes list into a new storeType obj
-    substores.flat(Infinity).reduce(
-        (accumStoreType, thisSub) =>
-        ({
-            // obj accumulated so far
-            ...accumStoreType,
+    substores.flat(Infinity).reduce((accumStoreType, thisSub) =>
+    ({
+        // obj accumulated so far
+        ...accumStoreType,
 
-            // substore key
-            [thisSub]: {
-                // existing substore content
-                ...accumStoreType[thisSub],
+        // substore key
+        [thisSub]: {
+            // existing substore content
+            ...accumStoreType[thisSub],
 
-                // clear changes list
-                changesList: [],
-            }
-        }),
+            // clear changes list
+            changesList: [],
+        }
+    }),
 
         // start with the given storeType obj
         storeType);
@@ -280,14 +279,14 @@ const clearChangesList = (...substores) => (storeType) =>
 // takes:
 //  storeType
 //  ...actions: list of actions to dispatch, as actionType
-// returns undefined
-export const dispatchActions = (inStoreType) => (...actions) => {
+// returns storeType
+export const dispatchActions = (inStoreType, ...actions) => {
     // build an initial object that will become the next app store
-    let outStoreType = clearChangesList(substoreChangesLists)(inStoreType);
+    let outStoreType = clearChangesList(inStoreType, substoreChangesLists);
 
     // process each action atomically
     actions.flat(Infinity).forEach((action) =>
-        outStoreType = combineReducers(storeTypeReducerTemplate)(outStoreType)(action)
+        outStoreType = combineReducers(storeTypeReducerTemplate, outStoreType, action)
     );
 
     // call subscribed func (typically used for rendering UI)
@@ -301,6 +300,6 @@ export const dispatchActions = (inStoreType) => (...actions) => {
 // takes:
 //  storeType
 //  ...events: list of events to map, as eventType
-// returns array of actionType
-export const mapEventsToActions = (storeType) => (...events) =>
+// returns [actionType]
+export const mapEventsToActions = (storeType, ...events) =>
     events.flat(Infinity).map((thisEvent) => resolveRules(storeType, thisEvent));
