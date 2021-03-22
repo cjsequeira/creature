@@ -2,6 +2,10 @@
 
 // ****** Functions to get information from store and generate store info
 
+// REFACTOR idea: For funcs using storeType or physType as first argument, keep as nested arrows
+// These funcs are composed in several places.
+// Other funcs: remove nested arrows?
+
 import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
 import { watchProps } from './watch_props.js';
 
@@ -123,6 +127,7 @@ export const getSavedPhysTypeStore = (storeType) => storeType.remainder.savedPhy
 
 
 // *** physType "use" functions
+// REFACTOR: Keep as arrow func: often composed!
 // use given conditions to make a physType
 // takes:
 //  physType: physType to use

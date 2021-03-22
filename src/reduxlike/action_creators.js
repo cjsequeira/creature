@@ -2,6 +2,8 @@
 
 // ****** Code for creating actions ******
 
+// REFACTOR away from nested arrow funcs?
+
 // *** Our imports
 import {
     ACTION_COMPARE_COMPARE_PHYSTYPE,

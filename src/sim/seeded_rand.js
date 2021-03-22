@@ -2,6 +2,11 @@
 
 // ****** Immutable pseudo-random number functions, featuring "randM" monad ******
 
+// REFACTOR: investigate to see where a level of nested arrow func can be removed. 
+// See how other code uses this code!
+// Can probably move a level of arrow from rand_getNextSeed and rand_seededRand
+// Retain one level in rand_seededRand to pass in seed
+
 // *** Our imports
 import {
     TYPE_RANDM,

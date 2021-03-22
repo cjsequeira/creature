@@ -55,6 +55,8 @@ export const getDefaultSimpleCreature = (_) =>
 
 
 // *** Behavior functions unique to Simple Creature
+// REFACTOR: Get rid of nested arrow funcs?
+
 // main behavior function
 // this function works by using the creatureType behavior to select a function to apply
 // if behavior is not a key in the object, 'behavior' bracket search gives null,
