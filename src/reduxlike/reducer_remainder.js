@@ -31,7 +31,7 @@ import {
 //  inStoreType: store to use as template for reduction, as storeType 
 //  inActionType: action to use for reduction, as actionType
 // returns storeType "remainder" property object
-export const remainderReducer = (inStoreType) => (inActionType) =>
+export const remainderReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({

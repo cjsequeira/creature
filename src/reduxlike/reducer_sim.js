@@ -34,7 +34,7 @@ import { rand_getNextSeed } from '../sim/seeded_rand.js';
 //  inStoreType: storeType object to use as template for reduction 
 //  inActionType: action to use for reduction, as actionType
 // returns storeType "sim" property object
-export const simReducer = (inStoreType) => (inActionType) =>
+export const simReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({

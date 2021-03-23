@@ -3,7 +3,6 @@
 // ****** Reduxlike utilities ******
 
 // *** Reducer combining functions
-// REFACTOR away from nested arrow funcs?
 // main reducer combining function
 // allows the use of multiple reducers, each reducing to a different store property
 // IMPORTANT: Code is such that every reducer GETS THE SAME INPUT STORETYPE and ALL REDUCERS EXECUTE!
@@ -38,7 +37,7 @@ export const combineReducers = (templateStoreType, storeType, action) =>
 
                     // object associated with property, built by applying the reducer func
                     //  located in curEntry[1] to the given storeType and current action
-                    curEntry[1](storeType)(action)
+                    curEntry[1](storeType, action)
                 ]
             ]
         )

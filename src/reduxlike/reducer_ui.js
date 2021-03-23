@@ -48,7 +48,7 @@ import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
 //  inStoreType: store to use as template for reduction, as storeType 
 //  inActionType: action to use for reduction, as actionType
 // returns storeType "ui" property object
-export const uiReducer = (inStoreType) => (inActionType) =>
+export const uiReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
     // each function is associated with an action type, given in brackets
     ({
