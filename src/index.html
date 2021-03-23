@@ -10,37 +10,47 @@
 </head>
 
 <body style="background-color: #f2f3d9;">
-  <div class="">
+  <div class="container-fluid">
 
-    <div class="">
-      <div class="">
-        <h1 class="">Creature!! Version 0.1.8</h1>
+    <!-- Banner row -->
+    <div class="top-box row align-items-center p-1">
+      <div class="col">
+        <h1 class="display-4">Creature!! Version 0.1.8</h1>
       </div>
-      <div class="">
+      <div class="col-1 p-0">
         <!-- Image from: https://www.deviantart.com/lethargiceye/art/Cute-Creature-75055699 -->
-        <img src="./assets/cute_creature.png" class="" />
-      </div>
-    </div>
-    <div class="">
-      <div class="">
-        <h3>Eats, sleeps, wanders, and crashes!!</h3>
+        <img src="./assets/cute_creature.png" class="rounded float-end" style="max-width: 100%; max-height: 70px;" />
       </div>
     </div>
 
-    <div class="">
-      <div class="">
-        <canvas id="page_geo_chart" width="400" height="300"></canvas>
-      </div>
-
-      <div class="">
-        <canvas id="page_time_chart" width="400" height="300"></canvas>
-      </div>
-
-      <div class=""
-        style="height: 16em;" id="page_creature_status">
+    <!-- Tagline row -->
+    <div class="row">
+      <div class="col">
+        <h3>Eats, sleeps, wanders... and crashes!!</h3>
       </div>
     </div>
-  </div>
+
+    <!-- Chart row -->
+    <div class="row justify-content-evenly p-0">
+      <div class="col-lg-4 col-md-6 col-11 p-1">
+        <canvas id="page_geo_chart" width="400" height="300"
+          class="bg-white border border-secondary rounded shadow"></canvas>
+      </div>
+
+      <div class="col-lg-4 col-md-6 col-11 p-1">
+        <canvas id="page_time_chart" width="400" height="300"
+          class="bg-white border border-secondary rounded shadow"></canvas>
+      </div>
+    </div>
+
+    <!-- Status box row -->
+    <div class="row justify-content-evenly p-1">
+      <div class="col-lg-6 col-md-8 col-11 p-0">
+        <div class="bg-white border border-secondary rounded shadow overflow-scroll p-2" style="height: 16em;"
+          id="page_creature_status">
+        </div>
+      </div>
+    </div>
 
   </div>
 </body>

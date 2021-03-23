@@ -10,6 +10,9 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 
 ## POTENTIAL next features:
 * Implement creature food-finding functionality
+* Implement creature draw scaling in geo chart: chart has its own coordinate system but creatures are in unscaled pixel units
+* Add a "Dwarf Fortress"-like story engine to translate events to text
+* Review all code for reversibility, and implement application rewinding
 
 ## Changelog:
 * **0.1.8**: Refactored entire code base to limit use of nested arrow functions; refined creature behavior
