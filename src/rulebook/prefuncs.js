@@ -28,12 +28,12 @@ import {
 import { physTypeDoPhysics } from '../sim/physics.js';
 
 import {
-    rand_chooseWeight,
-    rand_genRandM,
-    rand_getNextSeed,
-    rand_liftBind,
-    rand_nextSeed,
-    rand_val,
+    randM_chooseWeight,
+    randM_genRandM,
+    randM_getNextSeed,
+    randM_liftBind,
+    randM_nextSeed,
+    randM_val,
 } from '../sim/seeded_rand.js';
 
 import { actAsFood } from '../phystypes/food_type.js';
@@ -42,10 +42,10 @@ import { actAsFood } from '../phystypes/food_type.js';
 // *** Rulebook pre-functions
 // produce event containing physType with laws of physics applied
 // the function application below INCLUDES wall collision testing!
-// preFunc signature is (storeType, rand_eventType) => rand_eventType
-export const preFuncApplyPhysics = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_eventType
-    rand_liftBind
+// preFunc signature is (storeType, randM_eventType) => randM_eventType
+export const preFuncApplyPhysics = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_eventType
+    randM_liftBind
         ((eventType) =>
             compose
                 // create a new event using...
@@ -57,10 +57,10 @@ export const preFuncApplyPhysics = (storeType, rand_eventType) =>
                 // the physType to apply physics to
                 (eventType.physType)
         )
-        // apply rand_liftBind to the given rand_eventType to unwrap the contained eventType
+        // apply randM_liftBind to the given randM_eventType to unwrap the contained eventType
         //  for use in the function above
-        // the rand_liftBind function then returns a rand_eventType
-        (rand_eventType);
+        // the randM_liftBind function then returns a randM_eventType
+        (randM_eventType);
 
 // build an event to update the creatureType per the behavior request below
 //  which comes from weighted random draw using given desire functions
@@ -69,53 +69,53 @@ export const preFuncApplyPhysics = (storeType, rand_eventType) =>
 // the rulebook may assign the requested behavior, 
 //  or may reject the requested behavior and assign a different behavior,
 //  or may return an action totally unrelated to the creatureType object below!
-// preFunc signature is (storeType, rand_eventType) => rand_eventType
-export const preFuncGenBehaviorRequest = (_, rand_eventType) =>
-    // generate an updated rand_eventType
-    rand_genRandM
-        // rand_genRandM value
+// preFunc signature is (storeType, randM_eventType) => randM_eventType
+export const preFuncGenBehaviorRequest = (_, randM_eventType) =>
+    // generate an updated randM_eventType
+    randM_genRandM
+        // randM_genRandM value
         (compose
             // create a new event using...
             (event_replacePhysType)
 
             // ... an object based on the given physType, with a "behavior_request" prop-obj
-            (usePhysTypeConds(rand_val(rand_eventType).physType))
+            (usePhysTypeConds(randM_val(randM_eventType).physType))
 
             // here is the "behavior_request" prop-obj
             ({
                 behavior_request:
                     // select behavior request from list of given desire funcs using 
                     // a weighted random number selector
-                    Object.keys(rand_val(rand_eventType).desireFuncType)
+                    Object.keys(randM_val(randM_eventType).desireFuncType)
                     // use a randomly-chosen index to select a behavioral desire
-                    [rand_chooseWeight
+                    [randM_chooseWeight
                         // list of numerical desires
                         (
                             // the code below maps each desire function to a numerical weight
                             //  by evaluating it using the given physType
-                            Object.values(rand_val(rand_eventType).desireFuncType)
-                                .map(f => f(rand_val(rand_eventType).physType))
+                            Object.values(randM_val(randM_eventType).desireFuncType)
+                                .map(f => f(randM_val(randM_eventType).physType))
                         )
-                        // seed for rand_chooseWeight
-                        (rand_nextSeed(rand_eventType))
+                        // seed for randM_chooseWeight
+                        (randM_nextSeed(randM_eventType))
                     ]
             })
         )
-        // rand_genRandM seed
-        // since we just used a system seed for rand_chooseWeight, 
-        //  we must point to the next seed when assembling an updated rand_eventType
-        (rand_getNextSeed(rand_nextSeed(rand_eventType))(0));
+        // randM_genRandM seed
+        // since we just used a system seed for randM_chooseWeight, 
+        //  we must point to the next seed when assembling an updated randM_eventType
+        (randM_getNextSeed(randM_nextSeed(randM_eventType), 0));
 
-// tag simple creatures touched by creature by bundling them into the given rand_eventType
+// tag simple creatures touched by creature by bundling them into the given randM_eventType
 // REFACTOR: to tag in creatures that a creature will "pass through" between this timestep and the next!
 // That would enable tagging of creatures even when a creature is moving very quickly
-// preFunc signature is (storeType, rand_eventType) => rand_eventType
-export const preFuncTagTouchedCreatures = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_eventType
-    rand_liftBind
+// preFunc signature is (storeType, randM_eventType) => randM_eventType
+export const preFuncTagTouchedCreatures = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_eventType
+    randM_liftBind
         // signature of this function: (eventType) => eventType
-        // rand_liftBind lifts the function to signature (eventType) => rand_eventType
-        //  then binds it to signature (rand_eventType) => rand_eventType
+        // randM_liftBind lifts the function to signature (eventType) => randM_eventType
+        //  then binds it to signature (randM_eventType) => randM_eventType
         ((eventType) =>
             eventInsert_insertData
                 (
@@ -147,21 +147,21 @@ export const preFuncTagTouchedCreatures = (storeType, rand_eventType) =>
                         ) < WORLD_TOUCH_DISTANCE)
                 )
         )
-        // apply rand_liftBind to the given rand_eventType to unwrap the contained eventType
+        // apply randM_liftBind to the given randM_eventType to unwrap the contained eventType
         //  for use in the function above
-        // the rand_liftBind function then returns a rand_eventType
-        (rand_eventType);
+        // the randM_liftBind function then returns a randM_eventType
+        (randM_eventType);
 
-// tag food touched by creature by bundling it into the given rand_eventType
+// tag food touched by creature by bundling it into the given randM_eventType
 // REFACTOR: to tag in food that a creature will "pass through" between this timestep and the next!
 // That would enable tagging of food even when a creature is moving very quickly
-// preFunc signature is (storeType, rand_eventType) => rand_eventType
-export const preFuncTagTouchedFood = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_eventType
-    rand_liftBind
+// preFunc signature is (storeType, randM_eventType) => randM_eventType
+export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_eventType
+    randM_liftBind
         // signature of this function: (eventType) => eventType
-        // rand_liftBind lifts the function to signature (eventType) => rand_eventType
-        //  then binds it to signature (rand_eventType) => rand_eventType
+        // randM_liftBind lifts the function to signature (eventType) => randM_eventType
+        //  then binds it to signature (randM_eventType) => randM_eventType
         ((eventType) =>
             eventInsert_insertData
                 (
@@ -188,7 +188,7 @@ export const preFuncTagTouchedFood = (storeType, rand_eventType) =>
                         ) < WORLD_TOUCH_DISTANCE)
                 )
         )
-        // apply rand_liftBind to the given rand_eventType to unwrap the contained eventType
+        // apply randM_liftBind to the given randM_eventType to unwrap the contained eventType
         //  for use in the function above
-        // the rand_liftBind function then returns a rand_eventType
-        (rand_eventType);
+        // the randM_liftBind function then returns a randM_eventType
+        (randM_eventType);

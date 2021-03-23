@@ -25,7 +25,7 @@ import {
 } from '../const_vals.js';
 
 import { actAsSimpleCreature } from '../phystypes/simple_creature.js';
-import { rand_getNextSeed } from '../sim/seeded_rand.js';
+import { randM_getNextSeed } from '../sim/seeded_rand.js';
 
 
 // *** Sim reducer mini reducer functions
@@ -91,7 +91,7 @@ const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
                 (actionType.filterFunc(thisPt))
                     // yes: advance the seed by the number of randM generators 
                     //  in this physType, minus 1
-                    ? rand_getNextSeed(accumSeed)(actionType.gensForRand.length - 1)
+                    ? randM_getNextSeed(accumSeed, actionType.gensForRand.length - 1)
 
                     // no: don't go to the next seed
                     : accumSeed

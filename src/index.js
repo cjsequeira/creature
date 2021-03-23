@@ -37,7 +37,7 @@ import { sideEffect_storeInit } from './reduxlike/app_store.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
 import { getSimCurTime, getSimRunning, getUIProp } from './reduxlike/store_getters.js';
-import { rand_seededRand } from './sim/seeded_rand';
+import { randM_seededRand } from './sim/seeded_rand';
 
 
 // ***********************************************************************************
@@ -73,8 +73,8 @@ appStore = dispatchActions
                     (_) => true,
 
                     // randomize conds: x and y
-                    (seed1) => ({ x: rand_seededRand(0.1)(WORLD_SIZE_X - 0.1)(seed1) }),
-                    (seed2) => ({ y: rand_seededRand(0.1)(WORLD_SIZE_Y - 0.1)(seed2) }),
+                    (seed1) => ({ x: randM_seededRand(0.1, WORLD_SIZE_X - 0.1)(seed1) }),
+                    (seed2) => ({ y: randM_seededRand(0.1, WORLD_SIZE_Y - 0.1)(seed2) }),
                 ),
 
             // add all initial simple creature data to time chart
