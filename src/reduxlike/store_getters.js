@@ -1,7 +1,8 @@
 'use strict'
 
 // ****** Functions to get information from store and generate store info
-// Many of these functions are nested arrow functions enabling easy composition
+// Many of these functions are nested arrow functions enabling easy composition, as
+//  many of the functions feature a storeType or physType as the first parameter
 
 // *** physType info gen functions
 // generate available ID based on IDs already in use

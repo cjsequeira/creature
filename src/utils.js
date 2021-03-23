@@ -3,7 +3,7 @@
 // ****** Code utilities ******
 
 // *** Functional programming utilities
-// compose two functions f and g of a specific one-argument signature
+// compose two functions f and g of a specific one-parameter signature
 // takes:
 //  f: function of signature (typeA) => typeA
 //  g: function of signature (any) => typeA
@@ -11,7 +11,7 @@
 export const compose = f => g =>
     anyType => f(g(anyType));
 
-// compose two functions f and g of a specific two-argument signature
+// compose two functions f and g of a specific two-parameter signature
 // takes:
 //  f: function of signature (typeB) => (typeA) => typeA
 //  g: function of signature (typeB) => (any) => typeA
@@ -49,7 +49,7 @@ export const pipeArgs = (func) => (targetAnyType) =>
     (...argsAnyType) => argsAnyType.flat(Infinity).reduce(
         (accum, cur) => func(accum || targetAnyType)(cur), null);
 
-// given a target and an array of ONE-ARGUMENT functions, apply the first function to the target,
+// given a target and an array of ONE-PARAMETER functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all functions are applied
 // the array of functions will be completely flattened
@@ -64,7 +64,7 @@ export const pipe = (...funcs) =>
         (funcAccum, thisFunc) => thisFunc(funcAccum || targetAnyType),
         null);
 
-// given a target and an array of TWO-ARGUMENT functions, apply the first function to the target,
+// given a target and an array of TWO-PARAMETER functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all functions are applied
 // the array of functions will be completely flattened
@@ -79,7 +79,7 @@ export const pipe2 = (...funcs) =>
         (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
         null);
 
-// given a target and an array of TWO-ARGUMENT functions, apply the first function to the target,
+// given a target and an array of TWO-PARAMETER functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
 //  all functions are applied
 // the array of functions will be completely flattened
@@ -94,7 +94,7 @@ export const pipe2Comma = (...funcs) =>
         (funcAccum, thisFunc) => thisFunc(typeB, funcAccum || targetAnyType),
         null);
 
-// given a target, an array of ONE-ARGUMENT functions, and an input argument of typeA,
+// given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
 //  apply the first function to the input argument, then apply the next function to
 //  the result of the first function, and so on until all functions are applied
 // the array of functions will be completely flattened
@@ -107,7 +107,7 @@ export const pipeDirect = (inputAnyType, ...funcs) =>
     funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
 
 /*
-// given a target, an array of TWO-ARGUMENT functions, and input arguments of (typeA, typeB),
+// given a target, an array of TWO-PARAMETER functions, and input arguments of (typeA, typeB),
 //  apply the first function to the input arguments, then apply the next function to
 //  the result of the first function, and so on until all functions are applied
 // the array of functions will be completely flattened
