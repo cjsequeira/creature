@@ -66,8 +66,11 @@ export const randM_seededRand = (minFloatType, maxFloatType) => (seedIntType) =>
 // returns number: numerical index into weights list, as int
 export const randM_chooseWeight = (weightsFloatType) => (seedIntType) =>
     selectWeight
-        (weightsFloatType)
         (
+            // use the given weights list
+            weightsFloatType,
+
+            // as the selector, use: 
             compose
                 // get the random numerical value...
                 (randM_val)
@@ -106,7 +109,9 @@ export const randM_bind = (func) =>
         nextSeed: randM.nextSeed,
     });
 
-// randMObj monad?? unit object func
+
+// *** randMObj monad utilities
+// unit object func
 // builds a randMObj object by converting given prop-vals to randMs
 // takes: 
 //  objAnyType: the object to bundle randMs into
@@ -221,7 +226,9 @@ export const randM_genRandM = (valueAnyType) => (seedIntType) =>
     nextSeed: seedIntType,
 });
 
-// randM object random number generator function
+
+// *** randMObj support functions
+// randMObj random number generator function
 // builds a randM object by generating randM random values for the given props
 // takes: 
 //  objAnyType: the object to bundle randMs into

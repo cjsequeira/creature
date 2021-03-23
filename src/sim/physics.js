@@ -76,8 +76,8 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
 
     // are x and y within world boundary?
     return (
-        withinRange(0.1)(WORLD_SIZE_X - 0.1)(inGetCond('x')) &&
-        withinRange(0.1)(WORLD_SIZE_Y - 0.1)(inGetCond('y'))
+        withinRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')) &&
+        withinRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y'))
     )
         // yes: return given physType
         ? physType
@@ -87,10 +87,10 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
             (physType)
             ({
                 // bound x to the boundary limit minus a small margin
-                x: boundToRange(0.1)(WORLD_SIZE_X - 0.1)(inGetCond('x')),
+                x: boundToRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')),
 
                 // bound y to the boundary limit minus a small margin
-                y: boundToRange(0.1)(WORLD_SIZE_Y - 0.1)(inGetCond('y')),
+                y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y')),
 
                 // spin heading around a bit (in radians)
                 heading: inGetCond('heading') + 2.35,

@@ -341,15 +341,17 @@ function updateTimeChartDataset(inDataSet, labelStringType, minXFloatType, timeV
         //  "fallen off" the left side of the chart
         data:
             chartShiftData
-                (minXFloatType)
-                ([
-                    ...inDataSet.data,
+                (
+                    minXFloatType,
+                    [
+                        ...inDataSet.data,
 
-                    {
-                        x: timeValFloatTuple.time,
-                        y: timeValFloatTuple.value,
-                    }
-                ]),
+                        {
+                            x: timeValFloatTuple.time,
+                            y: timeValFloatTuple.value,
+                        }
+                    ]
+                ),
     };
 }
 

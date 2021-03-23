@@ -52,21 +52,21 @@ const ptsRed_actionPhysTypeReplacePhysType_func = (storeType, actionType) =>
         ((ptToFind) => ptToFind.id === actionType.physType.id)
         > -1)
         // yes: create a new physTypeStore object by...
-        ? splice
+        ? splice(
             // ...deleting one item...
-            (1)
+            1,
 
             // ... at the array index (as found by matching physType IDs)...
-            (
-                getPhysTypeStore(storeType).findIndex(
-                    (ptToFind) => ptToFind.id === actionType.physType.id)
-            )
+
+            getPhysTypeStore(storeType).findIndex(
+                (ptToFind) => ptToFind.id === actionType.physType.id),
 
             // ... in the physTypeStore array...
-            (getPhysTypeStore(storeType))
+            getPhysTypeStore(storeType),
 
             // ... and replacing with the given physType
-            (actionType.physType)
+            actionType.physType
+        )
 
         // no: return the physTypeStore unaltered
         : getPhysTypeStore(storeType);

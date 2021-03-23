@@ -36,7 +36,13 @@ import {
 import { sideEffect_storeInit } from './reduxlike/app_store.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
-import { getSimCurTime, getSimRunning, getUIProp } from './reduxlike/store_getters.js';
+
+import {
+    getSimCurTime,
+    getSimRunning,
+    getUIProp,
+} from './reduxlike/store_getters.js';
+
 import { randM_seededRand } from './sim/seeded_rand';
 
 
