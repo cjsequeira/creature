@@ -156,7 +156,7 @@ export const physTypeStoreReducer = (inStoreType, inActionType) =>
         // use inActionType.type as an entry key into the key-val list above
         // key is used to select a function that takes a storeType object  
         //  and actionType and returns a storeType "physTypeStore" prop obj
-        // if no key-val matches the entry key, return a func that echoes 
+        // if no key-val matches the entry key, return a "default" func that echoes 
         //  the given storeType "physTypeStore" property array
     }[inActionType.type] || ptsRed_default_func)
         // evaluate the function with the storeType "physTypeStore" property array 
