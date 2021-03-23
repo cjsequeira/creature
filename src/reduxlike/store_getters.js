@@ -1,14 +1,7 @@
 'use strict'
 
 // ****** Functions to get information from store and generate store info
-
-// REFACTOR idea: For funcs using storeType or physType as first argument, keep as nested arrows
-// These funcs are composed in several places.
-// Other funcs: remove nested arrows?
-
-import { WATCHPROP_CHANGESPROP } from '../const_vals.js';
-import { watchProps } from './watch_props.js';
-
+// Many of these functions are nested arrow functions enabling easy composition
 
 // *** physType info gen functions
 // generate available ID based on IDs already in use
@@ -29,27 +22,6 @@ export const genPhysTypeAvailID = (storeType) => (proposedIDIntType) =>
 
 
 // *** physType getter functions
-// did given prop in given physType change?
-// takes:
-//  physType: physType to use
-//  propStringType: string name for prop to check - could be a nested prop, with '.'
-// returns bool
-export const didPhysTypePropChange = (beforePhysType) => (afterPhysType) => (propStringType) =>
-    (
-        watchProps                          // get obj with watchprops added
-            (beforePhysType)
-            (afterPhysType)
-            (propStringType)
-        [WATCHPROP_CHANGESPROP]             // select watchprops sub-object
-        [propStringType]                    // select specific watchprop
-    ) || false;                             // if watchprop is undefined, return 'false'
-
-// get "passed comparison" physType store
-// takes: 
-//  storeType: store, as storeType
-// returns array of physType objects
-export const getPassedComparePhysTypeStore = (storeType) => storeType.remainder.passedComparePhysTypeStore;
-
 // get physType act
 // takes:
 //  physType: physType to use
@@ -119,15 +91,8 @@ export const getPhysTypeIndex = (storeType) => (physType) =>
         (ptToTest) => getPhysTypeID(ptToTest) === getPhysTypeID(physType)
     );
 
-// get saved physType store
-// takes: 
-//  storeType: store, as storeType
-// returns array of physType objects
-export const getSavedPhysTypeStore = (storeType) => storeType.remainder.savedPhysTypeStore;
 
-
-// *** physType "use" functions
-// REFACTOR: Keep as arrow func: often composed!
+// *** physType "use" function
 // use given conditions to make a physType
 // takes:
 //  physType: physType to use
@@ -194,7 +159,7 @@ export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStrin
 //  storeType: store, as storeType
 //  subStringType: string name for substore to investigate, e.g. 'ui'
 //  argStringType: string name for object to investigate
-export const isObjChanged = (storeType) => (subStringType) => (argStringType) =>
+export const isObjChanged = (storeType) => (subStringType, argStringType) =>
     // is given object name in the changes list?
     (storeType[subStringType].changesList.find((objName) => objName === argStringType)
         !== undefined)

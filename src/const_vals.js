@@ -94,10 +94,6 @@ export const UI_OTHER_RADIUS = 3;
 export const UPDATE_FREQ_TIME_CHART = 1.0;
 
 
-// *** Name for object property updated by watchProps
-export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
-
-
 // *** Sim constants
 // sim time step, in SECONDS
 export const SIM_TIME_STEP = 16.7 / 1000.0;
