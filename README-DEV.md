@@ -1,4 +1,4 @@
-# Creature version 0.1.7 - README for developers
+# Creature version 0.1.8 - README for developers
 
 ## System architecture
 
@@ -14,6 +14,36 @@ The Creature system adheres as much as possible to two important rules as observ
 
 1. NO STATE IN ACTION CREATORS: Action creators never rely on or even read the current application state. That is the job of separate logic - most notably the rulebook, which translates events to actions based on the current application state.
 2. NO ACTIONS IN REDUCERS: Reducers never dispatch actions. This prevents unpredictable reducer behavior, rendering behavior, and app state changes. Action dispatching ALWAYS happens in separate code.
+
+## Nested Arrow Functions
+Nearly all multi-parameter functions in the Creature system are comma-separated functions, e.g.:
+
+    export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
+
+This makes debugging easier. However, certain key functions are nested arrow functions, such as:
+
+    export const randM_seededRand = (minFloatType, maxFloatType) => (seedIntType) =>
+    export const physTypeDoPhysics = (storeType) => (physType) =>
+
+In the first example, use of nested arrows make possible the construction of "generators" - for example:
+
+    myGenerator = randM_seededRand(0.0, 1.0); 
+    myRandM = myGenerator(seed);
+
+The action **action_updateSelectPhysTypesRand** relies on just such a generator.
+
+In the second example, use of nested arrows makes composition easy. Many functions that take storeType or physType as the first argument are nested arrow functions, enabling straightforward composition. For example:
+
+    // function chain: must check wall collisions FIRST, because the check could
+    //  adjust the acceleration/speed/heading used for movements
+    pipe
+        (
+            physTypeCheckWallCollisions(storeType),
+            physTypeDoMovements(storeType),
+        )
+
+        // apply the pipe to the given physType
+        (physType);
 
 ## Monads
 

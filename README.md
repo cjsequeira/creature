@@ -1,4 +1,4 @@
-# Creature version 0.1.7
+# Creature version 0.1.8
 
 Eats, sleeps, and wanders - like a proper pet should!
 
@@ -12,6 +12,7 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 * Implement creature food-finding functionality
 
 ## Changelog:
+* **0.1.8**: Refactored entire code base to limit use of nested arrow functions; refined creature behavior
 * **0.1.7**: Added creature collision functionality and "aching" behavior
 * **0.1.6**: Added creature border color changes with behavior; trimmed behavior; adjusted layout
 * **0.1.5**: Implementation of UI element update frequency control for efficiency
