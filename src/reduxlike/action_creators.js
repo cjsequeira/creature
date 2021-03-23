@@ -6,9 +6,6 @@
 
 // *** Our imports
 import {
-    ACTION_COMPARE_COMPARE_PHYSTYPE,
-    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
-    ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_FORCE_CHANGES_LIST_UPDATE,
@@ -35,38 +32,6 @@ import { resolveRules } from '../rulebook/rulebook.js';
 
 
 // *** Comparing and testing physTypes
-// compare current physTypes with store of saved physTypes
-// takes: 
-//  selectFunc: test function for selecting physTypes from saved and current physType store
-//      signature: (physType) => boolean
-//  compareFunc: function for comparing selected physTypes 
-//      signature: (old physType, new physType) => bool
-// returns actionType
-export const action_comparePhysTypes = (selectFunc, compareFunc) =>
-({
-    type: ACTION_COMPARE_COMPARE_PHYSTYPE,
-    selectFunc,
-    compareFunc,
-});
-
-// log behavior changes into the app store journal
-// takes:
-//  don't care
-// returns actionType
-export const action_logChangedBehaviors = (_) =>
-({
-    type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
-});
-
-// save all physTypes for later comparison
-// takes: 
-//  don't care
-// returns actionType
-export const action_saveAllPhysTypes = (_) =>
-({
-    type: ACTION_COMPARE_SAVE_PHYSTYPE,
-});
-
 // stop if all creatures frozen
 // takes: 
 //  don't care
