@@ -76,7 +76,7 @@ export const UI_BEHAVIOR_COLORS = {
 // behavior strings
 export const UI_BEHAVIOR_STRINGS = {
     aching: "is sore! Ooof!",
-    eating: "is chewing and eating! Nom nom nom...",
+    eating: "is chewing! Nom nom nom...",
     frozen: "is frozen! Brrrr.....",
     idling: "is chillin'! Yeeeah...",
     sleeping: "is sleeping! Zzzz...",
