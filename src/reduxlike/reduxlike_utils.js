@@ -19,7 +19,7 @@
 //  storeType: input store, as storeType
 //  action: action to reduce, as actionType
 // returns storetype
-export const combineReducers = (templateStoreType) => (storeType) => (action) =>
+export const combineReducers = (templateStoreType, storeType, action) =>
     // ... for each property-object pair in the template storeType...
     Object.entries(templateStoreType).reduce((accumStoreType, curEntry) =>
     ({
@@ -37,7 +37,7 @@ export const combineReducers = (templateStoreType) => (storeType) => (action) =>
 
                     // object associated with property, built by applying the reducer func
                     //  located in curEntry[1] to the given storeType and current action
-                    curEntry[1](storeType)(action)
+                    curEntry[1](storeType, action)
                 ]
             ]
         )

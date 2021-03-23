@@ -60,7 +60,7 @@ const initial_store = {
 
                 // heading, speed, acceleration
                 heading: Math.PI,
-                speed: 1.0,
+                speed: 0.0,
                 accel: 0.0,
             },
         },
@@ -87,7 +87,7 @@ const initial_store = {
 
                 // heading, speed, acceleration
                 heading: 0.0,
-                speed: 1.0,
+                speed: 0.0,
                 accel: 0.0,
             },
         },
@@ -363,8 +363,8 @@ export const geoChartInitTemplate =
 
 // *** Store initializer function
 // SIDE EFFECT: creates new ChartJS objects
-export const sideEffect_storeInit = (creature_time_chart_context) => (creature_geo_chart_context) =>
-    (status_box_context) => (renderFunc) =>
+export const sideEffect_storeInit =
+    (creature_time_chart_context, creature_geo_chart_context, status_box_context, renderFunc) =>
     ({
         ...initial_store,
 

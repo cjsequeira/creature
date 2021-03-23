@@ -48,13 +48,15 @@ export const getDefaultSimpleCreature = (_) =>
 
         // heading, speed, acceleration
         heading: 0.0,
-        speed: 1.0,
+        speed: 0.0,
         accel: 0.0,
     },
 });
 
 
 // *** Behavior functions unique to Simple Creature
+// REFACTOR: Get rid of nested arrow funcs?
+
 // main behavior function
 // this function works by using the creatureType behavior to select a function to apply
 // if behavior is not a key in the object, 'behavior' bracket search gives null,
@@ -199,6 +201,6 @@ const actWandering = (_) => (physType) =>
                 // if speed really high, creature really wants to idle!
                 'wandering': (_) => 40.0,
                 'eating': (_) => (getPhysTypeCond(physType)('glucose') < 35.0) ? 60.0 : 0.1,
-                'idling': (_) => (getPhysTypeCond(physType)('speed') > 40.0) ? 300.0 : 0.1,
+                'idling': (_) => (getPhysTypeCond(physType)('speed') > 50.0) ? 300.0 : 0.1,
             }
         );

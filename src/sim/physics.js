@@ -1,6 +1,8 @@
 'use strict'
 
 // ****** Code implementing laws of physics ******
+// These are nested arrow functions to support easy composition, as the first argument
+//  to all of them is a storeType
 
 // *** Our imports
 import {
@@ -22,7 +24,6 @@ import {
 
 
 // *** Public consolidator for physType physics functions
-// nested arrow function to support easy composition
 // takes: 
 //  storeType
 //  physType
@@ -35,18 +36,19 @@ export const physTypeDoPhysics = (storeType) => (physType) =>
             physTypeCheckWallCollisions(storeType),
             physTypeDoMovements(storeType),
         )
+
+        // apply the pipe to the given physType
         (physType);
 
 
 // *** Internal physics functions
 // return physType with location updated based on speed and heading
-// nested arrow function to support easy composition
 // takes: 
 //  storeType
 //  physType
 // returns physType
 const physTypeDoMovements = (storeType) => (physType) => {
-    // get cond from given physType
+    // define shorthand function to get cond from given physType
     const inGetCond = getPhysTypeCond(physType);
 
     return usePhysTypeConds
@@ -64,7 +66,6 @@ const physTypeDoMovements = (storeType) => (physType) => {
 };
 
 // return physType with parameters updated if wall collisions
-// nested arrow function to support easy composition
 // takes: 
 //  don't care
 //  physType
@@ -75,8 +76,8 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
 
     // are x and y within world boundary?
     return (
-        withinRange(0.1)(WORLD_SIZE_X - 0.1)(inGetCond('x')) &&
-        withinRange(0.1)(WORLD_SIZE_Y - 0.1)(inGetCond('y'))
+        withinRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')) &&
+        withinRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y'))
     )
         // yes: return given physType
         ? physType
@@ -86,10 +87,10 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
             (physType)
             ({
                 // bound x to the boundary limit minus a small margin
-                x: boundToRange(0.1)(WORLD_SIZE_X - 0.1)(inGetCond('x')),
+                x: boundToRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')),
 
                 // bound y to the boundary limit minus a small margin
-                y: boundToRange(0.1)(WORLD_SIZE_Y - 0.1)(inGetCond('y')),
+                y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y')),
 
                 // spin heading around a bit (in radians)
                 heading: inGetCond('heading') + 2.35,
@@ -97,7 +98,7 @@ const physTypeCheckWallCollisions = (_) => (physType) => {
                 // dissipate some speed - or establish a minimum speed if creature is going slowly
                 speed:
                     (inGetCond('speed') > 3.0)
-                        ? 0.9 * inGetCond('speed')
+                        ? 0.96 * inGetCond('speed')
                         : 3.0,
             });
 };

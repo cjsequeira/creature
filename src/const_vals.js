@@ -4,9 +4,6 @@
 
 // *** Action names
 // compare: for saving and comparing physTypes
-export const ACTION_COMPARE_COMPARE_PHYSTYPE = 'ACTION_COMPARE_COMPARE_PHYSTYPE';
-export const ACTION_COMPARE_LOG_CHANGED_BEHAVIORS = 'ACTION_COMPARE_LOG_CHANGED_BEHAVIORS';
-export const ACTION_COMPARE_SAVE_PHYSTYPE = 'ACTION_COMPARE_SAVE_PHYSTYPE';
 export const ACTION_COMPARE_STOP_IF_FROZEN = 'ACTION_COMPARE_STOP_IF_FROZEN';
 
 // do nothing
@@ -69,9 +66,9 @@ export const TYPE_RANDM_OBJ = 'TYPE_RANDM_OBJ';
 // behavior colors
 export const UI_BEHAVIOR_COLORS = {
     aching: '#ff0000ff',        // hard red
-    eating: '#0cc421dd',        // light green
-    frozen: '#69beffff',        // ice blue
-    idling: '#bbbbbbdd',        // gray
+    eating: '#0cc421ff',        // light green
+    frozen: '#69beffcc',        // ice blue
+    idling: '#bbbbbbcc',        // gray
     sleeping: '#0565F9bb',      // deep blue
     wandering: '#ffdeadff',     // yellow-white
 };
@@ -79,15 +76,15 @@ export const UI_BEHAVIOR_COLORS = {
 // behavior strings
 export const UI_BEHAVIOR_STRINGS = {
     aching: "is sore! Ooof!",
-    eating: "is chewing and eating! Nom nom nom...",
+    eating: "is chewing! Nom nom nom...",
     frozen: "is frozen! Brrrr.....",
     idling: "is chillin'! Yeeeah...",
     sleeping: "is sleeping! Zzzz...",
     wandering: "is wandering! Wiggity whack!",
 };
 
-export const UI_BORDER_WIDTH = 5;
-export const UI_CREATURE_RADIUS = 7;
+export const UI_BORDER_WIDTH = 6;
+export const UI_CREATURE_RADIUS = 9;
 export const UI_NUM_TRAILS = 15;
 export const UI_OTHER_RADIUS = 3;
 
@@ -95,10 +92,6 @@ export const UI_OTHER_RADIUS = 3;
 // *** Update frequencies
 // how often to update the time chart, in SECONDS
 export const UPDATE_FREQ_TIME_CHART = 1.0;
-
-
-// *** Name for object property updated by watchProps
-export const WATCHPROP_CHANGESPROP = '_watchProps_changes';
 
 
 // *** Sim constants
@@ -115,4 +108,4 @@ export const WORLD_SIZE_X = 20.0;
 export const WORLD_SIZE_Y = 20.0;
 
 // distance between physTypes that constitutes a touch
-export const WORLD_TOUCH_DISTANCE = 0.80;
+export const WORLD_TOUCH_DISTANCE = 0.97;

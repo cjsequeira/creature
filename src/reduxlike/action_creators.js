@@ -2,11 +2,10 @@
 
 // ****** Code for creating actions ******
 
+// REFACTOR away from nested arrow funcs?
+
 // *** Our imports
 import {
-    ACTION_COMPARE_COMPARE_PHYSTYPE,
-    ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
-    ACTION_COMPARE_SAVE_PHYSTYPE,
     ACTION_COMPARE_STOP_IF_FROZEN,
     ACTION_DO_NOTHING,
     ACTION_FORCE_CHANGES_LIST_UPDATE,
@@ -33,38 +32,6 @@ import { resolveRules } from '../rulebook/rulebook.js';
 
 
 // *** Comparing and testing physTypes
-// compare current physTypes with store of saved physTypes
-// takes: 
-//  selectFunc: test function for selecting physTypes from saved and current physType store
-//      signature: (physType) => boolean
-//  compareFunc: function for comparing selected physTypes 
-//      signature: (old physType) => (new physType) => bool
-// returns actionType
-export const action_comparePhysTypes = (selectFunc) => (compareFunc) =>
-({
-    type: ACTION_COMPARE_COMPARE_PHYSTYPE,
-    selectFunc,
-    compareFunc,
-});
-
-// log behavior changes into the app store journal
-// takes:
-//  don't care
-// returns actionType
-export const action_logChangedBehaviors = (_) =>
-({
-    type: ACTION_COMPARE_LOG_CHANGED_BEHAVIORS,
-});
-
-// save all physTypes for later comparison
-// takes: 
-//  don't care
-// returns actionType
-export const action_saveAllPhysTypes = (_) =>
-({
-    type: ACTION_COMPARE_SAVE_PHYSTYPE,
-});
-
 // stop if all creatures frozen
 // takes: 
 //  don't care
@@ -89,7 +56,8 @@ export const action_doNothing = (_) =>
 // takes:
 //  subStringType: substore holding target changes list
 //  objStringType: object name to add to changes list
-export const action_forceChangesListUpdate = (subStringType) => (objStringType) =>
+// returns actionType
+export const action_forceChangesListUpdate = (subStringType, objStringType) =>
 ({
     type: ACTION_FORCE_CHANGES_LIST_UPDATE,
     subStringType,
@@ -145,7 +113,7 @@ export const action_replacePhysType = (physType) =>
 //  filterFunc: of signature (physType) => bool
 //  updateFunc: of signature (physType) => physType
 // returns actionType
-export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
+export const action_updateSelectPhysTypes = (filterFunc, updateFunc) =>
 ({
     type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES,
     filterFunc,
@@ -169,7 +137,7 @@ export const action_updateSelectPhysTypes = (filterFunc) => (updateFunc) =>
 //          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
 //
 // returns [actionType]
-export const action_updateSelectPhysTypesRand = (filterFunc) => (...gensForRand) =>
+export const action_updateSelectPhysTypesRand = (filterFunc, ...gensForRand) =>
 ({
     type: ACTION_PHYSTYPE_UPDATE_SELECT_PHYSTYPES_RAND,
     filterFunc,
@@ -250,23 +218,22 @@ const storeTypeReducerTemplate =
 const substoreChangesLists = ['ui', 'sim', 'remainder'];
 
 // function to clear changes list for each substore
-const clearChangesList = (...substores) => (storeType) =>
+const clearChangesList = (storeType, ...substores) =>
     // accumulate each cleared changes list into a new storeType obj
-    substores.flat(Infinity).reduce(
-        (accumStoreType, thisSub) =>
-        ({
-            // obj accumulated so far
-            ...accumStoreType,
+    substores.flat(Infinity).reduce((accumStoreType, thisSub) =>
+    ({
+        // obj accumulated so far
+        ...accumStoreType,
 
-            // substore key
-            [thisSub]: {
-                // existing substore content
-                ...accumStoreType[thisSub],
+        // substore key
+        [thisSub]: {
+            // existing substore content
+            ...accumStoreType[thisSub],
 
-                // clear changes list
-                changesList: [],
-            }
-        }),
+            // clear changes list
+            changesList: [],
+        }
+    }),
 
         // start with the given storeType obj
         storeType);
@@ -277,14 +244,14 @@ const clearChangesList = (...substores) => (storeType) =>
 // takes:
 //  storeType
 //  ...actions: list of actions to dispatch, as actionType
-// returns undefined
-export const dispatchActions = (inStoreType) => (...actions) => {
+// returns storeType
+export const dispatchActions = (inStoreType, ...actions) => {
     // build an initial object that will become the next app store
-    let outStoreType = clearChangesList(substoreChangesLists)(inStoreType);
+    let outStoreType = clearChangesList(inStoreType, substoreChangesLists);
 
     // process each action atomically
     actions.flat(Infinity).forEach((action) =>
-        outStoreType = combineReducers(storeTypeReducerTemplate)(outStoreType)(action)
+        outStoreType = combineReducers(storeTypeReducerTemplate, outStoreType, action)
     );
 
     // call subscribed func (typically used for rendering UI)
@@ -298,6 +265,6 @@ export const dispatchActions = (inStoreType) => (...actions) => {
 // takes:
 //  storeType
 //  ...events: list of events to map, as eventType
-// returns array of actionType
-export const mapEventsToActions = (storeType) => (...events) =>
+// returns [actionType]
+export const mapEventsToActions = (storeType, ...events) =>
     events.flat(Infinity).map((thisEvent) => resolveRules(storeType, thisEvent));

@@ -36,8 +36,14 @@ import {
 import { sideEffect_storeInit } from './reduxlike/app_store.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
 import { mutable_renderFunction } from './reduxlike/renderers.js';
-import { getSimCurTime, getSimRunning, getUIProp } from './reduxlike/store_getters.js';
-import { rand_seededRand } from './sim/seeded_rand';
+
+import {
+    getSimCurTime,
+    getSimRunning,
+    getUIProp,
+} from './reduxlike/store_getters.js';
+
+import { randM_seededRand } from './sim/seeded_rand';
 
 
 // ***********************************************************************************
@@ -46,44 +52,49 @@ import { rand_seededRand } from './sim/seeded_rand';
 // init our global app store object using some pointers to web page elements
 // SIDE EFFECT: creates new ChartJS objects
 var appStore = sideEffect_storeInit
-    (document.getElementById(CREATURE_TIME_CHART).getContext('2d'))
-    (document.getElementById(CREATURE_GEO_CHART).getContext('2d'))
-    (document.getElementById(CREATURE_STATUS_BOX))
-    (mutable_renderFunction);
+    (
+        document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
+        document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
+        document.getElementById(CREATURE_STATUS_BOX),
+        mutable_renderFunction
+    );
 
 // dispatch an initial series of actions
-appStore = dispatchActions(appStore)
+appStore = dispatchActions
     (
-        // add a bunch of food
-        //Array(2)
-        Array(WORLD_NUM_FOOD)
-            .fill(getDefaultFoodType())
-            .map(
-                (thisFood) => action_addPhysType(thisFood)
-            ),
+        appStore,
+        [
+            // add a bunch of food
+            //Array(2)
+            Array(WORLD_NUM_FOOD)
+                .fill(getDefaultFoodType())
+                .map(
+                    (thisFood) => action_addPhysType(thisFood)
+                ),
 
-        // atomically randomize locations of all physTypes
-        action_updateSelectPhysTypesRand
-            // filter function: include all physTypes
-            ((_) => true)
+            // atomically randomize locations of all physTypes
+            action_updateSelectPhysTypesRand
+                (
+                    // filter function: include all physTypes
+                    (_) => true,
 
-            // randomize conds: x and y
-            (
-                (seed1) => ({ x: rand_seededRand(0.1)(WORLD_SIZE_X - 0.1)(seed1) }),
-                (seed2) => ({ y: rand_seededRand(0.1)(WORLD_SIZE_Y - 0.1)(seed2) }),
-            ),
+                    // randomize conds: x and y
+                    (seed1) => ({ x: randM_seededRand(0.1, WORLD_SIZE_X - 0.1)(seed1) }),
+                    (seed2) => ({ y: randM_seededRand(0.1, WORLD_SIZE_Y - 0.1)(seed2) }),
+                ),
 
-        // add all initial simple creature data to time chart
-        action_uiAddTimeChartSimpleCreatureData(),
+            // add all initial simple creature data to time chart
+            action_uiAddTimeChartSimpleCreatureData(),
 
-        // add initial x-y data to geo chart
-        action_uiAddGeoChartData(),
+            // add initial x-y data to geo chart
+            action_uiAddGeoChartData(),
 
-        // force the journal to render to the status box
-        action_forceChangesListUpdate('remainder')('journal'),
+            // force the journal to render to the status box
+            action_forceChangesListUpdate('remainder', 'journal'),
 
-        // change the sim status to running
-        action_startSim(),
+            // change the sim status to running
+            action_startSim(),
+        ]
     );
 
 // Start updating application at animation-frame frequency
@@ -100,25 +111,32 @@ function appUpdate(_) {
     // is simulator running?
     if (getSimRunning(appStore)) {
         // yes: dispatch a series of actions to advance simulator
-        appStore = dispatchActions(appStore)
+        appStore = dispatchActions
             (
-                // send an event into the system: update all physTypes
-                // the method below returns action(s)
-                mapEventsToActions
-                    (appStore)
-                    (event_updateAllPhysTypes()),
+                appStore,
+                [
+                    // send an event into the system: update all physTypes
+                    // the method below returns action(s)
+                    mapEventsToActions
+                        (
+                            appStore,
+                            event_updateAllPhysTypes()
+                        ),
 
-                // if ALL creatures are now frozen, stop the sim
-                action_stopIfFrozen(),
+                    // if ALL creatures are now frozen, stop the sim
+                    action_stopIfFrozen(),
 
-                // advance sim if running
-                action_advanceSimIfRunning(),
+                    // advance sim if running
+                    action_advanceSimIfRunning(),
+                ]
             );
     }
 
     // dispatch action to update geo chart
-    appStore = dispatchActions(appStore)
+    appStore = dispatchActions
         (
+            appStore,
+
             // add current physType store x-y data to geo chart
             action_uiAddGeoChartData(),
         );
@@ -126,8 +144,10 @@ function appUpdate(_) {
     // enough time elapsed since we last updated the time chart?
     if (getSimCurTime(appStore) > (getUIProp(appStore)('chartTimeLastClock') + UPDATE_FREQ_TIME_CHART)) {
         // dispatch action to update time chart
-        appStore = dispatchActions(appStore)
+        appStore = dispatchActions
             (
+                appStore,
+
                 // add current simple creature data to time chart
                 action_uiAddTimeChartSimpleCreatureData(),
             );

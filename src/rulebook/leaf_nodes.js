@@ -35,20 +35,20 @@ import {
 } from '../reduxlike/store_getters.js';
 
 import {
-    rand_liftBind,
-    rand_seededRand,
-    rand_val,
+    randM_liftBind,
+    randM_seededRand,
+    randM_val,
 } from '../sim/seeded_rand.js';
 
 
 // *** Rulebook leaf nodes
-// signature of leaf func: (storeType, rand_eventType) => rand_actionType
-const leafApproveBehavior_func = (storeType, rand_eventType) =>
+// signature of leaf func: (storeType, randM_eventType) => randM_actionType
+const leafApproveBehavior_func = (storeType, randM_eventType) =>
     // action creator is nominally (any) => actionType
-    // lift action creator to give a rand_actionType: (any) => rand_actionType
-    // then bind the lifted function to take a rand_eventType
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+    // lift action creator to give a randM_actionType: (any) => randM_actionType
+    // then bind the lifted function to take a randM_eventType
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             // update physType behavior
@@ -73,16 +73,16 @@ const leafApproveBehavior_func = (storeType, rand_eventType) =>
                     ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                 : action_doNothing(),
         ])
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafApproveBehavior = {
     name: 'leafApproveBehavior',
     func: leafApproveBehavior_func,
 };
 
-const leafApproveBehaviorStopAccel_func = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafApproveBehaviorStopAccel_func = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
@@ -109,7 +109,7 @@ const leafApproveBehaviorStopAccel_func = (storeType, rand_eventType) =>
                     ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                 : action_doNothing(),
         ])
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafApproveBehaviorStopAccel = {
     name: 'leafApproveBehaviorStopAccel',
@@ -117,9 +117,9 @@ export const leafApproveBehaviorStopAccel = {
 };
 
 
-const leafApproveBehaviorStopMovement_func = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafApproveBehaviorStopMovement_func = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
@@ -147,16 +147,16 @@ const leafApproveBehaviorStopMovement_func = (storeType, rand_eventType) =>
                     ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
                 : action_doNothing(),
         ])
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafApproveBehaviorStopMovement = {
     name: 'leafApproveBehaviorStopMovement',
     func: leafApproveBehaviorStopMovement_func,
 };
 
-const leafCondsOOL_func = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafCondsOOL_func = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             // make an announcement
@@ -183,18 +183,18 @@ const leafCondsOOL_func = (storeType, rand_eventType) =>
             ),
 
             // force a redraw of the time chart to capture full conditions
-            action_forceChangesListUpdate('ui')('chartDataBufferTime'),
+            action_forceChangesListUpdate('ui', 'chartDataBufferTime'),
         ])
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafCondsOOL = {
     name: 'leafCondsOOL',
     func: leafCondsOOL_func,
 };
 
-const leafCreatureEatFood_func = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafCreatureEatFood_func = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             // announce glorious news in journal IF not already eating
@@ -232,72 +232,74 @@ const leafCreatureEatFood_func = (storeType, rand_eventType) =>
             ),
 
             // force a redraw of the geo chart to update creature color
-            action_forceChangesListUpdate('ui')('chartDataBufferGeo'),
+            action_forceChangesListUpdate('ui', 'chartDataBufferGeo'),
         ])
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafCreatureEatFood = {
     name: 'leafCreatureEatFood',
     func: leafCreatureEatFood_func,
 };
 
-const leafDoAndApproveWandering_func = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafDoAndApproveWandering_func = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             action_updateSelectPhysTypesRand
-                // find the given physType in the store
-                ((filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType))
-
-                // conds to update
-                // REFACTOR: Can this code be moved to simple_creature.js in some way?
                 (
-                    // conds driven by randomized acceleration
-                    (seed1) =>
-                        // anonymous function to produce randomized conds
-                        ((randNum) => ({
-                            // be sure to include conds that will not be randomized
-                            ...getPhysTypeCondsObj(eventType.physType),
+                    // find the given physType in the store
+                    (filterPt) => getPhysTypeID(filterPt) === getPhysTypeID(eventType.physType),
 
-                            behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                    // conds to update
+                    // REFACTOR: Can this code be moved to simple_creature.js in some way?
+                    [
+                        // conds driven by randomized acceleration
+                        (seed1) =>
+                            // anonymous function to produce randomized conds
+                            ((randNum) => ({
+                                // be sure to include conds that will not be randomized
+                                ...getPhysTypeCondsObj(eventType.physType),
 
-                            // update behavior clock time IF behavior has just changed,
-                            //  else keep the same
-                            behavior_clock:
-                                (getPhysTypeCond(eventType.physType)('behavior') !==
-                                    getPhysTypeCond(eventType.physType)('behavior_request'))
-                                    ? getSimCurTime(storeType)
-                                    : getPhysTypeCond(eventType.physType)('behavior_clock'),
+                                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
 
-                            // glucose and neuro impacts are more severe 
-                            //  with higher accceleration magnitude
-                            glucose:
-                                getPhysTypeCond(eventType.physType)('glucose') -
-                                0.01 * Math.abs(randNum) *
-                                getSimTimeStep(storeType),
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType)('behavior') !==
+                                        getPhysTypeCond(eventType.physType)('behavior_request'))
+                                        ? getSimCurTime(storeType)
+                                        : getPhysTypeCond(eventType.physType)('behavior_clock'),
 
-                            neuro:
-                                getPhysTypeCond(eventType.physType)('neuro') +
-                                0.007 * Math.abs(randNum) *
-                                getSimTimeStep(storeType),
+                                // glucose and neuro impacts are more severe 
+                                //  with higher accceleration magnitude
+                                glucose:
+                                    getPhysTypeCond(eventType.physType)('glucose') -
+                                    0.01 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
 
-                            accel: randNum * getSimTimeStep(storeType),
-                        }))
-                            // anonymous function argument: random accel that's at least 
-                            //  a minimum magnitude
-                            (
-                                excludeRange
-                                    (100.0)
-                                    (rand_val(rand_seededRand(-150.0)(750.0)(seed1)))
-                            ),
+                                neuro:
+                                    getPhysTypeCond(eventType.physType)('neuro') +
+                                    0.007 * Math.abs(randNum) *
+                                    getSimTimeStep(storeType),
 
-                    // conds driven by randomized heading nudge
-                    (seed2) => ({
-                        heading:
-                            getPhysTypeCond(eventType.physType)('heading') +
-                            rand_val(rand_seededRand(-0.3)(0.3)(seed2)),
-                    })
+                                accel: randNum * getSimTimeStep(storeType),
+                            }))
+                                // anonymous function argument: random accel that's at least 
+                                //  a minimum magnitude
+                                (
+                                    excludeRange
+                                        (100.0)
+                                        (randM_val(randM_seededRand(-150.0, 1000.0)(seed1)))
+                                ),
+
+                        // conds driven by randomized heading nudge
+                        (seed2) => ({
+                            heading:
+                                getPhysTypeCond(eventType.physType)('heading') +
+                                randM_val(randM_seededRand(-0.3, 0.3)(seed2)),
+                        })
+                    ]
                 ),
 
             // announce behavior IF behavior has just changed
@@ -310,16 +312,16 @@ const leafDoAndApproveWandering_func = (storeType, rand_eventType) =>
                 )
                 : action_doNothing(),
         ])
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafDoAndApproveWandering = {
     name: 'leafDoAndApproveWandering',
     func: leafDoAndApproveWandering_func,
 };
 
-const leafDoCreatureCollision_func = (storeType, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafDoCreatureCollision_func = (storeType, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             // announce news in journal for each touched creatureType
@@ -358,32 +360,32 @@ const leafDoCreatureCollision_func = (storeType, rand_eventType) =>
                     ' ' + UI_BEHAVIOR_STRINGS['aching'])
                 : action_doNothing(),
         ])
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafDoCreatureCollision = {
     name: 'leafDoCreatureCollision',
     func: leafDoCreatureCollision_func,
 };
 
-const leafPreservePhysType_func = (_, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafPreservePhysType_func = (_, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // replace the physType with the given physType
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => action_replacePhysType(eventType.physType))
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafPreservePhysType = {
     name: 'leafPreservePhysType',
     func: leafPreservePhysType_func,
 };
 
-const leafUnknownEvent_func = (_, rand_eventType) =>
-    // total signature: (rand_eventType) => rand_actionType
-    rand_liftBind
+const leafUnknownEvent_func = (_, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
         // signature of this func: (_) => actionType or [actionType]
         ((_) => action_doNothing())
-        (rand_eventType);
+        (randM_eventType);
 
 export const leafUnknownEvent = {
     name: 'leafUnknownEvent',

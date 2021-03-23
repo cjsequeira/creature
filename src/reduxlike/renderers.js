@@ -19,7 +19,7 @@ import { roundTo } from '../utils.js';
 // returns undefined
 export function mutable_renderFunction(storeType) {
     // time chart data buffer just updated?
-    if (isObjChanged(storeType)('ui')('chartDataBufferTime')) {
+    if (isObjChanged(storeType)('ui', 'chartDataBufferTime')) {
         // MUTABLE: point time chart data to internal data buffer and proper x axis settings, then draw
         let creatureTimeChartHandle = getUIProp(storeType)('creature_time_chart');
         creatureTimeChartHandle.data = getUIProp(storeType)('chartDataBufferTime');
@@ -28,7 +28,7 @@ export function mutable_renderFunction(storeType) {
     }
 
     // geo chart data buffer just updated?
-    if (isObjChanged(storeType)('ui')('chartDataBufferGeo')) {
+    if (isObjChanged(storeType)('ui', 'chartDataBufferGeo')) {
         // MUTABLE: point geo chart data to internal data buffer, then draw
         let creatureGeoChartHandle = getUIProp(storeType)('creature_geo_chart');
         creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo');
@@ -36,7 +36,7 @@ export function mutable_renderFunction(storeType) {
     }
 
     // journal just updated?
-    if (isObjChanged(storeType)('remainder')('journal')) {
+    if (isObjChanged(storeType)('remainder', 'journal')) {
         // MUTABLE: update status box
         mutable_updateStatusBox(storeType);
     }
@@ -60,7 +60,7 @@ function mutable_updateStatusBox(storeType) {
     const journalBufferHTMLType = getJournal(storeType).reduce(
         (accumHTML, thisEntry) =>
             accumHTML +
-            'Time ' + roundTo(2)(thisEntry.timeFloatType).toString() +
+            'Time ' + roundTo(2, thisEntry.timeFloatType).toString() +
             ': ' + thisEntry.msgStringType + '<br />',
         '');
 
