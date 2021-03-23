@@ -23,9 +23,9 @@ import {
 import { splice } from '../utils.js';
 
 import {
-    rand_genRandMObj,
+    randMObj_genRandMObj,
     randM_nextSeed,
-    rand_valObj,
+    randMObj_val,
 } from '../sim/seeded_rand.js';
 
 
@@ -96,7 +96,7 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
             // does this physType pass the filter function?
             (actionType.filterFunc(thisPt))
                 // yes: create randMObj using given randM generators
-                ? rand_genRandMObj
+                ? randMObj_genRandMObj
                     (
                         getPhysTypeCondsObj(thisPt),
                         actionType.gensForRand
@@ -110,7 +110,7 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
 
                 // no: create randMObj with no randM generators
                 // we do this in order to maintain the proper seed
-                : rand_genRandMObj
+                : randMObj_genRandMObj
                     (
                         getPhysTypeCondsObj(thisPt),
                         []
@@ -130,7 +130,7 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
             (thisRandMObj, i) =>
                 usePhysTypeConds
                     (getPhysTypeStore(storeType)[i])
-                    (rand_valObj(thisRandMObj))
+                    (randMObj_val(thisRandMObj))
         );
 
 const ptsRed_default_func = (storeType, _) =>

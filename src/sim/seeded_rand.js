@@ -124,8 +124,8 @@ export const randM_bind = (func) =>
 //      ...{property1: randM1, property2: randM2, ...},
 //      nextSeed
 //  }
-// REFACTOR: DO we need rand_unitObj at all??
-export const rand_unitObj = (objAnyType, objForRand) =>
+// REFACTOR: DO we need randMObj_unit at all??
+export const randMObj_unit = (objAnyType, objForRand) =>
     // build an object out of entries
     Object.entries(objForRand).reduce(
         (accumProp, propValPair, i) => ({
@@ -246,7 +246,7 @@ export const randM_genRandM = (valueAnyType) => (seedIntType) =>
 //      [TYPE_RANDM_OBJ]: true,
 //      nextSeed
 //  }
-export const rand_genRandMObj = (objAnyType, ...gensForRand) => (seedIntType) =>
+export const randMObj_genRandMObj = (objAnyType, ...gensForRand) => (seedIntType) =>
     // build an object by applying each generator function
     gensForRand.flat(Infinity).reduce(
         (accumObj, thisGenFunc, i) => ({
@@ -276,7 +276,7 @@ export const rand_genRandMObj = (objAnyType, ...gensForRand) => (seedIntType) =>
 //  randMObj
 // returns object with randM prop-vals unwrapped into float
 // total signature: (randMObj) => objAnyType
-export const rand_valObj = (randMObj) =>
+export const randMObj_val = (randMObj) =>
     // build an object out of entries
     Object.entries(randMObj)
         // filter out markers of randMObj
