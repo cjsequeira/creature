@@ -31,6 +31,10 @@ import {
     UI_CREATURE_RADIUS,
     UI_NUM_TRAILS,
     UI_OTHER_RADIUS,
+    HTML_BEHAVIOR_CLASS,
+    HTML_CREATURE_PHYSTYPE_CONTAINER,
+    UI_BORDER_WIDTH,
+    HTML_BEHAVIOR_ID_PREFIX,
 } from '../const_vals.js';
 
 import {
@@ -87,14 +91,26 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
                         {
                             ...timeChartInitTemplate,
                             label: getPhysTypeName(actionType.physType) + ' glucose',
-                            id: id,
+
+                            backgroundColor: getPhysTypeColor(actionType.physType),
+                            borderColor: getPhysTypeColor(actionType.physType),
+                            pointBackgroundColor: getPhysTypeColor(actionType.physType),
+                            pointBorderColor: getPhysTypeColor(actionType.physType),
+
+                            id: genPhysTypeAvailID(storeType)(0),
                         },
 
                         // neuro data
                         {
                             ...timeChartInitTemplate,
                             label: getPhysTypeName(actionType.physType) + ' neuro',
-                            id: id,
+
+                            backgroundColor: getPhysTypeColor(actionType.physType),
+                            borderColor: getPhysTypeColor(actionType.physType),
+                            pointBackgroundColor: getPhysTypeColor(actionType.physType),
+                            pointBorderColor: getPhysTypeColor(actionType.physType),
+
+                            id: genPhysTypeAvailID(storeType)(0),
                         },
                     ],
             }
@@ -122,6 +138,12 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
                     (getPhysTypeAct(actionType.physType) === actAsSimpleCreature)
                         ? UI_CREATURE_RADIUS
                         : UI_OTHER_RADIUS,
+
+                // point border width: select based on act
+                pointBorderWidth:
+                    (getPhysTypeAct(actionType.physType) === actAsSimpleCreature)
+                        ? UI_BORDER_WIDTH
+                        : 1,
             },
         ]
     },
@@ -136,13 +158,26 @@ const uiRed_actionPhysTypeDeletePhysType_func = (storeType, actionType) =>
         ...getChangesList(storeType)('ui'),
         'chartDataBufferTime',
         'chartDataBufferGeo',
+
+        // is the given physType a simple creature?
+        (getPhysTypeAct(actionType.physType) === actAsSimpleCreature)
+            // yes: indicate that behavior box needs updating
+            ? 'creature_behavior_boxes'
+
+            // no: placeholder
+            : '',
     ],
+
+    creature_behavior_boxes:
+        // keep the behavior objects NOT associated with the given physType ID
+        getUIProp(storeType)('creature_behavior_boxes').filter
+            ((boxToTest) => boxToTest.id !== getPhysTypeID(actionType.physType)),
 
     chartDataBufferTime: {
         ...getUIProp(storeType)('chartDataBufferTime'),
 
         datasets:
-            // filter out the datasets associated with the given physType ID
+            // keep the datasets NOT associated with the given physType ID
             getUIProp(storeType)('chartDataBufferTime').datasets.filter
                 ((dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)),
     },
@@ -151,7 +186,7 @@ const uiRed_actionPhysTypeDeletePhysType_func = (storeType, actionType) =>
         ...getUIProp(storeType)('chartDataBufferGeo'),
 
         datasets:
-            // filter out the dataset associated with the given physType ID
+            // keep the datasets NOT associated with the given physType ID
             getUIProp(storeType)('chartDataBufferGeo').datasets.filter
                 ((dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)),
     },
@@ -164,7 +199,35 @@ const uiRed_actionUIAddGeoChartData_func = (storeType, _) =>
     changesList: [
         ...getChangesList(storeType)('ui'),
         'chartDataBufferGeo',
+
+        // are there simple creatures in the physType store?
+        (getPhysTypeStore(storeType).filter
+            (
+                (filterPt) => getPhysTypeAct(filterPt) === actAsSimpleCreature
+            ).length > 0)
+            // indicate that behavior box needs updating
+            ? 'creature_behavior_boxes'
+
+            // no: placeholder
+            : '',
     ],
+
+    creature_behavior_boxes:
+        // for all physTypes in the store...
+        getPhysTypeStore(storeType)
+            // keep only physTypes that are simple creatures
+            .filter((filterPt) => getPhysTypeAct(filterPt) === actAsSimpleCreature)
+            .map(
+                // create a behavior box object representing each simple creature
+                (thisPhysType) =>
+                ({
+                    class: HTML_BEHAVIOR_CLASS,
+                    color: UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType)('behavior')],
+                    id: HTML_BEHAVIOR_ID_PREFIX + getPhysTypeID(thisPhysType).toString(),
+                    text: getPhysTypeName(thisPhysType) + ' is '
+                        + getPhysTypeCond(thisPhysType)('behavior'),
+                })
+            ),
 
     chartDataBufferGeo:
     {

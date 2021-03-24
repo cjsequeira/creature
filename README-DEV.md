@@ -1,4 +1,4 @@
-# Creature version 0.1.8 - README for developers
+# Creature version 0.1.9 - README for developers
 
 ## System architecture
 
@@ -129,4 +129,6 @@ Description:
 
 ### **eventType**: The type for simulator-specific events - TO BE ADDED
 
-### **randM, randM_eventType, randM_actionType **: Monadic types for use of immutable pseudo-random numbers - TO BE ADDED
+### **behaviorBoxType**: The type for web page creature behavior boxes - TO BE ADDED
+
+### Monadic types for use of immutable pseudo-random numbers - TO BE ADDED
