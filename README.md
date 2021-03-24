@@ -9,12 +9,16 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2984688a-76b0-4643-83ee-39ee6b0fcf79/deploy-status)](https://app.netlify.com/sites/arrogantfool-draft-creature/deploys)
 
 ## POTENTIAL next features:
+* Revise rulebook so it doesn't transform events in the middle of execution? Think through the logic of for/against
 * Add creature color legend
-** Relative luminance calculator: https://planetcalc.com/7779/ 
+* * Relative luminance calculator: https://planetcalc.com/7779/ 
 * Implement creature food-finding functionality
 * Implement creature draw scaling in geo chart: chart has its own coordinate system but creatures are in unscaled pixel units
 * Add a "Dwarf Fortress"-like story engine to translate events to text
+* * Make a rulebook just for story text generation?
 * Review all code for reversibility, and implement application rewinding
+* * May require doing all motions as deltas (changes) rather than direct assignments
+* Establish creature drag, mass, forces, torques?
 
 ## Changelog:
 * **0.1.9**: Refactored layout and added creature behavior color boxes
