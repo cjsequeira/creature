@@ -10,6 +10,7 @@ import {
 } from './store_getters.js';
 
 import { roundTo } from '../utils.js';
+import { HTML_BEHAVIOR_CLASS, HTML_BEHAVIOR_ID_PREFIX, HTML_BEHAVIOR_TAG, HTML_CREATURE_PHYSTYPE_CONTAINER } from '../const_vals.js';
 
 
 // *** Function to be called when app store changes
@@ -35,6 +36,12 @@ export function mutable_renderFunction(storeType) {
         creatureGeoChartHandle.update();
     }
 
+    // do we need to update creature behavior status boxes?
+    if (isObjChanged(storeType)('ui', 'creature_behavior_boxes')) {
+        // MUTABLE: update creature behavior status boxes
+        mutable_updateBehaviors(storeType);
+    }
+
     // journal just updated?
     if (isObjChanged(storeType)('remainder', 'journal')) {
         // MUTABLE: update status box
@@ -42,7 +49,57 @@ export function mutable_renderFunction(storeType) {
     }
 };
 
-// update simulator status box with given HTML message
+
+// *** Other mutable updaters
+// update behavior statuses
+// MUTABLE: causes behavior status boxes to change
+// takes:
+//  storeType: store, as storeType
+// returns undefined
+function mutable_updateBehaviors(storeType) {
+    // get a handle to the creature behavior box objects in the storeType
+    let behaviorBoxes = getUIProp(storeType)('creature_behavior_boxes');
+
+    // get a list of current DOM behavior box objects
+    let curChildren = Array.from(document.getElementById(HTML_CREATURE_PHYSTYPE_CONTAINER).children);
+
+    // delete DOM behavior objects NO LONGER REPRESENTED in storeType
+    curChildren
+        // get a list of all DOM objects NOT represented in storeType
+        .filter((findChild) => behaviorBoxes.find((findBox) => findChild.id === findBox.id)
+            === undefined)
+
+        // for each of those objects...
+        .forEach((thisChild) => {
+            // remove each identified DOM behavior object
+            document.getElementById(thisChild.id).remove();
+        });
+
+    // for each behavior box in the storeType...
+    behaviorBoxes.forEach((thisBox) => {
+        // is this behavior box ALREADY PRESENT on this web page?
+        if (curChildren.find((thisChild) => thisBox.id === thisChild.id) !== undefined) {
+            // change color and text 
+            let node = document.getElementById(thisBox.id);
+            node.style.backgroundColor = thisBox.color.slice(0, 7);
+            node.textContent = thisBox.text;
+        } else {
+            // is this behavior box NOT ALREADY PRESENT on this web page?
+            // add to DOM
+            let node = document.createElement(HTML_BEHAVIOR_TAG);
+
+            node.className = HTML_BEHAVIOR_CLASS;
+            node.style.backgroundColor = thisBox.color.slice(0, 7);
+            node.style.color = '#ffffff';
+            node.id = thisBox.id;
+            node.textContent = thisBox.text;
+
+            document.getElementById(HTML_CREATURE_PHYSTYPE_CONTAINER).appendChild(node);
+        }
+    });
+}
+
+// update status box with given HTML message
 // MUTABLE: causes simulator status box to change
 // takes:
 //  storeType: store, as storeType
@@ -71,4 +128,4 @@ function mutable_updateStatusBox(storeType) {
     if (statusScrollTop > (statusScrollHeight - 1.2 * statusInnerHeight)) {
         statusBox.scrollTop = statusScrollHeight;
     }
-};
+}

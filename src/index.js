@@ -9,9 +9,10 @@ import './custom.css';
 
 // our own stuff
 import {
-    CREATURE_GEO_CHART,
-    CREATURE_STATUS_BOX,
-    CREATURE_TIME_CHART,
+    HTML_CREATURE_GEO_CHART,
+    HTML_CREATURE_PHYSTYPE_CONTAINER,
+    HTML_CREATURE_STATUS_BOX,
+    HTML_CREATURE_TIME_CHART,
     UPDATE_FREQ_TIME_CHART,
     WORLD_NUM_FOOD,
     WORLD_SIZE_X,
@@ -44,6 +45,7 @@ import {
 } from './reduxlike/store_getters.js';
 
 import { randM_seededRand } from './sim/seeded_rand';
+import { actAsSimpleCreature, getDefaultSimpleCreature } from './phystypes/simple_creature';
 
 
 // ***********************************************************************************
@@ -53,9 +55,10 @@ import { randM_seededRand } from './sim/seeded_rand';
 // SIDE EFFECT: creates new ChartJS objects
 var appStore = sideEffect_storeInit
     (
-        document.getElementById(CREATURE_TIME_CHART).getContext('2d'),
-        document.getElementById(CREATURE_GEO_CHART).getContext('2d'),
-        document.getElementById(CREATURE_STATUS_BOX),
+        document.getElementById(HTML_CREATURE_TIME_CHART).getContext('2d'),
+        document.getElementById(HTML_CREATURE_GEO_CHART).getContext('2d'),
+        document.getElementById(HTML_CREATURE_PHYSTYPE_CONTAINER),
+        document.getElementById(HTML_CREATURE_STATUS_BOX),
         mutable_renderFunction
     );
 
@@ -64,6 +67,24 @@ appStore = dispatchActions
     (
         appStore,
         [
+            // Simple Creature Vinny
+            action_addPhysType
+                ({
+                    ...getDefaultSimpleCreature(),
+
+                    name: 'Vinny',
+                    color: '#f7036cff',
+                }),
+
+            // Simple Creature Johnny
+            action_addPhysType
+                ({
+                    ...getDefaultSimpleCreature(),
+
+                    name: 'Johnny',
+                    color: '#0000ccff',
+                }),
+
             // add a bunch of food
             //Array(2)
             Array(WORLD_NUM_FOOD)

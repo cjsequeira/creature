@@ -52,9 +52,14 @@ export const EVENT_INSERT_FOODTYPES = 'EVENT_INSERT_FOODTYPES';
 
 
 // *** HTML page references 
-export const CREATURE_GEO_CHART = 'page_geo_chart';
-export const CREATURE_TIME_CHART = 'page_time_chart';
-export const CREATURE_STATUS_BOX = 'page_creature_status';
+export const HTML_CREATURE_GEO_CHART = 'page_geo_chart';
+export const HTML_CREATURE_TIME_CHART = 'page_time_chart';
+export const HTML_CREATURE_STATUS_BOX = 'page_creature_status';
+
+export const HTML_CREATURE_PHYSTYPE_CONTAINER = 'page_creature_physType_container';
+export const HTML_BEHAVIOR_CLASS = 'border border-secondary col rounded p-2 align-middle';
+export const HTML_BEHAVIOR_TAG = 'h3';
+export const HTML_BEHAVIOR_ID_PREFIX = 'page_creature_physType_behavior_'; 
 
 
 // *** Special datatype names
