@@ -1,4 +1,4 @@
-# Creature version 0.1.8
+# Creature version 0.1.9
 
 Eats, sleeps, and wanders - like a proper pet should!
 
