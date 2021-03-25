@@ -178,7 +178,7 @@ const resolveRules = (storeType, eventType) =>
                     storeType,
 
                     // eventType to use, wrapped into a randM to make "randM_eventType"
-                    randM_genRandM(eventType)(getSimSeed(storeType)),
+                    randM_genRandM(eventType, getSimSeed(storeType)),
 
                     // use our rulebook as the starting rule node for randM_findRule
                     ruleBook
@@ -215,12 +215,13 @@ const recursive_leafUpdateAllPhysTypes_func = (storeType, randM_eventType) =>
 
                         // ... and a randM_eventType...
                         randM_genRandM
-                            // ... built from the eventType produced by physType "act"...
-                            (thisPt.act(storeType)(thisPt))
-
-                            // ... and the seed of the accumulated randM_actionType OR
-                            //  the given randM_eventType if accumulated randM_actionType is empty
                             (
+                                // ... built from the eventType produced by physType "act"...
+                                thisPt.act(storeType)(thisPt),
+
+                                // ... and the seed of the accumulated randM_actionType OR
+                                //  the given randM_eventType if accumulated randM_actionType is empty
+
                                 (randM_val(accum_randM_actionType).length > 0)
                                     ? randM_nextSeed(accum_randM_actionType)
                                     : randM_nextSeed(randM_eventType)

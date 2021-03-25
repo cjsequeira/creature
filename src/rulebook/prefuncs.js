@@ -94,25 +94,27 @@ export const preFuncGenBehaviorRequest = (_, randM_eventType) =>
                                     Object.keys(randM_val(randM_eventType).desireFuncType)
                                     // use a randomly-chosen index to select a behavioral desire
                                     [randM_chooseWeight
-                                        // list of numerical desires
                                         (
+                                            // list of numerical desires
                                             // the code below maps each desire function to a 
                                             //  numerical weight by evaluating it using the 
                                             //  given physType
                                             Object.values(randM_val(randM_eventType).desireFuncType)
-                                                .map(f => f(randM_val(randM_eventType).physType))
+                                                .map(f => f(randM_val(randM_eventType).physType)),
+
+                                            // seed for randM_chooseWeight
+                                            randM_nextSeed(randM_eventType)
                                         )
-                                        // seed for randM_chooseWeight
-                                        (randM_nextSeed(randM_eventType))
                                     ]
                             }
                         )
-                )
-        )
-        // randM_genRandM seed
-        // since we just used a system seed for randM_chooseWeight, 
-        //  we must point to the next seed when assembling an updated randM_eventType
-        (randM_getNextSeed(randM_nextSeed(randM_eventType), 0));
+                ),
+
+            // randM_genRandM seed
+            // since we just used a system seed for randM_chooseWeight, 
+            //  we must point to the next seed when assembling an updated randM_eventType
+            randM_getNextSeed(randM_nextSeed(randM_eventType), 0)
+        );
 
 // tag simple creatures touched by creature by bundling them into the given randM_eventType
 // REFACTOR: to tag in creatures that a creature will "pass through" between this timestep and the next!
