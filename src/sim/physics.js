@@ -55,17 +55,19 @@ const physTypeDoMovements = (storeType, physType) => {
     const inGetCond = partial2(getPhysTypeCond, physType);
 
     return usePhysTypeConds
-        (physType)
-        ({
-            // compute x and y based on given speed and heading
-            x: inGetCond('x') +
-                getSimTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
-            y: inGetCond('y') +
-                getSimTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
+        (
+            physType,
+            {
+                // compute x and y based on given speed and heading
+                x: inGetCond('x') +
+                    getSimTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
+                y: inGetCond('y') +
+                    getSimTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
 
-            // compute speed based on given accel
-            speed: inGetCond('speed') + getSimTimeStep(storeType) * inGetCond('accel'),
-        });
+                // compute speed based on given accel
+                speed: inGetCond('speed') + getSimTimeStep(storeType) * inGetCond('accel'),
+            }
+        );
 };
 
 // return physType with parameters updated if wall collisions
@@ -88,21 +90,23 @@ const physTypeCheckWallCollisions = (_, physType) => {
 
         // no: return physType with updated parameters due to wall collision
         : usePhysTypeConds
-            (physType)
-            ({
-                // bound x to the boundary limit minus a small margin
-                x: boundToRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')),
+            (
+                physType,
+                {
+                    // bound x to the boundary limit minus a small margin
+                    x: boundToRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')),
 
-                // bound y to the boundary limit minus a small margin
-                y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y')),
+                    // bound y to the boundary limit minus a small margin
+                    y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y')),
 
-                // spin heading around a bit (in radians)
-                heading: inGetCond('heading') + 2.35,
+                    // spin heading around a bit (in radians)
+                    heading: inGetCond('heading') + 2.35,
 
-                // dissipate some speed - or establish a minimum speed if creature is going slowly
-                speed:
-                    (inGetCond('speed') > 3.0)
-                        ? 0.96 * inGetCond('speed')
-                        : 3.0,
-            });
+                    // dissipate some speed - or establish a minimum speed if creature is going slowly
+                    speed:
+                        (inGetCond('speed') > 3.0)
+                            ? 0.96 * inGetCond('speed')
+                            : 3.0,
+                }
+            );
 };

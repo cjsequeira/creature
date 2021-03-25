@@ -130,8 +130,10 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
         .map(
             (thisRandMObj, i) =>
                 usePhysTypeConds
-                    (getPhysTypeStore(storeType)[i])
-                    (randMObj_val(thisRandMObj))
+                    (
+                        getPhysTypeStore(storeType)[i],
+                        randMObj_val(thisRandMObj)
+                    )
         );
 
 const ptsRed_default_func = (storeType, _) =>

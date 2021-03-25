@@ -80,7 +80,7 @@ export const getPhysTypeStore = (storeType) => storeType.physTypeStore;
 //  physType: physType to use
 //  argConds: list of conditions to include, as ...{key, value}
 // returns physType
-export const usePhysTypeConds = (physType) => (argConds) => ({
+export const usePhysTypeConds = (physType, argConds) => ({
     ...physType,
     conds: {
         ...physType.conds,

@@ -86,11 +86,13 @@ const actAching = (storeType) => (physType) =>
         (
             // pass in physType object with specific glucose and neuro
             usePhysTypeConds
-                (physType)
-                ({
-                    glucose: getPhysTypeCond(physType, 'glucose') - 8.0 * getSimTimeStep(storeType),
-                    neuro: getPhysTypeCond(physType, 'neuro') + 4.0 * getSimTimeStep(storeType),
-                }),
+                (
+                    physType,
+                    {
+                        glucose: getPhysTypeCond(physType, 'glucose') - 8.0 * getSimTimeStep(storeType),
+                        neuro: getPhysTypeCond(physType, 'neuro') + 4.0 * getSimTimeStep(storeType),
+                    }
+                ),
 
             // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!
@@ -112,11 +114,13 @@ const actEating = (storeType) => (physType) =>
         (
             // pass in physType object with specific glucose and neuro
             usePhysTypeConds
-                (physType)
-                ({
-                    glucose: getPhysTypeCond(physType, 'glucose') + 9.0 * getSimTimeStep(storeType),
-                    neuro: getPhysTypeCond(physType, 'neuro') + 1.4 * getSimTimeStep(storeType),
-                }),
+                (
+                    physType,
+                    {
+                        glucose: getPhysTypeCond(physType, 'glucose') + 9.0 * getSimTimeStep(storeType),
+                        neuro: getPhysTypeCond(physType, 'neuro') + 1.4 * getSimTimeStep(storeType),
+                    }
+                ),
 
             // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!
@@ -139,11 +143,13 @@ const actIdling = (storeType) => (physType) =>
         (
             // pass in physType object with specific glucose and neuro
             usePhysTypeConds
-                (physType)
-                ({
-                    glucose: getPhysTypeCond(physType, 'glucose') - 1.3 * getSimTimeStep(storeType),
-                    neuro: getPhysTypeCond(physType, 'neuro') + 1.0 * getSimTimeStep(storeType),
-                }),
+                (
+                    physType,
+                    {
+                        glucose: getPhysTypeCond(physType, 'glucose') - 1.3 * getSimTimeStep(storeType),
+                        neuro: getPhysTypeCond(physType, 'neuro') + 1.0 * getSimTimeStep(storeType),
+                    }
+                ),
 
             // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!
@@ -167,11 +173,13 @@ const actSleeping = (storeType) => (physType) =>
         (
             // pass in physType object with specific glucose and neuro
             usePhysTypeConds
-                (physType)
-                ({
-                    glucose: getPhysTypeCond(physType, 'glucose') - 0.6 * getSimTimeStep(storeType),
-                    neuro: getPhysTypeCond(physType, 'neuro') - 6.2 * getSimTimeStep(storeType),
-                }),
+                (
+                    physType,
+                    {
+                        glucose: getPhysTypeCond(physType, 'glucose') - 0.6 * getSimTimeStep(storeType),
+                        neuro: getPhysTypeCond(physType, 'neuro') - 6.2 * getSimTimeStep(storeType),
+                    }
+                ),
 
             // pass in behavior change desires specific to this behavior function
             // stay in this behavior for a minimum amount of time!

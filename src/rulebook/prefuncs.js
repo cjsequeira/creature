@@ -76,33 +76,38 @@ export const preFuncApplyPhysics = (storeType, randM_eventType) =>
 export const preFuncGenBehaviorRequest = (_, randM_eventType) =>
     // generate an updated randM_eventType
     randM_genRandM
-        // randM_genRandM value: an eventType
-        (compose
+        (
+            // randM_genRandM value: an eventType
             // create a new event using...
-            (event_replacePhysType)
-
-            // ...an object based on the given physType...
-            (usePhysTypeConds(randM_val(randM_eventType).physType))
-
-            // ...with a "behavior_request" prop-obj
-            ({
-                behavior_request:
-                    // select behavior request from list of given desire funcs using 
-                    // a weighted random number selector
-                    Object.keys(randM_val(randM_eventType).desireFuncType)
-                    // use a randomly-chosen index to select a behavioral desire
-                    [randM_chooseWeight
-                        // list of numerical desires
+            event_replacePhysType
+                (
+                    // ...an object based on the given physType...
+                    usePhysTypeConds
                         (
-                            // the code below maps each desire function to a numerical weight
-                            //  by evaluating it using the given physType
-                            Object.values(randM_val(randM_eventType).desireFuncType)
-                                .map(f => f(randM_val(randM_eventType).physType))
+                            randM_val(randM_eventType).physType,
+
+                            // ...with a "behavior_request" prop-obj
+                            {
+                                behavior_request:
+                                    // select behavior request from list of given desire funcs using 
+                                    // a weighted random number selector
+                                    Object.keys(randM_val(randM_eventType).desireFuncType)
+                                    // use a randomly-chosen index to select a behavioral desire
+                                    [randM_chooseWeight
+                                        // list of numerical desires
+                                        (
+                                            // the code below maps each desire function to a 
+                                            //  numerical weight by evaluating it using the 
+                                            //  given physType
+                                            Object.values(randM_val(randM_eventType).desireFuncType)
+                                                .map(f => f(randM_val(randM_eventType).physType))
+                                        )
+                                        // seed for randM_chooseWeight
+                                        (randM_nextSeed(randM_eventType))
+                                    ]
+                            }
                         )
-                        // seed for randM_chooseWeight
-                        (randM_nextSeed(randM_eventType))
-                    ]
-            })
+                )
         )
         // randM_genRandM seed
         // since we just used a system seed for randM_chooseWeight, 
