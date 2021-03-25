@@ -48,6 +48,18 @@ export const concatSliceMap = (lenLimitIntType) => (mapFunc) => (concatElemAnyTy
 export const geThan = (xFloatType, yFloatType) =>
     (yFloatType >= xFloatType);
 
+// given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
+//  apply the first function to the input argument, then apply the next function to
+//  the result of the first function, and so on until all functions are applied
+// the array of functions will be completely flattened
+// ALL functions must be of signature (typeA) => typeA
+// takes:
+//  inputAnyType: input argument that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns RESULT of signature typeA
+export const pipe = (inputAnyType, ...funcs) =>
+    funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
+
 // given a "typeB", a target, and an array of COMMA-SEPARATED TWO-PARAMETER functions, 
 //  apply the first function to the target, then apply the 
 //  next function to the result of the first function, and so on until all 
@@ -59,24 +71,12 @@ export const geThan = (xFloatType, yFloatType) =>
 //  targetAnyType: target that functions apply to, as any
 //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
 // returns function of signature (typeB, any) => typeA
-export const pipe2Comma = (typeB, targetAnyType, ...funcs) =>
+export const pipe2 = (typeB, targetAnyType, ...funcs) =>
     funcs.flat(Infinity).reduce
         (
             (funcAccum, thisFunc) => thisFunc(typeB, funcAccum || targetAnyType),
             null
         );
-
-// given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
-//  apply the first function to the input argument, then apply the next function to
-//  the result of the first function, and so on until all functions are applied
-// the array of functions will be completely flattened
-// ALL functions must be of signature (typeA) => typeA
-// takes:
-//  inputAnyType: input argument that functions apply to, as any
-//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
-// returns RESULT of signature typeA
-export const pipeDirect = (inputAnyType, ...funcs) =>
-    funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
 
 // given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
@@ -100,7 +100,7 @@ export const splice = (deleteCountIntType, startIntType, arrAnyType, ...itemsAny
 // takes:
 //  ...testFuncs: array of test functions of signature (typeA, typeB) => boolean
 // returns function that takes two comma-separated arguments and returns boolean
-export const orTests2Comma = (...testFuncs) =>
+export const orTests2 = (...testFuncs) =>
     (typeA, typeB) => testFuncs.flat(Infinity).reduce
         (
             (accum, curTest) => accum || curTest(typeA, typeB),
@@ -135,7 +135,7 @@ export const boundToRange = (minFloatType, maxFloatType, numFloatType) =>
 //  boundFloatType: positive and negative boundary around 0.0, as float
 //  numFloatType: number to check and possibly bump, as float
 // returns float
-export const excludeRange = (boundFloatType) => (numFloatType) =>
+export const excludeRange = (boundFloatType, numFloatType) =>
     // given number greater than 0.0?
     (numFloatType > 0.0)
         // yes: bound to range: [given bound, +Infinity]

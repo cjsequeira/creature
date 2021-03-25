@@ -15,7 +15,10 @@ import {
     WORLD_TOUCH_DISTANCE,
 } from '../const_vals.js';
 
-import { compose, partial2, pipeDirect } from '../utils.js';
+import {
+    partial2,
+    pipe,
+} from '../utils.js';
 
 import {
     getPhysTypeAct,
@@ -47,7 +50,7 @@ export const preFuncApplyPhysics = (storeType, randM_eventType) =>
     // total signature: (randM_eventType) => randM_eventType
     randM_liftBind
         ((eventType) =>
-            pipeDirect
+            pipe
                 (
                     // the given physType, contained in eventType
                     eventType.physType,

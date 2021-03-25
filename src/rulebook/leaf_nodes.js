@@ -309,8 +309,10 @@ const leafDoAndApproveWandering_func = (storeType, randM_eventType) =>
                                 //  a minimum magnitude
                                 (
                                     excludeRange
-                                        (100.0)
-                                        (randM_val(randM_seededRand(-150.0, 1000.0, seed1)))
+                                        (
+                                            100.0,
+                                            randM_val(randM_seededRand(-150.0, 1000.0, seed1))
+                                        )
                                 ),
 
                         // conds driven by randomized heading nudge

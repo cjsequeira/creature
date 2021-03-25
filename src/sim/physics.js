@@ -14,7 +14,7 @@ import {
     boundToRange,
     isWithinRange,
     partial2,
-    pipe2Comma,
+    pipe2,
 } from '../utils.js';
 
 import {
@@ -32,7 +32,7 @@ import {
 export const physTypeDoPhysics = (storeType, physType) =>
     // function chain: must check wall collisions FIRST, because the check could
     //  adjust the acceleration/speed/heading used for movements
-    pipe2Comma
+    pipe2
         (
             storeType,
             physType,

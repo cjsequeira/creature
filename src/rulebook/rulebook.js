@@ -61,8 +61,8 @@ import {
 } from './test_nodes.js';
 
 import {
-    pipe2Comma,
-    orTests2Comma,
+    pipe2,
+    orTests2,
 } from '../utils.js';
 
 import { action_setSimSeed } from '../reduxlike/action_creators.js';
@@ -83,7 +83,7 @@ import {
 
 // *** Pre-func named combinations
 const preFuncDoPhysicsAndTag = (storeType, randM_eventType) =>
-    pipe2Comma
+    pipe2
         (
             storeType,
             randM_eventType,
@@ -105,11 +105,12 @@ const preFuncDoPhysicsAndTag = (storeType, randM_eventType) =>
 const orTestRules = (...testRules) =>
 ({
     name: 'orTestRules',
-    testFunc: (storeType) => orTests2Comma(
-        testRules.map(
-            rule => rule.testFunc(storeType, randM_eventType)
+    testFunc: (storeType) => orTests2
+        (
+            testRules.map(
+                rule => rule.testFunc(storeType, randM_eventType)
+            )
         )
-    )
 });
 
 // unwrap a randM_actionType into an actionType plus an action to update the simulation seed
