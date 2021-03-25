@@ -163,7 +163,7 @@ function imp_appUpdate(_) {
         );
 
     // enough time elapsed since we last updated the time chart?
-    if (getSimCurTime(appStore) > (getUIProp(appStore)('chartTimeLastClock') + UPDATE_FREQ_TIME_CHART)) {
+    if (getSimCurTime(appStore) > (getUIProp(appStore, 'chartTimeLastClock') + UPDATE_FREQ_TIME_CHART)) {
         // dispatch action to update time chart
         appStore = imp_dispatchActions
             (

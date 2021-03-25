@@ -81,11 +81,11 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
         (getPhysTypeAct(actionType.physType) === actAsSimpleCreature)
             // yes: add two new datasets into the time chart data buffer
             ? {
-                ...getUIProp(storeType)('chartDataBufferTime'),
+                ...getUIProp(storeType, 'chartDataBufferTime'),
 
                 datasets:
                     [
-                        ...getUIProp(storeType)('chartDataBufferTime').datasets,
+                        ...getUIProp(storeType, 'chartDataBufferTime').datasets,
 
                         // glucose data
                         {
@@ -116,14 +116,14 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
             }
 
             // no, not a simple creature: keep the time chart data buffer the same
-            : getUIProp(storeType)('chartDataBufferTime'),
+            : getUIProp(storeType, 'chartDataBufferTime'),
 
     // add new dataset into the geo chart data buffer
     chartDataBufferGeo: {
-        ...getUIProp(storeType)('chartDataBufferGeo'),
+        ...getUIProp(storeType, 'chartDataBufferGeo'),
 
         datasets: [
-            ...getUIProp(storeType)('chartDataBufferGeo').datasets,
+            ...getUIProp(storeType, 'chartDataBufferGeo').datasets,
 
             {
                 // start construction of new dataset using template
@@ -170,24 +170,24 @@ const uiRed_actionPhysTypeDeletePhysType_func = (storeType, actionType) =>
 
     creature_behavior_boxes:
         // keep the behavior objects NOT associated with the given physType ID
-        getUIProp(storeType)('creature_behavior_boxes').filter
+        getUIProp(storeType, 'creature_behavior_boxes').filter
             ((boxToTest) => boxToTest.id !== getPhysTypeID(actionType.physType)),
 
     chartDataBufferTime: {
-        ...getUIProp(storeType)('chartDataBufferTime'),
+        ...getUIProp(storeType, 'chartDataBufferTime'),
 
         datasets:
             // keep the datasets NOT associated with the given physType ID
-            getUIProp(storeType)('chartDataBufferTime').datasets.filter
+            getUIProp(storeType, 'chartDataBufferTime').datasets.filter
                 ((dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)),
     },
 
     chartDataBufferGeo: {
-        ...getUIProp(storeType)('chartDataBufferGeo'),
+        ...getUIProp(storeType, 'chartDataBufferGeo'),
 
         datasets:
             // keep the datasets NOT associated with the given physType ID
-            getUIProp(storeType)('chartDataBufferGeo').datasets.filter
+            getUIProp(storeType, 'chartDataBufferGeo').datasets.filter
                 ((dsToTest) => dsToTest.id !== getPhysTypeID(actionType.physType)),
     },
 });
@@ -231,7 +231,7 @@ const uiRed_actionUIAddGeoChartData_func = (storeType, _) =>
 
     chartDataBufferGeo:
     {
-        ...getUIProp(storeType)('chartDataBufferGeo'),
+        ...getUIProp(storeType, 'chartDataBufferGeo'),
 
         datasets:
             // update geo chart data buffer associated with all physTypes in the store
@@ -239,7 +239,7 @@ const uiRed_actionUIAddGeoChartData_func = (storeType, _) =>
                 updateGeoChartDataset
                     (
                         // dataset to update: ASSUMED TO EXIST!
-                        (getUIProp(storeType)('chartDataBufferGeo').datasets[i]),
+                        (getUIProp(storeType, 'chartDataBufferGeo').datasets[i]),
 
                         // fill color to use
                         getPhysTypeColor(thisPhysType),
@@ -286,7 +286,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
     // REFACTOR to take more than two conditions, with arbitrary names!
     chartDataBufferTime:
     {
-        ...getUIProp(storeType)('chartDataBufferTime'),
+        ...getUIProp(storeType, 'chartDataBufferTime'),
 
         // update time chart data associated with all **simple creatures** in the store
         datasets: getPhysTypeStore(storeType)
@@ -297,8 +297,10 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
                     updateTimeChartDataset(
                         // dataset to update: ASSUMED TO EXIST!
                         getUIProp
-                            (storeType)
-                            ('chartDataBufferTime')
+                            (
+                                storeType,
+                                'chartDataBufferTime'
+                            )
                             .datasets[2 * i + 0],
 
                         // legend label to use
@@ -306,7 +308,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
                         getPhysTypeName(thisPhysType) + ' ' + 'glucose',
 
                         // minimum x below which data "falls off" chart,
-                        getUIProp(storeType)('chartXAxisBuffer').ticks.min - 2.0,
+                        getUIProp(storeType, 'chartXAxisBuffer').ticks.min - 2.0,
 
                         // data tuple to add
                         ({
@@ -319,8 +321,10 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
                     updateTimeChartDataset(
                         // dataset to update: ASSUMED TO EXIST!
                         getUIProp
-                            (storeType)
-                            ('chartDataBufferTime')
+                            (
+                                storeType,
+                                'chartDataBufferTime'
+                            )
                             .datasets[2 * i + 1],
 
                         // legend label to use
@@ -328,7 +332,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
                         getPhysTypeName(thisPhysType) + ' ' + 'neuro',
 
                         // minimum x below which data "falls off" chart,
-                        getUIProp(storeType)('chartXAxisBuffer').ticks.min - 2.0,
+                        getUIProp(storeType, 'chartXAxisBuffer').ticks.min - 2.0,
 
                         // data tuple to add
                         ({
@@ -345,7 +349,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
     chartXAxisBuffer:
         // update time chart x axis based on current sim time
         updateTimeChartXAxis(
-            getUIProp(storeType)('chartXAxisBuffer'),
+            getUIProp(storeType, 'chartXAxisBuffer'),
             getSimCurTime(storeType)
         ),
 });

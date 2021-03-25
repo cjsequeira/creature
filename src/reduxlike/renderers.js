@@ -26,18 +26,19 @@ import {
 export function imp_mutable_renderFunction(storeType) {
     // time chart data buffer just updated?
     if (isObjChanged(storeType)('ui', 'chartDataBufferTime')) {
-        // MUTABLE: point time chart data to internal data buffer and proper x axis settings, then draw
-        let creatureTimeChartHandle = getUIProp(storeType)('creature_time_chart');
-        creatureTimeChartHandle.data = getUIProp(storeType)('chartDataBufferTime');
-        creatureTimeChartHandle.options.scales.xAxes[0] = getUIProp(storeType)('chartXAxisBuffer');
+        // MUTABLE: point time chart data to internal data buffer and proper x axis settings, 
+        //  then draw
+        let creatureTimeChartHandle = getUIProp(storeType, 'creature_time_chart');
+        creatureTimeChartHandle.data = getUIProp(storeType, 'chartDataBufferTime');
+        creatureTimeChartHandle.options.scales.xAxes[0] = getUIProp(storeType, 'chartXAxisBuffer');
         creatureTimeChartHandle.update();
     }
 
     // geo chart data buffer just updated?
     if (isObjChanged(storeType)('ui', 'chartDataBufferGeo')) {
         // MUTABLE: point geo chart data to internal data buffer, then draw
-        let creatureGeoChartHandle = getUIProp(storeType)('creature_geo_chart');
-        creatureGeoChartHandle.data = getUIProp(storeType)('chartDataBufferGeo');
+        let creatureGeoChartHandle = getUIProp(storeType, 'creature_geo_chart');
+        creatureGeoChartHandle.data = getUIProp(storeType, 'chartDataBufferGeo');
         creatureGeoChartHandle.update();
     }
 
@@ -63,7 +64,7 @@ export function imp_mutable_renderFunction(storeType) {
 // returns undefined
 function imp_mutable_updateBehaviors(storeType) {
     // get a handle to the creature behavior box objects in the storeType
-    const behaviorBoxes = getUIProp(storeType)('creature_behavior_boxes');
+    const behaviorBoxes = getUIProp(storeType, 'creature_behavior_boxes');
 
     // get a list of current DOM behavior box objects
     const curChildren = Array.from(document.getElementById(HTML_CREATURE_PHYSTYPE_CONTAINER).children);
@@ -115,7 +116,7 @@ function imp_mutable_updateBehaviors(storeType) {
 // returns undefined
 function imp_mutable_updateStatusBox(storeType) {
     // point to status box HTML DOM context
-    const statusBox = getUIProp(storeType)('status_box');
+    const statusBox = getUIProp(storeType, 'status_box');
 
     // get status box scroll bar information
     const statusScrollTop = statusBox.scrollTop;
