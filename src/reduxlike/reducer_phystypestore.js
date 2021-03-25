@@ -100,13 +100,14 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
                 ? randMObj_genRandMObj
                     (
                         getPhysTypeCondsObj(thisPt),
-                        actionType.gensForRand
-                    )
-                    (
+
                         // use the proper seed
                         (accumRandMObj.length > 0)
                             ? randM_nextSeed(accumRandMObj.slice(-1)[0])
-                            : getSimSeed(storeType)
+                            : getSimSeed(storeType),
+
+                        // use the given generators
+                        actionType.gensForRand,
                     )
 
                 // no: create randMObj with no randM generators
@@ -114,13 +115,14 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
                 : randMObj_genRandMObj
                     (
                         getPhysTypeCondsObj(thisPt),
-                        []
-                    )
-                    (
+
                         // use the proper seed
                         (accumRandMObj.length > 0)
                             ? randM_nextSeed(accumRandMObj.slice(-1)[0])
-                            : getSimSeed(storeType)
+                            : getSimSeed(storeType),
+
+                        // use an empty list for generators
+                        [],
                     )
 
             // start with an empty array

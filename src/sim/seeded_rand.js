@@ -227,6 +227,7 @@ export const randM_genRandM = (valueAnyType, seedIntType) =>
 // builds a randM object by generating randM random values for the given props
 // takes: 
 //  objAnyType: the object to bundle randMs into
+//  seedIntType: the seed to start with
 //  ...gensForRand: an array of functions with properties and randomType generators, as:
 //
 //  [
@@ -236,10 +237,8 @@ export const randM_genRandM = (valueAnyType, seedIntType) =>
 //  ]
 //
 //      where randGen1a, randGen1b, ... are of signature (seedIntType) => randM
-//      for example, seededRand(0.0)(1.0) would have the appropriate signature 
-//          while seededRand(0.0)(1.0)(0) would NOT have the appropriate signature
-//
-//  seedIntType: the seed to start with
+//      for example, partial3(seededRand(0.0, 1.0)) would have the appropriate signature 
+//          while seededRand(0.0, 1.0, 0) would NOT have the appropriate signature
 //  
 // returns object of:
 //  {
@@ -248,7 +247,7 @@ export const randM_genRandM = (valueAnyType, seedIntType) =>
 //      [TYPE_RANDM_OBJ]: true,
 //      nextSeed
 //  }
-export const randMObj_genRandMObj = (objAnyType, ...gensForRand) => (seedIntType) =>
+export const randMObj_genRandMObj = (objAnyType, seedIntType, ...gensForRand) =>
     // build an object by applying each generator function
     gensForRand.flat(Infinity).reduce(
         (accumObj, thisGenFunc, i) => ({
