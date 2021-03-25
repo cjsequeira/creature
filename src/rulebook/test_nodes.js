@@ -24,7 +24,7 @@ import { randM_val } from '../sim/seeded_rand.js';
 
 // *** Rulebook test nodes
 const isBehaviorRequestIdling_func = (_, randM_eventType) =>
-    getPhysTypeCond(randM_val(randM_eventType).physType)('behavior_request') === 'idling';
+    getPhysTypeCond(randM_val(randM_eventType).physType, 'behavior_request') === 'idling';
 
 export const isBehaviorRequestIdling = {
     name: 'isBehaviorRequestIdling',
@@ -32,7 +32,7 @@ export const isBehaviorRequestIdling = {
 };
 
 const isBehaviorRequestEating_func = (_, randM_eventType) =>
-    getPhysTypeCond(randM_val(randM_eventType).physType)('behavior_request') === 'eating';
+    getPhysTypeCond(randM_val(randM_eventType).physType, 'behavior_request') === 'eating';
 
 export const isBehaviorRequestEating = {
     name: 'isBehaviorRequestSleeping',
@@ -40,7 +40,7 @@ export const isBehaviorRequestEating = {
 };
 
 const isBehaviorRequestSleeping_func = (_, randM_eventType) =>
-    getPhysTypeCond(randM_val(randM_eventType).physType)('behavior_request') === 'sleeping';
+    getPhysTypeCond(randM_val(randM_eventType).physType, 'behavior_request') === 'sleeping';
 
 export const isBehaviorRequestSleeping = {
     name: 'isBehaviorRequestSleeping',
@@ -48,7 +48,7 @@ export const isBehaviorRequestSleeping = {
 };
 
 const isBehaviorRequestWandering_func = (_, randM_eventType) =>
-    getPhysTypeCond(randM_val(randM_eventType).physType)('behavior_request') === 'wandering';
+    getPhysTypeCond(randM_val(randM_eventType).physType, 'behavior_request') === 'wandering';
 
 export const isBehaviorRequestWandering = {
     name: 'isBehaviorRequestWandering',
@@ -64,7 +64,7 @@ export const isSimpleCreature = {
 };
 
 const isCreatureAching_func = (_, randM_eventType) =>
-    getPhysTypeCond(randM_val(randM_eventType).physType)('behavior') === 'aching';
+    getPhysTypeCond(randM_val(randM_eventType).physType, 'behavior') === 'aching';
 
 export const isCreatureAching = {
     name: 'isCreatureAching',
@@ -72,7 +72,7 @@ export const isCreatureAching = {
 };
 
 const isCreatureEating_func = (_, randM_eventType) =>
-    getPhysTypeCond(randM_val(randM_eventType).physType)('behavior') === 'eating';
+    getPhysTypeCond(randM_val(randM_eventType).physType, 'behavior') === 'eating';
 
 export const isCreatureEating = {
     name: 'isCreatureEating',
@@ -112,8 +112,8 @@ export const isEventReplaceCreatureType = {
 };
 
 const isGlucoseNeuroInRange_func = (_, randM_eventType) =>
-    (getPhysTypeCond(randM_val(randM_eventType).physType)('glucose') > 0.0) &&
-    (getPhysTypeCond(randM_val(randM_eventType).physType)('neuro') < 100.0);
+    (getPhysTypeCond(randM_val(randM_eventType).physType, 'glucose') > 0.0) &&
+    (getPhysTypeCond(randM_val(randM_eventType).physType, 'neuro') < 100.0);
 
 export const isGlucoseNeuroInRange = {
     name: 'isGlucoseNeuroInRange',

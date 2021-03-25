@@ -31,10 +31,9 @@ export const getDefaultFoodType = (_) =>
 
 
 // *** Behavior functions unique to foodType
-// REFACTOR away from nested arrows?
 // main behavior function
 // takes: 
 //  storeType
 //  physType
 // returns eventType
-export const actAsFood = (_) => (physType) => event_replacePhysType(physType);
+export const actAsFood = (_, physType) => event_replacePhysType(physType);

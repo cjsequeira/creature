@@ -36,7 +36,7 @@ const ptsRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
 
     {
         ...actionType.physType,
-        id: genPhysTypeAvailID(storeType)(0),
+        id: genPhysTypeAvailID(storeType, 0),
     },
 ]);
 
@@ -85,6 +85,7 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypes_func = (storeType, actionType) 
             : thisPt
     );
 
+// REFACTOR: Simplify!
 const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =>
     // NOTE: the simulator seed is updated in the SIM REDUCER!!!
 
@@ -99,13 +100,14 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
                 ? randMObj_genRandMObj
                     (
                         getPhysTypeCondsObj(thisPt),
-                        actionType.gensForRand
-                    )
-                    (
+
                         // use the proper seed
                         (accumRandMObj.length > 0)
                             ? randM_nextSeed(accumRandMObj.slice(-1)[0])
-                            : getSimSeed(storeType)
+                            : getSimSeed(storeType),
+
+                        // use the given generators
+                        actionType.gensForRand,
                     )
 
                 // no: create randMObj with no randM generators
@@ -113,13 +115,14 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
                 : randMObj_genRandMObj
                     (
                         getPhysTypeCondsObj(thisPt),
-                        []
-                    )
-                    (
+
                         // use the proper seed
                         (accumRandMObj.length > 0)
                             ? randM_nextSeed(accumRandMObj.slice(-1)[0])
-                            : getSimSeed(storeType)
+                            : getSimSeed(storeType),
+
+                        // use an empty list for generators
+                        [],
                     )
 
             // start with an empty array
@@ -129,8 +132,10 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
         .map(
             (thisRandMObj, i) =>
                 usePhysTypeConds
-                    (getPhysTypeStore(storeType)[i])
-                    (randMObj_val(thisRandMObj))
+                    (
+                        getPhysTypeStore(storeType)[i],
+                        randMObj_val(thisRandMObj)
+                    )
         );
 
 const ptsRed_default_func = (storeType, _) =>
@@ -145,7 +150,6 @@ const ptsRed_default_func = (storeType, _) =>
 // returns storeType "physTypeStore" property array
 export const physTypeStoreReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
     ({
         [ACTION_PHYSTYPE_ADD_PHYSTYPE]: ptsRed_actionPhysTypeAddPhysType_func,
 

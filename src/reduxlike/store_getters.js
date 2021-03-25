@@ -10,13 +10,13 @@
 //  storeType
 //  proposedIDIntType: initial ID to check for availability, as int
 // returns int
-export const genPhysTypeAvailID = (storeType) => (proposedIDIntType) =>
+export const genPhysTypeAvailID = (storeType, proposedIDIntType) =>
     // is there a physType that already has the given ID?
     (getPhysTypeStore(storeType)
         .filter((ptToTest) => getPhysTypeID(ptToTest) === proposedIDIntType)
         .length > 0)
         // yes: increment the ID by one and check that
-        ? genPhysTypeAvailID(storeType)(proposedIDIntType + 1)
+        ? genPhysTypeAvailID(storeType, proposedIDIntType + 1)
 
         // no: send the given ID back to be used
         : proposedIDIntType
@@ -34,15 +34,15 @@ export const getPhysTypeAct = (physType) => physType.act;
 //  storeType: the store to use
 //  physType: physType to use
 // returns float
-export const getPhysTypeBCElapsed = (storeType) => (physType) =>
-    getSimCurTime(storeType) - getPhysTypeCond(physType)('behavior_clock');
+export const getPhysTypeBCElapsed = (storeType, physType) =>
+    getSimCurTime(storeType) - getPhysTypeCond(physType, 'behavior_clock');
 
 // get specific condition from physType
 // takes:
 //  physType: physType to use
 //  argCond: string name for key of condition to look at
 // returns condition value
-export const getPhysTypeCond = (physType) => (argCond) => physType.conds[argCond];
+export const getPhysTypeCond = (physType, argCond) => physType.conds[argCond];
 
 // get conds object from physType
 // takes:
@@ -68,30 +68,11 @@ export const getPhysTypeID = (physType) => physType.id;
 // returns name, as string
 export const getPhysTypeName = (physType) => physType.name;
 
-// get key value from physType
-// takes:
-//  physType: physType to use
-//  argStringType: string name for key of physType to look at
-// returns key value
-export const getPhysTypeRootKey = (physType) => (argStringType) => physType[argStringType];
-
 // get physType store
 // takes: 
 //  storeType: store, as storeType
 // returns array of physType objects
 export const getPhysTypeStore = (storeType) => storeType.physTypeStore;
-
-// get index into physTypeStore for the given physType
-// assumes only one physType in the physTypeStore has the ID of the given physType
-// takes:
-//  storeType
-//  physType
-// returns int, which would be -1 if physType not found in store
-export const getPhysTypeIndex = (storeType) => (physType) =>
-    getPhysTypeStore(storeType).findIndex(
-        (ptToTest) => getPhysTypeID(ptToTest) === getPhysTypeID(physType)
-    );
-
 
 // *** physType "use" function
 // use given conditions to make a physType
@@ -99,7 +80,7 @@ export const getPhysTypeIndex = (storeType) => (physType) =>
 //  physType: physType to use
 //  argConds: list of conditions to include, as ...{key, value}
 // returns physType
-export const usePhysTypeConds = (physType) => (argConds) => ({
+export const usePhysTypeConds = (physType, argConds) => ({
     ...physType,
     conds: {
         ...physType.conds,
@@ -139,7 +120,7 @@ export const getSimTimeStep = (storeType) => storeType.sim.timeStep;
 // takes:
 //  storeType: store, as storeType
 //  subStringType: string name for substore to get changes list of, e.g. 'ui'
-export const getChangesList = (storeType) => (subStringType) =>
+export const getChangesList = (storeType, subStringType) =>
     storeType[subStringType].changesList;
 
 // get journal
@@ -153,14 +134,14 @@ export const getJournal = (storeType) => storeType.remainder.journal;
 //  storeType: store, as storeType
 //  argStringType: string name for prop of store UI object to look at
 // returns value, as any
-export const getUIProp = (storeType) => (argStringType) => storeType.ui[argStringType];
+export const getUIProp = (storeType, argStringType) => storeType.ui[argStringType];
 
 // given object name found in UI changes list?
 // takes:
 //  storeType: store, as storeType
 //  subStringType: string name for substore to investigate, e.g. 'ui'
 //  argStringType: string name for object to investigate
-export const isObjChanged = (storeType) => (subStringType, argStringType) =>
+export const isObjChanged = (storeType, subStringType, argStringType) =>
     // is given object name in the changes list?
     (storeType[subStringType].changesList.find((objName) => objName === argStringType)
         !== undefined)

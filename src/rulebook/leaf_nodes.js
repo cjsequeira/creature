@@ -10,10 +10,7 @@ import {
     UI_BEHAVIOR_STRINGS,
 } from '../const_vals.js';
 
-import {
-    compose,
-    excludeRange,
-} from '../utils.js';
+import { excludeRange } from '../utils.js';
 
 import {
     action_replacePhysType,
@@ -21,7 +18,6 @@ import {
     action_doNothing,
     action_deletePhysType,
     action_updateSelectPhysTypesRand,
-    action_forceChangesListUpdate,
 } from '../reduxlike/action_creators.js';
 
 import {
@@ -52,25 +48,31 @@ const leafApproveBehavior_func = (storeType, randM_eventType) =>
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             // update physType behavior
-            compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
-                ({
-                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+            action_replacePhysType
+                (
+                    usePhysTypeConds
+                        (
+                            eventType.physType,
+                            {
+                                behavior: getPhysTypeCond(eventType.physType, 'behavior_request'),
 
-                    // update behavior clock time IF behavior has just changed,
-                    //  else keep the same
-                    behavior_clock:
-                        (getPhysTypeCond(eventType.physType)('behavior') !==
-                            getPhysTypeCond(eventType.physType)('behavior_request'))
-                            ? getSimCurTime(storeType)
-                            : getPhysTypeCond(eventType.physType)('behavior_clock'),
-                }),
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType, 'behavior') !==
+                                        getPhysTypeCond(eventType.physType, 'behavior_request'))
+                                        ? getSimCurTime(storeType)
+                                        : getPhysTypeCond(eventType.physType, 'behavior_clock'),
+                            }
+                        )
+                ),
 
             // announce behavior IF behavior has just changed
             (getPhysTypeCond(eventType.physType)('behavior') !==
                 getPhysTypeCond(eventType.physType)('behavior_request'))
 
                 ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType, 'behavior_request')])
                 : action_doNothing(),
         ])
         (randM_eventType);
@@ -85,28 +87,34 @@ const leafApproveBehaviorStopAccel_func = (storeType, randM_eventType) =>
     randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
-            compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
-                ({
-                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+            action_replacePhysType
+                (
+                    usePhysTypeConds
+                        (
+                            eventType.physType,
+                            {
+                                behavior: getPhysTypeCond(eventType.physType, 'behavior_request'),
 
-                    // update behavior clock time IF behavior has just changed,
-                    //  else keep the same
-                    behavior_clock:
-                        (getPhysTypeCond(eventType.physType)('behavior') !==
-                            getPhysTypeCond(eventType.physType)('behavior_request'))
-                            ? getSimCurTime(storeType)
-                            : getPhysTypeCond(eventType.physType)('behavior_clock'),
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType, 'behavior') !==
+                                        getPhysTypeCond(eventType.physType, 'behavior_request'))
+                                        ? getSimCurTime(storeType)
+                                        : getPhysTypeCond(eventType.physType, 'behavior_clock'),
 
-                    // stop accel, but leave speed alone
-                    accel: 0.0,
-                }),
+                                // stop accel, but leave speed alone
+                                accel: 0.0,
+                            }
+                        )
+                ),
 
             // announce behavior IF behavior has just changed
-            (getPhysTypeCond(eventType.physType)('behavior') !==
-                getPhysTypeCond(eventType.physType)('behavior_request'))
+            (getPhysTypeCond(eventType.physType, 'behavior') !==
+                getPhysTypeCond(eventType.physType, 'behavior_request'))
 
                 ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType, 'behavior_request')])
                 : action_doNothing(),
         ])
         (randM_eventType);
@@ -122,29 +130,35 @@ const leafApproveBehaviorStopMovement_func = (storeType, randM_eventType) =>
     randM_liftBind
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
-            compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
-                ({
-                    behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+            action_replacePhysType
+                (
+                    usePhysTypeConds
+                        (
+                            eventType.physType,
+                            {
+                                behavior: getPhysTypeCond(eventType.physType, 'behavior_request'),
 
-                    // update behavior clock time IF behavior has just changed,
-                    //  else keep the same
-                    behavior_clock:
-                        (getPhysTypeCond(eventType.physType)('behavior') !==
-                            getPhysTypeCond(eventType.physType)('behavior_request'))
-                            ? getSimCurTime(storeType)
-                            : getPhysTypeCond(eventType.physType)('behavior_clock'),
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType, 'behavior') !==
+                                        getPhysTypeCond(eventType.physType, 'behavior_request'))
+                                        ? getSimCurTime(storeType)
+                                        : getPhysTypeCond(eventType.physType, 'behavior_clock'),
 
-                    // stop speed AND accel
-                    speed: 0.0,
-                    accel: 0.0,
-                }),
+                                // stop speed AND accel
+                                speed: 0.0,
+                                accel: 0.0,
+                            }
+                        )
+                ),
 
             // announce behavior IF behavior has just changed
-            (getPhysTypeCond(eventType.physType)('behavior') !==
-                getPhysTypeCond(eventType.physType)('behavior_request'))
+            (getPhysTypeCond(eventType.physType, 'behavior') !==
+                getPhysTypeCond(eventType.physType, 'behavior_request'))
 
                 ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
-                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')])
+                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType, 'behavior_request')])
                 : action_doNothing(),
         ])
         (randM_eventType);
@@ -165,25 +179,28 @@ const leafCondsOOL_func = (storeType, randM_eventType) =>
             ),
 
             // change behavior to frozen
-            compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
-                ({
-                    behavior: 'frozen',
+            action_replacePhysType
+                (
+                    usePhysTypeConds
+                        (
+                            eventType.physType,
+                            {
+                                behavior: 'frozen',
 
-                    // update behavior clock time IF behavior has just changed,
-                    //  else keep the same
-                    behavior_clock:
-                        (getPhysTypeCond(eventType.physType)('behavior') !== 'frozen')
-                            ? getSimCurTime(storeType)
-                            : getPhysTypeCond(eventType.physType)('behavior_clock'),
-                }),
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType, 'behavior') !== 'frozen')
+                                        ? getSimCurTime(storeType)
+                                        : getPhysTypeCond(eventType.physType, 'behavior_clock'),
+                            }
+                        )
+                ),
 
             // let the creature speak
             action_addJournalEntry(
                 getPhysTypeName(eventType.physType) + ' ' + UI_BEHAVIOR_STRINGS['frozen']
             ),
-
-            // force a redraw of the time chart to capture full conditions
-            action_forceChangesListUpdate('ui', 'chartDataBufferTime'),
         ])
         (randM_eventType);
 
@@ -198,7 +215,7 @@ const leafCreatureEatFood_func = (storeType, randM_eventType) =>
         // signature of this func: (eventType) => actionType or [actionType]
         ((eventType) => [
             // announce glorious news in journal IF not already eating
-            (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
+            (getPhysTypeCond(eventType.physType, 'behavior') !== 'eating')
                 ? [
                     action_addJournalEntry(
                         getPhysTypeName(eventType.physType) + ' found FOOD!'
@@ -211,28 +228,31 @@ const leafCreatureEatFood_func = (storeType, randM_eventType) =>
                 : action_doNothing(),
 
             // switch creatureType behavior to 'eating'
-            compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
-                ({
-                    behavior: 'eating',
+            action_replacePhysType
+                (
+                    usePhysTypeConds
+                        (
+                            eventType.physType,
+                            {
+                                behavior: 'eating',
 
-                    // update behavior clock time IF behavior has just changed,
-                    //  else keep the same
-                    behavior_clock:
-                        (getPhysTypeCond(eventType.physType)('behavior') !== 'eating')
-                            ? getSimCurTime(storeType)
-                            : getPhysTypeCond(eventType.physType)('behavior_clock'),
+                                // update behavior clock time IF behavior has just changed,
+                                //  else keep the same
+                                behavior_clock:
+                                    (getPhysTypeCond(eventType.physType, 'behavior') !== 'eating')
+                                        ? getSimCurTime(storeType)
+                                        : getPhysTypeCond(eventType.physType, 'behavior_clock'),
 
-                    // stop accelerating!
-                    accel: 0.0,
-                }),
+                                // stop accelerating!
+                                accel: 0.0,
+                            }
+                        )
+                ),
 
             // remove food that is being touched
             eventType[EVENT_INSERT_FOODTYPES].map((thisFoodType) =>
                 action_deletePhysType(thisFoodType)
             ),
-
-            // force a redraw of the geo chart to update creature color
-            action_forceChangesListUpdate('ui', 'chartDataBufferGeo'),
         ])
         (randM_eventType);
 
@@ -261,25 +281,25 @@ const leafDoAndApproveWandering_func = (storeType, randM_eventType) =>
                                 // be sure to include conds that will not be randomized
                                 ...getPhysTypeCondsObj(eventType.physType),
 
-                                behavior: getPhysTypeCond(eventType.physType)('behavior_request'),
+                                behavior: getPhysTypeCond(eventType.physType, 'behavior_request'),
 
                                 // update behavior clock time IF behavior has just changed,
                                 //  else keep the same
                                 behavior_clock:
-                                    (getPhysTypeCond(eventType.physType)('behavior') !==
-                                        getPhysTypeCond(eventType.physType)('behavior_request'))
+                                    (getPhysTypeCond(eventType.physType, 'behavior') !==
+                                        getPhysTypeCond(eventType.physType, 'behavior_request'))
                                         ? getSimCurTime(storeType)
-                                        : getPhysTypeCond(eventType.physType)('behavior_clock'),
+                                        : getPhysTypeCond(eventType.physType, 'behavior_clock'),
 
                                 // glucose and neuro impacts are more severe 
                                 //  with higher accceleration magnitude
                                 glucose:
-                                    getPhysTypeCond(eventType.physType)('glucose') -
+                                    getPhysTypeCond(eventType.physType, 'glucose') -
                                     0.01 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
                                 neuro:
-                                    getPhysTypeCond(eventType.physType)('neuro') +
+                                    getPhysTypeCond(eventType.physType, 'neuro') +
                                     0.007 * Math.abs(randNum) *
                                     getSimTimeStep(storeType),
 
@@ -289,26 +309,28 @@ const leafDoAndApproveWandering_func = (storeType, randM_eventType) =>
                                 //  a minimum magnitude
                                 (
                                     excludeRange
-                                        (100.0)
-                                        (randM_val(randM_seededRand(-150.0, 1000.0)(seed1)))
+                                        (
+                                            100.0,
+                                            randM_val(randM_seededRand(-150.0, 1000.0, seed1))
+                                        )
                                 ),
 
                         // conds driven by randomized heading nudge
                         (seed2) => ({
                             heading:
-                                getPhysTypeCond(eventType.physType)('heading') +
-                                randM_val(randM_seededRand(-0.3, 0.3)(seed2)),
+                                getPhysTypeCond(eventType.physType, 'heading') +
+                                randM_val(randM_seededRand(-0.3, 0.3, seed2)),
                         })
                     ]
                 ),
 
             // announce behavior IF behavior has just changed
-            (getPhysTypeCond(eventType.physType)('behavior') !==
-                getPhysTypeCond(eventType.physType)('behavior_request'))
+            (getPhysTypeCond(eventType.physType, 'behavior') !==
+                getPhysTypeCond(eventType.physType, 'behavior_request'))
 
                 ? action_addJournalEntry(
                     getPhysTypeName(eventType.physType) +
-                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType)('behavior_request')]
+                    ' ' + UI_BEHAVIOR_STRINGS[getPhysTypeCond(eventType.physType, 'behavior_request')]
                 )
                 : action_doNothing(),
         ])
@@ -335,27 +357,33 @@ const leafDoCreatureCollision_func = (storeType, randM_eventType) =>
 
             // handle collision by changing direction and possibly speed, and
             //  setting behavior to 'aching'
-            compose(action_replacePhysType)(usePhysTypeConds(eventType.physType))
-                ({
-                    // behavior: aching!
-                    behavior: 'aching',
+            action_replacePhysType
+                (
+                    usePhysTypeConds
+                        (
+                            eventType.physType,
+                            {
+                                // behavior: aching!
+                                behavior: 'aching',
 
-                    // update behavior clock time even if already aching!
-                    // extend the pain!
-                    behavior_clock: getSimCurTime(storeType),
+                                // update behavior clock time even if already aching!
+                                // extend the pain!
+                                behavior_clock: getSimCurTime(storeType),
 
-                    // spin heading around a bit (in radians)
-                    heading: getPhysTypeCond(eventType.physType)('heading') + 0.8,
+                                // spin heading around a bit (in radians)
+                                heading: getPhysTypeCond(eventType.physType, 'heading') + 0.8,
 
-                    // establish a minimum speed
-                    speed:
-                        (getPhysTypeCond(eventType.physType)('speed') > 10.0)
-                            ? getPhysTypeCond(eventType.physType)('speed')
-                            : 10.0,
-                }),
+                                // establish a minimum speed
+                                speed:
+                                    (getPhysTypeCond(eventType.physType, 'speed') > 10.0)
+                                        ? getPhysTypeCond(eventType.physType, 'speed')
+                                        : 10.0,
+                            }
+                        )
+                ),
 
             // announce behavior IF behavior has just changed
-            (getPhysTypeCond(eventType.physType)('behavior') != 'aching')
+            (getPhysTypeCond(eventType.physType, 'behavior') != 'aching')
                 ? action_addJournalEntry(getPhysTypeName(eventType.physType) +
                     ' ' + UI_BEHAVIOR_STRINGS['aching'])
                 : action_doNothing(),

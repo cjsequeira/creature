@@ -2,8 +2,6 @@
 
 // ****** Code for creating actions ******
 
-// REFACTOR away from nested arrow funcs?
-
 // *** Our imports
 import {
     ACTION_COMPARE_STOP_IF_FROZEN,
@@ -28,7 +26,6 @@ import { remainderReducer } from './reducer_remainder.js';
 import { simReducer } from './reducer_sim.js';
 import { uiReducer } from './reducer_ui.js';
 import { combineReducers } from './reduxlike_utils.js';
-import { resolveRules } from '../rulebook/rulebook.js';
 
 
 // *** Comparing and testing physTypes
@@ -241,11 +238,12 @@ const clearChangesList = (storeType, ...substores) =>
 
 // *** Dispatch a list of actions, then call subscribedFunc
 //  then return updated storeType
+// IMPERATIVE
 // takes:
 //  storeType
 //  ...actions: list of actions to dispatch, as actionType
 // returns storeType
-export const dispatchActions = (inStoreType, ...actions) => {
+export function imp_dispatchActions(inStoreType, ...actions) {
     // build an initial object that will become the next app store
     let outStoreType = clearChangesList(inStoreType, substoreChangesLists);
 
@@ -260,11 +258,3 @@ export const dispatchActions = (inStoreType, ...actions) => {
     // return the updated storeType
     return outStoreType;
 };
-
-// *** Map a list of events to a list of associated actions by using our system rulebook
-// takes:
-//  storeType
-//  ...events: list of events to map, as eventType
-// returns [actionType]
-export const mapEventsToActions = (storeType, ...events) =>
-    events.flat(Infinity).map((thisEvent) => resolveRules(storeType, thisEvent));

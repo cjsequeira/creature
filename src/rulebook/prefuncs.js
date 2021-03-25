@@ -15,7 +15,10 @@ import {
     WORLD_TOUCH_DISTANCE,
 } from '../const_vals.js';
 
-import { compose } from '../utils.js';
+import {
+    partial2,
+    pipe,
+} from '../utils.js';
 
 import {
     getPhysTypeAct,
@@ -47,15 +50,18 @@ export const preFuncApplyPhysics = (storeType, randM_eventType) =>
     // total signature: (randM_eventType) => randM_eventType
     randM_liftBind
         ((eventType) =>
-            compose
-                // create a new event using...
-                (event_replacePhysType)
+            pipe
+                (
+                    // the given physType, contained in eventType
+                    eventType.physType,
+                    [
+                        // do laws of physics on physType above, using storeType as argument 1
+                        partial2(physTypeDoPhysics, storeType),
 
-                // ...a physType with physics applied
-                (physTypeDoPhysics(storeType))
-
-                // the physType to apply physics to
-                (eventType.physType)
+                        // create a new event using the resulting physType from above
+                        event_replacePhysType,
+                    ]
+                )
         )
         // apply randM_liftBind to the given randM_eventType to unwrap the contained eventType
         //  for use in the function above
@@ -73,38 +79,45 @@ export const preFuncApplyPhysics = (storeType, randM_eventType) =>
 export const preFuncGenBehaviorRequest = (_, randM_eventType) =>
     // generate an updated randM_eventType
     randM_genRandM
-        // randM_genRandM value
-        (compose
+        (
+            // randM_genRandM value: an eventType
             // create a new event using...
-            (event_replacePhysType)
-
-            // ... an object based on the given physType, with a "behavior_request" prop-obj
-            (usePhysTypeConds(randM_val(randM_eventType).physType))
-
-            // here is the "behavior_request" prop-obj
-            ({
-                behavior_request:
-                    // select behavior request from list of given desire funcs using 
-                    // a weighted random number selector
-                    Object.keys(randM_val(randM_eventType).desireFuncType)
-                    // use a randomly-chosen index to select a behavioral desire
-                    [randM_chooseWeight
-                        // list of numerical desires
+            event_replacePhysType
+                (
+                    // ...an object based on the given physType...
+                    usePhysTypeConds
                         (
-                            // the code below maps each desire function to a numerical weight
-                            //  by evaluating it using the given physType
-                            Object.values(randM_val(randM_eventType).desireFuncType)
-                                .map(f => f(randM_val(randM_eventType).physType))
+                            randM_val(randM_eventType).physType,
+
+                            // ...with a "behavior_request" prop-obj
+                            {
+                                behavior_request:
+                                    // select behavior request from list of given desire funcs using 
+                                    // a weighted random number selector
+                                    Object.keys(randM_val(randM_eventType).desireFuncType)
+                                    // use a randomly-chosen index to select a behavioral desire
+                                    [randM_chooseWeight
+                                        (
+                                            // list of numerical desires
+                                            // the code below maps each desire function to a 
+                                            //  numerical weight by evaluating it using the 
+                                            //  given physType
+                                            Object.values(randM_val(randM_eventType).desireFuncType)
+                                                .map(f => f(randM_val(randM_eventType).physType)),
+
+                                            // seed for randM_chooseWeight
+                                            randM_nextSeed(randM_eventType)
+                                        )
+                                    ]
+                            }
                         )
-                        // seed for randM_chooseWeight
-                        (randM_nextSeed(randM_eventType))
-                    ]
-            })
-        )
-        // randM_genRandM seed
-        // since we just used a system seed for randM_chooseWeight, 
-        //  we must point to the next seed when assembling an updated randM_eventType
-        (randM_getNextSeed(randM_nextSeed(randM_eventType), 0));
+                ),
+
+            // randM_genRandM seed
+            // since we just used a system seed for randM_chooseWeight, 
+            //  we must point to the next seed when assembling an updated randM_eventType
+            randM_getNextSeed(randM_nextSeed(randM_eventType), 0)
+        );
 
 // tag simple creatures touched by creature by bundling them into the given randM_eventType
 // REFACTOR: to tag in creatures that a creature will "pass through" between this timestep and the next!
@@ -135,15 +148,16 @@ export const preFuncTagTouchedCreatures = (storeType, randM_eventType) =>
 
                         // keep only creatureTypes...
                         .filter(
-                            (ptToTest1) => getPhysTypeCond(ptToTest1)('behavior') !== undefined
+                            (ptToTest1) => getPhysTypeCond(ptToTest1, 'behavior') !== undefined
                         )
 
                         // ...closer than a given distance from this creatureType
+                        // REFACTOR into own distance function
                         .filter((ptToTest2) => Math.sqrt(
-                            Math.pow(getPhysTypeCond(ptToTest2)('x') -
-                                getPhysTypeCond(eventType.physType)('x'), 2.0) +
-                            Math.pow(getPhysTypeCond(ptToTest2)('y') -
-                                getPhysTypeCond(eventType.physType)('y'), 2.0)
+                            Math.pow(getPhysTypeCond(ptToTest2, 'x') -
+                                getPhysTypeCond(eventType.physType, 'x'), 2.0) +
+                            Math.pow(getPhysTypeCond(ptToTest2, 'y') -
+                                getPhysTypeCond(eventType.physType, 'y'), 2.0)
                         ) < WORLD_TOUCH_DISTANCE)
                 )
         )
@@ -180,11 +194,12 @@ export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
                         )
 
                         // keep only food closer than a given distance from this creatureType
+                        // REFACTOR into own distance function
                         .filter((ptToTest2) => Math.sqrt(
-                            Math.pow(getPhysTypeCond(ptToTest2)('x') -
-                                getPhysTypeCond(eventType.physType)('x'), 2.0) +
-                            Math.pow(getPhysTypeCond(ptToTest2)('y') -
-                                getPhysTypeCond(eventType.physType)('y'), 2.0)
+                            Math.pow(getPhysTypeCond(ptToTest2, 'x') -
+                                getPhysTypeCond(eventType.physType, 'x'), 2.0) +
+                            Math.pow(getPhysTypeCond(ptToTest2, 'y') -
+                                getPhysTypeCond(eventType.physType, 'y'), 2.0)
                         ) < WORLD_TOUCH_DISTANCE)
                 )
         )

@@ -11,9 +11,10 @@ import {
 } from '../const_vals.js';
 
 import {
-    pipe,
     boundToRange,
-    withinRange,
+    isWithinRange,
+    partial2,
+    pipe2,
 } from '../utils.js';
 
 import {
@@ -28,17 +29,18 @@ import {
 //  storeType
 //  physType
 // returns physType
-export const physTypeDoPhysics = (storeType) => (physType) =>
+export const physTypeDoPhysics = (storeType, physType) =>
     // function chain: must check wall collisions FIRST, because the check could
     //  adjust the acceleration/speed/heading used for movements
-    pipe
+    pipe2
         (
-            physTypeCheckWallCollisions(storeType),
-            physTypeDoMovements(storeType),
-        )
-
-        // apply the pipe to the given physType
-        (physType);
+            storeType,
+            physType,
+            [
+                physTypeCheckWallCollisions,
+                physTypeDoMovements,
+            ]
+        );
 
 
 // *** Internal physics functions
@@ -47,22 +49,25 @@ export const physTypeDoPhysics = (storeType) => (physType) =>
 //  storeType
 //  physType
 // returns physType
-const physTypeDoMovements = (storeType) => (physType) => {
+const physTypeDoMovements = (storeType, physType) => {
     // define shorthand function to get cond from given physType
-    const inGetCond = getPhysTypeCond(physType);
+    // REFACTOR into own function
+    const inGetCond = partial2(getPhysTypeCond, physType);
 
     return usePhysTypeConds
-        (physType)
-        ({
-            // compute x and y based on given speed and heading
-            x: inGetCond('x') +
-                getSimTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
-            y: inGetCond('y') +
-                getSimTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
+        (
+            physType,
+            {
+                // compute x and y based on given speed and heading
+                x: inGetCond('x') +
+                    getSimTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
+                y: inGetCond('y') +
+                    getSimTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
 
-            // compute speed based on given accel
-            speed: inGetCond('speed') + getSimTimeStep(storeType) * inGetCond('accel'),
-        });
+                // compute speed based on given accel
+                speed: inGetCond('speed') + getSimTimeStep(storeType) * inGetCond('accel'),
+            }
+        );
 };
 
 // return physType with parameters updated if wall collisions
@@ -70,35 +75,38 @@ const physTypeDoMovements = (storeType) => (physType) => {
 //  don't care
 //  physType
 // returns physType
-const physTypeCheckWallCollisions = (_) => (physType) => {
+const physTypeCheckWallCollisions = (_, physType) => {
     // define shorthand func to get cond from given physType
-    const inGetCond = getPhysTypeCond(physType);
+    // REFACTOR into own function
+    const inGetCond = partial2(getPhysTypeCond, physType);
 
     // are x and y within world boundary?
     return (
-        withinRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')) &&
-        withinRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y'))
+        isWithinRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')) &&
+        isWithinRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y'))
     )
         // yes: return given physType
         ? physType
 
         // no: return physType with updated parameters due to wall collision
         : usePhysTypeConds
-            (physType)
-            ({
-                // bound x to the boundary limit minus a small margin
-                x: boundToRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')),
+            (
+                physType,
+                {
+                    // bound x to the boundary limit minus a small margin
+                    x: boundToRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')),
 
-                // bound y to the boundary limit minus a small margin
-                y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y')),
+                    // bound y to the boundary limit minus a small margin
+                    y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y')),
 
-                // spin heading around a bit (in radians)
-                heading: inGetCond('heading') + 2.35,
+                    // spin heading around a bit (in radians)
+                    heading: inGetCond('heading') + 2.35,
 
-                // dissipate some speed - or establish a minimum speed if creature is going slowly
-                speed:
-                    (inGetCond('speed') > 3.0)
-                        ? 0.96 * inGetCond('speed')
-                        : 3.0,
-            });
+                    // dissipate some speed - or establish a minimum speed if creature is going slowly
+                    speed:
+                        (inGetCond('speed') > 3.0)
+                            ? 0.96 * inGetCond('speed')
+                            : 3.0,
+                }
+            );
 };

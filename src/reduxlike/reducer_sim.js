@@ -35,13 +35,14 @@ const simRed_actionCompareStopIfFrozen_func = (storeType, _) =>
 
     running:
         // are ALL simple creatures frozen?
+        // REFACTOR: Simplify!
         (
             getPhysTypeStore(storeType)
                 // filter physType store to find simple creatures
                 .filter((ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature)
 
                 // filter to find those with behavior of 'frozen'
-                .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')
+                .filter((ptToTest2) => getPhysTypeCond(ptToTest2, 'behavior') === 'frozen')
 
                 // is number of frozen simple creatures equal to 
                 //  total number of simple creatures?
@@ -70,12 +71,12 @@ const simRed_actionForceChangesListUpdate_func = (storeType, actionType) =>
         (actionType.subStringType === 'sim')
             // yes: add the given object name to the changes list
             ? [
-                ...getChangesList(storeType)('sim'),
+                ...getChangesList(storeType, 'sim'),
                 actionType.objStringType,
             ]
 
             // no: keep the changes list the same
-            : getChangesList(storeType)('sim'),
+            : getChangesList(storeType, 'sim'),
 });
 
 const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =>
@@ -94,10 +95,10 @@ const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
                     ? randM_getNextSeed(accumSeed, actionType.gensForRand.length - 1)
 
                     // no: don't go to the next seed
-                    : accumSeed
+                    : accumSeed,
 
                 // start with the current sim seed
-                , getSimSeed(storeType))
+                getSimSeed(storeType))
             // no: keep the seed the same
             : getSimSeed(storeType)
 });
@@ -105,6 +106,7 @@ const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
 const simRed_actionSimAdvance_func = (storeType, _) =>
 ({
     ...storeType.sim,
+
     curTime:
         // is sim running?
         (getSimRunning(storeType))
@@ -145,7 +147,6 @@ const simRed_default_func = (storeType, _) =>
 // returns storeType "sim" property object
 export const simReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
     ({
         [ACTION_COMPARE_STOP_IF_FROZEN]: simRed_actionCompareStopIfFrozen_func,
 
