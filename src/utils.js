@@ -19,6 +19,7 @@ export const compose = f => g =>
 //  concatElemAnyType: element to concat, as any
 //  arrAnyType: array to concat onto, as any
 // returns processed array, as array type
+// REFACTOR: Is nested arrow needed?
 export const concatSliceMap = (lenLimitIntType) => (mapFunc) => (concatElemAnyType) => (arrAnyType) =>
     arrAnyType.flat(Infinity).concat(concatElemAnyType).slice(lenLimitIntType).map(mapFunc);
 
@@ -27,7 +28,8 @@ export const concatSliceMap = (lenLimitIntType) => (mapFunc) => (concatElemAnyTy
 //  xFloatType: as float
 //  yFloatType: as float
 // returns: bool
-export const geThan = (xFloatType, yFloatType) => (yFloatType >= xFloatType);
+export const geThan = (xFloatType, yFloatType) =>
+    (yFloatType >= xFloatType);
 
 // given a function, a target, and an array of args, apply function to the target 
 //  and first argument, then apply the same function to the result along with the next argument
@@ -39,8 +41,11 @@ export const geThan = (xFloatType, yFloatType) => (yFloatType >= xFloatType);
 //  targetAnyType: target that function applies to, as any
 // returns function of signature: ([typeA]) => typeA
 export const pipeArgs = (func, targetAnyType) =>
-    (...argsAnyType) => argsAnyType.flat(Infinity).reduce(
-        (accum, cur) => func(accum || targetAnyType)(cur), null);
+    (...argsAnyType) => argsAnyType.flat(Infinity).reduce
+        (
+            (accum, cur) => func(accum || targetAnyType)(cur),
+            null
+        );
 
 // given a target and an array of ONE-PARAMETER functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
@@ -53,9 +58,11 @@ export const pipeArgs = (func, targetAnyType) =>
 //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
 // returns function of signature (any) => typeA
 export const pipe = (...funcs) =>
-    (targetAnyType) => funcs.flat(Infinity).reduce(
-        (funcAccum, thisFunc) => thisFunc(funcAccum || targetAnyType),
-        null);
+    (targetAnyType) => funcs.flat(Infinity).reduce
+        (
+            (funcAccum, thisFunc) => thisFunc(funcAccum || targetAnyType),
+            null
+        );
 
 // given a target and an array of TWO-PARAMETER functions, apply the first function to the target,
 //  then apply the next function to the result of the first function, and so on until 
@@ -68,9 +75,11 @@ export const pipe = (...funcs) =>
 //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
 // returns function of signature (typeB) => (any) => typeA
 export const pipe2 = (...funcs) =>
-    (typeB) => (targetAnyType) => funcs.flat(Infinity).reduce(
-        (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
-        null);
+    (typeB) => (targetAnyType) => funcs.flat(Infinity).reduce
+        (
+            (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
+            null
+        );
 
 // given a target and an array of COMMA-SEPARATED TWO-PARAMETER functions, apply the 
 //  first function to the target, then apply the next function to the result of the 
@@ -83,9 +92,11 @@ export const pipe2 = (...funcs) =>
 //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
 // returns function of signature (typeB, any) => typeA
 export const pipe2Comma = (...funcs) =>
-    (typeB, targetAnyType) => funcs.flat(Infinity).reduce(
-        (funcAccum, thisFunc) => thisFunc(typeB, funcAccum || targetAnyType),
-        null);
+    (typeB, targetAnyType) => funcs.flat(Infinity).reduce
+        (
+            (funcAccum, thisFunc) => thisFunc(typeB, funcAccum || targetAnyType),
+            null
+        );
 
 // given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
 //  apply the first function to the input argument, then apply the next function to
@@ -109,11 +120,12 @@ export const pipeDirect = (inputAnyType, ...funcs) =>
 //  arrAnyType: array to work on, as any
 //  itemsAnyType: array of items to splice in at "start" index
 // returns array of arrAnyType
-export const splice = (deleteCountIntType, startIntType, arrAnyType, ...itemsAnyType) => [
-    ...arrAnyType.slice(0, startIntType),
-    ...itemsAnyType,
-    ...arrAnyType.slice(startIntType + deleteCountIntType)
-];
+export const splice = (deleteCountIntType, startIntType, arrAnyType, ...itemsAnyType) =>
+    [
+        ...arrAnyType.slice(0, startIntType),
+        ...itemsAnyType,
+        ...arrAnyType.slice(startIntType + deleteCountIntType)
+    ];
 
 // given an array of test functions that take one argument and return boolean, 
 //  construct a single function to "or" all function results together
@@ -121,8 +133,11 @@ export const splice = (deleteCountIntType, startIntType, arrAnyType, ...itemsAny
 //  ...testFuncs: array of test functions returning boolean
 // returns function that takes one argument and returns boolean
 export const orTests = (...testFuncs) =>
-    (arg) => testFuncs.flat(Infinity).reduce(
-        (accum, curTest) => accum || curTest(arg), testFuncs.flat(Infinity)[0](arg))
+    (arg) => testFuncs.flat(Infinity).reduce
+        (
+            (accum, curTest) => accum || curTest(arg),
+            testFuncs.flat(Infinity)[0](arg)
+        )
 
 // given an array of test functions that take one argument and return boolean, 
 //  construct a single function to "and" all function results together
@@ -130,8 +145,11 @@ export const orTests = (...testFuncs) =>
 //  ...testFuncs: array of test functions returning boolean
 // returns function that takes one argument and returns boolean
 export const andTests = (...testFuncs) =>
-    (arg) => testFuncs.flat(Infinity).reduce(
-        (accum, curTest) => accum && curTest(arg), testFuncs.flat(Infinity)[0](arg))
+    (arg) => testFuncs.flat(Infinity).reduce
+        (
+            (accum, curTest) => accum && curTest(arg),
+            testFuncs.flat(Infinity)[0](arg)
+        )
 
 // given an array of COMMA-SEPARATED TWO-PARAMETER test functions that return boolean, 
 //  construct a single function to "or" all function results together
@@ -139,8 +157,11 @@ export const andTests = (...testFuncs) =>
 //  ...testFuncs: array of test functions of signature (typeA, typeB) => boolean
 // returns function that takes two comma-separated arguments and returns boolean
 export const orTests2Comma = (...testFuncs) =>
-    (typeA, typeB) => testFuncs.flat(Infinity).reduce(
-        (accum, curTest) => accum || curTest(typeA, typeB), testFuncs.flat(Infinity)[0](arg))
+    (typeA, typeB) => testFuncs.flat(Infinity).reduce
+        (
+            (accum, curTest) => accum || curTest(typeA, typeB),
+            testFuncs.flat(Infinity)[0](arg)
+        )
 
 // given an array of COMMA-SEPARATED TWO-PARAMETER test functions that return boolean, 
 //  construct a single function to "and" all function results together
@@ -148,8 +169,11 @@ export const orTests2Comma = (...testFuncs) =>
 //  ...testFuncs: array of test functions of signature (typeA, typeB) => boolean
 // returns function that takes two comma-separated arguments and returns boolean
 export const andTests2Comma = (...testFuncs) =>
-    (typeA, typeB) => testFuncs.flat(Infinity).reduce(
-        (accum, curTest) => accum && curTest(typeA, typeB), testFuncs.flat(Infinity)[0](arg))
+    (typeA, typeB) => testFuncs.flat(Infinity).reduce
+        (
+            (accum, curTest) => accum && curTest(typeA, typeB),
+            testFuncs.flat(Infinity)[0](arg)
+        )
 
 // *** Numerical utilities
 // bound num to [minFloatType, maxFloatType]
@@ -159,10 +183,17 @@ export const andTests2Comma = (...testFuncs) =>
 //  numFloatType: number to bound, as float
 // returns number, as float
 export const boundToRange = (minFloatType, maxFloatType, numFloatType) =>
+    // given number less than lower bound?
     (numFloatType < minFloatType)
+        // yes: return lower bound
         ? minFloatType
+
+        // no: given number greater than upper bound?
         : (numFloatType > maxFloatType)
+            // yes: return upper bound
             ? maxFloatType
+
+            // no: return given number
             : numFloatType;
 
 // bump num so that it falls outside the given bound around 0.0
@@ -172,12 +203,17 @@ export const boundToRange = (minFloatType, maxFloatType, numFloatType) =>
 //  numFloatType: number to check and possibly bump, as float
 // returns float
 export const excludeRange = (boundFloatType) => (numFloatType) =>
+    // given number greater than 0.0?
     (numFloatType > 0.0)
+        // yes: bound to range: [given bound, +Infinity]
         ? boundToRange(boundFloatType, +Infinity, numFloatType)
+
+        // no: given number less than 0.0?
         : (numFloatType < 0.0)
+            // yes: bound to range: (-Infinity, -given bound]
             ? boundToRange(-Infinity, -boundFloatType, numFloatType)
 
-            // bump to positive bound if num is 0.0
+            // no: bump to positive bound if num is 0.0
             : boundToRange(boundFloatType, +Infinity, numFloatType);
 
 // round num to given number of digits
@@ -198,7 +234,11 @@ export const roundTo = (digits, num) =>
 // returns -1 if the selector is not in the range of the cumulative weights
 export const selectWeight = (weightFloatTypes, selectorFloatType) =>
     // build cumulative array of weights
-    weightFloatTypes.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], [])
+    weightFloatTypes.reduce
+        (
+            (a, x, i) => [...a, x + (a[i - 1] || 0)],
+            []
+        )
         // find the first cumulative weight that "holds" the selector
         //  returns -1 if the selector is not in the range of the cumulative weights
         .findIndex(x => geThan(selectorFloatType, x));
@@ -215,7 +255,7 @@ export const sum = (numFloatTypes) =>
 //  maxFloatType: upper bound, as float
 //  numFloatType: number to test, as float
 // returns bool
-export const withinRange = (minFloatType, maxFloatType, numFloatType) =>
+export const isWithinRange = (minFloatType, maxFloatType, numFloatType) =>
     (numFloatType > minFloatType) && (numFloatType < maxFloatType);
 
 
@@ -239,6 +279,7 @@ export const chartShiftData = (xFloatType, data) =>
 //  hexStartStringType: color at fader = 0.0, as string
 // returns string: RGBA hex color as a string
 export const interpRGBA = (faderFloatType, hexEndStringType, hexStartStringType) => {
+    // REFACTOR into separate functions
     const rStart = parseInt(hexStartStringType.slice(1, 3), 16),
         gStart = parseInt(hexStartStringType.slice(3, 5), 16),
         bStart = parseInt(hexStartStringType.slice(5, 7), 16),

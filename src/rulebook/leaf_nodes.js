@@ -181,9 +181,6 @@ const leafCondsOOL_func = (storeType, randM_eventType) =>
             action_addJournalEntry(
                 getPhysTypeName(eventType.physType) + ' ' + UI_BEHAVIOR_STRINGS['frozen']
             ),
-
-            // force a redraw of the time chart to capture full conditions
-            action_forceChangesListUpdate('ui', 'chartDataBufferTime'),
         ])
         (randM_eventType);
 
@@ -230,9 +227,6 @@ const leafCreatureEatFood_func = (storeType, randM_eventType) =>
             eventType[EVENT_INSERT_FOODTYPES].map((thisFoodType) =>
                 action_deletePhysType(thisFoodType)
             ),
-
-            // force a redraw of the geo chart to update creature color
-            action_forceChangesListUpdate('ui', 'chartDataBufferGeo'),
         ])
         (randM_eventType);
 

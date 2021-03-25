@@ -13,7 +13,7 @@ import {
 import {
     pipe,
     boundToRange,
-    withinRange,
+    isWithinRange,
 } from '../utils.js';
 
 import {
@@ -49,6 +49,7 @@ export const physTypeDoPhysics = (storeType) => (physType) =>
 // returns physType
 const physTypeDoMovements = (storeType) => (physType) => {
     // define shorthand function to get cond from given physType
+    // REFACTOR into own function
     const inGetCond = getPhysTypeCond(physType);
 
     return usePhysTypeConds
@@ -72,12 +73,13 @@ const physTypeDoMovements = (storeType) => (physType) => {
 // returns physType
 const physTypeCheckWallCollisions = (_) => (physType) => {
     // define shorthand func to get cond from given physType
+    // REFACTOR into own function
     const inGetCond = getPhysTypeCond(physType);
 
     // are x and y within world boundary?
     return (
-        withinRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')) &&
-        withinRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y'))
+        isWithinRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')) &&
+        isWithinRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y'))
     )
         // yes: return given physType
         ? physType

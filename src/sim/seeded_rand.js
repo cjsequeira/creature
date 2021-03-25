@@ -64,6 +64,7 @@ export const randM_seededRand = (minFloatType, maxFloatType) => (seedIntType) =>
 //  weightsFloatType: array of weights, as float
 //  seedIntType: the seed to use
 // returns number: numerical index into weights list, as int
+// REFACTOR: A better way to do this by returning a randM instead of number?
 export const randM_chooseWeight = (weightsFloatType) => (seedIntType) =>
     selectWeight
         (

@@ -85,6 +85,7 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypes_func = (storeType, actionType) 
             : thisPt
     );
 
+// REFACTOR: Simplify!
 const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =>
     // NOTE: the simulator seed is updated in the SIM REDUCER!!!
 
@@ -145,7 +146,6 @@ const ptsRed_default_func = (storeType, _) =>
 // returns storeType "physTypeStore" property array
 export const physTypeStoreReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
     ({
         [ACTION_PHYSTYPE_ADD_PHYSTYPE]: ptsRed_actionPhysTypeAddPhysType_func,
 

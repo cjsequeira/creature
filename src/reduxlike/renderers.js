@@ -10,7 +10,12 @@ import {
 } from './store_getters.js';
 
 import { roundTo } from '../utils.js';
-import { HTML_BEHAVIOR_CLASS, HTML_BEHAVIOR_ID_PREFIX, HTML_BEHAVIOR_TAG, HTML_CREATURE_PHYSTYPE_CONTAINER } from '../const_vals.js';
+
+import {
+    HTML_BEHAVIOR_CLASS,
+    HTML_BEHAVIOR_TAG,
+    HTML_CREATURE_PHYSTYPE_CONTAINER,
+} from '../const_vals.js';
 
 
 // *** Function to be called when app store changes
@@ -18,7 +23,7 @@ import { HTML_BEHAVIOR_CLASS, HTML_BEHAVIOR_ID_PREFIX, HTML_BEHAVIOR_TAG, HTML_C
 // takes: 
 //  storeType
 // returns undefined
-export function mutable_renderFunction(storeType) {
+export function imp_mutable_renderFunction(storeType) {
     // time chart data buffer just updated?
     if (isObjChanged(storeType)('ui', 'chartDataBufferTime')) {
         // MUTABLE: point time chart data to internal data buffer and proper x axis settings, then draw
@@ -39,13 +44,13 @@ export function mutable_renderFunction(storeType) {
     // do we need to update creature behavior status boxes?
     if (isObjChanged(storeType)('ui', 'creature_behavior_boxes')) {
         // MUTABLE: update creature behavior status boxes
-        mutable_updateBehaviors(storeType);
+        imp_mutable_updateBehaviors(storeType);
     }
 
     // journal just updated?
     if (isObjChanged(storeType)('remainder', 'journal')) {
         // MUTABLE: update status box
-        mutable_updateStatusBox(storeType);
+        imp_mutable_updateStatusBox(storeType);
     }
 };
 
@@ -56,18 +61,21 @@ export function mutable_renderFunction(storeType) {
 // takes:
 //  storeType: store, as storeType
 // returns undefined
-function mutable_updateBehaviors(storeType) {
+function imp_mutable_updateBehaviors(storeType) {
     // get a handle to the creature behavior box objects in the storeType
-    let behaviorBoxes = getUIProp(storeType)('creature_behavior_boxes');
+    const behaviorBoxes = getUIProp(storeType)('creature_behavior_boxes');
 
     // get a list of current DOM behavior box objects
-    let curChildren = Array.from(document.getElementById(HTML_CREATURE_PHYSTYPE_CONTAINER).children);
+    const curChildren = Array.from(document.getElementById(HTML_CREATURE_PHYSTYPE_CONTAINER).children);
 
     // delete DOM behavior objects NO LONGER REPRESENTED in storeType
     curChildren
         // get a list of all DOM objects NOT represented in storeType
-        .filter((findChild) => behaviorBoxes.find((findBox) => findChild.id === findBox.id)
-            === undefined)
+        .filter
+        (
+            (findChild) => behaviorBoxes.find((findBox) => findChild.id === findBox.id)
+                === undefined
+        )
 
         // for each of those objects...
         .forEach((thisChild) => {
@@ -79,14 +87,15 @@ function mutable_updateBehaviors(storeType) {
     behaviorBoxes.forEach((thisBox) => {
         // is this behavior box ALREADY PRESENT on this web page?
         if (curChildren.find((thisChild) => thisBox.id === thisChild.id) !== undefined) {
+            const node = document.getElementById(thisBox.id);
+
             // change color and text 
-            let node = document.getElementById(thisBox.id);
             node.style.backgroundColor = thisBox.color.slice(0, 7);
             node.textContent = thisBox.text;
         } else {
             // is this behavior box NOT ALREADY PRESENT on this web page?
             // add to DOM
-            let node = document.createElement(HTML_BEHAVIOR_TAG);
+            const node = document.createElement(HTML_BEHAVIOR_TAG);
 
             node.className = HTML_BEHAVIOR_CLASS;
             node.style.backgroundColor = thisBox.color.slice(0, 7);
@@ -104,9 +113,9 @@ function mutable_updateBehaviors(storeType) {
 // takes:
 //  storeType: store, as storeType
 // returns undefined
-function mutable_updateStatusBox(storeType) {
+function imp_mutable_updateStatusBox(storeType) {
     // point to status box HTML DOM context
-    let statusBox = getUIProp(storeType)('status_box');
+    const statusBox = getUIProp(storeType)('status_box');
 
     // get status box scroll bar information
     const statusScrollTop = statusBox.scrollTop;

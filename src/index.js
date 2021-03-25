@@ -30,13 +30,13 @@ import {
     action_uiAddGeoChartData,
     action_uiAddTimeChartSimpleCreatureData,
     action_updateSelectPhysTypesRand,
-    dispatchActions,
-    mapEventsToActions,
+    imp_dispatchActions,
 } from './reduxlike/action_creators.js';
 
 import { sideEffect_storeInit } from './reduxlike/app_store.js';
 import { event_updateAllPhysTypes } from './rulebook/event_creators';
-import { mutable_renderFunction } from './reduxlike/renderers.js';
+import { imp_mutable_renderFunction } from './reduxlike/renderers.js';
+import { mapEventsToActions } from './rulebook/rulebook.js';
 
 import {
     getSimCurTime,
@@ -45,7 +45,7 @@ import {
 } from './reduxlike/store_getters.js';
 
 import { randM_seededRand } from './sim/seeded_rand';
-import { actAsSimpleCreature, getDefaultSimpleCreature } from './phystypes/simple_creature';
+import { getDefaultSimpleCreature } from './phystypes/simple_creature';
 
 
 // ***********************************************************************************
@@ -59,11 +59,11 @@ var appStore = sideEffect_storeInit
         document.getElementById(HTML_CREATURE_GEO_CHART).getContext('2d'),
         document.getElementById(HTML_CREATURE_PHYSTYPE_CONTAINER),
         document.getElementById(HTML_CREATURE_STATUS_BOX),
-        mutable_renderFunction
+        imp_mutable_renderFunction
     );
 
 // dispatch an initial series of actions
-appStore = dispatchActions
+appStore = imp_dispatchActions
     (
         appStore,
         [
@@ -119,7 +119,7 @@ appStore = dispatchActions
     );
 
 // Start updating application at animation-frame frequency
-requestAnimationFrame(appUpdate);
+requestAnimationFrame(imp_appUpdate);
 
 // ***********************************************************************************
 
@@ -128,11 +128,11 @@ requestAnimationFrame(appUpdate);
 // takes: 
 //  don't care
 // returns undefined
-function appUpdate(_) {
+function imp_appUpdate(_) {
     // is simulator running?
     if (getSimRunning(appStore)) {
         // yes: dispatch a series of actions to advance simulator
-        appStore = dispatchActions
+        appStore = imp_dispatchActions
             (
                 appStore,
                 [
@@ -154,7 +154,7 @@ function appUpdate(_) {
     }
 
     // dispatch action to update geo chart
-    appStore = dispatchActions
+    appStore = imp_dispatchActions
         (
             appStore,
 
@@ -165,7 +165,7 @@ function appUpdate(_) {
     // enough time elapsed since we last updated the time chart?
     if (getSimCurTime(appStore) > (getUIProp(appStore)('chartTimeLastClock') + UPDATE_FREQ_TIME_CHART)) {
         // dispatch action to update time chart
-        appStore = dispatchActions
+        appStore = imp_dispatchActions
             (
                 appStore,
 
@@ -175,5 +175,5 @@ function appUpdate(_) {
     }
 
     // put self back in animation queue
-    requestAnimationFrame(appUpdate);
+    requestAnimationFrame(imp_appUpdate);
 };

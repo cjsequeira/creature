@@ -67,7 +67,6 @@ const remRed_default_func = (storeType, _) =>
 // returns storeType "remainder" property object
 export const remainderReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
     ({
         [ACTION_DO_NOTHING]: remRed_actionDoNothing_func,
 

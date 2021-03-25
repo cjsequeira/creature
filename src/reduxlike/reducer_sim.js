@@ -35,6 +35,7 @@ const simRed_actionCompareStopIfFrozen_func = (storeType, _) =>
 
     running:
         // are ALL simple creatures frozen?
+        // REFACTOR: Simplify!
         (
             getPhysTypeStore(storeType)
                 // filter physType store to find simple creatures
@@ -94,10 +95,10 @@ const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
                     ? randM_getNextSeed(accumSeed, actionType.gensForRand.length - 1)
 
                     // no: don't go to the next seed
-                    : accumSeed
+                    : accumSeed,
 
                 // start with the current sim seed
-                , getSimSeed(storeType))
+                getSimSeed(storeType))
             // no: keep the seed the same
             : getSimSeed(storeType)
 });
@@ -105,6 +106,7 @@ const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
 const simRed_actionSimAdvance_func = (storeType, _) =>
 ({
     ...storeType.sim,
+
     curTime:
         // is sim running?
         (getSimRunning(storeType))
@@ -145,7 +147,6 @@ const simRed_default_func = (storeType, _) =>
 // returns storeType "sim" property object
 export const simReducer = (inStoreType, inActionType) =>
     // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
     ({
         [ACTION_COMPARE_STOP_IF_FROZEN]: simRed_actionCompareStopIfFrozen_func,
 

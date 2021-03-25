@@ -73,15 +73,15 @@ export const preFuncApplyPhysics = (storeType, randM_eventType) =>
 export const preFuncGenBehaviorRequest = (_, randM_eventType) =>
     // generate an updated randM_eventType
     randM_genRandM
-        // randM_genRandM value
+        // randM_genRandM value: an eventType
         (compose
             // create a new event using...
             (event_replacePhysType)
 
-            // ... an object based on the given physType, with a "behavior_request" prop-obj
+            // ...an object based on the given physType...
             (usePhysTypeConds(randM_val(randM_eventType).physType))
 
-            // here is the "behavior_request" prop-obj
+            // ...with a "behavior_request" prop-obj
             ({
                 behavior_request:
                     // select behavior request from list of given desire funcs using 
@@ -139,6 +139,7 @@ export const preFuncTagTouchedCreatures = (storeType, randM_eventType) =>
                         )
 
                         // ...closer than a given distance from this creatureType
+                        // REFACTOR into own distance function
                         .filter((ptToTest2) => Math.sqrt(
                             Math.pow(getPhysTypeCond(ptToTest2)('x') -
                                 getPhysTypeCond(eventType.physType)('x'), 2.0) +
@@ -180,6 +181,7 @@ export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
                         )
 
                         // keep only food closer than a given distance from this creatureType
+                        // REFACTOR into own distance function
                         .filter((ptToTest2) => Math.sqrt(
                             Math.pow(getPhysTypeCond(ptToTest2)('x') -
                                 getPhysTypeCond(eventType.physType)('x'), 2.0) +

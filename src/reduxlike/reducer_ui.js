@@ -32,7 +32,6 @@ import {
     UI_NUM_TRAILS,
     UI_OTHER_RADIUS,
     HTML_BEHAVIOR_CLASS,
-    HTML_CREATURE_PHYSTYPE_CONTAINER,
     UI_BORDER_WIDTH,
     HTML_BEHAVIOR_ID_PREFIX,
 } from '../const_vals.js';
@@ -64,6 +63,7 @@ const uiRed_actionForceChangesListUpdate_func = (storeType, actionType) =>
             : getChangesList(storeType)('ui'),
 });
 
+// adding a new physType? Allocate space for the data in the charts
 const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
 ({
     ...storeType.ui,
@@ -236,36 +236,37 @@ const uiRed_actionUIAddGeoChartData_func = (storeType, _) =>
         datasets:
             // update geo chart data buffer associated with all physTypes in the store
             getPhysTypeStore(storeType).map((thisPhysType, i) =>
-                updateGeoChartDataset(
-                    // dataset to update: ASSUMED TO EXIST!
-                    (getUIProp(storeType)('chartDataBufferGeo').datasets[i]),
-
-                    // fill color to use
-                    getPhysTypeColor(thisPhysType),
-
-                    // border color to use
-                    // is this physType a simple creature?
-                    (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
-                        // yes: pick border color based on behavior
-                        ? UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType)('behavior')]
-                        // no: use same color as fill color
-                        : getPhysTypeColor(thisPhysType),
-
-                    // data to add
-                    ({
-                        x: getPhysTypeCond(thisPhysType)('x'),
-                        y: getPhysTypeCond(thisPhysType)('y'),
-                    }),
-
-                    // number of trails
+                updateGeoChartDataset
                     (
-                        // draw full number of trails for simple creatures
-                        // draw one trail for all other physTypes
+                        // dataset to update: ASSUMED TO EXIST!
+                        (getUIProp(storeType)('chartDataBufferGeo').datasets[i]),
+
+                        // fill color to use
+                        getPhysTypeColor(thisPhysType),
+
+                        // border color to use
+                        // is this physType a simple creature?
                         (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
-                            ? UI_NUM_TRAILS
-                            : 1
+                            // yes: pick border color based on behavior
+                            ? UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType)('behavior')]
+                            // no: use same color as fill color
+                            : getPhysTypeColor(thisPhysType),
+
+                        // data to add
+                        ({
+                            x: getPhysTypeCond(thisPhysType)('x'),
+                            y: getPhysTypeCond(thisPhysType)('y'),
+                        }),
+
+                        // number of trails
+                        (
+                            // draw full number of trails for simple creatures
+                            // draw one trail for all other physTypes
+                            (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
+                                ? UI_NUM_TRAILS
+                                : 1
+                        )
                     )
-                )
             ),
 
     },
@@ -323,6 +324,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
                             .datasets[2 * i + 1],
 
                         // legend label to use
+                        // REFACTOR
                         getPhysTypeName(thisPhysType) + ' ' + 'neuro',
 
                         // minimum x below which data "falls off" chart,
@@ -352,38 +354,6 @@ const uiRed_default_func = (storeType, _) =>
     ({ ...storeType.ui });
 
 
-// *** UI reducer main function
-// reducer for "ui" property of storeType
-// takes:
-//  inStoreType: store to use as template for reduction, as storeType 
-//  inActionType: action to use for reduction, as actionType
-// returns storeType "ui" property object
-export const uiReducer = (inStoreType, inActionType) =>
-    // list of "mini" reducer functions
-    // each function is associated with an action type, given in brackets
-    ({
-        [ACTION_FORCE_CHANGES_LIST_UPDATE]: uiRed_actionForceChangesListUpdate_func,
-
-        // adding a new physType? Allocate space for the data in the charts
-        [ACTION_PHYSTYPE_ADD_PHYSTYPE]: uiRed_actionPhysTypeAddPhysType_func,
-
-        [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: uiRed_actionPhysTypeDeletePhysType_func,
-
-        [ACTION_UI_ADD_GEO_CHART_DATA]: uiRed_actionUIAddGeoChartData_func,
-
-        [ACTION_UI_ADD_TIME_CHART_DATA]: uiRed_actionUIAddTimeChartData_func,
-
-        // use inActionType.type as an entry key into the key-val list above
-        // key is used to select a function that takes a storeType object  
-        //  and actionType and returns a storeType "ui" prop obj
-        // if no key-val matches the entry key, return a func that echoes 
-        //  the given storeType "ui" property object
-    }[inActionType.type] || uiRed_default_func)
-        // evaluate the function with the storeType "ui" property object
-        //  and actionType to get a storeType "ui" property object
-        (inStoreType, inActionType);
-
-
 // *** Reducer helper functions
 // update specific time history chart dataset
 // takes: 
@@ -392,39 +362,39 @@ export const uiReducer = (inStoreType, inActionType) =>
 //  minXFloatType: minimum x beyond which to drop data, as float
 //  timeValFloatTuple: floating-point data point, as {time, value}
 // returns ChartJS dataset type
-function updateTimeChartDataset(inDataSet, labelStringType, minXFloatType, timeValFloatTuple) {
-    // return dataset with data added and shifting-out of data that have "fallen off" 
-    //  the left side of the chart
-    return {
-        ...inDataSet,
+const updateTimeChartDataset = (inDataSet, labelStringType, minXFloatType, timeValFloatTuple) =>
+// return dataset with data added and shifting-out of data that have "fallen off" 
+//  the left side of the chart
+({
+    ...inDataSet,
 
-        label: labelStringType,
+    label: labelStringType,
 
-        // add in new data while shifting out data that has now
-        //  "fallen off" the left side of the chart
-        data:
-            chartShiftData
-                (
-                    minXFloatType,
-                    [
-                        ...inDataSet.data,
+    // add in new data while shifting out data that has now
+    //  "fallen off" the left side of the chart
+    data:
+        chartShiftData
+            (
+                minXFloatType,
+                [
+                    ...inDataSet.data,
 
-                        {
-                            x: timeValFloatTuple.time,
-                            y: timeValFloatTuple.value,
-                        }
-                    ]
-                ),
-    };
-}
+                    {
+                        x: timeValFloatTuple.time,
+                        y: timeValFloatTuple.value,
+                    }
+                ]
+            ),
+});
 
 // update specific time history chart x axis
 // takes: 
 //  inXAxis: time chart ChartJS x axis to use
 //  timeFloat: time to use for review, as float
 // returns ChartJS dataset type
-function updateTimeChartXAxis(inXAxis, timeFloat) {
+const updateTimeChartXAxis = (inXAxis, timeFloat) => {
     // calculate appropriate time chart x axis "window"
+    // REFACTOR into separate functions
     const chart_x = inXAxis.ticks;                                  // shorthand for x-axis ticks
     const chart_xWidth = chart_x.max - chart_x.min;                 // extents of x axis
     const new_max = Math.ceil(timeFloat - chart_x.stepSize);        // potential different x axis max           
@@ -442,7 +412,7 @@ function updateTimeChartXAxis(inXAxis, timeFloat) {
             min: (chart_x.min < new_min) ? new_min : chart_x.min,
         },
     };
-}
+};
 
 // update specific geospatial chart dataset
 // takes: 
@@ -452,8 +422,9 @@ function updateTimeChartXAxis(inXAxis, timeFloat) {
 //  xyFloatTuple: floating-point datapoint to add, as {x, y}
 //  numTrailsIntType: number of trailing dots to draw
 // returns ChartJS dataset type
-function updateGeoChartDataset
-    (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) {
+const updateGeoChartDataset =
+(inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) => {
+    // REFACTOR into separate functions
     // all of our slice limits are -numTrailsIntType, so define a shorthand 
     //  function with that limit built in 
     const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
@@ -487,4 +458,34 @@ function updateGeoChartDataset
         pointBorderColor:
             concatAndFade(borderColorStringType)([inDataSet.pointBorderColor]),
     };
-}
+};
+
+
+// *** UI reducer main function
+// reducer for "ui" property of storeType
+// takes:
+//  inStoreType: store to use as template for reduction, as storeType 
+//  inActionType: action to use for reduction, as actionType
+// returns storeType "ui" property object
+export const uiReducer = (inStoreType, inActionType) =>
+    // list of "mini" reducer functions
+    ({
+        [ACTION_FORCE_CHANGES_LIST_UPDATE]: uiRed_actionForceChangesListUpdate_func,
+
+        [ACTION_PHYSTYPE_ADD_PHYSTYPE]: uiRed_actionPhysTypeAddPhysType_func,
+
+        [ACTION_PHYSTYPE_DELETE_PHYSTYPE]: uiRed_actionPhysTypeDeletePhysType_func,
+
+        [ACTION_UI_ADD_GEO_CHART_DATA]: uiRed_actionUIAddGeoChartData_func,
+
+        [ACTION_UI_ADD_TIME_CHART_DATA]: uiRed_actionUIAddTimeChartData_func,
+
+        // use inActionType.type as an entry key into the key-val list above
+        // key is used to select a function that takes a storeType object  
+        //  and actionType and returns a storeType "ui" prop obj
+        // if no key-val matches the entry key, return a func that echoes 
+        //  the given storeType "ui" property object
+    }[inActionType.type] || uiRed_default_func)
+        // evaluate the function with the storeType "ui" property object
+        //  and actionType to get a storeType "ui" property object
+        (inStoreType, inActionType);
