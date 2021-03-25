@@ -15,7 +15,7 @@ import {
     WORLD_TOUCH_DISTANCE,
 } from '../const_vals.js';
 
-import { compose } from '../utils.js';
+import { compose, partial2, pipeDirect } from '../utils.js';
 
 import {
     getPhysTypeAct,
@@ -47,15 +47,18 @@ export const preFuncApplyPhysics = (storeType, randM_eventType) =>
     // total signature: (randM_eventType) => randM_eventType
     randM_liftBind
         ((eventType) =>
-            compose
-                // create a new event using...
-                (event_replacePhysType)
+            pipeDirect
+                (
+                    // the given physType, contained in eventType
+                    eventType.physType,
+                    [
+                        // do laws of physics on physType above, using storeType as argument 1
+                        partial2(physTypeDoPhysics, storeType),
 
-                // ...a physType with physics applied
-                (physTypeDoPhysics(storeType))
-
-                // the physType to apply physics to
-                (eventType.physType)
+                        // create a new event using the resulting physType from above
+                        event_replacePhysType,
+                    ]
+                )
         )
         // apply randM_liftBind to the given randM_eventType to unwrap the contained eventType
         //  for use in the function above
@@ -135,16 +138,16 @@ export const preFuncTagTouchedCreatures = (storeType, randM_eventType) =>
 
                         // keep only creatureTypes...
                         .filter(
-                            (ptToTest1) => getPhysTypeCond(ptToTest1)('behavior') !== undefined
+                            (ptToTest1) => getPhysTypeCond(ptToTest1, 'behavior') !== undefined
                         )
 
                         // ...closer than a given distance from this creatureType
                         // REFACTOR into own distance function
                         .filter((ptToTest2) => Math.sqrt(
-                            Math.pow(getPhysTypeCond(ptToTest2)('x') -
-                                getPhysTypeCond(eventType.physType)('x'), 2.0) +
-                            Math.pow(getPhysTypeCond(ptToTest2)('y') -
-                                getPhysTypeCond(eventType.physType)('y'), 2.0)
+                            Math.pow(getPhysTypeCond(ptToTest2, 'x') -
+                                getPhysTypeCond(eventType.physType, 'x'), 2.0) +
+                            Math.pow(getPhysTypeCond(ptToTest2, 'y') -
+                                getPhysTypeCond(eventType.physType, 'y'), 2.0)
                         ) < WORLD_TOUCH_DISTANCE)
                 )
         )
@@ -183,10 +186,10 @@ export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
                         // keep only food closer than a given distance from this creatureType
                         // REFACTOR into own distance function
                         .filter((ptToTest2) => Math.sqrt(
-                            Math.pow(getPhysTypeCond(ptToTest2)('x') -
-                                getPhysTypeCond(eventType.physType)('x'), 2.0) +
-                            Math.pow(getPhysTypeCond(ptToTest2)('y') -
-                                getPhysTypeCond(eventType.physType)('y'), 2.0)
+                            Math.pow(getPhysTypeCond(ptToTest2, 'x') -
+                                getPhysTypeCond(eventType.physType, 'x'), 2.0) +
+                            Math.pow(getPhysTypeCond(ptToTest2, 'y') -
+                                getPhysTypeCond(eventType.physType, 'y'), 2.0)
                         ) < WORLD_TOUCH_DISTANCE)
                 )
         )

@@ -36,7 +36,7 @@ const ptsRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
 
     {
         ...actionType.physType,
-        id: genPhysTypeAvailID(storeType)(0),
+        id: genPhysTypeAvailID(storeType, 0),
     },
 ]);
 

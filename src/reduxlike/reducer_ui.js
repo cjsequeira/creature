@@ -97,7 +97,7 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
                             pointBackgroundColor: getPhysTypeColor(actionType.physType),
                             pointBorderColor: getPhysTypeColor(actionType.physType),
 
-                            id: genPhysTypeAvailID(storeType)(0),
+                            id: genPhysTypeAvailID(storeType, 0),
                         },
 
                         // neuro data
@@ -110,7 +110,7 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
                             pointBackgroundColor: getPhysTypeColor(actionType.physType),
                             pointBorderColor: getPhysTypeColor(actionType.physType),
 
-                            id: genPhysTypeAvailID(storeType)(0),
+                            id: genPhysTypeAvailID(storeType, 0),
                         },
                     ],
             }
@@ -131,7 +131,7 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
 
                 // set label and ID
                 label: getPhysTypeName(actionType.physType),
-                id: genPhysTypeAvailID(storeType)(0),
+                id: genPhysTypeAvailID(storeType, 0),
 
                 // point radius: select based on act
                 pointRadius:
@@ -222,10 +222,10 @@ const uiRed_actionUIAddGeoChartData_func = (storeType, _) =>
                 (thisPhysType) =>
                 ({
                     class: HTML_BEHAVIOR_CLASS,
-                    color: UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType)('behavior')],
+                    color: UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType, 'behavior')],
                     id: HTML_BEHAVIOR_ID_PREFIX + getPhysTypeID(thisPhysType).toString(),
                     text: getPhysTypeName(thisPhysType) + ' is '
-                        + getPhysTypeCond(thisPhysType)('behavior'),
+                        + getPhysTypeCond(thisPhysType, 'behavior'),
                 })
             ),
 
@@ -248,14 +248,14 @@ const uiRed_actionUIAddGeoChartData_func = (storeType, _) =>
                         // is this physType a simple creature?
                         (getPhysTypeAct(thisPhysType) === actAsSimpleCreature)
                             // yes: pick border color based on behavior
-                            ? UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType)('behavior')]
+                            ? UI_BEHAVIOR_COLORS[getPhysTypeCond(thisPhysType, 'behavior')]
                             // no: use same color as fill color
                             : getPhysTypeColor(thisPhysType),
 
                         // data to add
                         ({
-                            x: getPhysTypeCond(thisPhysType)('x'),
-                            y: getPhysTypeCond(thisPhysType)('y'),
+                            x: getPhysTypeCond(thisPhysType, 'x'),
+                            y: getPhysTypeCond(thisPhysType, 'y'),
                         }),
 
                         // number of trails
@@ -311,7 +311,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
                         // data tuple to add
                         ({
                             time: getSimCurTime(storeType),
-                            value: getPhysTypeCond(thisPhysType)('glucose'),
+                            value: getPhysTypeCond(thisPhysType, 'glucose'),
                         })
                     ),
 
@@ -333,7 +333,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
                         // data tuple to add
                         ({
                             time: getSimCurTime(storeType),
-                            value: getPhysTypeCond(thisPhysType)('neuro'),
+                            value: getPhysTypeCond(thisPhysType, 'neuro'),
                         })
                     ),
                 ]
@@ -423,42 +423,42 @@ const updateTimeChartXAxis = (inXAxis, timeFloat) => {
 //  numTrailsIntType: number of trailing dots to draw
 // returns ChartJS dataset type
 const updateGeoChartDataset =
-(inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) => {
-    // REFACTOR into separate functions
-    // all of our slice limits are -numTrailsIntType, so define a shorthand 
-    //  function with that limit built in 
-    const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
+    (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) => {
+        // REFACTOR into separate functions
+        // all of our slice limits are -numTrailsIntType, so define a shorthand 
+        //  function with that limit built in 
+        const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
 
-    // define a shorthand function specific to concatenating a color 
-    //  and mapping color list to a fade
-    const concatAndFade = concatSliceTrailsMap(fadeColors);
+        // define a shorthand function specific to concatenating a color 
+        //  and mapping color list to a fade
+        const concatAndFade = concatSliceTrailsMap(fadeColors);
 
-    // return a ChartJS dataset object with data and colors added, 
-    //  then sliced to max length, then color-faded
-    return {
-        ...inDataSet,
+        // return a ChartJS dataset object with data and colors added, 
+        //  then sliced to max length, then color-faded
+        return {
+            ...inDataSet,
 
-        data: concatSliceTrailsMap
-            (x => x)                            // identity function for mapping
-            ({                                  // concatenate xyFloatTuple
-                x: xyFloatTuple.x,
-                y: xyFloatTuple.y
-            })
-            ([inDataSet.data]),                 // array: current chart xy data
+            data: concatSliceTrailsMap
+                (x => x)                            // identity function for mapping
+                ({                                  // concatenate xyFloatTuple
+                    x: xyFloatTuple.x,
+                    y: xyFloatTuple.y
+                })
+                ([inDataSet.data]),                 // array: current chart xy data
 
-        backgroundColor:
-            concatAndFade(fillColorStringType)([inDataSet.backgroundColor]),
+            backgroundColor:
+                concatAndFade(fillColorStringType)([inDataSet.backgroundColor]),
 
-        borderColor:
-            concatAndFade(fillColorStringType)([inDataSet.borderColor]),
+            borderColor:
+                concatAndFade(fillColorStringType)([inDataSet.borderColor]),
 
-        pointBackgroundColor:
-            concatAndFade(fillColorStringType)([inDataSet.pointBackgroundColor]),
+            pointBackgroundColor:
+                concatAndFade(fillColorStringType)([inDataSet.pointBackgroundColor]),
 
-        pointBorderColor:
-            concatAndFade(borderColorStringType)([inDataSet.pointBorderColor]),
+            pointBorderColor:
+                concatAndFade(borderColorStringType)([inDataSet.pointBorderColor]),
+        };
     };
-};
 
 
 // *** UI reducer main function

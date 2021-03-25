@@ -42,7 +42,7 @@ const simRed_actionCompareStopIfFrozen_func = (storeType, _) =>
                 .filter((ptToTest1) => getPhysTypeAct(ptToTest1) === actAsSimpleCreature)
 
                 // filter to find those with behavior of 'frozen'
-                .filter((ptToTest2) => getPhysTypeCond(ptToTest2)('behavior') === 'frozen')
+                .filter((ptToTest2) => getPhysTypeCond(ptToTest2, 'behavior') === 'frozen')
 
                 // is number of frozen simple creatures equal to 
                 //  total number of simple creatures?

@@ -11,6 +11,14 @@
 export const compose = f => g =>
     anyType => f(g(anyType));
 
+// enclose one argument into the first slot of a COMMA-SEPARATED two-parameter function
+// takes:
+//  func: the two-parameter function to use, signature (typeA, any) => any
+//  argTypeA: the argument to enclose into the first slot, signature typeA
+// returns: a function of signature (any) => any
+export const partial2 = (func, argTypeA) =>
+    (anyType) => func(argTypeA, anyType);
+
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // nested arrow function to support current use of concatSliceMap in UI code
 // takes:
@@ -100,6 +108,18 @@ export const pipe2Comma = (typeB, targetAnyType, ...funcs) =>
             null
         );
 
+// given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
+//  apply the first function to the input argument, then apply the next function to
+//  the result of the first function, and so on until all functions are applied
+// the array of functions will be completely flattened
+// ALL functions must be of signature (typeA) => typeA
+// takes:
+//  inputAnyType: input argument that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns RESULT of signature typeA
+export const pipeDirect = (inputAnyType, ...funcs) =>
+    funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
+    
 // given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
 //  and the specified number of items removed at that index

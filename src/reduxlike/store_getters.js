@@ -10,13 +10,13 @@
 //  storeType
 //  proposedIDIntType: initial ID to check for availability, as int
 // returns int
-export const genPhysTypeAvailID = (storeType) => (proposedIDIntType) =>
+export const genPhysTypeAvailID = (storeType, proposedIDIntType) =>
     // is there a physType that already has the given ID?
     (getPhysTypeStore(storeType)
         .filter((ptToTest) => getPhysTypeID(ptToTest) === proposedIDIntType)
         .length > 0)
         // yes: increment the ID by one and check that
-        ? genPhysTypeAvailID(storeType)(proposedIDIntType + 1)
+        ? genPhysTypeAvailID(storeType, proposedIDIntType + 1)
 
         // no: send the given ID back to be used
         : proposedIDIntType
@@ -34,15 +34,15 @@ export const getPhysTypeAct = (physType) => physType.act;
 //  storeType: the store to use
 //  physType: physType to use
 // returns float
-export const getPhysTypeBCElapsed = (storeType) => (physType) =>
-    getSimCurTime(storeType) - getPhysTypeCond(physType)('behavior_clock');
+export const getPhysTypeBCElapsed = (storeType, physType) =>
+    getSimCurTime(storeType) - getPhysTypeCond(physType, 'behavior_clock');
 
 // get specific condition from physType
 // takes:
 //  physType: physType to use
 //  argCond: string name for key of condition to look at
 // returns condition value
-export const getPhysTypeCond = (physType) => (argCond) => physType.conds[argCond];
+export const getPhysTypeCond = (physType, argCond) => physType.conds[argCond];
 
 // get conds object from physType
 // takes:

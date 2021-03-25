@@ -11,9 +11,10 @@ import {
 } from '../const_vals.js';
 
 import {
-    pipe,
     boundToRange,
     isWithinRange,
+    partial2,
+    pipe2Comma,
 } from '../utils.js';
 
 import {
@@ -28,17 +29,18 @@ import {
 //  storeType
 //  physType
 // returns physType
-export const physTypeDoPhysics = (storeType) => (physType) =>
+export const physTypeDoPhysics = (storeType, physType) =>
     // function chain: must check wall collisions FIRST, because the check could
     //  adjust the acceleration/speed/heading used for movements
-    pipe
+    pipe2Comma
         (
-            physTypeCheckWallCollisions(storeType),
-            physTypeDoMovements(storeType),
-        )
-
-        // apply the pipe to the given physType
-        (physType);
+            storeType,
+            physType,
+            [
+                physTypeCheckWallCollisions,
+                physTypeDoMovements,
+            ]
+        );
 
 
 // *** Internal physics functions
@@ -47,10 +49,10 @@ export const physTypeDoPhysics = (storeType) => (physType) =>
 //  storeType
 //  physType
 // returns physType
-const physTypeDoMovements = (storeType) => (physType) => {
+const physTypeDoMovements = (storeType, physType) => {
     // define shorthand function to get cond from given physType
     // REFACTOR into own function
-    const inGetCond = getPhysTypeCond(physType);
+    const inGetCond = partial2(getPhysTypeCond, physType);
 
     return usePhysTypeConds
         (physType)
@@ -71,10 +73,10 @@ const physTypeDoMovements = (storeType) => (physType) => {
 //  don't care
 //  physType
 // returns physType
-const physTypeCheckWallCollisions = (_) => (physType) => {
+const physTypeCheckWallCollisions = (_, physType) => {
     // define shorthand func to get cond from given physType
     // REFACTOR into own function
-    const inGetCond = getPhysTypeCond(physType);
+    const inGetCond = partial2(getPhysTypeCond, physType);
 
     // are x and y within world boundary?
     return (
