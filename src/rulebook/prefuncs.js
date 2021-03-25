@@ -52,10 +52,11 @@ export const preFuncApplyPhysics = (storeType, randM_eventType) =>
         ((eventType) =>
             pipe
                 (
-                    // the given physType, contained in eventType
+                    // the given physType to be piped in, contained in eventType
                     eventType.physType,
                     [
                         // do laws of physics on physType above, using storeType as argument 1
+                        // the pipe gives the physType to the partially-applied function below
                         partial2(physTypeDoPhysics, storeType),
 
                         // create a new event using the resulting physType from above

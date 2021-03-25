@@ -101,6 +101,7 @@ appStore = imp_dispatchActions
                     (_) => true,
 
                     // randomize conds: x and y
+                    // the seeds "seed1" and "seed2" are submitted by the reducer
                     (seed1) => ({ x: partial3(randM_seededRand, 0.1, WORLD_SIZE_X - 0.1)(seed1) }),
                     (seed2) => ({ y: partial3(randM_seededRand, 0.1, WORLD_SIZE_Y - 0.1)(seed2) }),
                 ),
