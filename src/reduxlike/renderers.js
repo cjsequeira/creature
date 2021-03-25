@@ -25,7 +25,7 @@ import {
 // returns undefined
 export function imp_mutable_renderFunction(storeType) {
     // time chart data buffer just updated?
-    if (isObjChanged(storeType)('ui', 'chartDataBufferTime')) {
+    if (isObjChanged(storeType, 'ui', 'chartDataBufferTime')) {
         // MUTABLE: point time chart data to internal data buffer and proper x axis settings, 
         //  then draw
         let creatureTimeChartHandle = getUIProp(storeType, 'creature_time_chart');
@@ -35,7 +35,7 @@ export function imp_mutable_renderFunction(storeType) {
     }
 
     // geo chart data buffer just updated?
-    if (isObjChanged(storeType)('ui', 'chartDataBufferGeo')) {
+    if (isObjChanged(storeType, 'ui', 'chartDataBufferGeo')) {
         // MUTABLE: point geo chart data to internal data buffer, then draw
         let creatureGeoChartHandle = getUIProp(storeType, 'creature_geo_chart');
         creatureGeoChartHandle.data = getUIProp(storeType, 'chartDataBufferGeo');
@@ -43,13 +43,13 @@ export function imp_mutable_renderFunction(storeType) {
     }
 
     // do we need to update creature behavior status boxes?
-    if (isObjChanged(storeType)('ui', 'creature_behavior_boxes')) {
+    if (isObjChanged(storeType, 'ui', 'creature_behavior_boxes')) {
         // MUTABLE: update creature behavior status boxes
         imp_mutable_updateBehaviors(storeType);
     }
 
     // journal just updated?
-    if (isObjChanged(storeType)('remainder', 'journal')) {
+    if (isObjChanged(storeType, 'remainder', 'journal')) {
         // MUTABLE: update status box
         imp_mutable_updateStatusBox(storeType);
     }
