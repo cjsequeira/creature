@@ -62,7 +62,6 @@ import {
 
 import {
     pipe2Comma,
-    pipeDirect,
     orTests2Comma,
 } from '../utils.js';
 
@@ -86,11 +85,14 @@ import {
 const preFuncDoPhysicsAndTag = (storeType, randM_eventType) =>
     pipe2Comma
         (
-            preFuncApplyPhysics,
-            preFuncTagTouchedCreatures,
-            preFuncTagTouchedFood,
-        )
-        (storeType, randM_eventType);
+            storeType,
+            randM_eventType,
+            [
+                preFuncApplyPhysics,
+                preFuncTagTouchedCreatures,
+                preFuncTagTouchedFood,
+            ]
+        );
 
 
 // *** Functional programming helper functions
@@ -162,8 +164,10 @@ const randM_findRule = (storeType, randM_eventType, node) => {
 //  eventType
 // returns [actionType]
 const resolveRules = (storeType, eventType) =>
-    // pipe randM_findRule() --> randM_actionTypeVal()
-    pipeDirect
+    // unwrap the randM_actionType produced by randM_findRule below
+    // when unwrapped, we get an [actionType] that consists of a combination of:
+    //  actionType or [actionType], plus an action to update the seed!!
+    randM_actionTypeVal
         (
             // get a randM_actionType through application of randM_findRule
             // wrap the given eventType in a randM to create a randM_eventType
@@ -178,12 +182,7 @@ const resolveRules = (storeType, eventType) =>
 
                     // use our rulebook as the starting rule node for randM_findRule
                     ruleBook
-                ),
-
-            // then, unwrap the randM_actionType produced by randM_findRule above
-            // when unwrapped, we get an [actionType] that consists of a combination of:
-            //  actionType or [actionType], plus an action to update the seed!!
-            randM_actionTypeVal
+                )
         );
 
 
