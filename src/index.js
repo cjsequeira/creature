@@ -46,6 +46,7 @@ import {
 
 import { randM_seededRand } from './sim/seeded_rand';
 import { getDefaultSimpleCreature } from './phystypes/simple_creature';
+import { partial3 } from './utils';
 
 
 // ***********************************************************************************
@@ -100,8 +101,8 @@ appStore = imp_dispatchActions
                     (_) => true,
 
                     // randomize conds: x and y
-                    (seed1) => ({ x: randM_seededRand(0.1, WORLD_SIZE_X - 0.1)(seed1) }),
-                    (seed2) => ({ y: randM_seededRand(0.1, WORLD_SIZE_Y - 0.1)(seed2) }),
+                    (seed1) => ({ x: partial3(randM_seededRand, 0.1, WORLD_SIZE_X - 0.1)(seed1) }),
+                    (seed2) => ({ y: partial3(randM_seededRand, 0.1, WORLD_SIZE_Y - 0.1)(seed2) }),
                 ),
 
             // add all initial simple creature data to time chart

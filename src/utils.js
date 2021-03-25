@@ -13,11 +13,20 @@ export const compose = f => g =>
 
 // enclose one argument into the first slot of a COMMA-SEPARATED two-parameter function
 // takes:
-//  func: the two-parameter function to use, signature (typeA, any) => any
-//  argTypeA: the argument to enclose into the first slot, signature typeA
+//  func: the two-parameter function to use, signature (any, any) => any
+//  argAnyType: the argument to enclose into the first slot, signature any
 // returns: a function of signature (any) => any
-export const partial2 = (func, argTypeA) =>
-    (anyType) => func(argTypeA, anyType);
+export const partial2 = (func, argAnyType) =>
+    (anyType) => func(argAnyType, anyType);
+
+// enclose two arguments into the first and second slots of a COMMA-SEPARATED three-parameter function
+// takes:
+//  func: the three-parameter function to use, signature (any, any, any) => any
+//  arg1AnyType: the argument to enclose into the first slot, signature any
+//  arg2AnyType: the argument to enclose into the second slot, signature any
+// returns: a function of signature (any) => any
+export const partial3 = (func, arg1AnyType, arg2AnyType) =>
+    (anyType) => func(arg1AnyType, arg2AnyType, anyType);
 
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // nested arrow function to support current use of concatSliceMap in UI code
@@ -38,57 +47,6 @@ export const concatSliceMap = (lenLimitIntType) => (mapFunc) => (concatElemAnyTy
 // returns: bool
 export const geThan = (xFloatType, yFloatType) =>
     (yFloatType >= xFloatType);
-
-// given a ONE-PARAMETER function and an array of args, return a function that
-//  takes a list of arguments, then applies function to the target and first argument, 
-//  then applies the same function to the result along with the next argument,
-//  and so on until all arguments are exhausted
-// the array of arguments will be completely flattened
-// assumes function is of signature (typeA) => typeA
-// takes:
-//  func: function to apply, of signature (typeA) => typeA
-//  targetAnyType: target that function applies to, as any
-// returns function of signature: ([typeA]) => typeA
-export const pipeArgs = (func, targetAnyType) =>
-    (...argsAnyType) => argsAnyType.flat(Infinity).reduce
-        (
-            (accum, cur) => func(accum || targetAnyType)(cur),
-            null
-        );
-
-// given a target and an array of ONE-PARAMETER functions, return a function that 
-//  applies the first function to the target,then apply the next function to the 
-//  result of the first function, and so on until all functions are applied
-// the array of functions will be completely flattened
-// if first function returns "typeA", then all remaining functions must be 
-//  of signature (typeA) => typeA
-// takes:
-//  targetAnyType: target that functions apply to, as any
-//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
-// returns function of signature (any) => typeA
-export const pipe = (...funcs) =>
-    (targetAnyType) => funcs.flat(Infinity).reduce
-        (
-            (funcAccum, thisFunc) => thisFunc(funcAccum || targetAnyType),
-            null
-        );
-
-// given a target and an array of TWO-PARAMETER functions, return a function that
-//  applies the first function to the target, then applies the next function to the 
-//  result of the first function, and so on until all functions are applied
-// the array of functions will be completely flattened
-// first function must be of signature (typeB) => (any) => typeA
-// all remaining functions must be of signature (typeB) => (typeA) => typeA
-// takes:
-//  targetAnyType: target that functions apply to, as any
-//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
-// returns function of signature (typeB) => (any) => typeA
-export const pipe2 = (...funcs) =>
-    (typeB) => (targetAnyType) => funcs.flat(Infinity).reduce
-        (
-            (funcAccum, thisFunc) => thisFunc(typeB)(funcAccum || targetAnyType),
-            null
-        );
 
 // given a "typeB", a target, and an array of COMMA-SEPARATED TWO-PARAMETER functions, 
 //  apply the first function to the target, then apply the 
@@ -119,7 +77,7 @@ export const pipe2Comma = (typeB, targetAnyType, ...funcs) =>
 // returns RESULT of signature typeA
 export const pipeDirect = (inputAnyType, ...funcs) =>
     funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
-    
+
 // given a delete count, an insertion index, an array, and a list of items to insert,
 //  return an array with the elements spliced into the array at the index
 //  and the specified number of items removed at that index
@@ -137,30 +95,6 @@ export const splice = (deleteCountIntType, startIntType, arrAnyType, ...itemsAny
         ...arrAnyType.slice(startIntType + deleteCountIntType)
     ];
 
-// given an array of test functions that take one argument and return boolean, 
-//  construct a single function to "or" all function results together
-// takes:
-//  ...testFuncs: array of test functions returning boolean
-// returns function that takes one argument and returns boolean
-export const orTests = (...testFuncs) =>
-    (arg) => testFuncs.flat(Infinity).reduce
-        (
-            (accum, curTest) => accum || curTest(arg),
-            testFuncs.flat(Infinity)[0](arg)
-        )
-
-// given an array of test functions that take one argument and return boolean, 
-//  construct a single function to "and" all function results together
-// takes:
-//  ...testFuncs: array of test functions returning boolean
-// returns function that takes one argument and returns boolean
-export const andTests = (...testFuncs) =>
-    (arg) => testFuncs.flat(Infinity).reduce
-        (
-            (accum, curTest) => accum && curTest(arg),
-            testFuncs.flat(Infinity)[0](arg)
-        )
-
 // given an array of COMMA-SEPARATED TWO-PARAMETER test functions that return boolean, 
 //  construct a single function to "or" all function results together
 // takes:
@@ -173,17 +107,6 @@ export const orTests2Comma = (...testFuncs) =>
             testFuncs.flat(Infinity)[0](arg)
         )
 
-// given an array of COMMA-SEPARATED TWO-PARAMETER test functions that return boolean, 
-//  construct a single function to "and" all function results together
-// takes:
-//  ...testFuncs: array of test functions of signature (typeA, typeB) => boolean
-// returns function that takes two comma-separated arguments and returns boolean
-export const andTests2Comma = (...testFuncs) =>
-    (typeA, typeB) => testFuncs.flat(Infinity).reduce
-        (
-            (accum, curTest) => accum && curTest(typeA, typeB),
-            testFuncs.flat(Infinity)[0](arg)
-        )
 
 // *** Numerical utilities
 // bound num to [minFloatType, maxFloatType]

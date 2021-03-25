@@ -310,14 +310,14 @@ const leafDoAndApproveWandering_func = (storeType, randM_eventType) =>
                                 (
                                     excludeRange
                                         (100.0)
-                                        (randM_val(randM_seededRand(-150.0, 1000.0)(seed1)))
+                                        (randM_val(randM_seededRand(-150.0, 1000.0, seed1)))
                                 ),
 
                         // conds driven by randomized heading nudge
                         (seed2) => ({
                             heading:
                                 getPhysTypeCond(eventType.physType, 'heading') +
-                                randM_val(randM_seededRand(-0.3, 0.3)(seed2)),
+                                randM_val(randM_seededRand(-0.3, 0.3, seed2)),
                         })
                     ]
                 ),
