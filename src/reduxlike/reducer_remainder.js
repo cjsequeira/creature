@@ -29,12 +29,12 @@ const remRed_actionForceChangesListUpdate_func = (storeType, actionType) =>
         (actionType.subStringType === 'remainder')
             // yes: add the given object name to the changes list
             ? [
-                ...getChangesList(storeType)('remainder'),
+                ...getChangesList(storeType, 'remainder'),
                 actionType.objStringType,
             ]
 
             // no: keep the changes list the same
-            : getChangesList(storeType)('remainder'),
+            : getChangesList(storeType, 'remainder'),
 });
 
 const remRed_actionJournalAddEntry_func = (storeType, actionType) =>
@@ -42,7 +42,7 @@ const remRed_actionJournalAddEntry_func = (storeType, actionType) =>
     ...storeType.remainder,
 
     changesList: [
-        ...getChangesList(storeType)('remainder'),
+        ...getChangesList(storeType, 'remainder'),
         'journal',
     ],
 

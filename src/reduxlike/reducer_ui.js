@@ -55,12 +55,12 @@ const uiRed_actionForceChangesListUpdate_func = (storeType, actionType) =>
         (actionType.subStringType === 'ui')
             // yes: add the given object name to the changes list
             ? [
-                ...getChangesList(storeType)('ui'),
+                ...getChangesList(storeType, 'ui'),
                 actionType.objStringType,
             ]
 
             // no: keep the changes list the same
-            : getChangesList(storeType)('ui'),
+            : getChangesList(storeType, 'ui'),
 });
 
 // adding a new physType? Allocate space for the data in the charts
@@ -69,7 +69,7 @@ const uiRed_actionPhysTypeAddPhysType_func = (storeType, actionType) =>
     ...storeType.ui,
 
     changesList: [
-        ...getChangesList(storeType)('ui'),
+        ...getChangesList(storeType, 'ui'),
         'chartDataBufferTime',
         'chartDataBufferGeo',
     ],
@@ -155,7 +155,7 @@ const uiRed_actionPhysTypeDeletePhysType_func = (storeType, actionType) =>
     ...storeType.ui,
 
     changesList: [
-        ...getChangesList(storeType)('ui'),
+        ...getChangesList(storeType, 'ui'),
         'chartDataBufferTime',
         'chartDataBufferGeo',
 
@@ -197,7 +197,7 @@ const uiRed_actionUIAddGeoChartData_func = (storeType, _) =>
     ...storeType.ui,
 
     changesList: [
-        ...getChangesList(storeType)('ui'),
+        ...getChangesList(storeType, 'ui'),
         'chartDataBufferGeo',
 
         // are there simple creatures in the physType store?
@@ -277,7 +277,7 @@ const uiRed_actionUIAddTimeChartData_func = (storeType, _) =>
     ...storeType.ui,
 
     changesList: [
-        ...getChangesList(storeType)('ui'),
+        ...getChangesList(storeType, 'ui'),
         'chartDataBufferTime',
     ],
 

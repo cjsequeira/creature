@@ -71,12 +71,12 @@ const simRed_actionForceChangesListUpdate_func = (storeType, actionType) =>
         (actionType.subStringType === 'sim')
             // yes: add the given object name to the changes list
             ? [
-                ...getChangesList(storeType)('sim'),
+                ...getChangesList(storeType, 'sim'),
                 actionType.objStringType,
             ]
 
             // no: keep the changes list the same
-            : getChangesList(storeType)('sim'),
+            : getChangesList(storeType, 'sim'),
 });
 
 const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =>

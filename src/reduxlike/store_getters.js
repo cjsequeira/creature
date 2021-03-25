@@ -68,30 +68,11 @@ export const getPhysTypeID = (physType) => physType.id;
 // returns name, as string
 export const getPhysTypeName = (physType) => physType.name;
 
-// get key value from physType
-// takes:
-//  physType: physType to use
-//  argStringType: string name for key of physType to look at
-// returns key value
-export const getPhysTypeRootKey = (physType) => (argStringType) => physType[argStringType];
-
 // get physType store
 // takes: 
 //  storeType: store, as storeType
 // returns array of physType objects
 export const getPhysTypeStore = (storeType) => storeType.physTypeStore;
-
-// get index into physTypeStore for the given physType
-// assumes only one physType in the physTypeStore has the ID of the given physType
-// takes:
-//  storeType
-//  physType
-// returns int, which would be -1 if physType not found in store
-export const getPhysTypeIndex = (storeType) => (physType) =>
-    getPhysTypeStore(storeType).findIndex(
-        (ptToTest) => getPhysTypeID(ptToTest) === getPhysTypeID(physType)
-    );
-
 
 // *** physType "use" function
 // use given conditions to make a physType
@@ -139,7 +120,7 @@ export const getSimTimeStep = (storeType) => storeType.sim.timeStep;
 // takes:
 //  storeType: store, as storeType
 //  subStringType: string name for substore to get changes list of, e.g. 'ui'
-export const getChangesList = (storeType) => (subStringType) =>
+export const getChangesList = (storeType, subStringType) =>
     storeType[subStringType].changesList;
 
 // get journal
