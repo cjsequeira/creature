@@ -31,8 +31,9 @@ export const concatSliceMap = (lenLimitIntType) => (mapFunc) => (concatElemAnyTy
 export const geThan = (xFloatType, yFloatType) =>
     (yFloatType >= xFloatType);
 
-// given a function, a target, and an array of args, apply function to the target 
-//  and first argument, then apply the same function to the result along with the next argument
+// given a ONE-PARAMETER function and an array of args, return a function that
+//  takes a list of arguments, then applies function to the target and first argument, 
+//  then applies the same function to the result along with the next argument,
 //  and so on until all arguments are exhausted
 // the array of arguments will be completely flattened
 // assumes function is of signature (typeA) => typeA
@@ -47,12 +48,12 @@ export const pipeArgs = (func, targetAnyType) =>
             null
         );
 
-// given a target and an array of ONE-PARAMETER functions, apply the first function to the target,
-//  then apply the next function to the result of the first function, and so on until 
-//  all functions are applied
+// given a target and an array of ONE-PARAMETER functions, return a function that 
+//  applies the first function to the target,then apply the next function to the 
+//  result of the first function, and so on until all functions are applied
 // the array of functions will be completely flattened
-// first function must be of signature (any) => typeA
-// all remaining functions must be of signature (typeA) => typeA
+// if first function returns "typeA", then all remaining functions must be 
+//  of signature (typeA) => typeA
 // takes:
 //  targetAnyType: target that functions apply to, as any
 //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
@@ -64,9 +65,9 @@ export const pipe = (...funcs) =>
             null
         );
 
-// given a target and an array of TWO-PARAMETER functions, apply the first function to the target,
-//  then apply the next function to the result of the first function, and so on until 
-//  all functions are applied
+// given a target and an array of TWO-PARAMETER functions, return a function that
+//  applies the first function to the target, then applies the next function to the 
+//  result of the first function, and so on until all functions are applied
 // the array of functions will be completely flattened
 // first function must be of signature (typeB) => (any) => typeA
 // all remaining functions must be of signature (typeB) => (typeA) => typeA
@@ -81,9 +82,10 @@ export const pipe2 = (...funcs) =>
             null
         );
 
-// given a target and an array of COMMA-SEPARATED TWO-PARAMETER functions, apply the 
-//  first function to the target, then apply the next function to the result of the 
-//  first function, and so on until all functions are applied
+// given a target and an array of COMMA-SEPARATED TWO-PARAMETER functions, return
+//  a function that applies the first function to the target, then applies the 
+//  next function to the result of the first function, and so on until all 
+//  functions are applied
 // the array of functions will be completely flattened
 // first function must be of signature (typeB, any) => typeA
 // all remaining functions must be of signature (typeB, typeA) => typeA
