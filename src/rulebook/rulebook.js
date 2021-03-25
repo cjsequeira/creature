@@ -217,7 +217,7 @@ const recursive_leafUpdateAllPhysTypes_func = (storeType, randM_eventType) =>
                         randM_genRandM
                             (
                                 // ... built from the eventType produced by physType "act"...
-                                thisPt.act(storeType)(thisPt),
+                                thisPt.act(storeType, thisPt),
 
                                 // ... and the seed of the accumulated randM_actionType OR
                                 //  the given randM_eventType if accumulated randM_actionType is empty

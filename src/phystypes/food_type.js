@@ -37,4 +37,4 @@ export const getDefaultFoodType = (_) =>
 //  storeType
 //  physType
 // returns eventType
-export const actAsFood = (_) => (physType) => event_replacePhysType(physType);
+export const actAsFood = (_, physType) => event_replacePhysType(physType);

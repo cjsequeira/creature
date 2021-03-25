@@ -65,7 +65,7 @@ export const getDefaultSimpleCreature = (_) =>
 //  storeType
 //  physType
 // returns eventType
-export const actAsSimpleCreature = (storeType) => (physType) =>
+export const actAsSimpleCreature = (storeType, physType) =>
     (
         {
             'aching': actAching,
@@ -73,15 +73,15 @@ export const actAsSimpleCreature = (storeType) => (physType) =>
             'idling': actIdling,
             'sleeping': actSleeping,
             'wandering': actWandering,
-        }[getPhysTypeCond(physType, 'behavior')] || (_ => x => x)
-    )(storeType)(physType);
+        }[getPhysTypeCond(physType, 'behavior')] || ((_, x) => x)
+    )(storeType, physType);
 
 // aching behavior function
 // takes: 
 //  storeType
 //  physType
 // returns physType
-const actAching = (storeType) => (physType) =>
+const actAching = (storeType, physType) =>
     event_replaceCreatureType
         (
             // pass in physType object with specific glucose and neuro
@@ -109,7 +109,7 @@ const actAching = (storeType) => (physType) =>
 //  storeType
 //  physType
 // returns physType
-const actEating = (storeType) => (physType) =>
+const actEating = (storeType, physType) =>
     event_replaceCreatureType
         (
             // pass in physType object with specific glucose and neuro
@@ -138,7 +138,7 @@ const actEating = (storeType) => (physType) =>
 //  storeType
 //  physType
 // returns physType
-const actIdling = (storeType) => (physType) =>
+const actIdling = (storeType, physType) =>
     event_replaceCreatureType
         (
             // pass in physType object with specific glucose and neuro
@@ -168,7 +168,7 @@ const actIdling = (storeType) => (physType) =>
 //  storeType
 //  physType
 // returns physType
-const actSleeping = (storeType) => (physType) =>
+const actSleeping = (storeType, physType) =>
     event_replaceCreatureType
         (
             // pass in physType object with specific glucose and neuro
@@ -197,7 +197,7 @@ const actSleeping = (storeType) => (physType) =>
 //  storeType
 //  physType
 // returns physType
-const actWandering = (_) => (physType) =>
+const actWandering = (_, physType) =>
     event_replaceCreatureType
         (
             // for 'wandering', the rulebook will assign conditions
