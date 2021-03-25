@@ -14,10 +14,10 @@ export const compose = f => g =>
 // enclose one argument into the first slot of a COMMA-SEPARATED two-parameter function
 // takes:
 //  func: the two-parameter function to use, signature (any, any) => any
-//  argAnyType: the argument to enclose into the first slot, signature any
+//  arg1AnyType: the argument to enclose into the first slot, signature any
 // returns: a function of signature (any) => any
-export const partial2 = (func, argAnyType) =>
-    (anyType) => func(argAnyType, anyType);
+export const partial2 = (func, arg1AnyType) =>
+    (arg2AnyType) => func(arg1AnyType, arg2AnyType);
 
 // enclose two arguments into the first and second slots of a COMMA-SEPARATED three-parameter function
 // takes:
@@ -26,7 +26,7 @@ export const partial2 = (func, argAnyType) =>
 //  arg2AnyType: the argument to enclose into the second slot, signature any
 // returns: a function of signature (any) => any
 export const partial3 = (func, arg1AnyType, arg2AnyType) =>
-    (anyType) => func(arg1AnyType, arg2AnyType, anyType);
+    (arg3AnyType) => func(arg1AnyType, arg2AnyType, arg3AnyType);
 
 // flatten, concatenate element, slice to a limit, and map using a mapping function
 // nested arrow function to support current use of concatSliceMap in UI code
