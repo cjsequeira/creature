@@ -427,46 +427,43 @@ const updateTimeChartXAxis = (inXAxis, timeFloat) => {
 //  numTrailsIntType: number of trailing dots to draw
 // returns ChartJS dataset type
 const updateGeoChartDataset =
-    (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) =>
-    ({
-        // return a ChartJS dataset object with data and colors added, 
-        //  then sliced to max length, then color-faded
-
-        ...inDataSet,
-
-        data: concatSliceMap
-            (-numTrailsIntType)                 // max length
-            (x => x)                            // identity function for mapping
-            ({                                  // concatenate xyFloatTuple
-                x: xyFloatTuple.x,
-                y: xyFloatTuple.y
-            })
-            ([inDataSet.data]),                 // array: given chart xy data
-
-        backgroundColor: concatSliceMap
+    (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) => {
+        // define shorthand helper functions
+        const helper_colorSliceFill = (data) => concatSliceMap
             (-numTrailsIntType)
             (fadeColors)
             (fillColorStringType)
-            ([inDataSet.backgroundColor]),
+            (data);
 
-        borderColor: concatSliceMap
-            (-numTrailsIntType)
-            (fadeColors)
-            (fillColorStringType)
-            ([inDataSet.borderColor]),
-
-        pointBackgroundColor: concatSliceMap
-            (-numTrailsIntType)
-            (fadeColors)
-            (fillColorStringType)
-            ([inDataSet.pointBackgroundColor]),
-
-        pointBorderColor: concatSliceMap
+        const helper_colorSliceBorder = (data) => concatSliceMap
             (-numTrailsIntType)
             (fadeColors)
             (borderColorStringType)
-            ([inDataSet.pointBorderColor]),
-    });
+            (data);
+
+        // return a ChartJS dataset object with data and colors added, 
+        //  then sliced to max length, then color-faded
+        return {
+            ...inDataSet,
+
+            data: concatSliceMap
+                (-numTrailsIntType)                 // max length
+                (x => x)                            // identity function for mapping
+                ({                                  // concatenate xyFloatTuple
+                    x: xyFloatTuple.x,
+                    y: xyFloatTuple.y
+                })
+                ([inDataSet.data]),                 // array: given chart xy data
+
+            backgroundColor: helper_colorSliceFill([inDataSet.backgroundColor]),
+
+            borderColor: helper_colorSliceFill([inDataSet.borderColor]),
+
+            pointBackgroundColor: helper_colorSliceFill([inDataSet.pointBackgroundColor]),
+
+            pointBorderColor: helper_colorSliceBorder([inDataSet.pointBorderColor]),
+        };
+    };
 
 
 // *** UI reducer main function
