@@ -94,25 +94,8 @@ const preFuncDoPhysicsAndTag = (storeType, randM_eventType) =>
             ]
         );
 
-
+        
 // *** Functional programming helper functions
-// link together rulebook test nodes with logical "or"
-// takes:
-//  ...testRules: array of rulebook test nodes
-// returns object with testFunc property as: function combining test nodes with logical "or"
-// the expected testFunc signature is (storeType, randM_eventType) => bool
-// REFACTOR: Not yet tested!
-const orTestRules = (...testRules) =>
-({
-    name: 'orTestRules',
-    testFunc: (storeType) => orTests2
-        (
-            testRules.map(
-                rule => rule.testFunc(storeType, randM_eventType)
-            )
-        )
-});
-
 // unwrap a randM_actionType into an actionType plus an action to update the simulation seed
 // takes:
 //  randM_actionType: an actionType wrapped in a randM monad
