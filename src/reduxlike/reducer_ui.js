@@ -397,23 +397,25 @@ const updateTimeChartDataset = (inDataSet, labelStringType, minXFloatType, timeV
 //  timeFloat: time to use for review, as float
 // returns ChartJS dataset type
 const updateTimeChartXAxis = (inXAxis, timeFloat) => {
-    // calculate appropriate time chart x axis "window"
-    // REFACTOR into separate functions
-    const chart_x = inXAxis.ticks;                                  // shorthand for x-axis ticks
-    const chart_xWidth = chart_x.max - chart_x.min;                 // extents of x axis
-    const new_max = Math.ceil(timeFloat - chart_x.stepSize);        // potential different x axis max           
-    const new_min = new_max - chart_xWidth;                         // potential different x axis min
+    // *** helpers to calculate appropriate time chart x axis "window"
+    // calc which is bigger: time to use for review, or current ticks max
+    const helper_newMax = (ticks) =>
+        Math.max(Math.ceil(timeFloat - ticks.stepSize), ticks.max);
+
+    // calc min based on max
+    const helper_newMin = (ticks) =>
+        helper_newMax(ticks) - (ticks.max - ticks.min);
 
     // return updated axes 
     return {
         ...inXAxis,
 
         ticks: {
-            ...chart_x,
+            ...inXAxis.ticks,
 
             // assign x axis min and max - shifted rightward if indicated by new_min and new_max
-            max: (chart_x.max < new_max) ? new_max : chart_x.max,
-            min: (chart_x.min < new_min) ? new_min : chart_x.min,
+            max: helper_newMax(inXAxis.ticks),
+            min: helper_newMin(inXAxis.ticks),
         },
     };
 };
@@ -428,39 +430,46 @@ const updateTimeChartXAxis = (inXAxis, timeFloat) => {
 // returns ChartJS dataset type
 const updateGeoChartDataset =
     (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) => {
-        // REFACTOR into separate functions
-        // all of our slice limits are -numTrailsIntType, so define a shorthand 
-        //  function with that limit built in 
-        const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
+        // define shorthand helper functions
+        const helper_colorSliceFill = (data) => concatSliceMap
+            (
+                -numTrailsIntType,
+                fadeColors,
+                fillColorStringType,
+                data
+            );
 
-        // define a shorthand function specific to concatenating a color 
-        //  and mapping color list to a fade
-        const concatAndFade = concatSliceTrailsMap(fadeColors);
+        const helper_colorSliceBorder = (data) => concatSliceMap
+            (
+                -numTrailsIntType,
+                fadeColors,
+                borderColorStringType,
+                data
+            );
 
         // return a ChartJS dataset object with data and colors added, 
         //  then sliced to max length, then color-faded
         return {
             ...inDataSet,
 
-            data: concatSliceTrailsMap
-                (x => x)                            // identity function for mapping
-                ({                                  // concatenate xyFloatTuple
-                    x: xyFloatTuple.x,
-                    y: xyFloatTuple.y
-                })
-                ([inDataSet.data]),                 // array: current chart xy data
+            data: concatSliceMap
+                (
+                    -numTrailsIntType,          // max length
+                    x => x,                     // identity function for mapping
+                    {                           // concatenate xyFloatTuple
+                        x: xyFloatTuple.x,
+                        y: xyFloatTuple.y
+                    },
+                    [inDataSet.data]            // array: given chart xy data
+                ),
 
-            backgroundColor:
-                concatAndFade(fillColorStringType)([inDataSet.backgroundColor]),
+            backgroundColor: helper_colorSliceFill([inDataSet.backgroundColor]),
 
-            borderColor:
-                concatAndFade(fillColorStringType)([inDataSet.borderColor]),
+            borderColor: helper_colorSliceFill([inDataSet.borderColor]),
 
-            pointBackgroundColor:
-                concatAndFade(fillColorStringType)([inDataSet.pointBackgroundColor]),
+            pointBackgroundColor: helper_colorSliceFill([inDataSet.pointBackgroundColor]),
 
-            pointBorderColor:
-                concatAndFade(borderColorStringType)([inDataSet.pointBorderColor]),
+            pointBorderColor: helper_colorSliceBorder([inDataSet.pointBorderColor]),
         };
     };
 
