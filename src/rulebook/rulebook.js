@@ -60,10 +60,7 @@ import {
     isSimpleCreature,
 } from './test_nodes.js';
 
-import {
-    pipe2,
-    orTests2,
-} from '../utils.js';
+import { pipe2 } from '../utils.js';
 
 import { action_setSimSeed } from '../reduxlike/action_creators.js';
 
@@ -94,7 +91,7 @@ const preFuncDoPhysicsAndTag = (storeType, randM_eventType) =>
             ]
         );
 
-        
+
 // *** Functional programming helper functions
 // unwrap a randM_actionType into an actionType plus an action to update the simulation seed
 // takes:
