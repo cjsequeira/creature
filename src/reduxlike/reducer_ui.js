@@ -397,23 +397,25 @@ const updateTimeChartDataset = (inDataSet, labelStringType, minXFloatType, timeV
 //  timeFloat: time to use for review, as float
 // returns ChartJS dataset type
 const updateTimeChartXAxis = (inXAxis, timeFloat) => {
-    // calculate appropriate time chart x axis "window"
-    // REFACTOR into separate functions
-    const chart_x = inXAxis.ticks;                                  // shorthand for x-axis ticks
-    const chart_xWidth = chart_x.max - chart_x.min;                 // extents of x axis
-    const new_max = Math.ceil(timeFloat - chart_x.stepSize);        // potential different x axis max           
-    const new_min = new_max - chart_xWidth;                         // potential different x axis min
+    // *** helpers to calculate appropriate time chart x axis "window"
+    // calc which is bigger: time to use for review, or current ticks max
+    const helper_newMax = (ticks) =>
+        Math.max(Math.ceil(timeFloat - ticks.stepSize), ticks.max);
+
+    // calc min based on max
+    const helper_newMin = (ticks) =>
+        helper_newMax(ticks) - (ticks.max - ticks.min);
 
     // return updated axes 
     return {
         ...inXAxis,
 
         ticks: {
-            ...chart_x,
+            ...inXAxis.ticks,
 
             // assign x axis min and max - shifted rightward if indicated by new_min and new_max
-            max: (chart_x.max < new_max) ? new_max : chart_x.max,
-            min: (chart_x.min < new_min) ? new_min : chart_x.min,
+            max: helper_newMax(inXAxis.ticks),
+            min: helper_newMin(inXAxis.ticks),
         },
     };
 };
