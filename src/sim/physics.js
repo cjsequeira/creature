@@ -49,41 +49,35 @@ export const physTypeDoPhysics = (storeType, physType) =>
 //  storeType
 //  physType
 // returns physType
-const physTypeDoMovements = (storeType, physType) => {
-    // define shorthand function to get cond from given physType
-    // REFACTOR into own function
-    const inGetCond = partial2(getPhysTypeCond, physType);
-
-    return usePhysTypeConds
+const physTypeDoMovements = (storeType, physType) =>
+    usePhysTypeConds
         (
             physType,
             {
                 // compute x and y based on given speed and heading
-                x: inGetCond('x') +
-                    getSimTimeStep(storeType) * inGetCond('speed') * Math.sin(inGetCond('heading')),
-                y: inGetCond('y') +
-                    getSimTimeStep(storeType) * inGetCond('speed') * Math.cos(inGetCond('heading')),
+                x: getPhysTypeCond(physType, 'x') +
+                    getSimTimeStep(storeType) * getPhysTypeCond(physType, 'speed') *
+                    Math.sin(getPhysTypeCond(physType, 'heading')),
+                y: getPhysTypeCond(physType, 'y') +
+                    getSimTimeStep(storeType) * getPhysTypeCond(physType, 'speed') *
+                    Math.cos(getPhysTypeCond(physType, 'heading')),
 
                 // compute speed based on given accel
-                speed: inGetCond('speed') + getSimTimeStep(storeType) * inGetCond('accel'),
+                speed: getPhysTypeCond(physType, 'speed') +
+                    getSimTimeStep(storeType) * getPhysTypeCond(physType, 'accel'),
             }
         );
-};
 
 // return physType with parameters updated if wall collisions
 // takes: 
 //  don't care
 //  physType
 // returns physType
-const physTypeCheckWallCollisions = (_, physType) => {
-    // define shorthand func to get cond from given physType
-    // REFACTOR into own function
-    const inGetCond = partial2(getPhysTypeCond, physType);
-
+const physTypeCheckWallCollisions = (_, physType) =>
     // are x and y within world boundary?
-    return (
-        isWithinRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')) &&
-        isWithinRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y'))
+    (
+        isWithinRange(0.1, WORLD_SIZE_X - 0.1, getPhysTypeCond(physType, 'x')) &&
+        isWithinRange(0.1, WORLD_SIZE_Y - 0.1, getPhysTypeCond(physType, 'y'))
     )
         // yes: return given physType
         ? physType
@@ -94,19 +88,18 @@ const physTypeCheckWallCollisions = (_, physType) => {
                 physType,
                 {
                     // bound x to the boundary limit minus a small margin
-                    x: boundToRange(0.1, WORLD_SIZE_X - 0.1, inGetCond('x')),
+                    x: boundToRange(0.1, WORLD_SIZE_X - 0.1, getPhysTypeCond(physType, 'x')),
 
                     // bound y to the boundary limit minus a small margin
-                    y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, inGetCond('y')),
+                    y: boundToRange(0.1, WORLD_SIZE_Y - 0.1, getPhysTypeCond(physType, 'y')),
 
                     // spin heading around a bit (in radians)
-                    heading: inGetCond('heading') + 2.35,
+                    heading: getPhysTypeCond(physType, 'heading') + 2.35,
 
                     // dissipate some speed - or establish a minimum speed if creature is going slowly
                     speed:
-                        (inGetCond('speed') > 3.0)
-                            ? 0.96 * inGetCond('speed')
+                        (getPhysTypeCond(physType, 'speed') > 3.0)
+                            ? 0.96 * getPhysTypeCond(physType, 'speed')
                             : 3.0,
                 }
             );
-};
