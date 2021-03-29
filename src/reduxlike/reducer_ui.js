@@ -427,42 +427,46 @@ const updateTimeChartXAxis = (inXAxis, timeFloat) => {
 //  numTrailsIntType: number of trailing dots to draw
 // returns ChartJS dataset type
 const updateGeoChartDataset =
-    (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) => {
-        // REFACTOR into separate functions
-        // all of our slice limits are -numTrailsIntType, so define a shorthand 
-        //  function with that limit built in 
-        const concatSliceTrailsMap = concatSliceMap(-numTrailsIntType);
-
-        // define a shorthand function specific to concatenating a color 
-        //  and mapping color list to a fade
-        const concatAndFade = concatSliceTrailsMap(fadeColors);
-
+    (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) =>
+    ({
         // return a ChartJS dataset object with data and colors added, 
         //  then sliced to max length, then color-faded
-        return {
-            ...inDataSet,
 
-            data: concatSliceTrailsMap
-                (x => x)                            // identity function for mapping
-                ({                                  // concatenate xyFloatTuple
-                    x: xyFloatTuple.x,
-                    y: xyFloatTuple.y
-                })
-                ([inDataSet.data]),                 // array: current chart xy data
+        ...inDataSet,
 
-            backgroundColor:
-                concatAndFade(fillColorStringType)([inDataSet.backgroundColor]),
+        data: concatSliceMap
+            (-numTrailsIntType)                 // max length
+            (x => x)                            // identity function for mapping
+            ({                                  // concatenate xyFloatTuple
+                x: xyFloatTuple.x,
+                y: xyFloatTuple.y
+            })
+            ([inDataSet.data]),                 // array: given chart xy data
 
-            borderColor:
-                concatAndFade(fillColorStringType)([inDataSet.borderColor]),
+        backgroundColor: concatSliceMap
+            (-numTrailsIntType)
+            (fadeColors)
+            (fillColorStringType)
+            ([inDataSet.backgroundColor]),
 
-            pointBackgroundColor:
-                concatAndFade(fillColorStringType)([inDataSet.pointBackgroundColor]),
+        borderColor: concatSliceMap
+            (-numTrailsIntType)
+            (fadeColors)
+            (fillColorStringType)
+            ([inDataSet.borderColor]),
 
-            pointBorderColor:
-                concatAndFade(borderColorStringType)([inDataSet.pointBorderColor]),
-        };
-    };
+        pointBackgroundColor: concatSliceMap
+            (-numTrailsIntType)
+            (fadeColors)
+            (fillColorStringType)
+            ([inDataSet.pointBackgroundColor]),
+
+        pointBorderColor: concatSliceMap
+            (-numTrailsIntType)
+            (fadeColors)
+            (borderColorStringType)
+            ([inDataSet.pointBorderColor]),
+    });
 
 
 // *** UI reducer main function
