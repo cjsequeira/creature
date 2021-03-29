@@ -432,16 +432,20 @@ const updateGeoChartDataset =
     (inDataSet, fillColorStringType, borderColorStringType, xyFloatTuple, numTrailsIntType) => {
         // define shorthand helper functions
         const helper_colorSliceFill = (data) => concatSliceMap
-            (-numTrailsIntType)
-            (fadeColors)
-            (fillColorStringType)
-            (data);
+            (
+                -numTrailsIntType,
+                fadeColors,
+                fillColorStringType,
+                data
+            );
 
         const helper_colorSliceBorder = (data) => concatSliceMap
-            (-numTrailsIntType)
-            (fadeColors)
-            (borderColorStringType)
-            (data);
+            (
+                -numTrailsIntType,
+                fadeColors,
+                borderColorStringType,
+                data
+            );
 
         // return a ChartJS dataset object with data and colors added, 
         //  then sliced to max length, then color-faded
@@ -449,13 +453,15 @@ const updateGeoChartDataset =
             ...inDataSet,
 
             data: concatSliceMap
-                (-numTrailsIntType)                 // max length
-                (x => x)                            // identity function for mapping
-                ({                                  // concatenate xyFloatTuple
-                    x: xyFloatTuple.x,
-                    y: xyFloatTuple.y
-                })
-                ([inDataSet.data]),                 // array: given chart xy data
+                (
+                    -numTrailsIntType,          // max length
+                    x => x,                     // identity function for mapping
+                    {                           // concatenate xyFloatTuple
+                        x: xyFloatTuple.x,
+                        y: xyFloatTuple.y
+                    },
+                    [inDataSet.data]            // array: given chart xy data
+                ),
 
             backgroundColor: helper_colorSliceFill([inDataSet.backgroundColor]),
 

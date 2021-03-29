@@ -85,7 +85,6 @@ const ptsRed_actionPhysTypeUpdateSelectPhysTypes_func = (storeType, actionType) 
             : thisPt
     );
 
-// REFACTOR: Simplify!
 const ptsRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =>
     // NOTE: the simulator seed is updated in the SIM REDUCER!!!
 

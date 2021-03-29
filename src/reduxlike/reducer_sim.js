@@ -35,7 +35,6 @@ const simRed_actionCompareStopIfFrozen_func = (storeType, _) =>
 
     running:
         // are ALL simple creatures frozen?
-        // REFACTOR: Simplify!
         (
             getPhysTypeStore(storeType)
                 // filter physType store to find simple creatures
@@ -84,23 +83,22 @@ const simRed_actionPhysTypeUpdateSelectPhysTypesRand = (storeType, actionType) =
     ...storeType.sim,
 
     seed:
-        // does the physType store have physTypes in it?
-        (getPhysTypeStore(storeType).length > 0)
-            // yes: get to the next seed by counting randM generators
-            ? getPhysTypeStore(storeType).reduce((accumSeed, thisPt) =>
-                // does this physType pass the filter function?
-                (actionType.filterFunc(thisPt))
-                    // yes: advance the seed by the number of randM generators 
-                    //  in this physType, minus 1
-                    ? randM_getNextSeed(accumSeed, actionType.gensForRand.length - 1)
+        // get to the next seed by counting randM generators
+        getPhysTypeStore(storeType).reduce
+            (
+                (accumSeed, thisPt) =>
+                    // does this physType pass the filter function?
+                    (actionType.filterFunc(thisPt))
+                        // yes: advance the seed by the number of randM generators 
+                        //  in this physType, minus 1
+                        ? randM_getNextSeed(accumSeed, actionType.gensForRand.length - 1)
 
-                    // no: don't go to the next seed
-                    : accumSeed,
+                        // no: don't go to the next seed
+                        : accumSeed,
 
-                // start with the current sim seed
-                getSimSeed(storeType))
-            // no: keep the seed the same
-            : getSimSeed(storeType)
+                // start reduction with the current sim seed
+                getSimSeed(storeType)
+            ),
 });
 
 const simRed_actionSimAdvance_func = (storeType, _) =>

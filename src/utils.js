@@ -29,15 +29,13 @@ export const partial3 = (func, arg1AnyType, arg2AnyType) =>
     (arg3AnyType) => func(arg1AnyType, arg2AnyType, arg3AnyType);
 
 // flatten, concatenate element, slice to a limit, and map using a mapping function
-// nested arrow function to support current use of concatSliceMap in UI code
 // takes:
 //  lenLimitIntType: slice input (PRESERVED SIGN), as int
 //  mapFunc: mapping function returning any
 //  concatElemAnyType: element to concat, as any
 //  arrAnyType: array to concat onto, as any
 // returns processed array, as array type
-// REFACTOR: Is nested arrow needed?
-export const concatSliceMap = (lenLimitIntType) => (mapFunc) => (concatElemAnyType) => (arrAnyType) =>
+export const concatSliceMap = (lenLimitIntType, mapFunc, concatElemAnyType, arrAnyType) =>
     arrAnyType.flat(Infinity).concat(concatElemAnyType).slice(lenLimitIntType).map(mapFunc);
 
 // is x greater than or equal to y?
