@@ -8,7 +8,7 @@
 //  f: function of signature (typeA) => typeA
 //  g: function of signature (any) => typeA
 // returns: composed function of signature (any) => typeA
-export const compose = f => g =>
+export const compose = (f, g) =>
     anyType => f(g(anyType));
 
 // enclose one argument into the first slot of a COMMA-SEPARATED two-parameter function
