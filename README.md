@@ -16,8 +16,6 @@ Visit [https://arrogantfool-draft-creature.netlify.app/](https://arrogantfool-dr
 * Implement creature draw scaling in geo chart: chart has its own coordinate system but creatures are in unscaled pixel units
 * Add a "Dwarf Fortress"-like story engine to translate events to text
 * * Make a rulebook just for story text generation?
-* Review all code for reversibility, and implement application rewinding
-* * May require doing all motions as deltas (changes) rather than direct assignments
 * Establish creature drag, mass, forces, torques?
 
 ## Changelog:
