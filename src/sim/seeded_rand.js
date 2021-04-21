@@ -185,7 +185,7 @@ export const randM_concat = (lhs, rhs) =>
 // returns function with signature (any) => randM
 // total signature: (any => any) => (any => randM)
 export const randM_lift = (func) =>
-    anyType => compose(randM_unit)(func)(anyType);
+    anyType => compose(randM_unit, func)(anyType);
 
 // randM func to lift and then bind
 // takes:
@@ -193,7 +193,7 @@ export const randM_lift = (func) =>
 // returns function with signature (randM) => randM
 // total signature: (any => any) => (randM => randM)
 export const randM_liftBind = (func) =>
-    randM => compose(randM_bind)(randM_lift)(func)(randM);
+    randM => compose(randM_bind, randM_lift)(func)(randM);
 
 // randM value unwrap func
 // takes:

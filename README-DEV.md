@@ -46,7 +46,7 @@ This makes debugging easier than if multi-parameter functions were to be encoded
     //  f: function of signature (typeA) => typeA
     //  g: function of signature (any) => typeA
     // returns: composed function of signature (any) => typeA
-    export const compose = f => g =>
+    export const compose = (f, g) =>
         anyType => f(g(anyType));
 
     // given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
@@ -96,20 +96,6 @@ The functions above are used in key parts of the Creature system. Note this exam
                 ]
             )
     )
-
-Here's another example, where **partial3** is used so that an external seed can be submitted to a random number generator that normally takes three arguments:
-
-    // atomically randomize locations of all physTypes
-    action_updateSelectPhysTypesRand
-        (
-            // filter function: include all physTypes
-            (_) => true,
-
-            // randomize conds: x and y
-            // the seeds "seed1" and "seed2" are submitted by the reducer
-            (seed1) => ({ x: partial3(randM_seededRand, 0.1, WORLD_SIZE_X - 0.1)(seed1) }),
-            (seed2) => ({ y: partial3(randM_seededRand, 0.1, WORLD_SIZE_Y - 0.1)(seed2) }),
-        )
 
 The **compose** function supports various aspects of the monads described below.
 
@@ -204,7 +190,7 @@ Key monad-supporting functions are below:
     // returns function with signature (any) => randM
     // total signature: (any => any) => (any => randM)
     export const randM_lift = (func) =>
-        anyType => compose(randM_unit)(func)(anyType);
+        anyType => compose(randM_unit, func)(anyType);
 
     // randM func to lift and then bind
     // takes:
@@ -212,7 +198,7 @@ Key monad-supporting functions are below:
     // returns function with signature (randM) => randM
     // total signature: (any => any) => (randM => randM)
     export const randM_liftBind = (func) =>
-        randM => compose(randM_bind)(randM_lift)(func)(randM);
+        randM => compose(randM_bind, randM_lift)(func)(randM);
 
 In particular, **randM_liftBind** is used heavily in the rulebook to apply functions that do not perform random number generation and therefore do not care about the randM seed. For example:
 
