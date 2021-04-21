@@ -97,20 +97,6 @@ The functions above are used in key parts of the Creature system. Note this exam
             )
     )
 
-Here's another example, where **partial3** is used so that an external seed can be submitted to a random number generator that normally takes three arguments:
-
-    // atomically randomize locations of all physTypes
-    action_updateSelectPhysTypesRand
-        (
-            // filter function: include all physTypes
-            (_) => true,
-
-            // randomize conds: x and y
-            // the seeds "seed1" and "seed2" are submitted by the reducer
-            (seed1) => ({ x: partial3(randM_seededRand, 0.1, WORLD_SIZE_X - 0.1)(seed1) }),
-            (seed2) => ({ y: partial3(randM_seededRand, 0.1, WORLD_SIZE_Y - 0.1)(seed2) }),
-        )
-
 The **compose** function supports various aspects of the monads described below.
 
 ## Monads
