@@ -18,84 +18,92 @@ The Creature system adheres as much as possible to two important rules as observ
 ## Higher-Order Functions and Function Application
 All multi-parameter functions in the Creature system are traditional JavaScript comma-separated functions, e.g.:
 
-    export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
+```javascript
+export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
+```
 
 This makes debugging easier than if multi-parameter functions were to be encoded as nested arrow functions. However, the Creature system also provides two functions for partial application, to support various aspects of functional programming. These functions return functions that permit the last argument to be given at a later time.
 
-    // enclose one argument into the first slot of a COMMA-SEPARATED two-parameter function
-    // takes:
-    //  func: the two-parameter function to use, signature (any, any) => any
-    //  arg1AnyType: the argument to enclose into the first slot, signature any
-    // returns: a function of signature (any) => any
-    export const partial2 = (func, arg1AnyType) =>
-        (arg2AnyType) => func(arg1AnyType, arg2AnyType);
+```javascript
+// enclose one argument into the first slot of a COMMA-SEPARATED two-parameter function
+// takes:
+//  func: the two-parameter function to use, signature (any, any) => any
+//  arg1AnyType: the argument to enclose into the first slot, signature any
+// returns: a function of signature (any) => any
+export const partial2 = (func, arg1AnyType) =>
+    (arg2AnyType) => func(arg1AnyType, arg2AnyType);
 
-    // enclose two arguments into the first and second slots of a COMMA-SEPARATED three-parameter function
-    // takes:
-    //  func: the three-parameter function to use, signature (any, any, any) => any
-    //  arg1AnyType: the argument to enclose into the first slot, signature any
-    //  arg2AnyType: the argument to enclose into the second slot, signature any
-    // returns: a function of signature (any) => any
-    export const partial3 = (func, arg1AnyType, arg2AnyType) =>
-        (arg3AnyType) => func(arg1AnyType, arg2AnyType, arg3AnyType);
+// enclose two arguments into the first and second slots of a COMMA-SEPARATED three-parameter function
+// takes:
+//  func: the three-parameter function to use, signature (any, any, any) => any
+//  arg1AnyType: the argument to enclose into the first slot, signature any
+//  arg2AnyType: the argument to enclose into the second slot, signature any
+// returns: a function of signature (any) => any
+export const partial3 = (func, arg1AnyType, arg2AnyType) =>
+    (arg3AnyType) => func(arg1AnyType, arg2AnyType, arg3AnyType);
+```
 
  The Creature system also contains **compose** for composing two one-argument functions, as well as **pipe** and **pipe2** for flowing arguments through more than two functions.
 
-    // compose two functions f and g of a specific one-parameter signature
-    // takes:
-    //  f: function of signature (typeA) => typeA
-    //  g: function of signature (any) => typeA
-    // returns: composed function of signature (any) => typeA
-    export const compose = (f, g) =>
-        anyType => f(g(anyType));
+```javascript
+// compose two functions f and g of a specific one-parameter signature
+// takes:
+//  f: function of signature (typeA) => typeA
+//  g: function of signature (any) => typeA
+// returns: composed function of signature (any) => typeA
+export const compose = (f, g) =>
+    anyType => f(g(anyType));
 
-    // given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
-    //  apply the first function to the input argument, then apply the next function to
-    //  the result of the first function, and so on until all functions are applied
-    // the array of functions will be completely flattened
-    // ALL functions must be of signature (typeA) => typeA
-    // takes:
-    //  inputAnyType: input argument that functions apply to, as any
-    //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
-    // returns RESULT of signature typeA
-    export const pipe = (inputAnyType, ...funcs) =>
-        funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
+// given a target, an array of ONE-PARAMETER functions, and an input argument of typeA,
+//  apply the first function to the input argument, then apply the next function to
+//  the result of the first function, and so on until all functions are applied
+// the array of functions will be completely flattened
+// ALL functions must be of signature (typeA) => typeA
+// takes:
+//  inputAnyType: input argument that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns RESULT of signature typeA
+export const pipe = (inputAnyType, ...funcs) =>
+    funcs.flat(Infinity).reduce((accumTypeA, thisFunc) => thisFunc(accumTypeA), inputAnyType);
 
-    // given a "typeB", a target, and an array of COMMA-SEPARATED TWO-PARAMETER functions, 
-    //  apply the first function to the target, then apply the 
-    //  next function to the result of the first function, and so on until all 
-    //  functions are applied
-    // the array of functions will be completely flattened
-    // first function must be of signature (typeB, any) => typeA
-    // all remaining functions must be of signature (typeB, typeA) => typeA
-    // takes:
-    //  targetAnyType: target that functions apply to, as any
-    //  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
-    // returns function of signature (typeB, any) => typeA
-    export const pipe2 = (typeB, targetAnyType, ...funcs) =>
-        funcs.flat(Infinity).reduce
-            (
-                (funcAccum, thisFunc) => thisFunc(typeB, funcAccum || targetAnyType),
-                null
-            );
+// given a "typeB", a target, and an array of COMMA-SEPARATED TWO-PARAMETER functions, 
+//  apply the first function to the target, then apply the 
+//  next function to the result of the first function, and so on until all 
+//  functions are applied
+// the array of functions will be completely flattened
+// first function must be of signature (typeB, any) => typeA
+// all remaining functions must be of signature (typeB, typeA) => typeA
+// takes:
+//  targetAnyType: target that functions apply to, as any
+//  funcs: array of functions to apply - will be applied LEFT TO RIGHT! (i.e. 0 to top index)
+// returns function of signature (typeB, any) => typeA
+export const pipe2 = (typeB, targetAnyType, ...funcs) =>
+    funcs.flat(Infinity).reduce
+        (
+            (funcAccum, thisFunc) => thisFunc(typeB, funcAccum || targetAnyType),
+            null
+        );
+```
 
 The functions above are used in key parts of the Creature system. Note this example for Creature physics:
 
-    ((eventType) =>
-        pipe
-            (
-                // the given physType to be piped in, contained in eventType
-                eventType.physType,
-                [
-                    // do laws of physics on physType above, using storeType as argument 1
-                    // the pipe gives the physType to the partially-applied function below
-                    partial2(physTypeDoPhysics, storeType),
+```javascript
+((eventType) =>
+    pipe
+        (
+            // the given physType to be piped in, contained in eventType
+            eventType.physType,
+            [
+                // do laws of physics on physType above, using storeType as argument 1
+                // the pipe gives the physType to the partially-applied function below
+                partial2(physTypeDoPhysics, storeType),
 
-                    // create a new event using the resulting physType from above
-                    event_replacePhysType,
-                ]
-            )
-    )
+                // create a new event using the resulting physType from above
+                event_replacePhysType,
+            ]
+        )
+)
+```
 
 The **compose** function supports various aspects of the monads described below.
 
@@ -107,108 +115,112 @@ The system rulebook consists almost entirely of monadic functions operating on *
 
 Key monad-supporting functions are below:
 
-    // randM monad unit func
-    // takes: 
-    //  valAnyType: the value to wrap into randM
-    // returns: randM with 0 seed
-    // total signature: (any) => randM
-    export const randM_unit = (valAnyType) =>
+```javascript
+// randM monad unit func
+// takes: 
+//  valAnyType: the value to wrap into randM
+// returns: randM with 0 seed
+// total signature: (any) => randM
+export const randM_unit = (valAnyType) =>
+({
+    [TYPE_RANDM]: true,
+    value: valAnyType,
+    nextSeed: 0,
+});
+
+// randM monad bind func
+// takes:
+//  func: the function to bind, of signature (any) => randM
+// returns function with signature (randM) => randM
+// total signature: (any => randM) => (randM => randM)
+export const randM_bind = (func) =>
+    randM =>
     ({
         [TYPE_RANDM]: true,
-        value: valAnyType,
-        nextSeed: 0,
+        ...func(randM.value),
+        nextSeed: randM.nextSeed,
     });
 
-    // randM monad bind func
-    // takes:
-    //  func: the function to bind, of signature (any) => randM
-    // returns function with signature (randM) => randM
-    // total signature: (any => randM) => (randM => randM)
-    export const randM_bind = (func) =>
-        randM =>
-        ({
-            [TYPE_RANDM]: true,
-            ...func(randM.value),
-            nextSeed: randM.nextSeed,
-        });
+// unit object func
+// builds a randMObj object by converting given prop-vals to randMs
+// takes: 
+//  objAnyType: the object to bundle randMs into
+//  objForRand: an object with numerical properties, as:
+//
+//  {
+//      property1: value1,
+//      property2: value2,
+//      ...
+//  }
+//  
+// returns randMObj object of:
+//  {
+//      ...objAnyType,
+//      ...{property1: randM1, property2: randM2, ...},
+//      nextSeed
+//  }
+export const randMObj_unit = (objAnyType, objForRand) =>
+    // build an object out of entries
+    Object.entries(objForRand).reduce(
+        (accumProp, propValPair, i) => ({
+            // object built so far
+            ...accumProp,
 
-    // unit object func
-    // builds a randMObj object by converting given prop-vals to randMs
-    // takes: 
-    //  objAnyType: the object to bundle randMs into
-    //  objForRand: an object with numerical properties, as:
-    //
-    //  {
-    //      property1: value1,
-    //      property2: value2,
-    //      ...
-    //  }
-    //  
-    // returns randMObj object of:
-    //  {
-    //      ...objAnyType,
-    //      ...{property1: randM1, property2: randM2, ...},
-    //      nextSeed
-    //  }
-    export const randMObj_unit = (objAnyType, objForRand) =>
-        // build an object out of entries
-        Object.entries(objForRand).reduce(
-            (accumProp, propValPair, i) => ({
-                // object built so far
-                ...accumProp,
-
-                // the property to assign a randM to
-                [propValPair[0]]:
-                // the unit randM assigned to the property, using i to get the appropriate seed
-                {
-                    ...randM_unit(propValPair[1]),
-                    nextSeed:
-                        (
-                            (i > 0)
-                                ? randM_getNextSeed(0, i - 1)
-                                : 0
-                        )
-                }
-            }),
-            // the initial object to accumulate upon, consisting of objAnyType and
-            //  the next seed to be used
+            // the property to assign a randM to
+            [propValPair[0]]:
+            // the unit randM assigned to the property, using i to get the appropriate seed
             {
-                ...objAnyType,
-                [TYPE_RANDM_OBJ]: true,
+                ...randM_unit(propValPair[1]),
                 nextSeed:
                     (
-                        (Object.entries(objForRand).length > 1)
-                            ? randM_getNextSeed(0, Object.entries(objForRand).length - 2)
+                        (i > 0)
+                            ? randM_getNextSeed(0, i - 1)
                             : 0
                     )
             }
-        );
+        }),
+        // the initial object to accumulate upon, consisting of objAnyType and
+        //  the next seed to be used
+        {
+            ...objAnyType,
+            [TYPE_RANDM_OBJ]: true,
+            nextSeed:
+                (
+                    (Object.entries(objForRand).length > 1)
+                        ? randM_getNextSeed(0, Object.entries(objForRand).length - 2)
+                        : 0
+                )
+        }
+    );
 
-    // randM lift func
-    // takes:
-    //  func: the function to lift, of signature (any) => any
-    // returns function with signature (any) => randM
-    // total signature: (any => any) => (any => randM)
-    export const randM_lift = (func) =>
-        anyType => compose(randM_unit, func)(anyType);
+// randM lift func
+// takes:
+//  func: the function to lift, of signature (any) => any
+// returns function with signature (any) => randM
+// total signature: (any => any) => (any => randM)
+export const randM_lift = (func) =>
+    anyType => compose(randM_unit, func)(anyType);
 
-    // randM func to lift and then bind
-    // takes:
-    //  func: the function to lift and then bind, of signature (any) => any
-    // returns function with signature (randM) => randM
-    // total signature: (any => any) => (randM => randM)
-    export const randM_liftBind = (func) =>
-        randM => compose(randM_bind, randM_lift)(func)(randM);
+// randM func to lift and then bind
+// takes:
+//  func: the function to lift and then bind, of signature (any) => any
+// returns function with signature (randM) => randM
+// total signature: (any => any) => (randM => randM)
+export const randM_liftBind = (func) =>
+    randM => compose(randM_bind, randM_lift)(func)(randM);
+```
 
 In particular, **randM_liftBind** is used heavily in the rulebook to apply functions that do not perform random number generation and therefore do not care about the randM seed. For example:
 
-    const leafPreservePhysType_func = (_, randM_eventType) =>
-        // total signature: (randM_eventType) => randM_actionType
-        randM_liftBind
-            // replace the physType with the given physType
-            // signature of this func: (eventType) => actionType or [actionType]
-            ((eventType) => action_replacePhysType(eventType.physType))
-            (randM_eventType);
+```javascript
+const leafPreservePhysType_func = (_, randM_eventType) =>
+    // total signature: (randM_eventType) => randM_actionType
+    randM_liftBind
+        // replace the physType with the given physType
+        // signature of this func: (eventType) => actionType or [actionType]
+        ((eventType) => action_replacePhysType(eventType.physType))
+        (randM_eventType);
+```
 
 ## Complex data types:
 ### **physType**: The basic type for physical objects that act in the world
