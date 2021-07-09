@@ -18,9 +18,9 @@ The Creature system adheres as much as possible to two important rules as observ
 ## Higher-Order Functions and Function Application
 All multi-parameter functions in the Creature system are traditional JavaScript comma-separated functions, e.g.:
 
-'''
+```
 export const preFuncTagTouchedFood = (storeType, randM_eventType) =>
-'''
+```
 
 This makes debugging easier than if multi-parameter functions were to be encoded as nested arrow functions. However, the Creature system also provides two functions for partial application, to support various aspects of functional programming. These functions return functions that permit the last argument to be given at a later time.
 
