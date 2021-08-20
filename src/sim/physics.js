@@ -1,8 +1,6 @@
 'use strict'
 
 // ****** Code implementing laws of physics ******
-// These are nested arrow functions to support easy composition, as the first argument
-//  to all of them is a storeType
 
 // *** Our imports
 import {
